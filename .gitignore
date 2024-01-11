@@ -41,6 +41,8 @@ out/
 /src/test/resources/**.properties
 /src/test/resources/**.yml
 
+!application-local.properties
+
 ## docker volume
 /redis/
 /mysql/
