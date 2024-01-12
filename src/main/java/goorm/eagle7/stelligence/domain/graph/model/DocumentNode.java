@@ -52,4 +52,10 @@ public class DocumentNode {
 	 */
 	@Relationship(type = "HAS_CHILD", direction = Relationship.Direction.OUTGOING)
 	private List<DocumentNode> childDocumentList = new ArrayList<>();
+
+	public DocumentNode(String title, Long rdbId, String group) {
+		this.title = title;
+		this.rdbId = rdbId;
+		this.group = group;
+	}
 }
