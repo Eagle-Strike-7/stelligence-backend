@@ -27,7 +27,7 @@ public class DocumentNode {
 	 */
 	@Id
 	@GeneratedValue(UUIDStringGenerator.class)
-	private String id;
+	private String nodeId;
 
 	/**
 	 * title 프로퍼티는 문서의 제목을 나타냅니다.
@@ -39,7 +39,7 @@ public class DocumentNode {
 	 * rdbId 프로퍼티는 rdb에 저장된 실제 문서의 id와 동일한 값을 갖습니다.
 	 * rdbId를 이용해 실제 문서의 내용에 접근합니다.
 	 */
-	private Long rdbId;
+	private Long documentId;
 
 	/**
 	 * group 프로퍼티는 최상위 노드의 title을 나타냅니다.
@@ -53,9 +53,9 @@ public class DocumentNode {
 	@Relationship(type = "HAS_CHILD", direction = Relationship.Direction.OUTGOING)
 	private List<DocumentNode> childDocumentList = new ArrayList<>();
 
-	public DocumentNode(String title, Long rdbId, String group) {
+	public DocumentNode(String title, Long documentId, String group) {
 		this.title = title;
-		this.rdbId = rdbId;
+		this.documentId = documentId;
 		this.group = group;
 	}
 }

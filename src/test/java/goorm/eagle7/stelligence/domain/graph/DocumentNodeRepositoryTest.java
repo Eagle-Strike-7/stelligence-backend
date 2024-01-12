@@ -25,9 +25,9 @@ class DocumentNodeRepositoryTest {
 
 		DocumentNode documentNode = new DocumentNode("제목1", 1L, "제목1");
 		documentNodeRepository.save(documentNode);
-		log.info("documentNode.getId = {}", documentNode.getId());
+		log.info("documentNode.getNodeId = {}", documentNode.getNodeId());
 
-		assertThat(documentNode.getId()).isNotNull();
+		assertThat(documentNode.getNodeId()).isNotNull();
 	}
 
 	@Test
@@ -37,9 +37,9 @@ class DocumentNodeRepositoryTest {
 		DocumentNode documentNode = new DocumentNode("제목1", 1L, "제목1");
 		documentNodeRepository.save(documentNode);
 
-		DocumentNode findNode = documentNodeRepository.findById(documentNode.getId()).orElseThrow();
+		DocumentNode findNode = documentNodeRepository.findById(documentNode.getNodeId()).orElseThrow();
 
-		assertThat(documentNode.getId()).isEqualTo(findNode.getId());
+		assertThat(documentNode.getNodeId()).isEqualTo(findNode.getNodeId());
 		assertThat(documentNode.getTitle()).isEqualTo(findNode.getTitle());
 	}
 }
