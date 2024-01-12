@@ -51,11 +51,20 @@ public class DocumentNode {
 	 * HAS_CHILD 릴레이션은 하위 계층의 문서와의 관계를 나타냅니다.
 	 */
 	@Relationship(type = "HAS_CHILD", direction = Relationship.Direction.OUTGOING)
-	private List<DocumentNode> childDocumentList = new ArrayList<>();
+	private List<DocumentNode> childDocumentNodeList = new ArrayList<>();
 
-	public DocumentNode(String title, Long documentId, String group) {
+	public DocumentNode(String title, Long documentId) {
 		this.title = title;
 		this.documentId = documentId;
+		this.group = title;
+	}
+
+	public void setGroup(String group) {
 		this.group = group;
+	}
+
+	public void addChildRelationship(DocumentNode childDocumentNode) {
+		childDocumentNode.setGroup(this.group);
+		childDocumentNodeList.add(childDocumentNode);
 	}
 }
