@@ -28,7 +28,8 @@ import lombok.NoArgsConstructor;
 public class Section extends BaseTimeEntity implements Comparable<Section> {
 
 	@Id
-	private Long sectionId;
+	@Column(name = "section_id")
+	private Long id;
 
 	@Id
 	private Long revision;
@@ -54,7 +55,7 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	//===생성===//
 	public static Section createSection(
 		Document document,
-		Long sectionId,
+		Long id,
 		Long revision,
 		Heading heading,
 		String title,
@@ -63,7 +64,7 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	) {
 		Section section = new Section();
 		section.document = document;
-		section.sectionId = sectionId;
+		section.id = id;
 		section.revision = revision;
 		section.heading = heading;
 		section.title = title;
