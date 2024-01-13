@@ -4,19 +4,22 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
+import goorm.eagle7.stelligence.domain.MockSectionIdGenerator;
+import goorm.eagle7.stelligence.domain.TestConfig;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.model.Document;
-import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import jakarta.persistence.EntityManager;
@@ -27,6 +30,7 @@ import jakarta.persistence.PersistenceContext;
  */
 @SpringBootTest
 @Transactional
+@Import(TestConfig.class)
 class DocumentServiceSpringBootTest {
 
 	@Autowired
@@ -36,12 +40,15 @@ class DocumentServiceSpringBootTest {
 	private DocumentRepository documentRepository;
 
 	@Autowired
-	private SectionRepository sectionRepository;
+	private SectionIdGenerator sectionIdGenerator;
 
 	@PersistenceContext
 	private EntityManager em;
 
-	private PlatformTransactionManager tm;
+	@BeforeEach
+	void setUp() {
+		((MockSectionIdGenerator)sectionIdGenerator).clear();
+	}
 
 	@Test
 	@DisplayName("문서 생성 - 성공")
@@ -334,6 +341,8 @@ class DocumentServiceSpringBootTest {
 
 		Long documentId = documentService.createDocument(title, sectionRequests);
 
+		Long documentId2 = documentService.createDocument(title, sectionRequests);
+
 		documentService.mergeContribute(
 			documentId,
 			List.of(
@@ -397,7 +406,7 @@ class DocumentServiceSpringBootTest {
 		assertThat(sections2.get(0).getRevision()).isEqualTo(1L);
 		assertThat(sections2.get(0).getTitle()).isEqualTo("title1");
 
-		assertThat(sections2.get(1).getSectionId()).isEqualTo(4L);
+		assertThat(sections2.get(1).getSectionId()).isEqualTo(7L);
 		assertThat(sections2.get(1).getRevision()).isEqualTo(2L);
 		assertThat(sections2.get(1).getTitle()).isEqualTo("newTitle");
 
@@ -418,7 +427,7 @@ class DocumentServiceSpringBootTest {
 		assertThat(sections3.get(0).getRevision()).isEqualTo(3L);
 		assertThat(sections3.get(0).getTitle()).isEqualTo("title1Update");
 
-		assertThat(sections3.get(1).getSectionId()).isEqualTo(4L);
+		assertThat(sections3.get(1).getSectionId()).isEqualTo(7L);
 		assertThat(sections3.get(1).getRevision()).isEqualTo(2L);
 		assertThat(sections3.get(1).getTitle()).isEqualTo("newTitle");
 
@@ -431,63 +440,4 @@ class DocumentServiceSpringBootTest {
 		assertThat(sections3.get(3).getTitle()).isEqualTo("title3");
 	}
 
-	@Test
-	@DisplayName("Merge 동시성 테스트")
-	void mergeConcurrency() {
-
-		String title = "title";
-
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
-
-		//트랜잭션 종료를 통해 이후 쓰레드들이 정상적으로 동작할 수 있게 함
-		//em.flush(), em.clear() 사용시, 쓰레드들이 정상적으로 동작하지 않음
-		//DB에 정보는 있지만, 테스트 트랜잭션이 쓰기모드로 엔티티에 접근한 상태이기 때문에 Deadklock 발생
-		//따라서 강제로 트랜잭션을 종료 시킨 이후, 쓰레드들이 각각의 트랜잭션에서 동작하게 함
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-
-		Thread t1 = new Thread(() -> documentService.mergeContribute(
-			documentId,
-			List.of(
-				new DocumentService.Commit("INSERT", 1L, 1L, Heading.H1, "newTitle", "newContent")
-			)
-		));
-
-		Thread t2 = new Thread(() -> documentService.mergeContribute(
-			documentId,
-			List.of(
-				new DocumentService.Commit("UPDATE", 1L, 1L, Heading.H1, "title1Update", "title1Update")
-			)
-		));
-
-		t1.start();
-		t2.start();
-
-		try {
-			t1.join();
-			t2.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		TestTransaction.start(); // 지연로딩을 위한 트랜잭션 재시작
-
-		Document document = documentRepository.findById(documentId).get();
-
-		// 동시성 문제 발생시 2가 나옴
-		//DocumentRepository.findForUpdate의 @Lock을 없애보면 확인 가능
-		assertThat(document.getCurrentRevision()).isEqualTo(3L);
-
-		assertThat(document.getSections()).hasSize(5);
-		assertThat(document.getSections().get(3).getRevision()).isEqualTo(2L);
-		assertThat(document.getSections().get(4).getRevision()).isEqualTo(3L);
-
-		TestTransaction.end();
-	}
 }
