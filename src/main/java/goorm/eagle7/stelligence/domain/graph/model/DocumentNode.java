@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.graph.model;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
@@ -19,24 +20,17 @@ import lombok.NoArgsConstructor;
 public class DocumentNode {
 
 	/**
-	 * id 프로퍼티는 neo4j가 내부적으로 사용하는 id를 정의합니다.
-	 * id는 노드 삽입 시점에 UUIDStringGenerator를 이용해 유일한 값으로 생성됩니다.
+	 * rdbId 프로퍼티는 rdb에 저장된 실제 문서의 id와 동일한 값을 가져야합니다.
+	 * rdbId를 이용해 실제 문서의 내용에 접근합니다.
 	 */
 	@Id
-	@GeneratedValue(UUIDStringGenerator.class)
-	private String nodeId;
+	private Long documentId;
 
 	/**
 	 * title 프로퍼티는 문서의 제목을 나타냅니다.
 	 * 그래프에 보여주거나, 제목을 이용해 검색을 할 때 사용됩니다.
 	 */
 	private String title;
-
-	/**
-	 * rdbId 프로퍼티는 rdb에 저장된 실제 문서의 id와 동일한 값을 갖습니다.
-	 * rdbId를 이용해 실제 문서의 내용에 접근합니다.
-	 */
-	private Long documentId;
 
 	/**
 	 * group 프로퍼티는 최상위 노드의 title을 나타냅니다.
@@ -53,25 +47,25 @@ public class DocumentNode {
 
 	/**
 	 * 최상위 문서가 될 노드를 생성할 때 사용하는 생성자입니다.
-	 * @param title: 문서의 제목
 	 * @param documentId: 문서의 RDB PK
+	 * @param title: 문서의 제목
 	 */
-	public DocumentNode(String title, Long documentId) {
-		this.title = title;
+	public DocumentNode(Long documentId, String title) {
 		this.documentId = documentId;
+		this.title = title;
 		// 부모 노드가 없다면, 그룹은 노드 자신의 title이 됩니다.
 		this.group = title;
 	}
 
 	/**
 	 * 특정 문서의 하위 계층의 문서를 생성할 때 사용하는 생성자입니다.
-	 * @param title: 문서의 제목
 	 * @param documentId: 문서의 RDB PK
-	 * @param parentDocumentNode: 부모 문서를 나타냅니다.
+	 * @param title: 문서의 제목
+	 * @param parentDocumentNode: 부모 문서
 	 */
-	public DocumentNode(String title, Long documentId, DocumentNode parentDocumentNode) {
-		this.title = title;
+	public DocumentNode(Long documentId, String title, DocumentNode parentDocumentNode) {
 		this.documentId = documentId;
+		this.title = title;
 		this.parentDocumentNode = parentDocumentNode;
 		// 자식 노드의 그룹은 부모 노드의 그룹을 그대로 물려받습니다.
 		this.group = parentDocumentNode.getGroup();
