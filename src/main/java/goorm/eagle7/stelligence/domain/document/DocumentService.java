@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
@@ -14,7 +15,6 @@ import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import goorm.eagle7.stelligence.domain.section.model.SectionId;
-import goorm.eagle7.stelligence.domain.section.sequence.SectionIdSequenceRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class DocumentService {
 
 	private final DocumentRepository documentRepository;
 	private final SectionRepository sectionRepository;
-	private final SectionIdSequenceRepository sectionIdSequenceRepository;
+	private final SectionIdGenerator sectionIdGenerator;
 
 	/**
 	 * Document를 생성합니다.
@@ -46,14 +46,11 @@ public class DocumentService {
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
 
-		//document의 sectionId Sequence 를 생성
-		sectionIdSequenceRepository.createSequence(document.getId());
-
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
 			Section section = Section.createSection(
 				document,
-				sectionIdSequenceRepository.getAndIncrementSectionId(document.getId()),
+				sectionIdGenerator.getAndIncrementSectionId(),
 				1L,
 				sectionRequests.get(order).getHeading(),
 				sectionRequests.get(order).getTitle(),
@@ -108,7 +105,7 @@ public class DocumentService {
 			if (commit.type.equals("INSERT")) {
 				Section section = Section.createSection(
 					document,
-					sectionIdSequenceRepository.getAndIncrementSectionId(document.getId()),
+					sectionIdGenerator.getAndIncrementSectionId(),
 					newRevision,
 					commit.getHeading(),
 					commit.getTitle(),
