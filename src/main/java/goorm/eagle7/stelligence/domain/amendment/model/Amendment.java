@@ -1,6 +1,9 @@
-package goorm.eagle7.stelligence.domain.commit.model;
+package goorm.eagle7.stelligence.domain.amendment.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.section.model.Heading;
+import goorm.eagle7.stelligence.domain.section.model.Section;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Commit extends BaseTimeEntity {
+public class Amendment extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +35,15 @@ public class Commit extends BaseTimeEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "contribute_id")
-	private Contribute contribute;
+	// @ManyToOne(fetch = FetchType.LAZY)
+	// @JoinColumn(name = "contribute_id")
+	// private Contribute contribute;
 
-	private String commitTitle;
-	private String commitDescription;
+	private String amendmentTitle;
+	private String amendmentDescription;
 
 	@Enumerated(EnumType.STRING)
-	private CommitType type;
+	private AmendmentType type;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumns({
@@ -56,30 +59,32 @@ public class Commit extends BaseTimeEntity {
 	private String newSectionContent;
 
 	@Enumerated(EnumType.STRING)
-	private CommitStatus status;
+	private AmendmentStatus status;
 
 	//수정안 생성(update, create)
-	public Commit(Member member, String commitTitle, String commitDescription, CommitType type, Section targetSection,
+	public Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
+		Section targetSection,
 		Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
 		this.member = member;
-		this.commitTitle = commitTitle;
-		this.commitDescription = commitDescription;
+		this.amendmentTitle = amendmentTitle;
+		this.amendmentDescription = amendmentDescription;
 		this.type = type;
 		this.targetSection = targetSection;
 		this.newSectionHeading = newSectionHeading;
 		this.newSectionTitle = newSectionTitle;
 		this.newSectionContent = newSectionContent;
 		//기본값 pending
-		this.status = CommitStatus.PENDING;
+		this.status = AmendmentStatus.PENDING;
 	}
 
 	//수정안 생성(delete)
-	public Commit(Member member, String commitTitle, String commitDescription, CommitType type, Section targetSection) {
+	public Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
+		Section targetSection) {
 		this.member = member;
-		this.commitTitle = commitTitle;
-		this.commitDescription = commitDescription;
+		this.amendmentTitle = amendmentTitle;
+		this.amendmentDescription = amendmentDescription;
 		this.type = type;
 		this.targetSection = targetSection;
-		this.status = CommitStatus.PENDING;
+		this.status = AmendmentStatus.PENDING;
 	}
 }
