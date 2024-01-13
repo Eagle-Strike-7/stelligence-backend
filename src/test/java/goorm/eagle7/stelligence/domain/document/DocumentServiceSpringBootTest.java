@@ -355,8 +355,10 @@ class DocumentServiceSpringBootTest {
 			)
 		);
 
-		em.flush();
-		em.clear();
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+
+		TestTransaction.start();
 
 		//when
 		DocumentResponse document1 = documentService.getDocument(documentId, 1L);
@@ -381,6 +383,13 @@ class DocumentServiceSpringBootTest {
 		assertThat(sections1.get(2).getTitle()).isEqualTo("title3");
 
 		//Document2
+		documentRepository.findById(documentId)
+			.get()
+			.getSections()
+			.stream()
+			.map(SectionResponse::of)
+			.forEach(System.out::println);
+
 		List<SectionResponse> sections2 = document2.getSections();
 		assertThat(sections2).hasSize(4);
 
