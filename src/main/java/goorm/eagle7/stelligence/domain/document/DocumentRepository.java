@@ -14,6 +14,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 	/**
 	 * Document를 조회합니다.
 	 * 업데이트용 조회로, 조회된 Document는 Lock이 걸립니다.
+	 * Contriute Merge를 하는 용도로만 한정적으로 사용하기로 합시다.
 	 * @param documentId
 	 * @return
 	 */

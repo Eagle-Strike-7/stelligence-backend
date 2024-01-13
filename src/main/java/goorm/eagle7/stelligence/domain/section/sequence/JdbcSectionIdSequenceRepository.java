@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
  *
  * 복합키는 AUTO_INCREMENT를 적용할 수 없기 때문에, 별도의 sequence 테이블을 만들어서 관리합니다.
  * 현재 방법으로는 매번 가져올 때마다 update가 발생하여 성능에 문제가 있으므로, 추후 개선이 필요합니다.
+ *
+ * RequiresNew를 사용하여 트랜잭션의 생명주기를 별도로 관리하여,
+ * 불필요하게 락 기간을 늘리지 않도록 합니다.
  */
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +32,6 @@ public class JdbcSectionIdSequenceRepository implements SectionIdSequenceReposit
 	 * @param documentId
 	 * @return
 	 */
-
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Long getAndIncrementSectionId(Long documentId) {
@@ -40,6 +42,10 @@ public class JdbcSectionIdSequenceRepository implements SectionIdSequenceReposit
 		return sectionId;
 	}
 
+	/**
+	 * Document의 SectionId Sequence를 생성합니다.
+	 * @param documentId
+	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void createSequence(Long documentId) {

@@ -51,10 +51,15 @@ public class DocumentService {
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
-			Section section = Section.createSection(document,
-				sectionIdSequenceRepository.getAndIncrementSectionId(document.getId()), 1L,
-				sectionRequests.get(order).getHeading(), sectionRequests.get(order).getTitle(),
-				sectionRequests.get(order).getContent(), order + 1);
+			Section section = Section.createSection(
+				document,
+				sectionIdSequenceRepository.getAndIncrementSectionId(document.getId()),
+				1L,
+				sectionRequests.get(order).getHeading(),
+				sectionRequests.get(order).getTitle(),
+				sectionRequests.get(order).getContent(),
+				order + 1
+			);
 
 			sectionRepository.save(section);
 		}
@@ -116,7 +121,6 @@ public class DocumentService {
 				sectionRepository.updateOrders(document.getId(), document.getCurrentRevision(), section.getOrder());
 
 			} else if (commit.type.equals("UPDATE")) {
-
 				Section section = Section.createSection(
 					document,
 					commit.targetSectionId, //기존 섹션의 ID를 그대로 사용합니다.
@@ -141,7 +145,6 @@ public class DocumentService {
 				);
 
 				sectionRepository.save(section);
-
 			}
 		}
 
@@ -167,9 +170,11 @@ public class DocumentService {
 	 */
 	public DocumentResponse getDocument(Long documentId, Long revision) {
 
+		//문서가 존재하는지 확인합니다.
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
 
+		//해당 버전의 섹션들을 조회합니다.
 		List<SectionResponse> sections = sectionRepository.findByVersion(document, revision)
 			.stream()
 			.sorted()

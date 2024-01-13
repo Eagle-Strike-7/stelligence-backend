@@ -16,6 +16,13 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Document Entity
+ * 문서를 저장하기 위한 엔티티 클래스입니다.
+ * 문서는 여러 Section을 가질 수 있습니다.
+ *
+ * todo: 추후 작성자를 저장할 수 있어야 합니다.
+ */
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -45,6 +52,7 @@ public class Document extends BaseTimeEntity { //추후 BaseTimeEntity 상속
 	}
 
 	//===수정===//
+
 	//Contribute에 대한 Merge가 끝나고 현재 버전을 올려줍니다.
 	public void incrementCurrentRevision() {
 		this.currentRevision++;
