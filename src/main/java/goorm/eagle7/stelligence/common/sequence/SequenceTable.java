@@ -6,6 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.NoArgsConstructor;
 
+/**
+ * DB sequence Key를 관리하는 테이블입니다.
+ */
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 public class SequenceTable {
