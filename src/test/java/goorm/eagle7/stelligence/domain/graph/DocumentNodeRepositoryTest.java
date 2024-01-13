@@ -65,9 +65,8 @@ class DocumentNodeRepositoryTest {
 		log.info("parentNode.getNodeId = {}", parentNode.getNodeId());
 
 		// 새로운 DocumentNode인 childNode
-		DocumentNode childNode = new DocumentNode(childTitle, childDocumentId);
-		parentNode.addChildRelationship(childNode);
-		documentNodeRepository.save(parentNode);
+		DocumentNode childNode = new DocumentNode(childTitle, childDocumentId, parentNode);
+		documentNodeRepository.save(childNode);
 		log.info("childNode.getNodeId = {}", childNode.getNodeId());
 
 		// 저장된 자식 노드 조회

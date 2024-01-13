@@ -1,8 +1,5 @@
 package goorm.eagle7.stelligence.domain.graph.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -49,22 +46,34 @@ public class DocumentNode {
 
 	/**
 	 * HAS_CHILD 릴레이션은 하위 계층의 문서와의 관계를 나타냅니다.
+	 * 여기서는 Relationship.Direction.INCOMING으로 설정힘으로써 어떤 노드를 부모노드로 설정할지를 결정합니다.
 	 */
-	@Relationship(type = "HAS_CHILD", direction = Relationship.Direction.OUTGOING)
-	private List<DocumentNode> childDocumentNodeList = new ArrayList<>();
+	@Relationship(type = "HAS_CHILD", direction = Relationship.Direction.INCOMING)
+	private DocumentNode parentDocumentNode;
 
+	/**
+	 * 최상위 문서가 될 노드를 생성할 때 사용하는 생성자입니다.
+	 * @param title: 문서의 제목
+	 * @param documentId: 문서의 RDB PK
+	 */
 	public DocumentNode(String title, Long documentId) {
 		this.title = title;
 		this.documentId = documentId;
+		// 부모 노드가 없다면, 그룹은 노드 자신의 title이 됩니다.
 		this.group = title;
 	}
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	public void addChildRelationship(DocumentNode childDocumentNode) {
-		childDocumentNode.setGroup(this.group);
-		childDocumentNodeList.add(childDocumentNode);
+	/**
+	 * 특정 문서의 하위 계층의 문서를 생성할 때 사용하는 생성자입니다.
+	 * @param title: 문서의 제목
+	 * @param documentId: 문서의 RDB PK
+	 * @param parentDocumentNode: 부모 문서를 나타냅니다.
+	 */
+	public DocumentNode(String title, Long documentId, DocumentNode parentDocumentNode) {
+		this.title = title;
+		this.documentId = documentId;
+		this.parentDocumentNode = parentDocumentNode;
+		// 자식 노드의 그룹은 부모 노드의 그룹을 그대로 물려받습니다.
+		this.group = parentDocumentNode.getGroup();
 	}
 }
