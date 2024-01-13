@@ -172,6 +172,7 @@ public class DocumentService {
 
 		List<SectionResponse> sections = sectionRepository.findByVersion(document, revision)
 			.stream()
+			.sorted()
 			.map(SectionResponse::of)
 			.toList();
 

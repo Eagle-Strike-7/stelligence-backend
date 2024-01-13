@@ -20,6 +20,7 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	 */
 	@Query("select s from Section s " +
 		"where s.document = :document " +
+		"and s.content is not null " +
 		"and s.revision = (" +
 		"   select max(s2.revision) " +
 		"   from Section s2 " +
