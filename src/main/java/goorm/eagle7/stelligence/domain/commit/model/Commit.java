@@ -34,7 +34,7 @@ public class Commit extends BaseTimeEntity {
 	private Contributes contributes;
 
 	private String commitTitle;
-	private String description;
+	private String commitDescription;
 
 	@Enumerated(EnumType.STRING)
 	private CommitType type;
@@ -55,13 +55,22 @@ public class Commit extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private CommitStatus status;
 
-	public Commit(Member member, String commitTitle, String description, NewSectionHeading newSectionHeading,
+	//수정안 생성(update, create)
+	public Commit(Member member, String commitTitle, String commitDescription, NewSectionHeading newSectionHeading,
 		String newSectionTitle, String newSectionContent) {
 		this.member = member;
 		this.commitTitle = commitTitle;
-		this.description = description;
+		this.commitDescription = commitDescription;
 		this.newSectionHeading = newSectionHeading;
 		this.newSectionTitle = newSectionTitle;
 		this.newSectionContent = newSectionContent;
 	}
+
+	//수정안 삭제(delete)
+	public Commit(Member member, String commitTitle, String commitDescription) {
+		this.member = member;
+		this.commitTitle = commitTitle;
+		this.commitDescription = commitDescription;
+	}
+
 }
