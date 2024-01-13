@@ -44,4 +44,10 @@ public class Document extends BaseTimeEntity { //추후 BaseTimeEntity 상속
 		return document;
 	}
 
+	//===수정===//
+	//Contribute에 대한 Merge가 끝나고 현재 버전을 올려줍니다.
+	public void incrementCurrentRevision() {
+		this.currentRevision++;
+	}
+
 }

@@ -25,7 +25,7 @@ public class SectionId implements Serializable {
 		this.revision = revision;
 	}
 
-	public static SectionId createSectionId(Long sectionId, Long revision) {
+	public static SectionId of(Long sectionId, Long revision) {
 		return new SectionId(sectionId, revision);
 	}
 }
