@@ -94,7 +94,6 @@ class MergeServiceIntegratedTest {
 		em.clear();
 
 		//when
-
 		Document findDocument = em.find(Document.class, document.getId());
 		Contribute findContribute = em.find(Contribute.class, contribute.getId());
 
@@ -102,8 +101,8 @@ class MergeServiceIntegratedTest {
 
 		em.flush();
 		em.clear();
-		//then
 
+		//then
 		Document mergedDocument = em.find(Document.class, document.getId());
 
 		assertThat(mergedDocument.getCurrentRevision()).isEqualTo(2L);
