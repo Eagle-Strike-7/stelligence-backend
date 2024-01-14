@@ -76,17 +76,17 @@ public class Member extends BaseTimeEntity {
 	// @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	// private List<Bookmark> bookmarks = new ArrayList<>();
 
-
 	// member 생성 시, role은 기본적으로 user로, contributes는 0으로, SocialType은 KAKAO로 설정.
 	/*
 	 * Member는 생성자로 생성하기
 	 * @param name
-	 * @param nickname
+	 * @param nickname // TODO service unique 검증 필요
 	 * @param email
 	 * @param imageUrl
 	 * @param refreshToken
 	 * @param socialId
 	 * default: role: USER, contributes: 0, socialType: KAKAO
+	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
 	 */
 	public Member(String name, String nickname, String email, String imageUrl, String refreshToken, String socialId) {
 		this.name = name;
@@ -100,5 +100,9 @@ public class Member extends BaseTimeEntity {
 		this.role = Role.USER;
 		this.socialType = SocialType.KAKAO;
 		this.contributes = 0;
+	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 }
