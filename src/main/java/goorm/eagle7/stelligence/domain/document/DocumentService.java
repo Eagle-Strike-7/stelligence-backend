@@ -82,10 +82,14 @@ public class DocumentService {
 	 * 높은 투표율을 받은 Contribute에 대해서 Merge를 진행합니다.
 	 * Contribute를 파라미터로 받아야하지만, 현재 개발되지 않았으므로 임시 파라미터를 받습니다.
 	 *
-	 * 추후 MergeService로 분리될 예정입니다.
+	 * MergeService로 로직이 분리되었습니다.
+	 * 하지만 다른 테스트가 현재 mergeContribute에 의존하고 있으므로
+	 * 테스트 데이터 구축된 이후 없애도록 하겠습니다.
+	 *
 	 * @param documentId
 	 */
 	@Transactional
+	@Deprecated
 	public void mergeContribute(Long documentId, List<Commit> commits) {
 		Document document = documentRepository.findForUpdate(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
