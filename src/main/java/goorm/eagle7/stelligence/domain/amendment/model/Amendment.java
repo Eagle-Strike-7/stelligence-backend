@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.amendment.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -35,9 +36,9 @@ public class Amendment extends BaseTimeEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "contribute_id")
-	// private Contribute contribute;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "contribute_id")
+	private Contribute contribute;
 
 	private String amendmentTitle;
 	private String amendmentDescription;
