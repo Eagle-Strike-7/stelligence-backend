@@ -88,4 +88,8 @@ public class Amendment extends BaseTimeEntity {
 		this.targetSection = targetSection;
 		this.status = AmendmentStatus.PENDING;
 	}
+
+	public void setContribute(Contribute contribute) {
+		this.contribute = contribute;
+	}
 }

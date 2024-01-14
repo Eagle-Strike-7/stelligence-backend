@@ -39,4 +39,11 @@ public class Contribute {
 	@OneToMany(mappedBy = "contribute")
 	private List<Amendment> amendments = new ArrayList<>();
 
+	//===생성===//
+	public static Contribute createContribute() {
+		Contribute contribute = new Contribute();
+		contribute.status = ContributeStatus.VOTING;
+		return contribute;
+	}
+
 }
