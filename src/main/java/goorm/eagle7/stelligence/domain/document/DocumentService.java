@@ -11,6 +11,7 @@ import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.parser.DocumentParser;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -34,17 +35,20 @@ public class DocumentService {
 	private final DocumentRepository documentRepository;
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
+	private final DocumentParser documentParser;
 
 	/**
 	 * Document를 생성합니다.
-	 * @param title
-	 * @param sectionRequests 생성할 섹션 정보
+	 * @param title 문서의 제목
+	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Long createDocument(String title, List<SectionRequest> sectionRequests) {
+	public Long createDocument(String title, String rawContent) {
 		//document 생성
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
+
+		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
