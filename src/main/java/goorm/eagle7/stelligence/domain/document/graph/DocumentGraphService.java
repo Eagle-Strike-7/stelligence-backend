@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph;
+package goorm.eagle7.stelligence.domain.document.graph;
 
 import java.util.List;
 
@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.document.model.Document;
-import goorm.eagle7.stelligence.domain.graph.dto.DocumentGraphResponse;
-import goorm.eagle7.stelligence.domain.graph.dto.DocumentNodeResponse;
-import goorm.eagle7.stelligence.domain.graph.dto.HasChildRelationshipResponse;
-import goorm.eagle7.stelligence.domain.graph.model.DocumentNode;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.HasChildRelationshipResponse;
+import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

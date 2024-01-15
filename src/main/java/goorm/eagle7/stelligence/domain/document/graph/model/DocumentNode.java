@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph.model;
+package goorm.eagle7.stelligence.domain.document.graph.model;
 
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;

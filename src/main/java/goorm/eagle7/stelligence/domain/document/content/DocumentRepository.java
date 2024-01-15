@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document;
+package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import jakarta.persistence.LockModeType;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {

@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.common.merge.handler.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.document.DocumentRepository;
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

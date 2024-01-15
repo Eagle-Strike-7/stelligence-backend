@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document.parser;
+package goorm.eagle7.stelligence.domain.document.content.parser;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 
 class DocumentParserTest {

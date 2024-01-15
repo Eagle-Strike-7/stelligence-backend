@@ -1,8 +1,8 @@
-package goorm.eagle7.stelligence.domain.document.dto;
+package goorm.eagle7.stelligence.domain.document.content.dto;
 
 import java.util.List;
 
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.Getter;
 
 /**

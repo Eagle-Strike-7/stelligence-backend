@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph.dto;
+package goorm.eagle7.stelligence.domain.document.graph.dto;
 
 import java.util.List;
 

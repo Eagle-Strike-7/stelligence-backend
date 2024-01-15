@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document.parser;
+package goorm.eagle7.stelligence.domain.document.content.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

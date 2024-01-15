@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document.model;
+package goorm.eagle7.stelligence.domain.document.content.model;
 
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;

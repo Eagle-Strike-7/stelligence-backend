@@ -13,8 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
-import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
-import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
+import goorm.eagle7.stelligence.domain.document.content.DocumentService;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 
 @SpringBootTest
 @Transactional

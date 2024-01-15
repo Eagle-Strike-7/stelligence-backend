@@ -14,8 +14,10 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
-import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
+import goorm.eagle7.stelligence.domain.document.content.DocumentService;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 

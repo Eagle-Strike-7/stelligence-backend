@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document.dto;
+package goorm.eagle7.stelligence.domain.document.content.dto;
 
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;

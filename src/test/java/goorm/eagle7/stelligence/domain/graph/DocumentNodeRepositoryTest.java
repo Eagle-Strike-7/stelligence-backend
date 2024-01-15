@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.graph.model.DocumentNode;
+import goorm.eagle7.stelligence.domain.document.graph.DocumentNodeRepository;
+import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest

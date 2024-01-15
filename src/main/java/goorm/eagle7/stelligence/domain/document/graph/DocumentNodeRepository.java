@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph;
+package goorm.eagle7.stelligence.domain.document.graph;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,9 +7,9 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
-import goorm.eagle7.stelligence.domain.graph.dto.DocumentNodeResponse;
-import goorm.eagle7.stelligence.domain.graph.dto.HasChildRelationshipResponse;
-import goorm.eagle7.stelligence.domain.graph.model.DocumentNode;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.HasChildRelationshipResponse;
+import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 
 public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Long> {
 
