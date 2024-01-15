@@ -51,7 +51,7 @@ public class DocumentGraphService {
 	}
 
 	/**
-	 * 툭정 뮨서와 그 문서로부터 n번째 깊이의 문서까지 함께 조회합니다.
+	 * 툭정 문서와 그 문서로부터 n번째 깊이의 문서까지 함께 조회합니다.
 	 * @param documentId: 찾으려는 특정 문서의 id를 나타냅니다.
 	 * @param depth: 어느 깊이의 문서까지 가져올지를 결정합니다. depth가 0이면 자기자신만 반환합니다.
 	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
