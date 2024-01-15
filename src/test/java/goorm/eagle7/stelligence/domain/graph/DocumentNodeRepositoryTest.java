@@ -98,4 +98,46 @@ class DocumentNodeRepositoryTest {
 		assertThat(findDocumentNode.getGroup()).isEqualTo(parentNode.getGroup());
 		assertThat(findDocumentNode.getParentDocumentNode().getDocumentId()).isEqualTo(parentDocumentId);
 	}
+
+	@Test
+	@DisplayName("문서 노드 3 개 이상 저장 테스트")
+	void saveThreeDocumentNodes() {
+
+		final long parentDocumentId = 1L;
+		final String parentTitle = "제목1";
+
+		final long childDocumentId = 2L;
+		final String childTitle = "제목2";
+
+		final long grandChildDocumentId = 3L;
+		final String grandChildTitle = "제목3";
+
+		// 기존에 있었던 DocumentNode인 parentNode
+		DocumentNode parentNode = new DocumentNode(parentDocumentId, parentTitle);
+		documentNodeRepository.save(parentNode);
+		log.info("parentNode.getDocumentId = {}", parentNode.getDocumentId());
+		log.info("parentNode.getTitle = {}", parentNode.getTitle());
+
+		// 기존에 있었던 DocumentNode인 childNode
+		DocumentNode childNode = new DocumentNode(childDocumentId, childTitle, parentNode);
+		documentNodeRepository.save(childNode);
+		log.info("childNode.getDocumentId = {}", childNode.getDocumentId());
+		log.info("childNode.getTitle = {}", childNode.getTitle());
+
+		// 새로운 DocumentNode인 grandChildNode 저장
+		log.info("단일노드 조회 시작");
+		DocumentNode findChildNode = documentNodeRepository.findSingleNodeByDocumentId(childDocumentId).get();
+		log.info("단일노드 조회 끝");
+		DocumentNode grandChildNode = new DocumentNode(grandChildDocumentId, grandChildTitle, findChildNode);
+		documentNodeRepository.save(grandChildNode);
+		log.info("grandChildNode.getDocumentId = {}", grandChildNode.getDocumentId());
+		log.info("grandChildNode.getTitle = {}", grandChildNode.getTitle());
+		log.info("grandChildNode.getGroup = {}", grandChildNode.getGroup());
+
+		// 저장된 손자 노드 조회
+		DocumentNode findDocumentNode = documentNodeRepository.findById(grandChildDocumentId).orElseThrow();
+		assertThat(findDocumentNode.getDocumentId()).isEqualTo(grandChildDocumentId);
+		assertThat(findDocumentNode.getTitle()).isEqualTo(grandChildTitle);
+		assertThat(findDocumentNode.getGroup()).isEqualTo(parentNode.getGroup());
+	}
 }
