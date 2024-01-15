@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 

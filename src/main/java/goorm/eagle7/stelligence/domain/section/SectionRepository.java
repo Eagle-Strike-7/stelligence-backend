@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import goorm.eagle7.stelligence.domain.section.model.SectionId;
 

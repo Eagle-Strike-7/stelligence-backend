@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document;
+package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
-import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
-import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
-import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
-import goorm.eagle7.stelligence.domain.document.model.Document;
-import goorm.eagle7.stelligence.domain.document.parser.DocumentParser;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;

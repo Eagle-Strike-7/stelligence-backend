@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph;
+package goorm.eagle7.stelligence.domain.document.graph;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -12,12 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.document.DocumentRepository;
-import goorm.eagle7.stelligence.domain.document.model.Document;
-import goorm.eagle7.stelligence.domain.graph.dto.DocumentGraphResponse;
-import goorm.eagle7.stelligence.domain.graph.dto.DocumentNodeResponse;
-import goorm.eagle7.stelligence.domain.graph.dto.HasChildRelationshipResponse;
-import goorm.eagle7.stelligence.domain.graph.model.DocumentNode;
+import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
+import goorm.eagle7.stelligence.domain.document.graph.DocumentNodeRepository;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.HasChildRelationshipResponse;
+import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
