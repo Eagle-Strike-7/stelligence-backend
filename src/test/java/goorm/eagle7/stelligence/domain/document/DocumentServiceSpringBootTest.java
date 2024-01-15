@@ -17,7 +17,6 @@ import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.MockSectionIdGenerator;
 import goorm.eagle7.stelligence.domain.TestConfig;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
-import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.model.Document;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -45,6 +44,15 @@ class DocumentServiceSpringBootTest {
 	@PersistenceContext
 	private EntityManager em;
 
+	private static final String rawContent =
+		"# title1\n"
+			+ "content1\n"
+			+ "## title2\n"
+			+ "content2 line 1\n"
+			+ "content2 line 2\n"
+			+ "### title3\n"
+			+ "content3";
+
 	@BeforeEach
 	void setUp() {
 		((MockSectionIdGenerator)sectionIdGenerator).clear();
@@ -56,13 +64,7 @@ class DocumentServiceSpringBootTest {
 
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		em.flush();
 		em.clear();
@@ -73,6 +75,15 @@ class DocumentServiceSpringBootTest {
 		assertThat(createdDocs.getCurrentRevision()).isEqualTo(1);
 		assertThat(createdDocs.getSections()).hasSize(3);
 
+		//section 1의 title이 잘 들어갔는지 확인합니다.
+		assertThat(createdDocs.getSections().get(0).getTitle()).isEqualTo("title1");
+
+		//section 2의 content가 잘 들어갔는지 확인합니다.
+		assertThat(createdDocs.getSections().get(1).getContent()).isEqualTo("content2 line 1\ncontent2 line 2\n");
+
+		//section 3의 heading이 잘 들어갔는지 확인합니다.
+		assertThat(createdDocs.getSections().get(2).getHeading()).isEqualTo(Heading.H3);
+
 	}
 
 	@Test
@@ -80,13 +91,7 @@ class DocumentServiceSpringBootTest {
 	void mergeOneInsertContribute() {
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(documentId, List.of(
 			new DocumentService.Commit("INSERT", 1L, 1L, Heading.H1, "newTitle", "newContent")
@@ -118,13 +123,7 @@ class DocumentServiceSpringBootTest {
 	void mergeOneModifyContribute() {
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(documentId, List.of(
 			new DocumentService.Commit("UPDATE", 1L, 1L, Heading.H2, "newTitle", "newContent")
@@ -163,13 +162,7 @@ class DocumentServiceSpringBootTest {
 	void mergeOneDeleteContribute() {
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(documentId, List.of(
 			new DocumentService.Commit("DELETE", 2L, 1L, null, null, null)
@@ -202,14 +195,18 @@ class DocumentServiceSpringBootTest {
 	void mergeCommits() {
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3"),
-			new SectionRequest(Heading.H3, "title4", "content4")
-		);
+		String rawContent =
+			"# title1\n"
+				+ "content1\n"
+				+ "## title2\n"
+				+ "content2 line 1\n"
+				+ "content2 line 2\n"
+				+ "### title3\n"
+				+ "content3\n"
+				+ "## title4\n"
+				+ "content4\n";
 
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(documentId, List.of(
 			new DocumentService.Commit("DELETE", 2L, 1L, null, null, null),
@@ -271,13 +268,7 @@ class DocumentServiceSpringBootTest {
 		//given
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
-
-		Long documentId = documentService.createDocument(title, sectionRequests);
+		Long documentId = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(
 			documentId,
@@ -333,15 +324,9 @@ class DocumentServiceSpringBootTest {
 		//given
 		String title = "title";
 
-		List<SectionRequest> sectionRequests = List.of(
-			new SectionRequest(Heading.H1, "title1", "content1"),
-			new SectionRequest(Heading.H2, "title2", "content2"),
-			new SectionRequest(Heading.H3, "title3", "content3")
-		);
+		Long documentId = documentService.createDocument(title, rawContent);
 
-		Long documentId = documentService.createDocument(title, sectionRequests);
-
-		Long documentId2 = documentService.createDocument(title, sectionRequests);
+		Long documentId2 = documentService.createDocument(title, rawContent);
 
 		documentService.mergeContribute(
 			documentId,
