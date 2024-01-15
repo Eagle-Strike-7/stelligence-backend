@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.graph;
+package goorm.eagle7.stelligence.domain.document.graph;
 
 import static org.assertj.core.api.Assertions.*;
 

@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document;
+package goorm.eagle7.stelligence.domain.document.content;
 
 import static org.assertj.core.api.Assertions.*;
 
