@@ -67,4 +67,14 @@ public class DocumentNode {
 		// 자식 노드의 그룹은 부모 노드의 그룹을 그대로 물려받습니다.
 		this.group = parentDocumentNode.getGroup();
 	}
+
+	@Override
+	public String toString() {
+		return "DocumentNode{" +
+			"documentId=" + documentId +
+			", title='" + title + '\'' +
+			", group='" + group + '\'' +
+			", parentDocumentNode=" + (parentDocumentNode == null ? "null" : parentDocumentNode.getClass().getName() + "@" + Integer.toHexString(parentDocumentNode.hashCode())) +
+			'}';
+	}
 }
