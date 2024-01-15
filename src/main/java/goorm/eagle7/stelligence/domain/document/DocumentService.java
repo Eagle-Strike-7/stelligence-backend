@@ -186,6 +186,6 @@ public class DocumentService {
 			.map(SectionResponse::of)
 			.toList();
 
-		return DocumentResponse.of(document.getId(), document.getTitle(), sections);
+		return DocumentResponse.of(document, sections);
 	}
 }
