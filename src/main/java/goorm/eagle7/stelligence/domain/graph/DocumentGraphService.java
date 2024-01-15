@@ -45,7 +45,7 @@ public class DocumentGraphService {
 	public void createDocumentNodeWithParent(Document document, Long parentDocumentId) {
 
 		DocumentNode parentDocumentNode = documentNodeRepository.findSingleNodeByDocumentId(parentDocumentId)
-			.orElseThrow(() -> new BaseException("링크를 연결할 노드가 존재하지 않습니다."));
+			.orElseThrow(() -> new BaseException("링크를 연결할 문서가 존재하지 않습니다."));
 		DocumentNode documentNode = new DocumentNode(document.getId(), document.getTitle(), parentDocumentNode);
 		documentNodeRepository.save(documentNode);
 	}
