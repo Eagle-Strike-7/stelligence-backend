@@ -77,8 +77,8 @@ class DocumentGraphServiceTest {
 	}
 
 	@Test
-	@DisplayName("특정 문서와 깊이로 그래프 조회 서비스 테스트")
-	void findGraphWithDepth() {
+	@DisplayName("특정 문서와 2의 깊이로 그래프 조회 서비스 테스트")
+	void findGraphWithDepth2() {
 
 		//given
 		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
@@ -87,7 +87,7 @@ class DocumentGraphServiceTest {
 			neo4jClient.query(queryString).run();
 		}
 
-		//when 1 - 깊이가 2일 때 조회
+		//when
 		DocumentGraphResponse graph = documentGraphService.findGraphWithDepth(1L, 2);
 		Set<Long> documentIdSet = graph.getDocumentNodes()
 			.stream()
@@ -98,13 +98,25 @@ class DocumentGraphServiceTest {
 			.map(HasChildRelationshipResponse::getLinkId)
 			.collect(Collectors.toSet());
 
-		//then 1
+		//then
 		assertThat(graph.getDocumentNodes()).hasSize(1+3+9);
 		assertThat(graph.getLinks()).hasSize(3+9);
 		assertThat(documentIdSet).hasSize(1+3+9);
 		assertThat(linkIdSet).hasSize(3+9);
+	}
 
-		//when 2 - 깊이가 1일 때 조회
+	@Test
+	@DisplayName("특정 문서와 1의 깊이로 그래프 조회 서비스 테스트")
+	void findGraphWithDepth1() {
+
+		//given
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
 		DocumentGraphResponse graph2 = documentGraphService.findGraphWithDepth(1L, 1);
 		Set<Long> documentIdSet2 = graph2.getDocumentNodes()
 			.stream()
@@ -115,13 +127,25 @@ class DocumentGraphServiceTest {
 			.map(HasChildRelationshipResponse::getLinkId)
 			.collect(Collectors.toSet());
 
-		//then 2
+		//then
 		assertThat(graph2.getDocumentNodes()).hasSize(1+3);
 		assertThat(graph2.getLinks()).hasSize(3);
 		assertThat(documentIdSet2).hasSize(1+3);
 		assertThat(linkIdSet2).hasSize(3);
+	}
 
-		//when 3 - 깊이가 0일 때 조회
+	@Test
+	@DisplayName("특정 문서와 0의 깊이로 그래프 조회 서비스 테스트")
+	void findGraphWithDepth0() {
+
+		//given
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
 		DocumentGraphResponse graph3 = documentGraphService.findGraphWithDepth(1L, 0);
 		Set<Long> documentIdSet3 = graph3.getDocumentNodes()
 			.stream()
@@ -132,13 +156,25 @@ class DocumentGraphServiceTest {
 			.map(HasChildRelationshipResponse::getLinkId)
 			.collect(Collectors.toSet());
 
-		//then 3
+		//then
 		assertThat(graph3.getDocumentNodes()).hasSize(1);
 		assertThat(graph3.getLinks()).isEmpty();
 		assertThat(documentIdSet3).hasSize(1);
 		assertThat(linkIdSet3).isEmpty();
+	}
 
-		//when 4 - 깊이가 클 때 조회
+	@Test
+	@DisplayName("특정 문서와 실제 깊이보다 큰 깊이로 그래프 조회 서비스 테스트")
+	void findGraphWithBigDepth() {
+
+		//given
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
 		DocumentGraphResponse graph4 = documentGraphService.findGraphWithDepth(1L, 99);
 		Set<Long> documentIdSet4 = graph4.getDocumentNodes()
 			.stream()
@@ -149,7 +185,7 @@ class DocumentGraphServiceTest {
 			.map(HasChildRelationshipResponse::getLinkId)
 			.collect(Collectors.toSet());
 
-		//then 4
+		//then
 		assertThat(graph4.getDocumentNodes()).hasSize(1+3+9+27);
 		assertThat(graph4.getLinks()).hasSize(3+9+27);
 		assertThat(documentIdSet4).hasSize(1+3+9+27);
