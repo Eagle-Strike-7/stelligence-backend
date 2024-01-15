@@ -11,6 +11,7 @@ import goorm.eagle7.stelligence.domain.document.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.model.Document;
+import goorm.eagle7.stelligence.domain.document.parser.DocumentParser;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -34,17 +35,20 @@ public class DocumentService {
 	private final DocumentRepository documentRepository;
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
+	private final DocumentParser documentParser;
 
 	/**
 	 * Document를 생성합니다.
-	 * @param title
-	 * @param sectionRequests 생성할 섹션 정보
+	 * @param title 문서의 제목
+	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Long createDocument(String title, List<SectionRequest> sectionRequests) {
+	public Long createDocument(String title, String rawContent) {
 		//document 생성
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
+
+		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
@@ -82,10 +86,14 @@ public class DocumentService {
 	 * 높은 투표율을 받은 Contribute에 대해서 Merge를 진행합니다.
 	 * Contribute를 파라미터로 받아야하지만, 현재 개발되지 않았으므로 임시 파라미터를 받습니다.
 	 *
-	 * 추후 MergeService로 분리될 예정입니다.
+	 * MergeService로 로직이 분리되었습니다.
+	 * 하지만 다른 테스트가 현재 mergeContribute에 의존하고 있으므로
+	 * 테스트 데이터 구축된 이후 없애도록 하겠습니다.
+	 *
 	 * @param documentId
 	 */
 	@Transactional
+	@Deprecated
 	public void mergeContribute(Long documentId, List<Commit> commits) {
 		Document document = documentRepository.findForUpdate(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
