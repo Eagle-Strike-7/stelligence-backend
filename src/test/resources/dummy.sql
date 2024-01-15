@@ -45,7 +45,7 @@ values (1, 1, 1, 'H1', 'document1_title1', 'document1_content1', 1, NOW(), NOW()
        (12, 1, 4, 'H3', 'document4_title3', 'document4_content3', 3, NOW(), NOW());
 
 -- SectionId의 sequence_Id는 15부터
-INSERT sequence_table (sequence_name, sequence_value)
+INSERT into sequence_table (sequence_name, sequence_value)
 values ('section', 15);
 
 
