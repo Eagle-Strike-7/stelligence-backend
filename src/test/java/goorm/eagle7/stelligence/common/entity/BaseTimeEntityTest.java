@@ -24,7 +24,7 @@ class BaseTimeEntityTest {
 	private EntityManager em;
 
 	@Entity
-	public static class TestEntity extends BaseTimeEntity {
+	static class TestEntity extends BaseTimeEntity {
 		@Id
 		Long id;
 		String val;
