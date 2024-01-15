@@ -7,18 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
-import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.document.model.Document;
-import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @SpringBootTest
 @Transactional
+@WithMockData
 class MergeServiceIntegratedTest {
 
 	@Autowired
@@ -27,77 +25,16 @@ class MergeServiceIntegratedTest {
 	@PersistenceContext
 	EntityManager em;
 
-	@Autowired
-	SectionIdGenerator sectionIdGenerator;
-
 	@Test
 	void merge() {
-		//given
-		Document document = Document.createDocument("title");
+		Document document = em.find(Document.class, 2L);
+		Long beforeRevision = document.getCurrentRevision();
+		int beforeSectionSize = document.getSections().size();
 
-		Section section1 = Section.createSection(
-			document,
-			sectionIdGenerator.getAndIncrementSectionId(),
-			1L,
-			Heading.H1,
-			"title",
-			"content",
-			1
-		);
+		//5번 Contribute는 투표중이며, 4번 섹션의 뒤에 새로운 섹션을 추가하는 수정안과 6번 섹션을 수정하는 수정안을 갖고있다.
+		Contribute contribute = em.find(Contribute.class, 5L);
 
-		Section section2 = Section.createSection(
-			document,
-			sectionIdGenerator.getAndIncrementSectionId(),
-			1L,
-			Heading.H2,
-			"title2",
-			"content2",
-			2
-		);
-
-		Contribute contribute = Contribute.createContribute();
-
-		Amendment amendment1 = new Amendment(
-			null,
-			"amendmentTitle",
-			"amendmentDescription",
-			AmendmentType.CREATE,
-			section1,
-			Heading.H2,
-			"newTitle",
-			"newContent"
-		);
-
-		amendment1.setContribute(contribute);
-
-		Amendment amendment2 = new Amendment(
-			null,
-			"amendmentTitle",
-			"amendmentDescription",
-			AmendmentType.UPDATE,
-			section2,
-			Heading.H2,
-			"updateTitle",
-			"updateContent"
-		);
-
-		amendment2.setContribute(contribute);
-
-		em.persist(document);
-		em.persist(section1);
-		em.persist(section2);
-		em.persist(contribute);
-		em.persist(amendment1);
-		em.persist(amendment2);
-
-		em.flush();
-		em.clear();
-
-		//when
-		Document findDocument = em.find(Document.class, document.getId());
-		Contribute findContribute = em.find(Contribute.class, contribute.getId());
-
-		mergeService.merge(findDocument.getId(), findContribute);
+		mergeService.merge(document.getId(), contribute);
 
 		em.flush();
 		em.clear();
@@ -105,16 +42,29 @@ class MergeServiceIntegratedTest {
 		//then
 		Document mergedDocument = em.find(Document.class, document.getId());
 
-		assertThat(mergedDocument.getCurrentRevision()).isEqualTo(2L);
-		assertThat(mergedDocument.getSections()).hasSize(4);
+		//Merge 대상 문서의 revision이 증가해야 한다.
+		assertThat(mergedDocument.getCurrentRevision()).isEqualTo(beforeRevision + 1);
+		assertThat(mergedDocument.getSections()).hasSize(beforeSectionSize + 2);
 
-		//Merge 대상 섹션은 새로 생성되어야 하며, revision이 증가해야 한다.
-		Section updatedSection = mergedDocument.getSections().get(2);
-		Section insertedSection = mergedDocument.getSections().get(3);
-		assertThat(updatedSection.getRevision()).isEqualTo(2);
-		assertThat(updatedSection.getId()).isEqualTo(section2.getId());
-		assertThat(insertedSection.getRevision()).isEqualTo(2);
-		assertThat(insertedSection.getId()).isEqualTo(3L);
+		//기존거 잘 있는지 확인
+		Section section1 = mergedDocument.getSections().get(0);
+
+		assertThat(section1.getId()).isEqualTo(4L);
+		assertThat(section1.getRevision()).isEqualTo(1L);
+
+		//수정된 섹션 확인
+		Section section5 = mergedDocument.getSections().get(4);
+
+		assertThat(section5.getId()).isEqualTo(6L);
+		assertThat(section5.getRevision()).isEqualTo(3L);
+		assertThat(section5.getTitle()).isEqualTo("document2_title3_update");
+
+		//삽입된 섹션 확인
+		Section section6 = mergedDocument.getSections().get(5);
+
+		assertThat(section6.getId()).isEqualTo(15L);
+		assertThat(section6.getRevision()).isEqualTo(3L);
+		assertThat(section6.getTitle()).isEqualTo("document2_title4_insert");
 
 	}
 }

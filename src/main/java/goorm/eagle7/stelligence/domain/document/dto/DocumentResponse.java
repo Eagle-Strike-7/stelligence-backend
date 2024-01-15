@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.dto;
 
 import java.util.List;
 
+import goorm.eagle7.stelligence.domain.document.model.Document;
 import lombok.Getter;
 
 /**
@@ -21,8 +22,8 @@ public class DocumentResponse {
 		this.sections = sections;
 	}
 
-	public static DocumentResponse of(Long documentId, String title, List<SectionResponse> sections) {
-		return new DocumentResponse(documentId, title, sections);
+	public static DocumentResponse of(Document document, List<SectionResponse> sections) {
+		return new DocumentResponse(document.getId(), document.getTitle(), sections);
 	}
 
 }

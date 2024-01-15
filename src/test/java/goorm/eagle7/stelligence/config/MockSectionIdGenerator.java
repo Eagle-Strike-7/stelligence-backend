@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain;
+package goorm.eagle7.stelligence.config;
 
 import java.util.concurrent.atomic.AtomicLong;
 

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.TestConfig;
+import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.domain.document.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
