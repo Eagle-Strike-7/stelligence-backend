@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.common.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -18,7 +17,6 @@ import jakarta.persistence.PersistenceContext;
  * TimeAuditing이 잘 동작하는지 테스트합니다.
  */
 @DataJpaTest
-@Disabled
 @Import(JpaAuditingConfig.class)
 class BaseTimeEntityTest {
 
@@ -26,7 +24,7 @@ class BaseTimeEntityTest {
 	private EntityManager em;
 
 	@Entity
-	static class TestEntity extends BaseTimeEntity {
+	public static class TestEntity extends BaseTimeEntity {
 		@Id
 		Long id;
 		String val;
