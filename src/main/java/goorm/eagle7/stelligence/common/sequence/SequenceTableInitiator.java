@@ -2,12 +2,14 @@ package goorm.eagle7.stelligence.common.sequence;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@Profile("local") //테스트 환경과 분리하기 위해서 local profile에서만 실행합니다.
 class SequenceTableInitiator implements ApplicationRunner {
 
 	private final SequenceTableRepository sequenceTableRepository;
