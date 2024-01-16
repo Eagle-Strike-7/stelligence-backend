@@ -80,7 +80,7 @@ public class Member extends BaseTimeEntity {
 
 	// member 생성 시, role은 기본적으로 user로, contributes는 0으로, SocialType은 KAKAO로 설정.
 	/*
-	 * Member는 생성자로 생성하기
+	 * Member는 정적 팩토리 메서드로 생성하기
 	 * @param name
 	 * @param nickname // TODO service unique 검증 필요
 	 * @param email
@@ -104,9 +104,6 @@ public class Member extends BaseTimeEntity {
 		member.role = Role.USER;
 		member.contributes = 0;
 		return member;
-	}
-	public void updateRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
 	}
 
 	public void updateRefreshToken(String refreshToken) {
