@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
-import goorm.eagle7.stelligence.domain.document.content.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import jakarta.persistence.EntityManager;
@@ -25,7 +24,7 @@ import jakarta.persistence.PersistenceContext;
 class DocumentServiceCreateTest {
 
 	@Autowired
-	private DocumentService documentService;
+	private DocumentContentService documentContentService;
 	@PersistenceContext
 	private EntityManager em;
 
@@ -43,12 +42,12 @@ class DocumentServiceCreateTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Long documentId = documentService.createDocument(title, rawContent);
+		Document document = documentContentService.createDocument(title, rawContent);
 
 		em.flush();
 		em.clear();
 
-		Document createdDocs = em.find(Document.class, documentId);
+		Document createdDocs = em.find(Document.class, document.getId());
 
 		assertThat(createdDocs.getTitle()).isEqualTo(title);
 		assertThat(createdDocs.getCurrentRevision()).isEqualTo(1);

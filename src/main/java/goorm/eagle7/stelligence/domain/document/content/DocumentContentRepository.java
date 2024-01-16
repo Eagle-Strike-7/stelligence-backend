@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import jakarta.persistence.LockModeType;
 
-public interface DocumentRepository extends JpaRepository<Document, Long> {
+public interface DocumentContentRepository extends JpaRepository<Document, Long> {
 
 	/**
 	 * Document를 조회합니다.

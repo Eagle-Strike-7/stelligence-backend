@@ -30,9 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class DocumentService {
+public class DocumentContentService {
 
-	private final DocumentRepository documentRepository;
+	private final DocumentContentRepository documentRepository;
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
@@ -43,7 +43,7 @@ public class DocumentService {
 	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Long createDocument(String title, String rawContent) {
+	public Document createDocument(String title, String rawContent) {
 		//document 생성
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
@@ -65,7 +65,7 @@ public class DocumentService {
 			sectionRepository.save(section);
 		}
 
-		return document.getId();
+		return document;
 	}
 
 	/**
