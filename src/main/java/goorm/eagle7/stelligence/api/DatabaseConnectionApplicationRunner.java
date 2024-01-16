@@ -63,6 +63,21 @@ public class DatabaseConnectionApplicationRunner implements ApplicationRunner {
 		} catch (Exception e) {
 			log.error("Error testing Neo4j connection: " + e.getMessage());
 		}
+
+		try {
+			String neo4jFulltextIndexQuery = "create fulltext index documentTitleIndex"
+				+ " if not exists for (n:DocumentNode) on each [n.title]"
+				+ " OPTIONS {"
+				+ "  indexConfig: {"
+				+ "    `fulltext.analyzer`: 'cjk',"
+				+ "    `fulltext.eventually_consistent`: true"
+				+ "  }"
+				+ " };";
+			neo4jClient.query(neo4jFulltextIndexQuery).run();
+			log.info("Neo4j fulltext index has checked successful.");
+		} catch (Exception e) {
+			log.error("Error checking Neo4j fulltext index: " + e.getMessage());
+		}
 	}
 
 }
