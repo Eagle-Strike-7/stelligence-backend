@@ -17,15 +17,15 @@ public class GlobalRestControllerAdvice {
 
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
-	public ApiResponse<String> handleException(Exception ex) {
+	public ResponseTemplate<String> handleException(Exception ex) {
 		log.error("Exception catched in RestControllerAdvice : {}", ex.getMessage());
-		return ApiResponse.fail(ex.getMessage());
+		return ResponseTemplate.fail(ex.getMessage());
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(BaseException.class)
-	public ApiResponse<String> handleBaseException(BaseException ex) {
+	public ResponseTemplate<String> handleBaseException(BaseException ex) {
 		log.debug("Exception catched in RestControllerAdvice : {}", ex.getMessage());
-		return ApiResponse.fail(ex.getMessage());
+		return ResponseTemplate.fail(ex.getMessage());
 	}
 }
