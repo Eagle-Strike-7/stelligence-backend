@@ -35,7 +35,7 @@ values (1, 1, 1, 'H1', 'document1_title1', 'document1_content1', 1, NOW(), NOW()
        (13, 2, 1, 'H1', 'document1_title4_insert', 'document1_content4_insert', 4, NOW(), NOW()),
        (4, 1, 2, 'H1', 'document2_title1', 'document2_content1', 1, NOW(), NOW()),
        (5, 1, 2, 'H2', 'document2_title2', 'document2_content2', 3, NOW(), NOW()),
-       (6, 1, 2, 'H3', 'document2_title3', 'document3_content3', 4, NOW(), NOW()),
+       (6, 1, 2, 'H3', 'document2_title3', 'document2_content3', 4, NOW(), NOW()),
        (14, 2, 2, 'H1', 'document2_title4_insert', 'document2_content4_insert', 2, NOW(), NOW()),
        (7, 1, 3, 'H1', 'document3_title1', 'document3_content1', 1, NOW(), NOW()),
        (8, 1, 3, 'H2', 'document3_title2', 'document3_content2', 2, NOW(), NOW()),
