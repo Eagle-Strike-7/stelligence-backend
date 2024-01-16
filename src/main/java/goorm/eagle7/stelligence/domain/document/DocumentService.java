@@ -49,4 +49,18 @@ public class DocumentService {
 		return DocumentResponse.of(createdDocument, sections);
 	}
 
+	/**
+	 * Document를 조회합니다.
+	 * @param documentId : 조회할 Document의 ID
+	 * @param revision : null이면 최신 버전을 조회합니다.
+	 * @return
+	 */
+	public DocumentResponse getDocumentContent(Long documentId, Long revision) {
+		if (revision == null) {
+			return documentContentService.getDocument(documentId);
+		} else {
+			return documentContentService.getDocument(documentId, revision);
+		}
+	}
+
 }
