@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
-import goorm.eagle7.stelligence.domain.document.graph.DocumentNodeRepository;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.HasChildRelationshipResponse;
