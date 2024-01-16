@@ -39,7 +39,7 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 	@Query("call db.index.fulltext.queryNodes('documentTitleIndex', $title+'~', {limit: :#{literal(#limit)}, sortBy: 'score'})"
 		+ " yield node, score"
 		+ " where score > 0"
-		+ " return node.documentId, node.title, node.group")
+		+ " return node.documentId as documentId, node.title as title, node.group as group")
 	List<DocumentNodeResponse> findNodeByTitle(@Param("title") String title, @Param("limit") int limit);
 
 }
