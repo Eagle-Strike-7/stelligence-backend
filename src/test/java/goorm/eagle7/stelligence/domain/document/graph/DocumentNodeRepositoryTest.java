@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.graph;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -218,6 +219,33 @@ class DocumentNodeRepositoryTest {
 		assertThat(titleList)
 			.isNotEmpty()
 			.allMatch(s -> s.contains(searchTitle));
+	}
+
+	@Test
+	@DisplayName("documentId의 리스트로 문서 노드들 검색")
+	void findNodeByDocumentId() {
+		//given
+		final List<Long> searchDocumentIdList = new ArrayList<>();
+		searchDocumentIdList.add(1L);
+		searchDocumentIdList.add(2L);
+		searchDocumentIdList.add(3L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByDocumentId(searchDocumentIdList);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<Long> findDocumentIdList = findNodes.stream().map(DocumentNodeResponse::getDocumentId).toList();
+		assertThat(findDocumentIdList)
+			.isNotEmpty()
+			.hasSize(3)
+			.containsAll(searchDocumentIdList);
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
