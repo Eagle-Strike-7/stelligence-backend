@@ -139,7 +139,7 @@ public class JwtTokenService {
 
 	/**
 	 * Jws<Claims>에서 claim값 추출해 MemberInfo로 조립
-	 * @param claims
+	 * @param claims 서명이 포함된 클레임
 	 * @return MemberInfo
 	 */
 	private MemberInfo extractMemberInfo(Jws<Claims> claims) {
