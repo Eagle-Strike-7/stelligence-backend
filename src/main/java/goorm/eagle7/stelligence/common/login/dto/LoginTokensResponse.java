@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.auth.dto;
+package goorm.eagle7.stelligence.common.login.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,5 +12,6 @@ public class LoginTokensResponse {
 
 	private String accessToken;
 	private String refreshToken;
+	private String socialType;
 
 }
