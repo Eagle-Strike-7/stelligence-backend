@@ -13,4 +13,13 @@ public class DocumentCreateRequest {
 	private Long parentDocumentId;
 	@Schema(description = "문서의 내용", example = "# 마리모\n마리모는 조류의 일종이다.\n## 마리모의 생애\n마리모의 수명은 평균 1년이다.\n")
 	private String content;
+
+	@Override
+	public String toString() {
+		return "DocumentCreateRequest{" +
+			"title='" + title + '\'' +
+			", parentDocumentId=" + parentDocumentId +
+			", content='" + content.replace("\n", "\\n") + '\'' +
+			'}';
+	}
 }
