@@ -14,8 +14,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
-import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
-import goorm.eagle7.stelligence.domain.document.content.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -27,10 +25,10 @@ import goorm.eagle7.stelligence.domain.section.model.Heading;
 class DocumentMergeConcurrencyTest {
 
 	@Autowired
-	private DocumentService documentService;
+	private DocumentContentService documentContentService;
 
 	@Autowired
-	private DocumentRepository documentRepository;
+	private DocumentContentRepository documentContentRepository;
 
 	@Autowired
 	private SectionRepository sectionRepository;
@@ -55,7 +53,7 @@ class DocumentMergeConcurrencyTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Long documentId = documentService.createDocument(title, rawContent);
+		Document document = documentContentService.createDocument(title, rawContent);
 
 		//트랜잭션 종료를 통해 이후 쓰레드들이 정상적으로 동작할 수 있게 함
 		//em.flush(), em.clear() 사용시, 쓰레드들이 정상적으로 동작하지 않음
@@ -64,17 +62,17 @@ class DocumentMergeConcurrencyTest {
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 
-		Thread t1 = new Thread(() -> documentService.mergeContribute(
-			documentId,
+		Thread t1 = new Thread(() -> documentContentService.mergeContribute(
+			document.getId(),
 			List.of(
-				new DocumentService.Commit("INSERT", 1L, 1L, Heading.H1, "newTitle", "newContent")
+				new DocumentContentService.Commit("INSERT", 1L, 1L, Heading.H1, "newTitle", "newContent")
 			)
 		));
 
-		Thread t2 = new Thread(() -> documentService.mergeContribute(
-			documentId,
+		Thread t2 = new Thread(() -> documentContentService.mergeContribute(
+			document.getId(),
 			List.of(
-				new DocumentService.Commit("UPDATE", 1L, 1L, Heading.H1, "title1Update", "title1Update")
+				new DocumentContentService.Commit("UPDATE", 1L, 1L, Heading.H1, "title1Update", "title1Update")
 			)
 		));
 
@@ -90,18 +88,18 @@ class DocumentMergeConcurrencyTest {
 
 		TestTransaction.start(); // 지연로딩을 위한 트랜잭션 재시작
 
-		Document document = documentRepository.findById(documentId).get();
+		Document findDocument = documentContentRepository.findById(document.getId()).get();
 
-		document.getSections().stream().map(SectionResponse::of).forEach(System.out::println);
+		findDocument.getSections().stream().map(SectionResponse::of).forEach(System.out::println);
 
 		// 동시성 문제 발생시 2가 나옴
 		//DocumentRepository.findForUpdate의 @Lock을 없애보면 확인 가능
-		assertThat(document.getCurrentRevision()).isEqualTo(3L);
+		assertThat(findDocument.getCurrentRevision()).isEqualTo(3L);
 
-		assertThat(document.getSections()).hasSize(5);
+		assertThat(findDocument.getSections()).hasSize(5);
 		//아래 assert문은 동시성 문제 발생시 실패. 정렬이 되기 때문에 순서는 이렇게 보장. 2-2만 안나오면 됨
-		assertThat(document.getSections().get(3).getRevision()).isEqualTo(2L);
-		assertThat(document.getSections().get(4).getRevision()).isEqualTo(3L);
+		assertThat(findDocument.getSections().get(3).getRevision()).isEqualTo(2L);
+		assertThat(findDocument.getSections().get(4).getRevision()).isEqualTo(3L);
 
 		TestTransaction.end();
 	}

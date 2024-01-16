@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
-import goorm.eagle7.stelligence.domain.document.content.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 
@@ -24,14 +23,14 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 class DocumentServiceReadTest {
 
 	@Autowired
-	private DocumentService documentService;
+	private DocumentContentService documentContentService;
 
 	@Test
 	@DisplayName("문서 조회 - 최신버전")
 	void getLatestDocumentSuccess() {
 
 		//when
-		DocumentResponse document = documentService.getDocument(1L);
+		DocumentResponse document = documentContentService.getDocument(1L);
 
 		//then
 		assertThat(document.getTitle()).isEqualTo("title1");
@@ -62,8 +61,8 @@ class DocumentServiceReadTest {
 	void getDocumentByVersionSuccess() {
 
 		//when
-		DocumentResponse document1 = documentService.getDocument(1L, 1L);
-		DocumentResponse document2 = documentService.getDocument(1L, 2L);
+		DocumentResponse document1 = documentContentService.getDocument(1L, 1L);
+		DocumentResponse document2 = documentContentService.getDocument(1L, 2L);
 
 		//then
 		//Document1

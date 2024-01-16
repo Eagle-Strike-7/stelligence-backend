@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.common.merge.handler.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
+import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MergeService {
 
-	private final DocumentRepository documentRepository;
+	private final DocumentContentRepository documentContentRepository;
 	private final AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
 
 	/**
@@ -34,7 +34,7 @@ public class MergeService {
 	 */
 	public void merge(Long documentId, Contribute contribute) {
 
-		Document document = documentRepository.findForUpdate(documentId)
+		Document document = documentContentRepository.findForUpdate(documentId)
 			.orElseThrow(() -> new RuntimeException("Document가 존재하지 않습니다."));
 
 		List<Amendment> amendments = contribute.getAmendments();
