@@ -42,4 +42,8 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 		+ " return node.documentId as documentId, node.title as title, node.group as group")
 	List<DocumentNodeResponse> findNodeByTitle(@Param("title") String title, @Param("limit") int limit);
 
+	@Query("match (n:DocumentNode)"
+		+ " where n.documentId in $idList"
+		+ " return n.documentId as documentId, n.title as title, n.group as group")
+	List<DocumentNodeResponse> findNodeByDocumentId(@Param("idList") List<Long> documentIdList);
 }
