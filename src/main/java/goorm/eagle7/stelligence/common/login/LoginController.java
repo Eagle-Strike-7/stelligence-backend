@@ -22,7 +22,7 @@ public class LoginController {
 	private static final String ACCESS_TOKEN_COOKIE = "StelligenceAccessToken";
 	private static final String REFRESH_TOKEN_COOKIE = "StelligenceRefreshToken";
 	private static final String SOCIAL_TYPE_TOKEN_COOKIE = "StelligenceSocialTypeToken";
-	private static final int MAX_AGE_COOKIE = 60 * 60 * 24 * 30;
+	private static final int MAX_AGE_COOKIE = 60 * 60 * 24 * 14; // 14일
 	private static final String SET_COOKIE = "Set-Cookie";
 
 	@PostMapping("/login")
