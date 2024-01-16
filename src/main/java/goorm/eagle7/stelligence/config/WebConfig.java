@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * 1. memberInfoArgumentResolver를 WebMvcConfigurer에 등록해 HandlerMethodArgumentResolver로 사용하게 한다.
  * 2. memberInfoInterceptor를 WebMvcConfigurer에 등록해 Interceptor로 사용하게 한다.
- *
  */
 @Configuration
 @RequiredArgsConstructor
@@ -28,13 +27,11 @@ public class WebConfig implements WebMvcConfigurer {
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-
-		// TODO new MemberInfoInterceptor()로 생성하는 방식과 @Component로 생성하는 방식 중 어떤 것이 더 좋은가?
 		registry.addInterceptor(memberInfoInterceptor);
 	}
 
 	/**
-	 * memberInfoArgumentResolver를 WebMvcConfigurer에 등록해 HandlerMethodArgumentResolver로 사용하게 한다. -> 안 하면 Filter 접속하고 바로 Jwt 검증 실패 -> TODO why?
+	 * memberInfoArgumentResolver를 WebMvcConfigurer에 등록해 HandlerMethodArgumentResolver로 사용하게 한다. -> 안 하면 Filter 접속하고 바로 Jwt 검증 실패
 	 * @param resolvers initially an empty list
 	 */
 	@Override
