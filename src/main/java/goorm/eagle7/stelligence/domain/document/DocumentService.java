@@ -44,7 +44,7 @@ public class DocumentService {
 		//DocumentLink 저장
 		documentGraphService.createDocumentNode(createdDocument);
 
-		//DocumentResponse의 SectionResponse는 Document 엔티티와 연결된 Sections를 따르지 않습니다. (버전별로 상이한 경우가 있기 때문)
+		//DocumentResponse를 생성합니다.
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
 		return DocumentResponse.of(createdDocument, sections);
 	}
