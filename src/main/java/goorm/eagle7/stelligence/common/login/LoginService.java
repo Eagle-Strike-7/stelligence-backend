@@ -28,11 +28,14 @@ public class LoginService {
 		// nickname 중복 확인 후 중복이면 랜덤 생성
 		String nickname = loginRequest.getNickname();
 		nickname = generateUniqueNickname(nickname);
-		log.info("nickname: {}", nickname);
 
+		// TODO OAuth2.0 테스트용 하드 코딩
+		Member member1 = new Member("영민", nickname, "sbslc2000@stelligence.com", "star.com", "",
+			"eeunzzi");
+
+		// 해당 닉네임으로 저장
 		Member member = memberRepository.save(
-			new Member("영민", nickname, "sbslc2000@stelligence.com", "star.com", "",
-				"eeunzzi"));
+			member1);
 
 		// Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
@@ -57,6 +60,7 @@ public class LoginService {
 	}
 
 	// 닉네임 생성 메서드
+	@Transactional
 	public String generateUniqueNickname(String nickname) {
 		while (isNicknameDuplicate(nickname)) {
 			nickname = createNicknameWithRandomNumber(nickname);
