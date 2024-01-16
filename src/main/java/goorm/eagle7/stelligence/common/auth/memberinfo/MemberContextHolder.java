@@ -9,9 +9,13 @@ package goorm.eagle7.stelligence.common.auth.memberinfo;
 public class MemberContextHolder {
 	private static final ThreadLocal<MemberInfo> CONTEXT = new ThreadLocal<>();
 
+	private MemberContextHolder() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	/**
 	 * ThreadLocal에 저장된 데이터를 반환함.
-	 * @return MemberInfo null인 경우, 기본 객체 MemberInfo.of(1L, Role.USER)를 반환 - test 용, TODO 기본값은 MemberInfo.of(null, null)로 고려 중.
+	 * @return MemberInfo null인 경우, 기본 객체 MemberInfo.of(1L, Role.USER)를 반환 - test 용
 	 */
 	public static MemberInfo getMemberInfo() {
 		return CONTEXT.get() ;

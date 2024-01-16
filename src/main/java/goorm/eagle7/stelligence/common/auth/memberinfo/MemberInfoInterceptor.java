@@ -9,23 +9,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * AuthFilter에서 검증된 MemberInfo를 ThreadLocal에 저장
+ * AuthFilter에서 검증된 MemberInfo를 ThreadLocal에 저장, 전달
  */
 @Slf4j
 @Component
 public class MemberInfoInterceptor implements HandlerInterceptor {
 
-	// TODO 실제 Filter에서 거르고 들어온다고 하면, MemberInfo에도 다 똑같이 넣어줘야 하나? 애노테이션은 쓸 곳에서 쓰고, Resources에 추가해 주면 괜찮은 건가?
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws
-		Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
 		// ThreadLocal 초기화
 		MemberContextHolder.clear();
 
-		// TODO 임시로 1L, USER 반환, (null, null)은 고려 X
-		// TODO Test 시 Filter 사용하지 않으면 @Auth 사용 시 MemberInfo가 없음 -> 테스트용 MemberInfo 생성하여 저장
-		// TODO 기본값은 MemberInfo.of(null, null)로 고려 중.
+		// test 용으로 1L, USER 반환
+		// Test 시 Filter 사용하지 않으면 @Auth 사용 시 MemberInfo가 없음 -> 테스트용 MemberInfo 생성하여 저장
+		// 운영 시 기본값은 MemberInfo.of(null, null)가 낫다고 함.
 		MemberInfo memberInfo =
 			(MemberInfo) request.getAttribute("memberInfo") == null ?
 				MemberInfo.of(1L, Role.USER) :
@@ -37,7 +35,7 @@ public class MemberInfoInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
-		Exception ex) throws Exception {
+		Exception ex) {
 		MemberContextHolder.clear();
 	}
 }
