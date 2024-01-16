@@ -76,4 +76,10 @@ public class DocumentGraphService {
 
 		return DocumentGraphResponse.of(documentNodes, hasChildRelationshipList);
 	}
+
+
+	public List<DocumentNodeResponse> findNodeByTitle(String title, int limit) {
+
+		return documentNodeRepository.findNodeByTitle(title, limit);
+	}
 }

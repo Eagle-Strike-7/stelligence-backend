@@ -33,4 +33,13 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 		+ " where n1.documentId=$documentId"
 		+ " return id(r[-1]) as linkId, startNode(r[-1]).documentId as parentDocumentId, endNode(r[-1]).documentId as childDocumentId")
 	List<HasChildRelationshipResponse> findHasChildRelationshipByDocumentIdWithDepth(@Param("documentId") Long documentId, @Param("depth") int depth);
+
+
+	// @Query("match (n:DocumentNode) where n.title contains $title return n.documentId, n.title, n.group limit $limit")
+	@Query("call db.index.fulltext.queryNodes('documentTitleIndex', $title+'~', {limit: :#{literal(#limit)}, sortBy: 'score'})"
+		+ " yield node, score"
+		+ " where score > 0"
+		+ " return node.documentId, node.title, node.group")
+	List<DocumentNodeResponse> findNodeByTitle(@Param("title") String title, @Param("limit") int limit);
+
 }
