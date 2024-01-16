@@ -45,6 +45,8 @@ public class Member extends BaseTimeEntity {
 	private String email;
 	private String imageUrl;
 	private String socialId; // unique
+
+	@Enumerated(EnumType.STRING)
 	private SocialType socialType; // default: kakao
 
 	private String refreshToken;
@@ -88,20 +90,21 @@ public class Member extends BaseTimeEntity {
 	 * default: role: USER, contributes: 0, socialType: KAKAO
 	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
 	 */
-	public Member(String name, String nickname, String email, String imageUrl, String refreshToken, String socialId) {
-		this.name = name;
-		this.nickname = nickname;
-		this.email = email;
-		this.imageUrl = imageUrl;
-		this.refreshToken = refreshToken;
-		this.socialId = socialId;
+	public static Member of(String name, String nickname, String email, String imageUrl, String socialId) {
+		Member member = new Member();
+		member.name = name;
+		member.nickname = nickname;
+		member.email = email;
+		member.imageUrl = imageUrl;
+		member.socialId = socialId;
 
 		// 기본값 설정
-		this.role = Role.USER;
-		this.socialType = SocialType.KAKAO;
-		this.contributes = 0;
+		member.socialType = SocialType.KAKAO;
+		member.refreshToken = "";
+		member.role = Role.USER;
+		member.contributes = 0;
+		return member;
 	}
-
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
