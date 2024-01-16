@@ -12,10 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.document.content.DocumentRepository;
+import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
-import goorm.eagle7.stelligence.domain.document.graph.DocumentNodeRepository;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.HasChildRelationshipResponse;
@@ -28,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 class DocumentGraphServiceTest {
 
 	@Autowired
-	DocumentRepository documentRepository;
+	DocumentContentRepository documentContentRepository;
 	@Autowired
 	DocumentGraphService documentGraphService;
 	@Autowired
@@ -41,7 +39,7 @@ class DocumentGraphServiceTest {
 	void createDocumentNode() {
 
 		Document createdDocument = Document.createDocument("제목1");
-		documentRepository.save(createdDocument);
+		documentContentRepository.save(createdDocument);
 
 		documentGraphService.createDocumentNode(createdDocument);
 
@@ -60,12 +58,12 @@ class DocumentGraphServiceTest {
 
 		// 기존에 존재하는 상위 문서
 		Document parentDocument = Document.createDocument("상위 문서 제목");
-		documentRepository.save(parentDocument);
+		documentContentRepository.save(parentDocument);
 		documentGraphService.createDocumentNode(parentDocument);
 
 		// 하위 문서 생성
 		Document createdDocument = Document.createDocument("하위 문서 제목");
-		documentRepository.save(createdDocument);
+		documentContentRepository.save(createdDocument);
 		documentGraphService.createDocumentNodeWithParent(createdDocument, parentDocument.getId());
 
 		DocumentNode createdDocumentNode = documentNodeRepository.findById(createdDocument.getId()).get();
@@ -101,10 +99,10 @@ class DocumentGraphServiceTest {
 			.collect(Collectors.toSet());
 
 		//then
-		assertThat(graph.getDocumentNodes()).hasSize(1+3+9);
-		assertThat(graph.getLinks()).hasSize(3+9);
-		assertThat(documentIdSet).hasSize(1+3+9);
-		assertThat(linkIdSet).hasSize(3+9);
+		assertThat(graph.getDocumentNodes()).hasSize(1 + 3 + 9);
+		assertThat(graph.getLinks()).hasSize(3 + 9);
+		assertThat(documentIdSet).hasSize(1 + 3 + 9);
+		assertThat(linkIdSet).hasSize(3 + 9);
 	}
 
 	@Test
@@ -130,9 +128,9 @@ class DocumentGraphServiceTest {
 			.collect(Collectors.toSet());
 
 		//then
-		assertThat(graph2.getDocumentNodes()).hasSize(1+3);
+		assertThat(graph2.getDocumentNodes()).hasSize(1 + 3);
 		assertThat(graph2.getLinks()).hasSize(3);
-		assertThat(documentIdSet2).hasSize(1+3);
+		assertThat(documentIdSet2).hasSize(1 + 3);
 		assertThat(linkIdSet2).hasSize(3);
 	}
 
@@ -188,10 +186,10 @@ class DocumentGraphServiceTest {
 			.collect(Collectors.toSet());
 
 		//then
-		assertThat(graph4.getDocumentNodes()).hasSize(1+3+9+27);
-		assertThat(graph4.getLinks()).hasSize(3+9+27);
-		assertThat(documentIdSet4).hasSize(1+3+9+27);
-		assertThat(linkIdSet4).hasSize(3+9+27);
+		assertThat(graph4.getDocumentNodes()).hasSize(1 + 3 + 9 + 27);
+		assertThat(graph4.getLinks()).hasSize(3 + 9 + 27);
+		assertThat(documentIdSet4).hasSize(1 + 3 + 9 + 27);
+		assertThat(linkIdSet4).hasSize(3 + 9 + 27);
 	}
 
 	@Test
