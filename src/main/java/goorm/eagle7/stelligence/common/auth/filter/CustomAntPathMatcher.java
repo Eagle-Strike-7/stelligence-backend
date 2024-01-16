@@ -11,7 +11,7 @@ import org.springframework.util.AntPathMatcher;
 @Component
 public class CustomAntPathMatcher extends AntPathMatcher {
 
-	private List<Resource> resources;
+	private final List<Resource> resources;
 
 	public CustomAntPathMatcher(MemoryResourceRepository memoryResourceRepository){
 		this.resources = memoryResourceRepository.findAll();

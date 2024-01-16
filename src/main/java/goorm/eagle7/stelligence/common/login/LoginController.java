@@ -29,7 +29,16 @@ public class LoginController {
 	public ApiResponse<Void> login(@RequestBody LoginRequest loginRequest,
 		HttpServletResponse response) {
 
+		// 로그인 혹은 회원 가입
 		LoginTokensResponse loginTokensResponse = loginService.login(loginRequest);
+		// cookie에 토큰 저장
+		addCookies(response, loginTokensResponse);
+
+		return ApiResponse.ok();
+	}
+
+	private static void addCookies(HttpServletResponse response, LoginTokensResponse loginTokensResponse) {
+
 		// TODO 테스트 용이성을 위해 ServletServerHttpResponse 사용
 		ServletServerHttpResponse servletServerHttpResponse = new ServletServerHttpResponse(response);
 
@@ -37,7 +46,6 @@ public class LoginController {
 		addCookie(servletServerHttpResponse, REFRESH_TOKEN_COOKIE, loginTokensResponse.getRefreshToken());
 		addCookie(servletServerHttpResponse, SOCIAL_TYPE_TOKEN_COOKIE, loginTokensResponse.getSocialType());
 
-		return ApiResponse.ok();
 	}
 
 	private static void addCookie(ServletServerHttpResponse response, String name, String content) {
