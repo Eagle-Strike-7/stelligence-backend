@@ -5,14 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
+import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
+
 @SpringBootTest
-class JwtServiceTest {
+class JwtTokenServiceTest {
 
 	@Autowired
-	private JwtService jwtService;
+	private JwtTokenService jwtTokenService;
 
 	@Autowired
-	private JwtProvider jwtProvider ;
+	private JwtTokenProvider jwtTokenProvider;
 
 	/**
 	 * jwtService의 getMemberId를 테스트한다.
@@ -23,8 +26,8 @@ class JwtServiceTest {
 	@Test
 	void getMemberId() {
 
-		String accessToken = jwtProvider.createAccessToken(1L);
-		Long memberId = jwtService.getMemberId(accessToken);
+		String accessToken = jwtTokenProvider.createAccessToken(1L);
+		Long memberId = jwtTokenService.getMemberInfo(accessToken).getId();
 		Assertions.assertThat(memberId).isEqualTo(1L);
 
 	}
