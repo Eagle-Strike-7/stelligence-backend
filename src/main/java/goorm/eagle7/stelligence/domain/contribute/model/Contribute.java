@@ -7,6 +7,7 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.vote.model.Vote;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,6 +40,13 @@ public class Contribute extends BaseTimeEntity {
 	 */
 	@OneToMany(mappedBy = "contribute")
 	private List<Amendment> amendments = new ArrayList<>();
+
+	/**
+	 * 해당 수정 요청에 대한 투표 목록을 가지고 있습니다.
+	 * 효율성을 위해 Vote -> Contribute 일방향 연관관계만 유지할 수도 있습니다.
+	 */
+	@OneToMany(mappedBy = "contribute")
+	private List<Vote> votes = new ArrayList<>();
 
 	//===생성===//
 	public static Contribute createContribute() {
