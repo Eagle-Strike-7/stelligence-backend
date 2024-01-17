@@ -188,4 +188,14 @@ public class DocumentContentService {
 
 		return DocumentResponse.of(document, sections);
 	}
+
+	/**
+	 * 특정 문자열을 포함하는 Document의 ID를 조회합니다. 최신 버전의 섹션만 조사의 대상이 됩니다.
+	 * @param keyword 검색할 키워드
+	 * @return 검색된 Document의 ID 목록
+	 */
+	public List<Long> findDocumentWhichContainsKeyword(String keyword) {
+		return documentRepository.findDocumentIdWhichContainsKeywordInLatestVersion(keyword);
+	}
+
 }
