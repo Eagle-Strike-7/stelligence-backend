@@ -230,13 +230,12 @@ class AmendmentServiceTest {
 	@DisplayName("Amendment 목록 조회 - 1가지 파라미터 존재")
 	void getAmendmentsWithOneParameter() {
 		List<AmendmentResponse> amendments = amendmentService.getAmendments(null,
-			1L, null);
+			null, AmendmentStatus.PENDING);
 
-		assertThat(amendments).hasSize(5);
+		assertThat(amendments).hasSize(1);
 
-		// amendments.forEach(amendment -> {
-		// 	assertThat(amendment.getTargetSection().getDocument().getId()).isEqualTo(1L);
-		// });
+		assertThat(amendments.get(0).getTitle()).isEqualTo("amendment_title4");
+		assertThat(amendments.get(0).getTargetSection().getSectionId()).isEqualTo(13L);
 	}
 
 	@Test
