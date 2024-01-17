@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
  * CustomAntPathMatcher에서 사용, 전체를 불러와 매칭할 때 사용함.
  */
 @Repository
-public class MemoryResourceRepository {
+public class ResourceMemoryRepository {
 	private static final List<Resource> resources = new ArrayList<>();
 
-	public MemoryResourceRepository() {
+	public ResourceMemoryRepository() {
 
 		resources.add(Resource.of("GET", "/api/"));
 		resources.add(Resource.of("GET", "/api/members/me"));

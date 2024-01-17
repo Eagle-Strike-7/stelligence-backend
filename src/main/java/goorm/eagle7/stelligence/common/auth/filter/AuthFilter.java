@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import goorm.eagle7.stelligence.api.ApiResponse;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
-import goorm.eagle7.stelligence.common.auth.memberinfo.MemberContextHolder;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import jakarta.servlet.FilterChain;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
-	private final CustomAntPathMatcher customAntPathMatcher;
+	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
 
 	/**
@@ -38,11 +38,6 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * 4. 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 	 * 5. BaseException 예외 발생 시 ApiResponse로 응답
 	 * 6. 무슨 일이 있어도 ThreadLocal 초기화
-	 * @param request HttpServletRequest
-	 * @param response HttpServletResponse
-	 * @param filterChain FilterChain
-	 * @throws ServletException
-	 * @throws IOException
 	 */
 	@Override
 	protected void doFilterInternal(
@@ -64,14 +59,14 @@ public class AuthFilter extends OncePerRequestFilter {
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 
 				// ThreadLocal 초기화
-				MemberContextHolder.clear();
+				MemberInfoContextHolder.clear();
 				// null이면 test 용으로 1L, USER 반환
 				MemberInfo memberInfo = jwtTokenService.getMemberInfo(token);
 				if (memberInfo == null) {
 					memberInfo = MemberInfo.of(1L, Role.USER);
 				}
 				// ThreadLocal에 token에서 추출한 memberInfo 저장
-				MemberContextHolder.setMemberInfo(memberInfo);
+				MemberInfoContextHolder.setMemberInfo(memberInfo);
 			}
 			filterChain.doFilter(request, response);
 		} catch (BaseException e) {
@@ -89,7 +84,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		} finally {
 			// 무슨 일이 있어도 ThreadLocal 초기화
-			MemberContextHolder.clear();
+			MemberInfoContextHolder.clear();
 		}
 	}
 
@@ -100,6 +95,6 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return customAntPathMatcher.match(httpMethod, uri);
+		return resourceAntPathMatcher.match(httpMethod, uri);
 	}
 }
