@@ -24,4 +24,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 */
 	Optional<Member> findByNickname(String nickname);
 
+	/**
+	 * member nickname으로 member 정보가 존재하는지 확인한다.
+	 * @param nickname	member nickname
+	 * @return  존재하면 true, 존재하지 않으면 false
+	 */
+	boolean existsByNickname(String nickname);
+
 }
