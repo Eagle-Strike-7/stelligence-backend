@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -173,6 +174,7 @@ public class DocumentContentService {
 	/**
 	 * Document의 특정 버전을 조회합니다.
 	 */
+	@Cacheable(value = "document", key = "#documentId + ':' + #revision", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId, Long revision) {
 
 		//문서가 존재하는지 확인합니다.
