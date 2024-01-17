@@ -1,8 +1,6 @@
 package goorm.eagle7.stelligence.domain.member.model;
 
 import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,12 +19,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -85,7 +84,6 @@ public class Member extends BaseTimeEntity {
 	 * @param nickname // TODO service unique 검증 필요
 	 * @param email
 	 * @param imageUrl
-	 * @param refreshToken
 	 * @param socialId
 	 * default: role: USER, contributes: 0, socialType: KAKAO
 	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
