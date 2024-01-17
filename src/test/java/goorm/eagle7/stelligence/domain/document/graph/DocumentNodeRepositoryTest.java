@@ -2,15 +2,18 @@ package goorm.eagle7.stelligence.domain.document.graph;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.document.graph.DocumentNodeRepository;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +24,8 @@ class DocumentNodeRepositoryTest {
 
 	@Autowired
 	private DocumentNodeRepository documentNodeRepository;
+	@Autowired
+	Neo4jClient neo4jClient;
 
 	@Test
 	@DisplayName("문서 노드 단일 저장 테스트")
@@ -140,5 +145,146 @@ class DocumentNodeRepositoryTest {
 		assertThat(findDocumentNode.getDocumentId()).isEqualTo(grandChildDocumentId);
 		assertThat(findDocumentNode.getTitle()).isEqualTo(grandChildTitle);
 		assertThat(findDocumentNode.getGroup()).isEqualTo(parentNode.getGroup());
+	}
+
+	@Test
+	@DisplayName("특정 제목으로 검색하면 해당 제목이 포함된 경우에만 반환")
+	void findNodeByTitle() {
+
+		//given
+		final String searchTitle = "title1";
+		final int limit = 5;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByTitle(searchTitle, limit);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<String> titleList = findNodes.stream().map(DocumentNodeResponse::getTitle).toList();
+		assertThat(titleList)
+			.isNotEmpty()
+			.allMatch(s -> s.contains(searchTitle));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 제목으로 검색하면 결과가 빈 리스트로 반환")
+	void findNoNodeByTitle() {
+
+		//given
+		final String searchTitle = "대충검색이될수없는이상한검색어";
+		final int limit = 5;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByTitle(searchTitle, limit);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<String> titleList = findNodes.stream().map(DocumentNodeResponse::getTitle).toList();
+		assertThat(titleList)
+			.isEmpty();
+	}
+
+	@Test
+	@DisplayName("한국어 제목으로도 검색이 잘 됨")
+	void findKoreanNodeByTitle() {
+
+		//given
+		final String searchTitle = "제목";
+		final int limit = 5;
+
+		String[] queries = queriesThatMakesNodeInKorean();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByTitle(searchTitle, limit);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<String> titleList = findNodes.stream().map(DocumentNodeResponse::getTitle).toList();
+		assertThat(titleList)
+			.isNotEmpty()
+			.allMatch(s -> s.contains(searchTitle));
+	}
+
+	@Test
+	@DisplayName("documentId의 리스트로 문서 노드들 검색")
+	void findNodeByDocumentId() {
+		//given
+		final List<Long> searchDocumentIdList = new ArrayList<>();
+		searchDocumentIdList.add(1L);
+		searchDocumentIdList.add(2L);
+		searchDocumentIdList.add(3L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByDocumentId(searchDocumentIdList);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<Long> findDocumentIdList = findNodes.stream().map(DocumentNodeResponse::getDocumentId).toList();
+		assertThat(findDocumentIdList)
+			.isNotEmpty()
+			.hasSize(3)
+			.containsAll(searchDocumentIdList);
+	}
+
+	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
+		return new String[] {
+			"CREATE (:DocumentNode {documentId: 1, level: 2, title: 'title1', group: 'title1'}),"
+				+ "       (:DocumentNode {documentId: 2, level: 2, title: 'title2', group: 'title2'}),"
+				+ "       (:DocumentNode {documentId: 3, level: 2, title: 'title3', group: 'title3'});",
+			"MATCH (p2:DocumentNode {level: 2})"
+				+ " WITH p2"
+				+ " CREATE (p2)-[:HAS_CHILD]->(:DocumentNode {documentId: p2.documentId * 10 + 1, level: 3, title: 'title' + toString(p2.documentId * 10 + 1), group: p2.group}),"
+				+ "       (p2)-[:HAS_CHILD]->(:DocumentNode {documentId: p2.documentId * 10 + 2, level: 3, title: 'title' + toString(p2.documentId * 10 + 2), group: p2.group}),"
+				+ "       (p2)-[:HAS_CHILD]->(:DocumentNode {documentId: p2.documentId * 10 + 3, level: 3, title: 'title' + toString(p2.documentId * 10 + 3), group: p2.group});",
+			"MATCH (p3:DocumentNode {level: 3})"
+				+ " WITH p3"
+				+ " CREATE (p3)-[:HAS_CHILD]->(:DocumentNode {documentId: p3.documentId * 10 + 1, level: 4, title: 'title' + toString(p3.documentId * 10 + 1), group: p3.group}),"
+				+ "       (p3)-[:HAS_CHILD]->(:DocumentNode {documentId: p3.documentId * 10 + 2, level: 4, title: 'title' + toString(p3.documentId * 10 + 2), group: p3.group}),"
+				+ "       (p3)-[:HAS_CHILD]->(:DocumentNode {documentId: p3.documentId * 10 + 3, level: 4, title: 'title' + toString(p3.documentId * 10 + 3), group: p3.group});",
+			" MATCH (p4:DocumentNode {level: 4})"
+				+ " WITH p4"
+				+ " CREATE (p4)-[:HAS_CHILD]->(:DocumentNode {documentId: p4.documentId * 10 + 1, level: 5, title: 'title' + toString(p4.documentId * 10 + 1), group: p4.group}),"
+				+ "       (p4)-[:HAS_CHILD]->(:DocumentNode {documentId: p4.documentId * 10 + 2, level: 5, title: 'title' + toString(p4.documentId * 10 + 2), group: p4.group}),"
+				+ "       (p4)-[:HAS_CHILD]->(:DocumentNode {documentId: p4.documentId * 10 + 3, level: 5, title: 'title' + toString(p4.documentId * 10 + 3), group: p4.group});",
+			"MATCH (n:DocumentNode)"
+				+ " SET n.level = NULL;"
+		};
+	}
+
+	private static String[] queriesThatMakesNodeInKorean() {
+		return new String[] {
+			"CREATE (:DocumentNode {documentId: 1, title: '제목', group: '제목'}),"
+				+ " (:DocumentNode {documentId: 2, title: '제목찾기', group: '제목찾기'}),"
+				+ " (:DocumentNode {documentId: 3, title: '제목검색', group: '제목검색'}),"
+				+ " (:DocumentNode {documentId: 4, title: '목재', group: '목재'}),"
+				+ " (:DocumentNode {documentId: 5, title: '제목과 목차', group: '제목과 목차'}),"
+				+ " (:DocumentNode {documentId: 6, title: '제목예시', group: '제목예시'}),"
+				+ " (:DocumentNode {documentId: 7, title: '제 목', group: '제 목'}),"
+				+ " (:DocumentNode {documentId: 8, title: '제몫', group: '제몫'}),"
+				+ " (:DocumentNode {documentId: 9, title: '제모', group: '제모'}),"
+				+ " (:DocumentNode {documentId: 10, title: '제뭐임', group: '제뭐임'});"
+		};
 	}
 }

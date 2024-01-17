@@ -3,13 +3,16 @@ package goorm.eagle7.stelligence.domain.document.content.dto;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Document 응답 DTO 입니다.
  * Document의 정보와 Section의 정보를 담습니다.
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DocumentResponse {
 
 	private Long documentId;

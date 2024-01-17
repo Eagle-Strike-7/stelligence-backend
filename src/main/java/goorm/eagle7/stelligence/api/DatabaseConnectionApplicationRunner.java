@@ -63,6 +63,23 @@ public class DatabaseConnectionApplicationRunner implements ApplicationRunner {
 		} catch (Exception e) {
 			log.error("Error testing Neo4j connection: " + e.getMessage());
 		}
+
+		// neo4j의 fulltextindex를 체크하는 로직
+		try {
+			// `fulltext.analyzer`: 'cjk'는 중/일/한국어 특화 분석기
+			// `fulltext.eventually_consistent`: false : 삽입에 대해 인덱싱을 지연하지 않고 즉시 적용
+			String neo4jFulltextIndexQuery = "create fulltext index documentTitleIndex"
+				+ " if not exists for (n:DocumentNode) on each [n.title]"
+				+ " OPTIONS {"
+				+ "  indexConfig: {"
+				+ "    `fulltext.analyzer`: 'cjk', `fulltext.eventually_consistent`: false"
+				+ "  }"
+				+ " };";
+			neo4jClient.query(neo4jFulltextIndexQuery).run();
+			log.info("Neo4j fulltext index has checked successful.");
+		} catch (Exception e) {
+			log.error("Error checking Neo4j fulltext index: " + e.getMessage());
+		}
 	}
 
 }

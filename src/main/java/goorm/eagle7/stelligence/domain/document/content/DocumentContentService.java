@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -172,7 +173,11 @@ public class DocumentContentService {
 
 	/**
 	 * Document의 특정 버전을 조회합니다.
+	 *
+	 * 최초 호출시에는 DB에서 조회한 뒤, Redis에 캐싱합니다.
+	 * Redis에 저장되는 키는 다음과 같습니다. document::{documentId}:{revision}
 	 */
+	@Cacheable(value = "document", key = "#documentId + ':' + #revision", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId, Long revision) {
 
 		//문서가 존재하는지 확인합니다.
@@ -188,4 +193,14 @@ public class DocumentContentService {
 
 		return DocumentResponse.of(document, sections);
 	}
+
+	/**
+	 * 특정 문자열을 포함하는 Document의 ID를 조회합니다. 최신 버전의 섹션만 조사의 대상이 됩니다.
+	 * @param keyword 검색할 키워드
+	 * @return 검색된 Document의 ID 목록
+	 */
+	public List<Long> findDocumentWhichContainsKeyword(String keyword) {
+		return documentRepository.findDocumentIdWhichContainsKeywordInLatestVersion(keyword);
+	}
+
 }

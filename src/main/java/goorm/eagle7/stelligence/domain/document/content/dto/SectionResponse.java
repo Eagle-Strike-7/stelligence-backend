@@ -2,16 +2,19 @@ package goorm.eagle7.stelligence.domain.document.content.dto;
 
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
  * Section의 정보를 담기 위한 응답 DTO입니다.
  */
+@Getter
 @ToString
 @AllArgsConstructor
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SectionResponse {
 
 	private Long sectionId;

@@ -21,7 +21,6 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
@@ -52,8 +51,10 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-}
 
+    //ioutils
+    implementation 'commons-io:commons-io:2.11.0'
+}
 
 tasks.named('test') {
     useJUnitPlatform()

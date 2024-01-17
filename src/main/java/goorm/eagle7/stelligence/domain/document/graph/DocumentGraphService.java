@@ -76,4 +76,25 @@ public class DocumentGraphService {
 
 		return DocumentGraphResponse.of(documentNodes, hasChildRelationshipList);
 	}
+
+	/**
+	 * 특정 제목으로 문서를 검색합니다.
+	 * @param title: 검색할 제목을 나타냅니다.
+	 * @param limit: 최대로 검색할 노드의 개수를 나타냅니다.
+	 * @return List&lt;DocumentNodeResponse&gt;: 문서 노드에 대한 응답입니다.
+	 */
+	public List<DocumentNodeResponse> findNodeByTitle(String title, int limit) {
+
+		return documentNodeRepository.findNodeByTitle(title, limit);
+	}
+
+	/**
+	 * documentId의 리스트와 일치하는 문서들을 검색합니다.
+	 * @param documentIdList: 검색할 문서들의 id들을 담은 리스트입니다.
+	 * @return List&lt;DocumentNodeResponse&gt;: 문서 노드에 대한 응답입니다.
+	 */
+	public List<DocumentNodeResponse> findNodeByDocumentId(List<Long> documentIdList) {
+
+		return documentNodeRepository.findNodeByDocumentId(documentIdList);
+	}
 }
