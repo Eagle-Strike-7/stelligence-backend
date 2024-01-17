@@ -5,7 +5,11 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberContextHolder;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
+import goorm.eagle7.stelligence.domain.member.model.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,20 +18,23 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * test 시 @component 주석처리하기!!!
- * 토큰 검증이 필요한 리소스에 대해 토큰을 검증한다.
+ * 토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.
  * 토큰 검증이 필요한 리소스는 CustomAntPathMatcher에서 정의한다.
  */
-// @Component
+@Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
 	private final CustomAntPathMatcher customAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
-	private static final String MEMBER_INFO = "memberInfo";
 
 	/**
-	 * request의 header에서 토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, 검증이 완료됐다면 해당 토큰을 다시 request에 담아준다..
-	 * request에
+	 * 1. request의 header에서 토큰 검증이 필요한 리소스인지 확인
+	 * 2. request에서 token 추출
+	 * 3. 추출한 token 유효성 검증
+	 * 4. 검증 완료 이후 memberInfo를 ThreadLocal에 저장
+	 * 5. 예외 발생 시 적절한 응답 TODO
+	 * 6. 무슨 일이 있어도 ThreadLocal 초기화
 	 * @param request HttpServletRequest
 	 * @param response HttpServletResponse
 	 * @param filterChain FilterChain
@@ -42,23 +49,40 @@ public class AuthFilter extends OncePerRequestFilter {
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
-		// TODO 검증 예외 고려 필요
-		// 토큰 검증이 필요한 uri라면 토큰 검증
-		if (isTokenValidationRequired(httpMethod, uri)) {
+		try {
+			// 토큰 검증이 필요한 uri라면 토큰 검증
+			if (isTokenValidationRequired(httpMethod, uri)) {
 
-			String token = JwtTokenService.extractJwtFromHeader(request);
-			jwtTokenService.validateActiveToken(token);
+				// request에서 token 추출
+				String token = jwtTokenService.extractJwtFromHeader(request);
+				// 추출한 token 유효성 검증
+				jwtTokenService.validateActiveToken(token);
 
-			// 검증 완료 후 request에 memberInfo 저장
-			request.setAttribute(MEMBER_INFO, jwtTokenService.getMemberInfo(token));
+				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
+
+				// ThreadLocal 초기화
+				MemberContextHolder.clear();
+				// null이면 test 용으로 1L, USER 반환
+				MemberInfo memberInfo = jwtTokenService.getMemberInfo(token);
+				if (memberInfo == null) {
+					memberInfo = MemberInfo.of(1L, Role.USER);
+				}
+				// ThreadLocal에 token에서 추출한 memberInfo 저장
+				MemberContextHolder.setMemberInfo(memberInfo);
+			}
+			filterChain.doFilter(request, response);
+		} catch (BaseException e) {
+			// TODO 적절한 응답
+		} finally {
+			// 무슨 일이 있어도 ThreadLocal 초기화
+			MemberContextHolder.clear();
 		}
-		filterChain.doFilter(request, response);
 	}
 
 	/**
 	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
-	 * @param httpMethod
-	 * @param uri
+	 * @param httpMethod String 타입으로 추출.
+	 * @param uri uri String 타입으로 추출.
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
