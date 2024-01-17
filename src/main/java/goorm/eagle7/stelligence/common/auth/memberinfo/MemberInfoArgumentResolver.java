@@ -41,6 +41,6 @@ public class MemberInfoArgumentResolver
 		ModelAndViewContainer mavContainer,
 		@Nullable NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) {
-		return MemberContextHolder.getMemberInfo();
+		return MemberInfoContextHolder.getMemberInfo();
 	}
 }

@@ -7,10 +7,10 @@ import goorm.eagle7.stelligence.domain.member.model.Role;
  * - 웹 애플리케이션에서 각 요청이 별도의 스레드에서 처리될 수 있도록 하기 위해 ThreadLocal을 사용해 각 스레드에서 MemberInfo를 독립적으로 관리.
  * - ThreadLocal은 인스턴스 자체가 아니라 현재 스레드에 대한 컨텍스트를 관리하기 위한 수단이기 때문에 빈으로 등록 X
  */
-public class MemberContextHolder {
+public class MemberInfoContextHolder {
 	private static final ThreadLocal<MemberInfo> CONTEXT = new ThreadLocal<>();
 
-	private MemberContextHolder() {
+	private MemberInfoContextHolder() {
 		throw new IllegalStateException("Utility class");
 	}
 
@@ -31,8 +31,7 @@ public class MemberContextHolder {
 
 	/**
 	 * ThreadLocal에 MemberInfo를 저장함.
-	 * @param memberInfo
-	 * @return void
+	 * @param memberInfo MemberInfo
 	 */
 	public static void setMemberInfo(MemberInfo memberInfo) {
 		CONTEXT.set(memberInfo);

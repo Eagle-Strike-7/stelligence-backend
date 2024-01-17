@@ -9,12 +9,12 @@ import org.springframework.util.AntPathMatcher;
  * Request의 method, path가 검증 대상인지 확인 후, 검증 대상인지를 알려준다.
  */
 @Component
-public class CustomAntPathMatcher extends AntPathMatcher {
+public class ResourceAntPathMatcher extends AntPathMatcher {
 
 	private final List<Resource> resources;
 
-	public CustomAntPathMatcher(MemoryResourceRepository memoryResourceRepository){
-		this.resources = memoryResourceRepository.findAll();
+	public ResourceAntPathMatcher(ResourceMemoryRepository resourceMemoryRepository){
+		this.resources = resourceMemoryRepository.findAll();
 	}
 
 	/**
