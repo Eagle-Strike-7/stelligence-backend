@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import goorm.eagle7.stelligence.api.ApiResponse;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberContextHolder;
@@ -33,7 +36,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * 2. request에서 token 추출
 	 * 3. 추출한 token 유효성 검증
 	 * 4. 검증 완료 이후 memberInfo를 ThreadLocal에 저장
-	 * 5. 예외 발생 시 적절한 응답 TODO
+	 * 5. BaseException 예외 발생 시 ApiResponse로 응답
 	 * 6. 무슨 일이 있어도 ThreadLocal 초기화
 	 * @param request HttpServletRequest
 	 * @param response HttpServletResponse
@@ -72,7 +75,18 @@ public class AuthFilter extends OncePerRequestFilter {
 			}
 			filterChain.doFilter(request, response);
 		} catch (BaseException e) {
-			// TODO 적절한 응답
+			// 사용자 정의 오류 응답 생성
+			ApiResponse<Object> apiResponse = ApiResponse.fail(e.getMessage());
+
+			// JSON으로 변환
+			String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
+
+			// 응답 설정
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 상태 코드
+			response.getWriter().write(jsonResponse);
+
 		} finally {
 			// 무슨 일이 있어도 ThreadLocal 초기화
 			MemberContextHolder.clear();

@@ -89,8 +89,12 @@ public class JwtTokenService {
 	 *
 	 */
 	public  String extractJwtFromHeader(HttpServletRequest request) {
-		return JwtTokenUtil.removeBearerPrefix(
-			request.getHeader(authorization));
+		try {
+			return JwtTokenUtil.removeBearerPrefix(
+				request.getHeader(authorization));
+		} catch (Exception e) {
+			throw new BaseException("Authorization 헤더가 없거나 잘못된 형식입니다.");
+		}
 	}
 
 	public static String extractJwtFromCookie(HttpServletRequest request) {
@@ -146,9 +150,14 @@ public class JwtTokenService {
 	 * @return MemberInfo
 	 */
 	private MemberInfo extractMemberInfo(Jws<Claims> claims) {
-		return MemberInfo.of(
-			Long.parseLong(claims.getPayload().getSubject()),
-			Role.getRoleFromString(claims.getPayload().get(claimRole, String.class)));
+		try {
+			return MemberInfo.of(
+				Long.parseLong(claims.getPayload().getSubject()),
+				Role.getRoleFromString(claims.getPayload().get(claimRole, String.class)));
+		} catch (NumberFormatException e) {
+			log.debug("JWT에 저장된 사용자 식별자가 올바르지 않습니다. {}", e.getMessage());
+			throw new BaseException("JWT에 저장된 사용자 식별자, Role이 올바르지 않습니다.");
+		}
 	}
 
 }
