@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
  * 토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.
  * 토큰 검증이 필요한 리소스는 CustomAntPathMatcher에서 정의한다.
  */
-@Component
+// @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
