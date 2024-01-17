@@ -97,4 +97,17 @@ public class DocumentGraphService {
 
 		return documentNodeRepository.findNodeByDocumentId(documentIdList);
 	}
+
+	/**
+	 * 처음 그래프를 조회할 때에는 루트 노드로부터 특정 깊이까지를 조회할 수 있어야합니다.
+	 * @param depth: 루트 노드로부터 몇 번째 깊이까지를 조회할 것인지를 결정합니다.
+	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
+	 */
+	public DocumentGraphResponse findFromRootNodesWithDepth(int depth) {
+
+		List<DocumentNodeResponse> documentNodes = documentNodeRepository.findDocumentNodeFromRootWithDepth(depth);
+		List<HasChildRelationshipResponse> hasChildRelationshipList = documentNodeRepository.findHasChildRelationshipFromRootWithDepth(depth);
+
+		return DocumentGraphResponse.of(documentNodes, hasChildRelationshipList);
+	}
 }
