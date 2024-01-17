@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.common.auth.memberinfo;
 
+import goorm.eagle7.stelligence.domain.member.model.Role;
 
 /**
  * Filter에서 MemberInfo를 ThreadLocal에 저장하고, Controller에서 @Auth를 사용하면 ThreadLocal에 저장됐던 MemberInfo를 받을 수 있다.
@@ -15,10 +16,17 @@ public class MemberContextHolder {
 
 	/**
 	 * ThreadLocal에 저장된 데이터를 반환함.
-	 * @return MemberInfo null인 경우, 기본 객체 MemberInfo.of(1L, Role.USER)를 반환 - test 용
+	 * @return MemberInfo null인 경우(token 보내지 않는 경우), 기본 객체 MemberInfo.of(1L, Role.USER)를 반환 - test 용
 	 */
 	public static MemberInfo getMemberInfo() {
-		return CONTEXT.get() ;
+
+		// TODO (test 아니면 지우기)
+		// filter에서 저장할 때 이미 기본값을 넣어주지만, filter를 해제하고 test하는 경우 null로 초기화되어 test를 위해 ThreadLocal에서 자체 초기화
+		MemberInfo memberInfo = CONTEXT.get();
+		if (memberInfo == null) {
+			return MemberInfo.of(1L, Role.USER);
+		}
+		return memberInfo;
 	}
 
 	/**
