@@ -148,7 +148,7 @@ class AmendmentServiceTest {
 	}
 
 	@Test
-	@DisplayName("Amendment 삭제 테스트 - 실패")
+	@DisplayName("Amendment 삭제 테스트 - 실패: memberId 불일치")
 	void deleteAmendmentFail() {
 		AmendmenCreateSavetRequest request = new AmendmenCreateSavetRequest(
 			"title",
@@ -169,6 +169,16 @@ class AmendmentServiceTest {
 
 		assertThrows(BaseException.class, () -> {
 			amendmentService.deleteAmendment(response.getAmendmentId(), 3L);
+		});
+	}
+
+	@Test
+	@DisplayName("Amendment 삭제 테스트 - 실패: REQUESTED 상태")
+	void deleteAmendmentFailWhenRequested() {
+		AmendmentResponse amendment = amendmentService.getAmendment(1L);
+
+		assertThrows(BaseException.class, () -> {
+			amendmentService.deleteAmendment(amendment.getAmendmentId(), 1L);
 		});
 	}
 

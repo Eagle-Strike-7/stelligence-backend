@@ -130,6 +130,11 @@ public class AmendmentService {
 			throw new BaseException("수정 권한이 없습니다. 사용자 ID: " + memberId);
 		}
 
+		// 상태가 REQUESTED인 경우 삭제 불가
+		if (amendment.getStatus() == AmendmentStatus.REQUESTED) {
+			throw new BaseException("REQUESTED 상태의 수정안은 삭제할 수 없습니다.");
+		}
+
 		amendmentRepository.deleteById(id);
 	}
 
