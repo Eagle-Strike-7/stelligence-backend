@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.common.login;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +20,21 @@ import lombok.RequiredArgsConstructor;
 public class LoginController {
 
 	private final LoginService loginService;
-	private static final String ACCESS_TOKEN_COOKIE = "StelligenceAccessToken";
-	private static final String REFRESH_TOKEN_COOKIE = "StelligenceRefreshToken";
-	private static final String SOCIAL_TYPE_TOKEN_COOKIE = "StelligenceSocialTypeToken";
-	private static final int MAX_AGE_COOKIE = 60 * 60 * 24 * 14; // 14일
-	private static final String SET_COOKIE = "Set-Cookie";
+
+	@Value("${jwt.accessToken.name}")
+	private String accessTokenCookieName;
+
+	@Value("${jwt.refreshToken.name}")
+	private String refreshTokenCookieName;
+
+	@Value("${jwt.socialTypeToken.name}")
+	private String socialTypeTokenCookieName;
+
+	@Value("${http.cookie.maxAge}")
+	private int maxAgeCookie; // 14일
+
+	@Value("${http.cookie.field}")
+	private String setCookie;
 
 	@PostMapping("/login")
 	public ApiResponse<Void> login(@RequestBody LoginRequest loginRequest,
@@ -37,27 +48,27 @@ public class LoginController {
 		return ApiResponse.ok();
 	}
 
-	private static void addCookies(HttpServletResponse response, LoginTokensResponse loginTokensResponse) {
+	private void addCookies(HttpServletResponse response, LoginTokensResponse loginTokensResponse) {
 
 		// TODO 테스트 용이성을 위해 ServletServerHttpResponse 사용
 		ServletServerHttpResponse servletServerHttpResponse = new ServletServerHttpResponse(response);
 
-		addCookie(servletServerHttpResponse, ACCESS_TOKEN_COOKIE, loginTokensResponse.getAccessToken());
-		addCookie(servletServerHttpResponse, REFRESH_TOKEN_COOKIE, loginTokensResponse.getRefreshToken());
-		addCookie(servletServerHttpResponse, SOCIAL_TYPE_TOKEN_COOKIE, loginTokensResponse.getSocialType());
+		addCookie(servletServerHttpResponse, accessTokenCookieName, loginTokensResponse.getAccessToken());
+		addCookie(servletServerHttpResponse, refreshTokenCookieName, loginTokensResponse.getRefreshToken());
+		addCookie(servletServerHttpResponse, socialTypeTokenCookieName, loginTokensResponse.getSocialType());
 
 	}
 
-	private static void addCookie(ServletServerHttpResponse response, String name, String content) {
+	private void addCookie(ServletServerHttpResponse response, String name, String content) {
 		ResponseCookie responseCookie = ResponseCookie.from(name,
 				content)
 			.httpOnly(true)
-			.maxAge(MAX_AGE_COOKIE)
+			.maxAge(maxAgeCookie)
 			.path("/")
 			// .sameSite("Strict") // CSRF 방지
 			// .secure(true) // HTTPS
 			.build();
-		response.getServletResponse().addHeader(SET_COOKIE, responseCookie.toString());
+		response.getServletResponse().addHeader(setCookie, responseCookie.toString());
 	}
 
 }

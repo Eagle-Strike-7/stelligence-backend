@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -36,14 +37,16 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenService {
 
 	private final SecretKey key;
-	private static final String AUTHORIZATION = "Authorization";
-	private static final String CLAIM_ROLE = "role";
+	@Value("${http.header.field}")
+	private String authorization;
+	@Value("${jwt.claim.role}")
+	private String claimRole ;
 
 	/**
 	 * AccessToken에서 MemberInfo 추출
 	 * 1. 유효성 검사
 	 * 2. JWT 파싱해 claim 추출
-	 * 3. claim의 subject에서 memberId 추출
+	 * 3. claim의 subject에서 MemberInfo 추출
 	 * @return MemberInfo 사용자 정보(식별자, 권한)
 	 * @throws BaseException 유효성 검사, JWT 파싱 실패인 경우.
 	 */
@@ -66,7 +69,6 @@ public class JwtTokenService {
 		if (!StringUtils.hasText(token)) {
 			throw new BaseException("JWT가 없습니다.");
 		}
-
 		try {
 			return !Jwts.parser()
 				.verifyWith(key) // 서명 검증 시 사용할 키 정하기
@@ -75,7 +77,7 @@ public class JwtTokenService {
 				.getPayload() // 페이로드 반환
 				.getExpiration().before(new Date()); // 토큰의 만료 시간이 현재 시간보다 이전인지 확인
 		} catch (Exception e) {
-			throw new BaseException("JWT 검증 실패"); // TODO 상세한 예외 처리?
+			throw new BaseException("JWT 유효성 검사에 실패했습니다.");
 		}
 	}
 
@@ -83,17 +85,17 @@ public class JwtTokenService {
 	 *
 	 * "Authorization"의 헤더 값에서 Bearer를 제외한 token 추출
 	 * @param request HttpServletRequest 객체
-	 * @return token
+	 * @return token Bearer 접두어 제외한 token
 	 *
 	 */
-	public static String extractJwtFromHeader(HttpServletRequest request) {
+	public  String extractJwtFromHeader(HttpServletRequest request) {
 		return JwtTokenUtil.removeBearerPrefix(
-			request.getHeader(AUTHORIZATION));
+			request.getHeader(authorization));
 	}
 
 	public static String extractJwtFromCookie(HttpServletRequest request) {
 
-		// TODO switch로 세 종류를 나눠서 구현?
+		// TODO switch로 세 종류를 나눠서 구현
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
@@ -110,7 +112,7 @@ public class JwtTokenService {
 	/**
 	 * 토큰에서 클레임 추출(파싱)
 	 * 	- 파싱: 데이터 해석, 클레임 추출, 서명 검증
-	 * @param accessToken
+	 * @param accessToken 토큰(Bearer 접두어 제외)
 	 * @return Jws<Claims> 서명이 포함된 클레임
 	 */
 	private Jws<Claims> parseToken(String accessToken) {
@@ -122,17 +124,18 @@ public class JwtTokenService {
 				.parseSignedClaims(accessToken); // 서명의 유효성 검증
 			// 발생 예: 서명 불일치, 만료된 토큰, 잘못된 형식 등
 			// 어떤 이유인지 확인 위해 log 추가, 어느 정도 확인 후 Exception으로 통일 예정
+			// Error난 상황이 아니기 때문에 log.error는 적절하지 않고, log.debug로 변경
 		} catch (ExpiredJwtException e) {
-			log.error("만료된 JWT: {}", e.getMessage());
+			log.debug("만료된 JWT: {}", e.getMessage());
 			throw new BaseException("만료된 JWT입니다.");
 		} catch (MalformedJwtException e) {
-			log.error("잘못된 형식의 JWT: {}", e.getMessage());
+			log.debug("잘못된 형식의 JWT: {}", e.getMessage());
 			throw new BaseException("잘못된 형식의 JWT입니다.");
 		} catch (JwtException e) {
-			log.error("JWT 파싱 실패: {}", e.getMessage());
+			log.debug("JWT 파싱 실패: {}", e.getMessage());
 			throw new BaseException("JWT 파싱에 실패했습니다.");
 		} catch (Exception e) {
-			log.error("JWT 파싱 실패", e);
+			log.debug("JWT 파싱 실패", e);
 			throw new BaseException("JWT 파싱에 실패했습니다.");
 		}
 	}
@@ -145,7 +148,7 @@ public class JwtTokenService {
 	private MemberInfo extractMemberInfo(Jws<Claims> claims) {
 		return MemberInfo.of(
 			Long.parseLong(claims.getPayload().getSubject()),
-			Role.getRoleFromString(claims.getPayload().get(CLAIM_ROLE, String.class)));
+			Role.getRoleFromString(claims.getPayload().get(claimRole, String.class)));
 	}
 
 }

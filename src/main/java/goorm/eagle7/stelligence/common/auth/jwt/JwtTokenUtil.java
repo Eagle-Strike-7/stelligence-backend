@@ -11,7 +11,9 @@ package goorm.eagle7.stelligence.common.auth.jwt;
  */
 class JwtTokenUtil {
 
-	private static final String BEARER = "Bearer ";
+	// 정확한 값을 숨기고, 환경 변수나 외부에서 주입받는 방법 고민하기
+	// @Value("${http.header.prefix}")
+	private static String bearer = "Bearer ";
 
 	/**
 	 * 인스턴스로 생성되는 것을 막기 위해 private 생성자
@@ -26,7 +28,7 @@ class JwtTokenUtil {
 	 * @return String token(Bearer 접두어 제거)
 	 */
 	public static String removeBearerPrefix(String token) {
-		return token.replace(BEARER, "");
+		return token.replace(bearer, "");
 	}
 
 }
