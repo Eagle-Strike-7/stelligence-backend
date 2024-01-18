@@ -63,7 +63,7 @@ public class Amendment extends BaseTimeEntity {
 	private AmendmentStatus status;
 
 	//수정안 생성(update, create)
-	public Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
+	private Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
 		Section targetSection,
 		Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
 		this.member = member;
@@ -79,7 +79,7 @@ public class Amendment extends BaseTimeEntity {
 	}
 
 	//수정안 생성(delete)
-	public Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
+	private Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
 		Section targetSection) {
 		this.member = member;
 		this.amendmentTitle = amendmentTitle;
@@ -87,6 +87,47 @@ public class Amendment extends BaseTimeEntity {
 		this.type = type;
 		this.targetSection = targetSection;
 		this.status = AmendmentStatus.PENDING;
+	}
+
+	//수정안 생성(create)
+	public static Amendment forCreate(Member member, String title, String description,
+		Section section, Heading heading, String sectionTitle, String sectionContent) {
+		return new Amendment(
+			member,
+			title,
+			description,
+			AmendmentType.CREATE,
+			section,
+			heading,
+			sectionTitle,
+			sectionContent
+		);
+	}
+
+	//수정안 생성(update)
+	public static Amendment forUpdate(Member member, String title, String description,
+		Section section, Heading heading, String sectionTitle, String sectionContent) {
+		return new Amendment(
+			member,
+			title,
+			description,
+			AmendmentType.UPDATE,
+			section,
+			heading,
+			sectionTitle,
+			sectionContent
+		);
+	}
+
+	//수정안 생성(delete)
+	public static Amendment forDelete(Member member, String title, String description, Section section) {
+		return new Amendment(
+			member,
+			title,
+			description,
+			AmendmentType.DELETE,
+			section
+		);
 	}
 
 	//수정안 수정
@@ -109,5 +150,13 @@ public class Amendment extends BaseTimeEntity {
 
 	public void setContribute(Contribute contribute) {
 		this.contribute = contribute;
+	}
+
+	public boolean hasPermissionToDeleteOrUpdate(Long memberId) {
+		return this.getMember().getId().equals(memberId);
+	}
+
+	public boolean isNotDeletable() {
+		return this.getStatus() == AmendmentStatus.REQUESTED;
 	}
 }
