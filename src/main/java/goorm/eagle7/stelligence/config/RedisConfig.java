@@ -22,7 +22,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 public class RedisConfig {
 
-	private static final int DEFAULT_EXPIRE_SEC = 60 * 5; // 캐시는 5분동안 유효합니다.
+	private static final int DEFAULT_EXPIRE_SEC = 60 * 10; // 캐시는 10분동안 유효합니다.
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
