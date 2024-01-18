@@ -75,4 +75,17 @@ public class Contribute extends BaseTimeEntity {
 		return contribute;
 	}
 
+	public static Contribute createContribute(String title, Document document, Member member, List<Amendment> amendments) {
+		Contribute contribute = new Contribute(title, document, member, amendments);
+		amendments.forEach(amendment -> amendment.setContribute(contribute));
+		return contribute;
+	}
+
+	private Contribute(String title, Document document, Member member, List<Amendment> amendments) {
+		this.title = title;
+		this.document = document;
+		this.member = member;
+		this.amendments = amendments;
+		this.status = ContributeStatus.VOTING;
+	}
 }
