@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
-public class LoginTokensResponse {
-
-	private String accessToken;
-	private String refreshToken;
-	private String socialType;
-
+public class LoginTokenResponse {
+	private String stelligenceSocialTypeToken;
 }
