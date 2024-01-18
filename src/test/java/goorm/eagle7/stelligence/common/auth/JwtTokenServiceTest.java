@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
+import io.jsonwebtoken.Claims;
 
 @SpringBootTest
 class JwtTokenServiceTest {
@@ -27,7 +28,8 @@ class JwtTokenServiceTest {
 	void getMemberId() {
 
 		String accessToken = jwtTokenProvider.createAccessToken(1L);
-		Long memberId = jwtTokenService.getMemberInfo(accessToken).getId();
+		Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
+		Long memberId = jwtTokenService.getMemberInfo(claims).getId();
 		Assertions.assertThat(memberId).isEqualTo(1L);
 
 	}
