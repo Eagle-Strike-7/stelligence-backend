@@ -14,7 +14,7 @@ public class TestFixtureGenerator {
 	}
 
 	public static Member member(String nickname) {
-		return new Member("name", nickname, "email", "imageUrl", "refreshToken", "socialId");
+		return Member.of("name", nickname, "email", "imageUrl", "socialId");
 	}
 
 	public static Document document(String title) {
