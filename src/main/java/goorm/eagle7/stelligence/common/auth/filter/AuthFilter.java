@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.common.auth.filter;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -9,27 +10,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import goorm.eagle7.stelligence.api.ApiResponse;
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
-import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.domain.member.model.Role;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-/**
- * test 시 @component 주석처리하기!!!
- * 토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.
- * 토큰 검증이 필요한 리소스는 CustomAntPathMatcher에서 정의한다.
- */
 // @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
 
+	@Value("${jwt.accessToken.name}")
+	private String accessTokenName;
+	@Value("${jwt.refreshToken.name}")
+	private String refreshTokenName;
+
 	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
+	private final JwtTokenReissueService jwtTokenReissueService;
 
 	/**
 	 * 1. request의 header에서 토큰 검증이 필요한 리소스인지 확인
@@ -37,41 +41,60 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * 3. 추출한 token 유효성 검증
 	 * 4. 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 	 * 5. BaseException 예외 발생 시 ApiResponse로 응답
+	 * 	- 401 상태 코드(인증 실패, UNAUTHORIZED)로 응답
 	 * 6. 무슨 일이 있어도 ThreadLocal 초기화
 	 */
 	@Override
 	protected void doFilterInternal(
-		HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
+		ServletException,
+		IOException {
 
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (isTokenValidationRequired(httpMethod, uri)) {
+			if (!isTokenValidationRequired(httpMethod, uri)) {
 
-				// request에서 token 추출
-				String token = jwtTokenService.extractJwtFromHeader(request);
-				// 추출한 token 유효성 검증
-				jwtTokenService.validateActiveToken(token);
+				Cookie[] cookies = request.getCookies();
 
-				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
+				String accessToken = null;
+				if (cookies != null) {
+					// request에서 accessToken 추출
+					accessToken = jwtTokenService.extractJwtFromCookie(request, accessTokenName);
+				}
+
+				// accessToken이 유효하지 않다면
+				if (!jwtTokenService.validateToken(accessToken)) {
+
+					String refreshToken = jwtTokenService.extractJwtFromCookie(request, refreshTokenName);
+
+					// accessToken 재발급, refresh 토큰 만료라면 throw BaseException
+					 accessToken = jwtTokenReissueService.reIssueAccessToken(response, refreshToken, accessTokenName, refreshTokenName);
+
+				}
+
+				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
+
+				/**
+				 * 검증 완료 이후 memberInfo를 ThreadLocal에 저장
+				 */
 
 				// ThreadLocal 초기화
 				MemberInfoContextHolder.clear();
-				// null이면 test 용으로 1L, USER 반환
-				MemberInfo memberInfo = jwtTokenService.getMemberInfo(token);
-				if (memberInfo == null) {
-					memberInfo = MemberInfo.of(1L, Role.USER);
-				}
+				MemberInfo memberInfo = jwtTokenService.getMemberInfo(claims);
+
 				// ThreadLocal에 token에서 추출한 memberInfo 저장
 				MemberInfoContextHolder.setMemberInfo(memberInfo);
 			}
+
 			filterChain.doFilter(request, response);
+
 		} catch (BaseException e) {
+
 			// 사용자 정의 오류 응답 생성
-			ApiResponse<Object> apiResponse = ApiResponse.fail(e.getMessage());
+			ApiResponse<Void> apiResponse = ApiResponse.fail(e.getMessage());
 
 			// JSON으로 변환
 			String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
@@ -79,7 +102,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 응답 설정
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 상태 코드
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
 			response.getWriter().write(jsonResponse);
 
 		} finally {
