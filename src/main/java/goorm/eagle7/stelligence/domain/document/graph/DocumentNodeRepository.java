@@ -46,4 +46,14 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 		+ " where n.documentId in $idList"
 		+ " return n.documentId as documentId, n.title as title, n.group as group")
 	List<DocumentNodeResponse> findNodeByDocumentId(@Param("idList") List<Long> documentIdList);
+
+	@Query("match (n1:DocumentNode)-[:HAS_CHILD*0..:#{literal(#depth)}]->(n2:DocumentNode)"
+		+ " where not exists((n1)<--())"
+		+ " return n2.documentId as documentId, n2.title as title, n2.group as group")
+	List<DocumentNodeResponse> findDocumentNodeFromRootWithDepth(@Param("depth") int depth);
+
+	@Query("match (n1:DocumentNode)-[r:HAS_CHILD*1..:#{literal(#depth)}]->(n2:DocumentNode)"
+		+ " where not exists((n1)<--())"
+		+ " return id(r[-1]) as linkId, startNode(r[-1]).documentId as parentDocumentId, endNode(r[-1]).documentId as childDocumentId")
+	List<HasChildRelationshipResponse> findHasChildRelationshipFromRootWithDepth(@Param("depth") int depth);
 }
