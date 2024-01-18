@@ -160,25 +160,23 @@ public class DocumentContentService {
 
 	/**
 	 * 최신 Document를 조회합니다.
+	 *
+	 * Redis에 캐싱할 예정입니다.
+	 * 캐시는 Document에 대한 수정요청이 반영되는 시점에 invalidate 됩니다.
 	 * @param documentId
 	 * @return
 	 */
+	@Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
 
-		//getDocument에서 재사용
-		//추후 Redis에 캐싱할 예정
 		return getDocument(documentId, document.getCurrentRevision());
 	}
 
 	/**
 	 * Document의 특정 버전을 조회합니다.
-	 *
-	 * 최초 호출시에는 DB에서 조회한 뒤, Redis에 캐싱합니다.
-	 * Redis에 저장되는 키는 다음과 같습니다. document::{documentId}:{revision}
 	 */
-	@Cacheable(value = "document", key = "#documentId + ':' + #revision", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId, Long revision) {
 
 		//문서가 존재하는지 확인합니다.
