@@ -1,32 +1,27 @@
 package goorm.eagle7.stelligence.domain.member.model;
 
 import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -45,6 +40,8 @@ public class Member extends BaseTimeEntity {
 	private String email;
 	private String imageUrl;
 	private String socialId; // unique
+
+	@Enumerated(EnumType.STRING)
 	private SocialType socialType; // default: kakao
 
 	private String refreshToken;
@@ -76,29 +73,34 @@ public class Member extends BaseTimeEntity {
 	// @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
 	// private List<Bookmark> bookmarks = new ArrayList<>();
 
-
 	// member 생성 시, role은 기본적으로 user로, contributes는 0으로, SocialType은 KAKAO로 설정.
 	/*
-	 * Member는 생성자로 생성하기
+	 * Member는 정적 팩토리 메서드로 생성하기
 	 * @param name
-	 * @param nickname
+	 * @param nickname // TODO service unique 검증 필요
 	 * @param email
 	 * @param imageUrl
-	 * @param refreshToken
 	 * @param socialId
 	 * default: role: USER, contributes: 0, socialType: KAKAO
+	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
 	 */
-	public Member(String name, String nickname, String email, String imageUrl, String refreshToken, String socialId) {
-		this.name = name;
-		this.nickname = nickname;
-		this.email = email;
-		this.imageUrl = imageUrl;
-		this.refreshToken = refreshToken;
-		this.socialId = socialId;
+	public static Member of(String name, String nickname, String email, String imageUrl, String socialId) {
+		Member member = new Member();
+		member.name = name;
+		member.nickname = nickname;
+		member.email = email;
+		member.imageUrl = imageUrl;
+		member.socialId = socialId;
 
 		// 기본값 설정
-		this.role = Role.USER;
-		this.socialType = SocialType.KAKAO;
-		this.contributes = 0;
+		member.socialType = SocialType.KAKAO;
+		member.refreshToken = "";
+		member.role = Role.USER;
+		member.contributes = 0;
+		return member;
+	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 }
