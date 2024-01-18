@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
-import goorm.eagle7.stelligence.common.login.dto.LoginRequest;
-import goorm.eagle7.stelligence.common.login.dto.LoginTokensResponse;
+import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokens;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +21,12 @@ public class LoginService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final SignUpService signUpService;
 
-	public LoginTokensResponse login(LoginRequest loginRequest) {
+	public LoginTokens login(DevLoginRequest devLoginRequest) {
 
 		// socialId로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		Member member = memberRepository.findByNickname(loginRequest.getNickname())
-			.orElseGet(() -> signUpService.signUp(loginRequest.getNickname())); //TODO getSocialId()
-
+		Member member = memberRepository.findByNickname(devLoginRequest.getNickname())
+			.orElseGet(() -> signUpService.signUp(devLoginRequest.getNickname())); //TODO getSocialId()
 		// socialId가 중복이면 로그인
-
 
 		// token 생성 후 저장
 		return generateAndSaveTokens(member);
@@ -39,8 +37,7 @@ public class LoginService {
 	 * @param member 회원
 	 * @return 토큰
 	 */
-
-	private LoginTokensResponse generateAndSaveTokens(Member member) {
+	private LoginTokens generateAndSaveTokens(Member member) {
 
 		// Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
@@ -51,7 +48,7 @@ public class LoginService {
 		member.updateRefreshToken(refreshToken);
 
 		return
-			LoginTokensResponse.of(
+			LoginTokens.of(
 				accessToken,
 				refreshToken,
 				socialTypeToken
