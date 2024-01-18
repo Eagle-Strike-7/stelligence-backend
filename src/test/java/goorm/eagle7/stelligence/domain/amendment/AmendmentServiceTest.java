@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.amendment;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,11 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmenCreateSavetRequest;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentDeleteSaveRequest;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentUpdateSaveRequest;
-import goorm.eagle7.stelligence.domain.amendment.dto.UpdateAmendmentRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveCreateRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveDeleteRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveUpdateRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentUpdateRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentStatus;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
@@ -42,7 +43,7 @@ class AmendmentServiceTest {
 	@DisplayName("Amendment 생성 테스트 - create")
 	void amendmentCreateSave() {
 		//given
-		AmendmenCreateSavetRequest request = new AmendmenCreateSavetRequest(
+		AmendmentSaveCreateRequest request = new AmendmentSaveCreateRequest(
 			"title",
 			"description",
 			10L,
@@ -71,7 +72,7 @@ class AmendmentServiceTest {
 	@DisplayName("Amendment 생성 테스트 - update")
 	void amendmentUpdateSave() {
 		//given
-		AmendmentUpdateSaveRequest request = new AmendmentUpdateSaveRequest(
+		AmendmentSaveUpdateRequest request = new AmendmentSaveUpdateRequest(
 			"title",
 			"description",
 			10L,
@@ -100,7 +101,7 @@ class AmendmentServiceTest {
 	@DisplayName("Amendment 생성 테스트 - delete")
 	void amendmentDeleteSave() {
 		//given
-		AmendmentDeleteSaveRequest request = new AmendmentDeleteSaveRequest(
+		AmendmentSaveDeleteRequest request = new AmendmentSaveDeleteRequest(
 			"title",
 			"description",
 			10L
@@ -125,7 +126,7 @@ class AmendmentServiceTest {
 	@Test
 	@DisplayName("Amendment 삭제 테스트 - 성공")
 	void deleteAmendmentSuccess() {
-		AmendmenCreateSavetRequest request = new AmendmenCreateSavetRequest(
+		AmendmentSaveCreateRequest request = new AmendmentSaveCreateRequest(
 			"title",
 			"description",
 			10L,
@@ -150,7 +151,7 @@ class AmendmentServiceTest {
 	@Test
 	@DisplayName("Amendment 삭제 테스트 - 실패: memberId 불일치")
 	void deleteAmendmentFail() {
-		AmendmenCreateSavetRequest request = new AmendmenCreateSavetRequest(
+		AmendmentSaveCreateRequest request = new AmendmentSaveCreateRequest(
 			"title",
 			"description",
 			10L,
@@ -167,9 +168,11 @@ class AmendmentServiceTest {
 		assertThat(response.getTitle()).isEqualTo("title");
 		assertThat(response.getTargetSection().getSectionId()).isEqualTo(10L);
 
-		assertThrows(BaseException.class, () -> {
+		BaseException thrown = assertThrows(BaseException.class, () -> {
 			amendmentService.deleteAmendment(response.getAmendmentId(), 3L);
 		});
+
+		assertThat(thrown.getMessage()).isEqualTo("삭제 권한이 없습니다. 사용자 ID: " + 3L);
 	}
 
 	@Test
@@ -177,9 +180,11 @@ class AmendmentServiceTest {
 	void deleteAmendmentFailWhenRequested() {
 		AmendmentResponse amendment = amendmentService.getAmendment(1L);
 
-		assertThrows(BaseException.class, () -> {
+		BaseException thrown = assertThrows(BaseException.class, () -> {
 			amendmentService.deleteAmendment(amendment.getAmendmentId(), 1L);
 		});
+
+		assertThat(thrown.getMessage()).isEqualTo("이미 요청중인 수정안은 삭제할 수 없습니다.");
 	}
 
 	@Test
@@ -195,8 +200,8 @@ class AmendmentServiceTest {
 	@Test
 	@DisplayName("Amendment 목록 조회 - 3가지 파라미터 존재")
 	void getAmendmentsWithAllParameters() {
-		List<AmendmentResponse> amendments = amendmentService.getAmendments(1L,
-			1L, AmendmentStatus.PENDING);
+		List<AmendmentResponse> amendments = amendmentService.getAmendments(
+			AmendmentStatus.PENDING, 1L, 1L);
 
 		assertThat(amendments).hasSize(1);
 
@@ -208,29 +213,34 @@ class AmendmentServiceTest {
 	@Test
 	@DisplayName("Amendment 목록 조회 - 2가지 파라미터 존재")
 	void getAmendmentsWithTwoParameters() {
-		List<AmendmentResponse> amendments = amendmentService.getAmendments(1L,
-			null, AmendmentStatus.REQUESTED);
+		List<AmendmentResponse> amendments = amendmentService.getAmendments(
+			AmendmentStatus.REQUESTED, null, 1L);
 
 		assertThat(amendments).hasSize(4);
 
-		assertThat(amendments.get(0).getTitle()).isEqualTo("amendment_title1");
-		assertThat(amendments.get(0).getTargetSection().getSectionId()).isEqualTo(2L);
+		List<String> expectedTitles = Arrays.asList("amendment_title1", "amendment_title2",
+			"amendment_title3", "amendment_title5");
 
-		assertThat(amendments.get(1).getTitle()).isEqualTo("amendment_title2");
-		assertThat(amendments.get(1).getTargetSection().getSectionId()).isEqualTo(3L);
+		List<Long> expectedSectionIds = Arrays.asList(2L, 3L, 1L, 3L);
 
-		assertThat(amendments.get(2).getTitle()).isEqualTo("amendment_title3");
-		assertThat(amendments.get(2).getTargetSection().getSectionId()).isEqualTo(1L);
+		List<String> actualTitles = amendments.stream()
+			.map(AmendmentResponse::getTitle)
+			.toList();
 
-		assertThat(amendments.get(3).getTitle()).isEqualTo("amendment_title5");
-		assertThat(amendments.get(3).getTargetSection().getSectionId()).isEqualTo(3L);
+		List<Long> actualSectionIds = amendments.stream()
+			.map(amendment -> amendment.getTargetSection().getSectionId())
+			.toList();
+
+		//실제 제목, 실제 섹션id가 예상과 같은지 확인
+		assertThat(actualTitles).containsAll(expectedTitles);
+		assertThat(actualSectionIds).containsAll(expectedSectionIds);
 	}
 
 	@Test
 	@DisplayName("Amendment 목록 조회 - 1가지 파라미터 존재")
 	void getAmendmentsWithOneParameter() {
-		List<AmendmentResponse> amendments = amendmentService.getAmendments(null,
-			null, AmendmentStatus.PENDING);
+		List<AmendmentResponse> amendments = amendmentService.getAmendments(
+			AmendmentStatus.PENDING, null, null);
 
 		assertThat(amendments).hasSize(1);
 
@@ -246,50 +256,45 @@ class AmendmentServiceTest {
 
 		assertThat(amendments).hasSize(7);
 
-		assertThat(amendments.get(0).getTitle()).isEqualTo("amendment_title1");
-		assertThat(amendments.get(0).getTargetSection().getSectionId()).isEqualTo(2L);
+		List<String> expectedTitles = Arrays.asList("amendment_title1", "amendment_title2",
+			"amendment_title3", "amendment_title4", "amendment_title5", "amendment_title6", "amendment_title6");
 
-		assertThat(amendments.get(1).getTitle()).isEqualTo("amendment_title2");
-		assertThat(amendments.get(1).getTargetSection().getSectionId()).isEqualTo(3L);
+		List<Long> expectedSectionIds = Arrays.asList(2L, 3L, 1L, 13L, 3L, 4L, 6L);
 
-		assertThat(amendments.get(2).getTitle()).isEqualTo("amendment_title3");
-		assertThat(amendments.get(2).getTargetSection().getSectionId()).isEqualTo(1L);
+		List<String> actualTitles = amendments.stream()
+			.map(AmendmentResponse::getTitle)
+			.toList();
 
-		assertThat(amendments.get(3).getTitle()).isEqualTo("amendment_title4");
-		assertThat(amendments.get(3).getTargetSection().getSectionId()).isEqualTo(13L);
+		List<Long> actualSectionIds = amendments.stream()
+			.map(amendment -> amendment.getTargetSection().getSectionId())
+			.toList();
 
-		assertThat(amendments.get(4).getTitle()).isEqualTo("amendment_title5");
-		assertThat(amendments.get(4).getTargetSection().getSectionId()).isEqualTo(3L);
-
-		assertThat(amendments.get(5).getTitle()).isEqualTo("amendment_title6");
-		assertThat(amendments.get(5).getTargetSection().getSectionId()).isEqualTo(4L);
-
-		assertThat(amendments.get(6).getTitle()).isEqualTo("amendment_title6");
-		assertThat(amendments.get(6).getTargetSection().getSectionId()).isEqualTo(6L);
+		//실제 제목, 실제 섹션id가 예상과 같은지 확인
+		assertThat(actualTitles).containsAll(expectedTitles);
+		assertThat(actualSectionIds).containsAll(expectedSectionIds);
 	}
 
 	@Test
 	@DisplayName("Amendment 수정 - 성공")
 	void updateAmendmentSuccess() {
-		UpdateAmendmentRequest request = new UpdateAmendmentRequest(
+		AmendmentUpdateRequest request = new AmendmentUpdateRequest(
 			"updateTitle",
 			"updateDescription",
 			Heading.H1,
 			"newTitle",
 			"newContent"
 		);
-		AmendmentResponse amendment = amendmentService.updateAmendment(4L, 1L, request);
+		AmendmentResponse amendment = amendmentService.updateAmendment(request, 4L, 1L);
 
 		assertThat(amendment.getTitle()).isEqualTo("updateTitle");
 		assertThat(amendment.getRequestedSectionTitle()).isEqualTo("newTitle");
 		assertThat(amendment.getTargetSection().getSectionId()).isEqualTo(13L);
-
 	}
 
 	@Test
 	@DisplayName("Amendment 수정 - 실패: status 불일치")
 	void updateAmendmentFail1() {
-		UpdateAmendmentRequest request = new UpdateAmendmentRequest(
+		AmendmentUpdateRequest request = new AmendmentUpdateRequest(
 			"updateTitle",
 			"updateDescription",
 			Heading.H1,
@@ -297,15 +302,18 @@ class AmendmentServiceTest {
 			"newContent"
 		);
 
-		assertThrows(BaseException.class, () -> {
-			amendmentService.updateAmendment(1L, 1L, request);
+		BaseException thrown = assertThrows(BaseException.class, () -> {
+			amendmentService.updateAmendment(request, 1L, 1L);
 		});
+
+		assertThat(thrown.getMessage()).isEqualTo("수정 요청 후에는 수정안을 수정할 수 없습니다.");
+
 	}
 
 	@Test
 	@DisplayName("Amendment 수정 - 실패: 작성자 불일치")
 	void updateAmendmentFail2() {
-		UpdateAmendmentRequest request = new UpdateAmendmentRequest(
+		AmendmentUpdateRequest request = new AmendmentUpdateRequest(
 			"updateTitle",
 			"updateDescription",
 			Heading.H1,
@@ -313,9 +321,11 @@ class AmendmentServiceTest {
 			"newContent"
 		);
 
-		assertThrows(BaseException.class, () -> {
-			amendmentService.updateAmendment(1L, 2L, request);
+		BaseException thrown = assertThrows(BaseException.class, () -> {
+			amendmentService.updateAmendment(request, 1L, 2L);
 		});
+
+		assertThat(thrown.getMessage()).isEqualTo("수정 권한이 없습니다. 사용자 ID: " + 2L);
 	}
 
 }
