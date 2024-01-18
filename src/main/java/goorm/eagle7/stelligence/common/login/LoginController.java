@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import goorm.eagle7.stelligence.api.ApiResponse;
+import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokenResponse;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokens;
@@ -33,7 +33,7 @@ public class LoginController {
 	 * @return socialType 토큰
 	 */
 	@PostMapping("/login")
-	public ApiResponse<LoginTokenResponse> login(@RequestBody DevLoginRequest devLoginRequest,
+	public ResponseTemplate<LoginTokenResponse> login(@RequestBody DevLoginRequest devLoginRequest,
 		HttpServletResponse response) {
 
 		// 로그인 혹은 회원 가입
@@ -43,6 +43,6 @@ public class LoginController {
 		CookieUtils.addCookie(response, accessTokenCookieName, loginTokens.getAccessToken());
 		CookieUtils.addCookie(response, refreshTokenCookieName, loginTokens.getRefreshToken());
 
-		return ApiResponse.ok(LoginTokenResponse.of(loginTokens.getSocialType()));
+		return ResponseTemplate.ok(LoginTokenResponse.of(loginTokens.getSocialType()));
 	}
 }

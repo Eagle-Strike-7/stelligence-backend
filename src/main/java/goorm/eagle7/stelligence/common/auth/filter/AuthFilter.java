@@ -8,7 +8,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import goorm.eagle7.stelligence.api.ApiResponse;
+import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
@@ -94,7 +94,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		} catch (BaseException e) {
 
 			// 사용자 정의 오류 응답 생성
-			ApiResponse<Void> apiResponse = ApiResponse.fail(e.getMessage());
+			ResponseTemplate<Void> apiResponse = ResponseTemplate.fail(e.getMessage());
 
 			// JSON으로 변환
 			String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
