@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "from")
 public class LoginTokenResponse {
 	private String stelligenceSocialTypeToken;
 }

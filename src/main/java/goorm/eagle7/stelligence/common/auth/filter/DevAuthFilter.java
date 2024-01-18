@@ -133,7 +133,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				}
 
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				LoginTokens loginTokens = loginService.login(DevLoginRequest.of(nickname));
+				LoginTokens loginTokens = loginService.login(DevLoginRequest.from(nickname));
 				String  refreshToken = loginTokens.getRefreshToken();
 				String accessToken = loginTokens.getAccessToken();
 				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);

@@ -36,7 +36,7 @@ public class JwtTokenReissueService {
 	 * @param refreshTokenName 쿠키의 refreshTokenName
 	 * @return accessToken
 	 */
-	public String reIssueAccessToken(HttpServletResponse response, String refreshToken,
+	public String reissueAccessToken(HttpServletResponse response, String refreshToken,
 		String accessTokenName,
 		String refreshTokenName) {
 
@@ -48,7 +48,7 @@ public class JwtTokenReissueService {
 		String refreshTokenFromDB = member.getRefreshToken();
 
 		// DB에 저장된 refreshToken과 일치하지 않거나 refreshToken이 만료되었다면 로그인 필요
-		if (validatIsEqualRefreshTokenToDB(refreshToken, refreshTokenFromDB) || !jwtTokenService.validateToken(
+		if (validateIsEqualRefreshTokenToDB(refreshToken, refreshTokenFromDB) || !jwtTokenService.validateToken(
 			refreshToken)) {
 			throw new BaseException("로그인이 필요합니다.");
 		}
@@ -64,7 +64,7 @@ public class JwtTokenReissueService {
 	 * @param refreshTokenFromDB DB에 저장된 refreshToken
 	 * @return 일치하지 않으면 false
 	 */
-	private static boolean validatIsEqualRefreshTokenToDB(String refreshToken, String refreshTokenFromDB) {
+	private static boolean validateIsEqualRefreshTokenToDB(String refreshToken, String refreshTokenFromDB) {
 		if (!refreshToken.equals(refreshTokenFromDB)) {
 			log.debug("refreshToken이 DB에 저장된 refreshToken과 일치하지 않습니다.");
 			return false;

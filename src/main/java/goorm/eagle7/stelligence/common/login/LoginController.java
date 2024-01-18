@@ -43,6 +43,6 @@ public class LoginController {
 		CookieUtils.addCookie(response, accessTokenCookieName, loginTokens.getAccessToken());
 		CookieUtils.addCookie(response, refreshTokenCookieName, loginTokens.getRefreshToken());
 
-		return ResponseTemplate.ok(LoginTokenResponse.of(loginTokens.getSocialType()));
+		return ResponseTemplate.ok(LoginTokenResponse.from(loginTokens.getSocialType()));
 	}
 }
