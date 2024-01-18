@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.graph;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -220,6 +221,63 @@ class DocumentGraphServiceTest {
 
 		assertThat(documentIdSet).hasSize(120);
 		assertThat(linkIdSet).hasSize(117);
+	}
+
+	@Test
+	@DisplayName("최상위 문서와 2의 깊이로 그래프 조회 서비스 테스트")
+	void findRootGraphWithDepth2() {
+
+		//given
+		final int depth = 2;
+		final List<Long> rootNodeIdList = List.of(1L, 2L, 3L);
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		DocumentGraphResponse graph = documentGraphService.findFromRootNodesWithDepth(depth);
+		Set<Long> documentIdSet = graph.getDocumentNodes()
+			.stream()
+			.map(DocumentNodeResponse::getDocumentId)
+			.collect(Collectors.toSet());
+		Set<Long> linkIdSet = graph.getLinks()
+			.stream()
+			.map(HasChildRelationshipResponse::getLinkId)
+			.collect(Collectors.toSet());
+
+		//then
+		assertThat(graph.getDocumentNodes()).hasSize(3 + 9 + 27);
+		assertThat(graph.getLinks()).hasSize(9 + 27);
+		assertThat(documentIdSet).hasSize(3 + 9 + 27).containsAll(rootNodeIdList);
+		assertThat(linkIdSet).hasSize(9 + 27);
+	}
+
+	@Test
+	@DisplayName("최상위 문서와 0의 깊이로 그래프 조회 서비스 테스트")
+	void findRootGraphWithDepth0() {
+
+		//given
+		final int depth = 0;
+		final List<Long> rootNodeIdList = List.of(1L, 2L, 3L);
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		DocumentGraphResponse graph = documentGraphService.findFromRootNodesWithDepth(depth);
+		Set<Long> documentIdSet = graph.getDocumentNodes()
+			.stream()
+			.map(DocumentNodeResponse::getDocumentId)
+			.collect(Collectors.toSet());
+
+		//then
+		assertThat(graph.getDocumentNodes()).hasSize(3);
+		assertThat(graph.getLinks()).isEmpty();
+		assertThat(documentIdSet).hasSize(3).containsAll(rootNodeIdList);
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {

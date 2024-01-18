@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.common.merge;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +30,13 @@ public class MergeService {
 
 	/**
 	 * Contribute의 Amendment들을 원본에 반영합니다.
+	 *
+	 * 해당 캐시 엔트리를 삭제합니다.
+	 *
 	 * @param documentId 반영될 Document ID
 	 * @param contribute 반영할 Contribute
 	 */
+	@CacheEvict(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public void merge(Long documentId, Contribute contribute) {
 
 		Document document = documentContentRepository.findForUpdate(documentId)

@@ -27,8 +27,16 @@ public class TestFixtureGenerator {
 
 	public static Amendment amendment(Member member, Section section, String amendmentTitle, AmendmentType type,
 		Heading heading, String title, String content, Contribute contribute) {
-		Amendment amendment = new Amendment(member, amendmentTitle, "description", type, section, heading, title,
-			content);
+		Amendment amendment;
+
+		// AmendmentType에 따라 적절한 팩토리 메서드 호출
+		if (type == AmendmentType.CREATE) {
+			amendment = Amendment.forCreate(member, amendmentTitle, "description", section, heading, title, content);
+		} else if (type == AmendmentType.UPDATE) {
+			amendment = Amendment.forUpdate(member, amendmentTitle, "description", section, heading, title, content);
+		} else {
+			amendment = Amendment.forDelete(member, amendmentTitle, "description", section);
+		}
 
 		amendment.setContribute(contribute);
 		return amendment;

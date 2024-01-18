@@ -14,7 +14,6 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
-import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -89,9 +88,7 @@ class DocumentMergeConcurrencyTest {
 		TestTransaction.start(); // 지연로딩을 위한 트랜잭션 재시작
 
 		Document findDocument = documentContentRepository.findById(document.getId()).get();
-
-		findDocument.getSections().stream().map(SectionResponse::of).forEach(System.out::println);
-
+		   
 		// 동시성 문제 발생시 2가 나옴
 		//DocumentRepository.findForUpdate의 @Lock을 없애보면 확인 가능
 		assertThat(findDocument.getCurrentRevision()).isEqualTo(3L);
