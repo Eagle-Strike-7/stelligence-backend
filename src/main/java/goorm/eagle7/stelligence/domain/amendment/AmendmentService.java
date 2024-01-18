@@ -1,32 +1,22 @@
 package goorm.eagle7.stelligence.domain.amendment;
 
-import static goorm.eagle7.stelligence.domain.amendment.model.QAmendment.*;
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmenCreateSavetRequest;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentDeleteSaveRequest;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentUpdateSaveRequest;
-import goorm.eagle7.stelligence.domain.amendment.dto.UpdateAmendmentRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveCreateRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveDeleteRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentSaveUpdateRequest;
+import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentUpdateRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentStatus;
-import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
-import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
-import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,32 +25,29 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AmendmentService {
-	private final EntityManager em;
 
 	private final AmendmentRepository amendmentRepository;
 	private final SectionRepository sectionRepository;
 	private final MemberRepository memberRepository;
-	private final DocumentContentRepository documentRepository;
 
 	/**
 	 * 수정안 생성(새로운 문단 생성)
 	 */
 	@Transactional
-	public AmendmentResponse saveCreateAmendment(AmendmenCreateSavetRequest amendmenCreateSavetRequest, Long memberId) {
-		Section section = sectionRepository.findLatestSection(amendmenCreateSavetRequest.getSectionId());
+	public AmendmentResponse saveCreateAmendment(AmendmentSaveCreateRequest amendmentSaveCreateRequest, Long memberId) {
+		Section section = sectionRepository.findLatestSection(amendmentSaveCreateRequest.getSectionId());
 
 		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException("존재하지 않는 id입니다. ID : " + memberId));
+			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + memberId));
 
-		Amendment amendment = new Amendment(
+		Amendment amendment = Amendment.forCreate(
 			member,
-			amendmenCreateSavetRequest.getTitle(),
-			amendmenCreateSavetRequest.getDescription(),
-			AmendmentType.CREATE,
+			amendmentSaveCreateRequest.getTitle(),
+			amendmentSaveCreateRequest.getDescription(),
 			section,
-			amendmenCreateSavetRequest.getHeading(),
-			amendmenCreateSavetRequest.getSectionTitle(),
-			amendmenCreateSavetRequest.getSectionContent()
+			amendmentSaveCreateRequest.getHeading(),
+			amendmentSaveCreateRequest.getSectionTitle(),
+			amendmentSaveCreateRequest.getSectionContent()
 		);
 
 		amendmentRepository.save(amendment);
@@ -72,21 +59,20 @@ public class AmendmentService {
 	 * 수정안 생성(기존 문단 수정)
 	 */
 	@Transactional
-	public AmendmentResponse saveUpdateAmendment(AmendmentUpdateSaveRequest amendmentUpdateSaveRequest, Long memberId) {
-		Section section = sectionRepository.findLatestSection(amendmentUpdateSaveRequest.getSectionId());
+	public AmendmentResponse saveUpdateAmendment(AmendmentSaveUpdateRequest amendmentSaveUpdateRequest, Long memberId) {
+		Section section = sectionRepository.findLatestSection(amendmentSaveUpdateRequest.getSectionId());
 
 		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException("존재하지 않는 id입니다. ID : " + memberId));
+			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + memberId));
 
-		Amendment amendment = new Amendment(
+		Amendment amendment = Amendment.forUpdate(
 			member,
-			amendmentUpdateSaveRequest.getTitle(),
-			amendmentUpdateSaveRequest.getDescription(),
-			AmendmentType.UPDATE,
+			amendmentSaveUpdateRequest.getTitle(),
+			amendmentSaveUpdateRequest.getDescription(),
 			section,
-			amendmentUpdateSaveRequest.getHeading(),
-			amendmentUpdateSaveRequest.getSectionTitle(),
-			amendmentUpdateSaveRequest.getSectionContent()
+			amendmentSaveUpdateRequest.getHeading(),
+			amendmentSaveUpdateRequest.getSectionTitle(),
+			amendmentSaveUpdateRequest.getSectionContent()
 		);
 
 		amendmentRepository.save(amendment);
@@ -98,19 +84,14 @@ public class AmendmentService {
 	 * 수정안 생성(기존 문단 삭제)
 	 */
 	@Transactional
-	public AmendmentResponse saveDeleteAmendment(AmendmentDeleteSaveRequest amendmentDeleteSaveRequest, Long memberId) {
-		Section section = sectionRepository.findLatestSection(amendmentDeleteSaveRequest.getSectionId());
+	public AmendmentResponse saveDeleteAmendment(AmendmentSaveDeleteRequest amendmentSaveDeleteRequest, Long memberId) {
+		Section section = sectionRepository.findLatestSection(amendmentSaveDeleteRequest.getSectionId());
 
 		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException("존재하지 않는 id입니다. ID : " + memberId));
+			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + memberId));
 
-		Amendment amendment = new Amendment(
-			member,
-			amendmentDeleteSaveRequest.getTitle(),
-			amendmentDeleteSaveRequest.getDescription(),
-			AmendmentType.DELETE,
-			section
-		);
+		Amendment amendment = Amendment.forDelete(member, amendmentSaveDeleteRequest.getTitle(),
+			amendmentSaveDeleteRequest.getDescription(), section);
 
 		amendmentRepository.save(amendment);
 
@@ -121,29 +102,29 @@ public class AmendmentService {
 	 * 수정안 삭제
 	 */
 	@Transactional
-	public void deleteAmendment(Long id, Long memberId) {
-		Amendment amendment = amendmentRepository.findById(id).orElseThrow(
-			() -> new BaseException("존재하지 않는 수정안입니다. ID : " + id));
+	public void deleteAmendment(Long amendmentId, Long memberId) {
+		Amendment amendment = amendmentRepository.findById(amendmentId).orElseThrow(
+			() -> new BaseException("존재하지 않는 수정안입니다. 수정안 ID : " + amendmentId));
 
-		// 삭제 요청한 사용자가 수정안의 작성자와 일치하는지 검증
-		if (!amendment.getMember().getId().equals(memberId)) {
-			throw new BaseException("수정 권한이 없습니다. 사용자 ID: " + memberId);
+		// 삭제 요청한 사용자가 수정안을 삭제할 권한을 가지고 있는지 검즘
+		if (!amendment.hasPermissionToDeleteOrUpdate(memberId)) {
+			throw new BaseException("삭제 권한이 없습니다. 사용자 ID: " + memberId);
 		}
 
 		// 상태가 REQUESTED인 경우 삭제 불가
-		if (amendment.getStatus() == AmendmentStatus.REQUESTED) {
-			throw new BaseException("REQUESTED 상태의 수정안은 삭제할 수 없습니다.");
+		if (amendment.isNotDeletable()) {
+			throw new BaseException("이미 요청중인 수정안은 삭제할 수 없습니다.");
 		}
 
-		amendmentRepository.deleteById(id);
+		amendmentRepository.delete(amendment);
 	}
 
 	/**
 	 * 수정안 개별 조회
 	 */
-	public AmendmentResponse getAmendment(Long id) {
-		Amendment amendment = amendmentRepository.findById(id).orElseThrow(
-			() -> new BaseException("존재하지 않는 수정안입니다. ID : " + id));
+	public AmendmentResponse getAmendment(Long amendmentId) {
+		Amendment amendment = amendmentRepository.findById(amendmentId).orElseThrow(
+			() -> new BaseException("존재하지 않는 수정안입니다. 수정안 ID : " + amendmentId));
 
 		return AmendmentResponse.of(amendment);
 	}
@@ -151,31 +132,10 @@ public class AmendmentService {
 	/**
 	 * 수정안 목록 조회
 	 */
-	public List<AmendmentResponse> getAmendments(Long memberId, Long documentId, AmendmentStatus status) {
-		BooleanBuilder builder = new BooleanBuilder();
-		JPAQueryFactory query = new JPAQueryFactory(em);
+	public List<AmendmentResponse> getAmendments(AmendmentStatus status, Long documentId, Long memberId) {
 
 		//파라미터가 null이면 그 파라미터는 목록 조회 조건에 포함이 되지 않음
-		if (memberId != null) {
-			Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 id입니다. ID: " + memberId));
-			builder.and(amendment.member.eq(member));
-		}
-
-		if (documentId != null) {
-			Document document = documentRepository.findById(documentId)
-				.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 문서입니다 ID: " + documentId));
-			builder.and(amendment.targetSection.document.eq(document));
-		}
-
-		if (status != null) {
-			builder.and(amendment.status.eq(status));
-		}
-
-		List<Amendment> amendments = query
-			.selectFrom(amendment)
-			.where(builder)
-			.fetch();
+		List<Amendment> amendments = amendmentRepository.findAmendments(status, documentId, memberId);
 
 		return amendments.stream()
 			.map(AmendmentResponse::of)
@@ -186,20 +146,21 @@ public class AmendmentService {
 	 * 수정안 수정
 	 */
 	@Transactional
-	public AmendmentResponse updateAmendment(Long id, Long memberId, UpdateAmendmentRequest updateAmendmentRequest) {
-		Amendment amendment = amendmentRepository.findById(id).orElseThrow(
-			() -> new BaseException("존재하지 않는 수정안입니다. ID : " + id));
+	public AmendmentResponse updateAmendment(AmendmentUpdateRequest amendmentUpdateRequest, Long documentId,
+		Long memberId) {
+		Amendment amendment = amendmentRepository.findById(documentId).orElseThrow(
+			() -> new BaseException("존재하지 않는 수정안입니다. 수정안 ID : " + documentId));
 
 		// 수정 요청한 사용자가 수정안의 작성자와 일치하는지 검증
-		if (!amendment.getMember().getId().equals(memberId)) {
+		if (!amendment.hasPermissionToDeleteOrUpdate(memberId)) {
 			throw new BaseException("수정 권한이 없습니다. 사용자 ID: " + memberId);
 		}
 
 		//내부에서 status를 검사함
 		try {
-			Amendment update = amendment.updateContent(updateAmendmentRequest.getTitle(),
-				updateAmendmentRequest.getDescription(), updateAmendmentRequest.getHeading(),
-				updateAmendmentRequest.getSectionTitle(), updateAmendmentRequest.getSectionContent());
+			Amendment update = amendment.updateContent(amendmentUpdateRequest.getTitle(),
+				amendmentUpdateRequest.getDescription(), amendmentUpdateRequest.getHeading(),
+				amendmentUpdateRequest.getSectionTitle(), amendmentUpdateRequest.getSectionContent());
 
 			return AmendmentResponse.of(update);
 		} catch (IllegalStateException e) {
