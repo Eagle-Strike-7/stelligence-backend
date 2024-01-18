@@ -54,6 +54,10 @@ dependencies {
 
     //ioutils
     implementation 'commons-io:commons-io:2.11.0'
+
+    //protobuf
+    implementation 'com.google.protobuf:protobuf-java:3.16.3'
+    implementation 'com.google.protobuf:protobuf-java-util:3.16.3'
 }
 
 tasks.named('test') {

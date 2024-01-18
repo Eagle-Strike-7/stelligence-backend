@@ -12,7 +12,6 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -41,7 +40,7 @@ public class RedisConfig {
 	private RedisCacheConfiguration cacheConfiguration() {
 		return RedisCacheConfiguration.defaultCacheConfig()
 			.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
-			.serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer())) //객체 직렬화에 Jackson을 사용
+			.serializeValuesWith(fromSerializer(new ProtoBufRedisSerializer())) //객체 직렬화에 ProtocolBuffer을 사용
 			.entryTtl(Duration.ofSeconds(DEFAULT_EXPIRE_SEC)) //DEFAULT_EXPIRE_SEC 만큼 캐시 유지
 			.disableCachingNullValues();
 	}

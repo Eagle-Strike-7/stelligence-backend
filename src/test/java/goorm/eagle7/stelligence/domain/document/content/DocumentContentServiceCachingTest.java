@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.document.content;
 
 import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
+import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.merge.MergeService;
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
-import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 
@@ -91,5 +91,8 @@ class DocumentContentServiceCachingTest {
 
 		//캐싱된 값이 같은지 검증
 		assertThat(documentResponse.getDocumentId()).isEqualTo(documentResponse2.getDocumentId());
+		assertThat(documentResponse.getTitle()).isEqualTo(documentResponse2.getTitle());
+		assertThat(documentResponse.getSections()).hasSize(documentResponse2.getSections().size());
+
 	}
 }

@@ -1,5 +1,8 @@
 package goorm.eagle7.stelligence.domain.document.content;
 
+import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
+import static goorm.eagle7.stelligence.domain.document.content.dto.SectionResponseOuterClass.*;
+
 import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -8,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
-import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
-import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
