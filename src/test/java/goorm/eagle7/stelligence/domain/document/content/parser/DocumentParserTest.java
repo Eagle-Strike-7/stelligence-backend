@@ -102,4 +102,31 @@ class DocumentParserTest {
 		assertThat(result.get(1).getTitle()).isEqualTo("title3");
 		assertThat(result.get(1).getContent()).isEqualTo("content3\n");
 	}
+
+	@Test
+	@DisplayName("제목에 띄어쓰기가 있는 경우")
+	void blankInTitle() {
+		//given
+		String rawContent =
+			"content\n"
+				+ "## title2 hello\n"
+				+ "content2 line 1\n"
+				+ "content2 line 2\n"
+				+ "### title3\n"
+				+ "content3";
+
+		DocumentParser parser = new DocumentParser();
+
+		//when
+		List<SectionRequest> result = parser.parse(rawContent);
+
+		//then
+		assertThat(result).hasSize(2);
+
+		//첫 문단은 제목이 없으므로 무시한다.
+
+		assertThat(result.get(0).getHeading()).isEqualTo(Heading.H2);
+		assertThat(result.get(0).getTitle()).isEqualTo("title2 hello");
+		assertThat(result.get(0).getContent()).isEqualTo("content2 line 1\ncontent2 line 2\n");
+	}
 }
