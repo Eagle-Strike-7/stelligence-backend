@@ -1,14 +1,13 @@
 package goorm.eagle7.stelligence.domain.document;
 
-import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
-import static goorm.eagle7.stelligence.domain.document.content.dto.SectionResponseOuterClass.*;
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
