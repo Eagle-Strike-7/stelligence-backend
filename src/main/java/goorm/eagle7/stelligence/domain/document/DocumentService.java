@@ -12,6 +12,7 @@ import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,6 +67,30 @@ public class DocumentService {
 		} else {
 			return documentContentService.getDocument(documentId, revision);
 		}
+	}
+
+	/**
+	 * 문서 그래프를 조회합니다.
+	 * documentId가 null 이라면 최상위 문서를 기준으로 조회합니다.
+	 * 조회 대상 문서로부터 일정 깊이의 하위 문서까지 함께 조회합니다.
+	 * @param documentId: 조회 대상이 되는 문서의 id입니다.
+	 * @param depth: 함께 조회할 문서의 깊이입니다.
+	 * @return DocumentGraphResponse
+	 */
+	public DocumentGraphResponse getDocumentGraph(Long documentId, int depth) {
+		if (documentId == null) {
+			return documentGraphService.findFromRootNodesWithDepth(depth);
+		} else {
+			return documentGraphService.findGraphWithDepth(documentId, depth);
+		}
+	}
+
+	/**
+	 * 전체 문서 그래프를 조회합니다.
+	 * @return DocumentGraphResponse
+	 */
+	public DocumentGraphResponse getAllDocumentGraph() {
+		return documentGraphService.findAllGraph();
 	}
 
 }
