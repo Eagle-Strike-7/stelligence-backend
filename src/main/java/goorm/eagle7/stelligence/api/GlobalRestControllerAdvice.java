@@ -19,6 +19,7 @@ public class GlobalRestControllerAdvice {
 	@ExceptionHandler(Exception.class)
 	public ResponseTemplate<String> handleException(Exception ex) {
 		log.error("Exception catched in RestControllerAdvice : {}", ex.getMessage());
+		ex.printStackTrace();
 		return ResponseTemplate.fail(ex.getMessage());
 	}
 
