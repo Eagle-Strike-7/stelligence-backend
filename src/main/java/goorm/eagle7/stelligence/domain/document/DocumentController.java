@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.domain.document;
 
-import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import io.swagger.v3.oas.annotations.Operation;

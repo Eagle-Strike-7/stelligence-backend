@@ -34,7 +34,6 @@ public class DocumentParser {
 		StringTokenizer tokenizer = new StringTokenizer(rawContent, "\n");
 
 		StringBuilder sb = new StringBuilder();
-		String[] splited;
 
 		Heading tempHeading = null;
 		String tempTitle = null;
@@ -47,14 +46,14 @@ public class DocumentParser {
 					results.add(new SectionRequest(tempHeading, tempTitle, sb.toString()));
 				}
 
-				// 빈칸을 기준으로 헤딩과 제목을 분리합니다.
-				splited = line.split(" ");
+				// 헤딩과 제목을 분리할 index를 찾습니다.
+				int blank = line.indexOf(" ");
 
 				// 헤딩의 길이에 따라 헤딩의 값을 정합니다.
-				tempHeading = HEADING_VALUES[splited[0].length() - 1];
+				tempHeading = HEADING_VALUES[blank - 1];
 
 				// 제목은 헤딩 이후의 문자열로 정합니다.
-				tempTitle = splited[1].trim();
+				tempTitle = line.substring(blank).trim();
 
 				// 기존의 내용을 초기화하고, 다음번 반복문부터 내용을 채워갑니다.
 				sb.setLength(0);

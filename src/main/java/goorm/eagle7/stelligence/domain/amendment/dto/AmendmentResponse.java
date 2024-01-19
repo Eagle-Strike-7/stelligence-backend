@@ -1,12 +1,11 @@
 package goorm.eagle7.stelligence.domain.amendment.dto;
 
-import static goorm.eagle7.stelligence.domain.document.content.dto.SectionResponseOuterClass.*;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentStatus;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import lombok.AccessLevel;
 import lombok.Getter;

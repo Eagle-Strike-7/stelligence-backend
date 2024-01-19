@@ -1,17 +1,15 @@
 package goorm.eagle7.stelligence.domain.document.content;
 
-import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
-import static goorm.eagle7.stelligence.domain.document.content.dto.SectionResponseOuterClass.*;
-
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
+import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -161,12 +159,11 @@ public class DocumentContentService {
 	/**
 	 * 최신 Document를 조회합니다.
 	 *
-	 * Redis에 캐싱할 예정입니다.
+	 * Redis의 캐싱 데이터를 조회합니다. -> DocumentCacheAspect 참조
 	 * 캐시는 Document에 대한 수정요청이 반영되는 시점에 invalidate 됩니다.
 	 * @param documentId
 	 * @return
 	 */
-	@Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));

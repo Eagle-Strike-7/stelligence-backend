@@ -1,6 +1,6 @@
 package goorm.eagle7.stelligence.config;
 
-import static goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponseOuterClass.*;
+import static goorm.eagle7.stelligence.domain.document.content.dto.protobuf.DocumentResponseOuterClass.*;
 
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;
@@ -9,6 +9,8 @@ import org.springframework.data.redis.serializer.SerializationException;
  * ProtoBufRedisSerializer
  * Redis에 저장할 때 DocumentResponse의 경우 Protocol Buffer를 통해 직렬화를 수행시킵니다.
  * 그 외의 경우에는 Jackson을 통해 직렬화를 수행합니다.
+ *
+ * 2023-01-19 일 기준으로 사용되지 않습니다.
  */
 public class ProtoBufRedisSerializer extends GenericJackson2JsonRedisSerializer {
 
