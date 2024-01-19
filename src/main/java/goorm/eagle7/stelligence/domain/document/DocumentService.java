@@ -42,8 +42,12 @@ public class DocumentService {
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
 			documentCreateRequest.getContent());
 
-		//DocumentLink 저장
-		documentGraphService.createDocumentNode(createdDocument);
+		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
+		if (documentCreateRequest.getParentDocumentId() == null) {
+			documentGraphService.createDocumentNode(createdDocument);
+		} else {
+			documentGraphService.createDocumentNodeWithParent(createdDocument, documentCreateRequest.getParentDocumentId());
+		}
 
 		//DocumentResponse를 생성합니다.
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
