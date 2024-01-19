@@ -3,6 +3,12 @@ package goorm.eagle7.stelligence.domain.document.content.dto.protobuf.converter;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.protobuf.SectionResponseOuterClass;
 
+/**
+ * ProtoBufSectionResponseConverter
+ * SectionResponse와 SectionResponseOuterClass.SectionResponse 간의 변환을 수행하는 유틸 클래스입니다.
+ *
+ * 캐싱을 위해 사용됩니다.
+ */
 public class ProtoBufSectionResponseConverter {
 
 	private ProtoBufSectionResponseConverter() {
