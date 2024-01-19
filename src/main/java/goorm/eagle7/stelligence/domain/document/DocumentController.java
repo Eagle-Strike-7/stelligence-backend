@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -70,5 +71,16 @@ public class DocumentController {
 
 		//revision이 null인 경우는 service에서 최신값을 찾아 반환하도록 되어있습니다.
 		return ResponseTemplate.ok(documentService.getDocumentContent(documentId, revision));
+	}
+
+	@GetMapping
+	public ResponseTemplate<DocumentGraphResponse> getDocumentGraph(
+		@RequestParam(value = "documentId", required = false) Long documentId,
+		@RequestParam(value = "depth", defaultValue = "0") int depth
+	) {
+		log.trace("requested /api/documents?documentId={}&depth={}", documentId, depth);
+
+		// documentId가 null이라면 최상위 문서로부터 조회합니다.
+		return ResponseTemplate.ok(documentService.getDocumentGraph(documentId, depth));
 	}
 }
