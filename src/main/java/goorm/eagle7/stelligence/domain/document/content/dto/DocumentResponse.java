@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.document.content.dto;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.document.content.parser.SectionResponseConcatenator;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +19,21 @@ public class DocumentResponse {
 	private Long documentId;
 	private String title;
 	private List<SectionResponse> sections;
+	
+	/**
+	 * Document의 모든 섹션의 내용을 하나의 문자열로 합친 내용입니다.
+	 * 사용자가 글 조회시 프론트엔드에서 섹션의 내용을 하나의 문자열로 합쳐서 보여주기 편리하게 만듦니다.
+	 *
+	 * sections에서 파생되는 정보기 때문에 캐싱의 대상으로 삼지 않습니다.
+	 * 매번 요청시 새로 계산해서 반환합니다.
+	 */
+	private String content;
 
 	private DocumentResponse(Long documentId, String title, List<SectionResponse> sections) {
 		this.documentId = documentId;
 		this.title = title;
 		this.sections = sections;
+		this.content = SectionResponseConcatenator.concat(sections);
 	}
 
 	/**
