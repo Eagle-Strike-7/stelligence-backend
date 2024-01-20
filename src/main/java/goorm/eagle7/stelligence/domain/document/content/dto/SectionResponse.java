@@ -44,4 +44,12 @@ public class SectionResponse {
 	public static SectionResponse of(Long sectionId, Long revision, Heading heading, String title, String content) {
 		return new SectionResponse(sectionId, revision, heading, title, content);
 	}
+
+	/**
+	 * 섹션의 내용을 하나의 문자열로 합칩니다.
+	 * @return
+	 */
+	public String getFullContentString() {
+		return heading.getSymbol() + " " + title + "\n" + content;
+	}
 }
