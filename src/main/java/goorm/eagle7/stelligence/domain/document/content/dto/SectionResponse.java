@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.document.content.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import lombok.AccessLevel;
@@ -49,6 +51,7 @@ public class SectionResponse {
 	 * 섹션의 내용을 하나의 문자열로 합칩니다.
 	 * @return
 	 */
+	@JsonIgnore
 	public String getFullContentString() {
 		return heading.getSymbol() + " " + title + "\n" + content;
 	}
