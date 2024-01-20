@@ -5,6 +5,10 @@ import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
+/**
+ * Swagger 설정 클래스입니다.
+ * http://{host}/api-docs 로 접속하면 api 문서를 확인할 수 있습니다.
+ */
 @Configuration
 public class SwaggerConfig {
 
