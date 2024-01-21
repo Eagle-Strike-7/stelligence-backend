@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import jakarta.persistence.EntityManager;
@@ -53,6 +54,8 @@ class DocumentMergeConcurrencyTest {
 	@DisplayName("Merge 동시성 테스트")
 	void mergeConcurrency() {
 
+		Member author = em.find(Member.class, 1L);
+
 		String title = "title";
 
 		String rawContent =
@@ -64,7 +67,7 @@ class DocumentMergeConcurrencyTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent, member("nickname"));
+		Document document = documentContentService.createDocument(title, rawContent, author);
 
 		//트랜잭션 종료를 통해 이후 쓰레드들이 정상적으로 동작할 수 있게 함
 		//em.flush(), em.clear() 사용시, 쓰레드들이 정상적으로 동작하지 않음

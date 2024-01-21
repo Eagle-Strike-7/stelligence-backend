@@ -56,9 +56,9 @@ class DocumentServiceTest {
 			1
 		);
 
-		DocumentCreateRequest documentCreateRequest = new DocumentCreateRequest(
+		DocumentCreateRequest documentCreateRequest = DocumentCreateRequest.of(
 			"testTitle",
-			1L,
+			null,
 			"testSectionContent"
 		);
 

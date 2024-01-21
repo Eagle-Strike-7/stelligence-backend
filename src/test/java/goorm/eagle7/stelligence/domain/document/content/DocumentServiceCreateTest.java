@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -38,6 +39,7 @@ class DocumentServiceCreateTest {
 	@Test
 	@DisplayName("문서 생성 - 성공")
 	void createDocumentSuccess() {
+		Member author = em.find(Member.class, 1L);
 
 		String title = "title";
 		String rawContent =
@@ -49,7 +51,7 @@ class DocumentServiceCreateTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent, member("nickname"));
+		Document document = documentContentService.createDocument(title, rawContent, author);
 
 		em.flush();
 		em.clear();
