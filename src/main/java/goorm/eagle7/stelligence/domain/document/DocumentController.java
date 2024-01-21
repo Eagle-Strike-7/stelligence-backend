@@ -91,7 +91,6 @@ public class DocumentController {
 		@Parameter(description = "조회할 문서의 깊이. 입력하지 않으면 깊이가 0으로 설정됩니다.", example = "1")
 		@RequestParam(value = "depth", defaultValue = "0") int depth
 	) {
-		log.trace("requested /api/documents?documentId={}&depth={}", documentId, depth);
 
 		// documentId가 null이라면 최상위 문서로부터 조회합니다.
 		return ResponseTemplate.ok(documentService.getDocumentGraph(documentId, depth));
@@ -113,7 +112,6 @@ public class DocumentController {
 		@Parameter(description = "최대 검색 결과의 개수. 입력하지 않으면 최대 10개를 조회합니다.", example = "10")
 		@RequestParam(value = "limit", defaultValue = "10") int limit
 	) {
-		log.trace("requested /api/documents/search?title={}&limit={}", title, limit);
 
 		return ResponseTemplate.ok(documentService.getDocumentNodeByTitle(title, limit));
 	}
