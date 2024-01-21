@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 
 /**
  * DB sequence Key를 관리하는 테이블입니다.
- *
  * Section이 생성되는 경우 sequenceName이 section인 레코드에서
  * sequenceValue를 가져와 PK로 사용합니다.
+ * -------------------------------
+ * | sequenceName | sequenceValue |
+ * -------------------------------
+ * | section      | 1             |
+ * -------------------------------
  */
 @Entity
 @NoArgsConstructor(access = PROTECTED)
