@@ -1,9 +1,11 @@
 package goorm.eagle7.stelligence.domain.document.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 @Schema(description = "생성할 문서의 정보")
 public class DocumentCreateRequest {
 

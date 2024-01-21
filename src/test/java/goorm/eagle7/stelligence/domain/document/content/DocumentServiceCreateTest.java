@@ -49,7 +49,7 @@ class DocumentServiceCreateTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent, 1L);
+		Document document = documentContentService.createDocument(title, rawContent, member("nickname"));
 
 		em.flush();
 		em.clear();

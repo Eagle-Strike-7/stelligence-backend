@@ -64,7 +64,7 @@ class DocumentMergeConcurrencyTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent, 1L);
+		Document document = documentContentService.createDocument(title, rawContent, member("nickname"));
 
 		//트랜잭션 종료를 통해 이후 쓰레드들이 정상적으로 동작할 수 있게 함
 		//em.flush(), em.clear() 사용시, 쓰레드들이 정상적으로 동작하지 않음
