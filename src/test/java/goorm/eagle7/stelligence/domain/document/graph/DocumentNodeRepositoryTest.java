@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
@@ -223,6 +224,7 @@ class DocumentNodeRepositoryTest {
 
 	@Test
 	@DisplayName("documentId의 리스트로 문서 노드들 검색")
+	@Rollback(false)
 	void findNodeByDocumentId() {
 		//given
 		final List<Long> searchDocumentIdList = new ArrayList<>();
@@ -249,15 +251,85 @@ class DocumentNodeRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("문서 노드 삭제 시에는 하위 문서는 상위 문서의 관계를 물려받게 된다.")
-	void deleteNodeByDocumentId() {
+	@DisplayName("루트 노드 여부 테스트")
+	void isRootNode() {
+		//given
+		final Long rootNodeId = 1L;
+		final Long nonrootNodeId = 11L;
+		final Long nonexistNodeId = 999999L;
 
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		Optional<Boolean> rootIsRoot = documentNodeRepository.isRootNode(rootNodeId);
+		Optional<Boolean> nonrootIsRoot = documentNodeRepository.isRootNode(nonrootNodeId);
+		Optional<Boolean> emptuIsRoot = documentNodeRepository.isRootNode(nonexistNodeId);
+
+		//then
+		assertThat(rootIsRoot).isNotEmpty().hasValue(true);
+		assertThat(nonrootIsRoot).isNotEmpty().hasValue(false);
+		assertThat(emptuIsRoot).isEmpty();
+	}
+
+	@Test
+	@DisplayName("최상위 문서가 아닌 노드 삭제 시, 하위 문서는 상위 문서의 관계를 물려받게 된다.")
+	void deleteNonrootNodeByDocumentId() {
+		//given
+		final Long deleteTargetId = 11L;
+		final Long parentIdOfDeleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.deleteNonrootNodeByDocumentId(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<DocumentNode> parentNodeList = childNodeList.stream().map(DocumentNode::getParentDocumentNode).toList();
+
+		assertThat(parentNodeList)
+			.isNotEmpty()
+			.allMatch(p -> p.getDocumentId().equals(parentIdOfDeleteTargetId));
 	}
 
 	@Test
 	@DisplayName("최상위 문서 노드 삭제 시에는 하위 문서들이 최상위 문서가 된다.")
 	void deleteRootByDocumentId() {
+		// given
+		final Long deleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(11L, 12L, 13L);
 
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.deleteRootNodeByDocumentId(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<Boolean> isRootList = childNodeList.stream()
+			.map(DocumentNode::getDocumentId)
+			.map(id -> documentNodeRepository.isRootNode(id).get())
+			.toList();
+
+		assertThat(isRootList)
+			.isNotEmpty()
+			.allMatch(b -> b);
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
