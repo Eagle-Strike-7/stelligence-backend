@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.document;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,8 +14,10 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -91,5 +95,26 @@ public class DocumentController {
 
 		// documentId가 null이라면 최상위 문서로부터 조회합니다.
 		return ResponseTemplate.ok(documentService.getDocumentGraph(documentId, depth));
+	}
+
+	@Operation(summary = "문서 노드 제목으로 조회", description = "문서 노드를 제목으로 조회합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "문서 노드 제목 조회 성공",
+		content = @Content(
+			mediaType = "application/json",
+			array = @ArraySchema(schema = @Schema(implementation = DocumentNodeResponse.class))
+		)
+	)
+	@GetMapping("/search")
+	public ResponseTemplate<List<DocumentNodeResponse>> searchDocument(
+		@Parameter(description = "검색할 제목", example = "제목")
+		@RequestParam("title") String title,
+		@Parameter(description = "최대 검색 결과의 개수. 입력하지 않으면 최대 10개를 조회합니다.", example = "10")
+		@RequestParam(value = "limit", defaultValue = "10") int limit
+	) {
+		log.trace("requested /api/documents/search?title={}&limit={}", title, limit);
+
+		return ResponseTemplate.ok(documentService.getDocumentNodeByTitle(title, limit));
 	}
 }

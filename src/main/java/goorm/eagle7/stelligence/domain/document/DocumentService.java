@@ -12,6 +12,7 @@ import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -92,4 +93,13 @@ public class DocumentService {
 		return documentGraphService.findAllGraph();
 	}
 
+	/**
+	 * 문서의 제목을 기준으로 그래프 노드를 조회합니다.
+	 * @param title: 문서의 제목
+	 * @param limit: 조회할 최대 결과의 개수를 제한합니다.
+	 * @return List&lt;DocumentNodeResponse&gt;
+	 */
+	public List<DocumentNodeResponse> getDocumentNodeByTitle(String title, int limit) {
+		return documentGraphService.findNodeByTitle(title, limit);
+	}
 }
