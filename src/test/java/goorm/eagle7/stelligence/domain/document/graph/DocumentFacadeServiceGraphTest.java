@@ -31,7 +31,14 @@ class DocumentFacadeServiceGraphTest {
 	@DisplayName("DocumentContent를 생성할 때 DocumentNode도 함께 생성")
 	void createDocument() {
 		String title = "title";
-		String rawContent = "content";
+		String rawContent =
+			"# title1\n"
+				+ "content1\n"
+				+ "## title2\n"
+				+ "content2 line 1\n"
+				+ "content2 line 2\n"
+				+ "### title3\n"
+				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest = DocumentCreateRequest.of(title, null, rawContent);
 		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest);
@@ -49,7 +56,14 @@ class DocumentFacadeServiceGraphTest {
 		//given
 		String parentTitle = "parent";
 		String childTitle = "child";
-		String rawContent = "content";
+		String rawContent =
+			"# title1\n"
+				+ "content1\n"
+				+ "## title2\n"
+				+ "content2 line 1\n"
+				+ "content2 line 2\n"
+				+ "### title3\n"
+				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest1 = DocumentCreateRequest.of(parentTitle, null, rawContent);
 		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest1);
