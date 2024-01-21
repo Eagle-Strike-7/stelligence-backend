@@ -35,11 +35,11 @@ public class DocumentService {
 	 * @param documentCreateRequest
 	 * @return
 	 */
-	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest) {
+	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent());
+			documentCreateRequest.getContent(), loginMemberId);
 
 		//DocumentLink 저장
 		documentGraphService.createDocumentNode(createdDocument);

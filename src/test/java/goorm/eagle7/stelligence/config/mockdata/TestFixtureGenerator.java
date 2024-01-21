@@ -17,8 +17,8 @@ public class TestFixtureGenerator {
 		return Member.of("name", nickname, "email", "imageUrl", "socialId");
 	}
 
-	public static Document document(String title) {
-		return Document.createDocument(title);
+	public static Document document(String title, Member author) {
+		return Document.createDocument(title, author);
 	}
 
 	public static Section section(Document document, Long id, Long revision, String title, int order) {

@@ -1,7 +1,9 @@
 package goorm.eagle7.stelligence.domain.document.content;
 
+import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,11 @@ class DocumentServiceCreateTest {
 	@PersistenceContext
 	private EntityManager em;
 
+	@BeforeEach
+	void setUp() {
+		em.persist(member("nickname"));
+	}
+
 	@Test
 	@DisplayName("문서 생성 - 성공")
 	void createDocumentSuccess() {
@@ -42,7 +49,7 @@ class DocumentServiceCreateTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent);
+		Document document = documentContentService.createDocument(title, rawContent, 1L);
 
 		em.flush();
 		em.clear();

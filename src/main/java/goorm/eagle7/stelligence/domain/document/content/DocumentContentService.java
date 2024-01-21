@@ -12,6 +12,8 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -36,6 +38,7 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
+	private final MemberRepository memberRepository;
 
 	/**
 	 * Document를 생성합니다.
@@ -43,10 +46,15 @@ public class DocumentContentService {
 	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Document createDocument(String title, String rawContent) {
+	public Document createDocument(String title, String rawContent, Long loginMemberId) {
 		log.trace("DocumentService.createDocument called");
+
+		//사용자 조회
+		Member author = memberRepository.findById(loginMemberId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
+
 		//document 생성
-		Document document = Document.createDocument(title);
+		Document document = Document.createDocument(title, author);
 		documentRepository.save(document);
 
 		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);

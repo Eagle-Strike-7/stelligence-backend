@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,9 +47,10 @@ public class DocumentController {
 	)
 	@PostMapping
 	public ResponseTemplate<DocumentResponse> createDocument(
-		@RequestBody DocumentCreateRequest documentCreateRequest
+		@RequestBody DocumentCreateRequest documentCreateRequest,
+		@Auth MemberInfo memberInfo
 	) {
-		return ResponseTemplate.ok(documentService.createDocument(documentCreateRequest));
+		return ResponseTemplate.ok(documentService.createDocument(documentCreateRequest, memberInfo.getId()));
 	}
 
 	@Operation(summary = "문서 내용 조회", description = "문서의 내용을 조회합니다")
