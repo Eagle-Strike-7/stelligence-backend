@@ -280,6 +280,80 @@ class DocumentGraphServiceTest {
 		assertThat(documentIdSet).hasSize(3).containsAll(rootNodeIdList);
 	}
 
+	@Test
+	@DisplayName("루트 노드를 정상적으로 삭제할 수 있다.")
+	void deleteRootNode() {
+		// given
+		final Long deleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(11L, 12L, 13L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.deleteDocumentNode(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<Boolean> isRootList = childNodeList.stream()
+			.map(DocumentNode::getDocumentId)
+			.map(id -> documentNodeRepository.isRootNode(id).get())
+			.toList();
+
+		assertThat(isRootList)
+			.isNotEmpty()
+			.allMatch(b -> b);
+	}
+
+	@Test
+	@DisplayName("루트 노드가 아닌 노드를 정상적으로 삭제할 수 있다.")
+	void deleteNonrootNode() {
+		//given
+		final Long deleteTargetId = 11L;
+		final Long parentIdOfDeleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.deleteDocumentNode(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<DocumentNode> parentNodeList = childNodeList.stream().map(DocumentNode::getParentDocumentNode).toList();
+
+		assertThat(parentNodeList)
+			.isNotEmpty()
+			.allMatch(p -> p.getDocumentId().equals(parentIdOfDeleteTargetId));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 노드는 삭제할 수 없다.")
+	void deleteNotExistNode() {
+		//given
+		final Long deleteTargetId = -1L;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when - then
+		assertThatThrownBy(() -> documentGraphService.deleteDocumentNode(deleteTargetId))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
 		return new String[] {
 			"CREATE (:DocumentNode {documentId: 1, level: 2, title: 'title1', group: 'title1'}),"
