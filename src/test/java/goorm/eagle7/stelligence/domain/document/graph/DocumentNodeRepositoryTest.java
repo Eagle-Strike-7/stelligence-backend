@@ -248,6 +248,18 @@ class DocumentNodeRepositoryTest {
 			.containsAll(searchDocumentIdList);
 	}
 
+	@Test
+	@DisplayName("문서 노드 삭제 시에는 하위 문서는 상위 문서의 관계를 물려받게 된다.")
+	void deleteNodeByDocumentId() {
+
+	}
+
+	@Test
+	@DisplayName("최상위 문서 노드 삭제 시에는 하위 문서들이 최상위 문서가 된다.")
+	void deleteRootByDocumentId() {
+
+	}
+
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
 		return new String[] {
 			"CREATE (:DocumentNode {documentId: 1, level: 2, title: 'title1', group: 'title1'}),"
