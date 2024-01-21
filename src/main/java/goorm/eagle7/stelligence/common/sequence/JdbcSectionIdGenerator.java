@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * SectionId의 Sequence를 관리합니다.
- *
- * for update를 사용하므로 트랜잭션이 길어진다면 성능에 영향을 줄 수 있습니다.
- * 따라서 새로운 트랜잭션을 생성하여 사용합니다.
  */
 @Repository
 @RequiredArgsConstructor
@@ -25,6 +22,8 @@ class JdbcSectionIdGenerator implements SectionIdGenerator {
 	/**
 	 * Document가 다음으로 생성할 SectionId를 가져옵니다.
 	 * 동시성 문제를 해결하기 위해, for update를 사용합니다.
+	 * for update를 사용하므로 트랜잭션이 길어진다면 성능에 영향을 줄 수 있습니다.
+	 * 따라서 새로운 트랜잭션을 생성하여 사용합니다.
 	 * @return
 	 */
 	@Override
