@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.merge.handler;
+package goorm.eagle7.stelligence.common.merge.template;
 
 import org.springframework.stereotype.Component;
 
