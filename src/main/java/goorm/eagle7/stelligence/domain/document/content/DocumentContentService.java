@@ -44,6 +44,7 @@ public class DocumentContentService {
 	 */
 	@Transactional
 	public Document createDocument(String title, String rawContent) {
+		log.trace("DocumentService.createDocument called");
 		//document 생성
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
@@ -175,6 +176,7 @@ public class DocumentContentService {
 	 * Document의 특정 버전을 조회합니다.
 	 */
 	public DocumentResponse getDocument(Long documentId, Long revision) {
+		log.trace("DocumentService.getDocument called");
 
 		//문서가 존재하는지 확인합니다.
 		Document document = documentRepository.findById(documentId)
@@ -196,6 +198,7 @@ public class DocumentContentService {
 	 * @return 검색된 Document의 ID 목록
 	 */
 	public List<Long> findDocumentWhichContainsKeyword(String keyword) {
+		log.trace("DocumentService.findDocumentWhichContainsKeyword called");
 		return documentRepository.findDocumentIdWhichContainsKeywordInLatestVersion(keyword);
 	}
 

@@ -10,7 +10,9 @@ import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.protobuf.DocumentResponseOuterClass;
 import goorm.eagle7.stelligence.domain.document.content.dto.protobuf.converter.ProtoBufDocumentResponseConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class DocumentCacheAspect {
 	//최신 document를 조회하는데에 캐싱을 적용합니다.
 	@Around("execution(* goorm.eagle7.stelligence.domain.document.content.DocumentContentService.getDocument(Long))")
 	public Object getDocumentProxy(ProceedingJoinPoint joinPoint) throws Throwable {
+		log.trace("DocumentCacheAspect.getDocumentProxy called");
 
 		// Redis 키 생성
 		Long documentId = (Long)joinPoint.getArgs()[0];
@@ -32,11 +35,13 @@ public class DocumentCacheAspect {
 
 		// 캐시가 존재한다면 캐시 데이터를 DocumentResponse로 변환하여 반환
 		if (cachedDocument != null) {
+			log.debug("{} cache hit", key);
 			DocumentResponseOuterClass.DocumentResponse documentResponse = DocumentResponseOuterClass.DocumentResponse.parser()
 				.parseFrom(cachedDocument);
 
 			return ProtoBufDocumentResponseConverter.toMyDocumentResponse(documentResponse);
 		} else { // 캐시가 없다면 DB 조회 후 캐시 저장
+			log.debug("{} cache miss", key);
 			Object document = joinPoint.proceed();
 			DocumentResponseOuterClass.DocumentResponse protoBufDocumentResponse = ProtoBufDocumentResponseConverter.toProtoBufDocumentResponse(
 				(DocumentResponse)document);
