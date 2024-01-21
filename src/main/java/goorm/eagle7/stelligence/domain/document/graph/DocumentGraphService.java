@@ -110,4 +110,15 @@ public class DocumentGraphService {
 
 		return DocumentGraphResponse.of(documentNodes, hasChildRelationshipList);
 	}
+
+	/**
+	 * 문서 ID에 따라 특정 문서 노드를 삭제합니다.
+	 * 이때, 해당 문서의 하위 문서의 링크와 그룹을 함께 재정의합니다.
+	 * @param documentId: 삭제할 문서의 ID입니다.
+	 */
+	@Transactional
+	public void deleteDocumentNode(Long documentId) {
+
+		documentNodeRepository.deleteByDocumentId(documentId);
+	}
 }
