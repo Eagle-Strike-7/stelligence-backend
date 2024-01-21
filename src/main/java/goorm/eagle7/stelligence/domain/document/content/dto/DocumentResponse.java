@@ -32,7 +32,7 @@ public class DocumentResponse {
 	 * DocumentResponse에 담길 sections는 특정 버전에 해당하는 섹션만 담기므로, DTO 외부에서 이를 결정하고 삽입해주도록 했습니다. (documentContentService.getDocument 참조)
 	 * @param document : 조회한 Document
 	 * @param sections : 특정 버전에 해당하는 섹션들
-	 * @return
+	 * @return 생성된 DocumentResponse
 	 */
 	public static DocumentResponse of(Document document, List<SectionResponse> sections) {
 		return new DocumentResponse(document.getId(), document.getTitle(), sections);
