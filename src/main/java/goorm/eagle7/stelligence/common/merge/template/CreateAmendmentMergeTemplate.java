@@ -32,9 +32,10 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 
 	/**
 	 * 수정안의 정보를 바탕으로 새로운 섹션을 생성합니다.
-	 * @param document
-	 * @param amendment
-	 * @return
+	 *
+	 * @param document 섹션이 생성될 Document
+	 * @param amendment 섹션을 생성하기 위한 정보를 담고 있는 Amendment
+	 * @return 새로 생성된 섹션으로 DB에 저장되지 않은 상태입니다.
 	 */
 	@Override
 	Section createSection(Document document, Amendment amendment) {
