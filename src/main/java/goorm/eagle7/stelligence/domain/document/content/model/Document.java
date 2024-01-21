@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class Document extends BaseTimeEntity { //추후 BaseTimeEntity 상속
+public class Document extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -37,8 +37,14 @@ public class Document extends BaseTimeEntity { //추후 BaseTimeEntity 상속
 
 	private String title;
 
+	/**
+	 * 현재 버전을 나타냅니다.
+	 */
 	private Long currentRevision;
 
+	/**
+	 * 문서에 포함되어있는 섹션 목록입니다.
+	 */
 	@OneToMany(mappedBy = "document", orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
@@ -47,13 +53,17 @@ public class Document extends BaseTimeEntity { //추후 BaseTimeEntity 상속
 		Document document = new Document();
 		document.title = title;
 
+		//최초 생성 시 버전은 1입니다.
 		document.currentRevision = 1L;
 		return document;
 	}
 
 	//===수정===//
 
-	//Contribute에 대한 Merge가 끝나고 현재 버전을 올려줍니다.
+	/**
+	 * 현재 버전을 증가시킵니다.
+	 * Merge의 수행 이후 호출되어야 합니다.
+	 */
 	public void incrementCurrentRevision() {
 		this.currentRevision++;
 	}

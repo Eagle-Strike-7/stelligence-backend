@@ -44,6 +44,7 @@ public class DocumentContentService {
 	 */
 	@Transactional
 	public Document createDocument(String title, String rawContent) {
+		log.trace("DocumentService.createDocument called");
 		//document 생성
 		Document document = Document.createDocument(title);
 		documentRepository.save(document);
@@ -52,15 +53,9 @@ public class DocumentContentService {
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
-			Section section = Section.createSection(
-				document,
-				sectionIdGenerator.getAndIncrementSectionId(),
-				1L,
-				sectionRequests.get(order).getHeading(),
-				sectionRequests.get(order).getTitle(),
-				sectionRequests.get(order).getContent(),
-				order + 1
-			);
+			Section section = Section.createSection(document, sectionIdGenerator.getAndIncrementSectionId(), 1L,
+				sectionRequests.get(order).getHeading(), sectionRequests.get(order).getTitle(),
+				sectionRequests.get(order).getContent(), order + 1);
 
 			sectionRepository.save(section);
 		}
@@ -111,43 +106,23 @@ public class DocumentContentService {
 
 			//Commit Type에 따라 분기
 			if (commit.type.equals("INSERT")) {
-				Section section = Section.createSection(
-					document,
-					sectionIdGenerator.getAndIncrementSectionId(),
-					newRevision,
-					commit.getHeading(),
-					commit.getTitle(),
-					commit.getContent(),
-					targetSection.getOrder() + 1
-				);
+				Section section = Section.createSection(document, sectionIdGenerator.getAndIncrementSectionId(),
+					newRevision, commit.getHeading(), commit.getTitle(), commit.getContent(),
+					targetSection.getOrder() + 1);
 
 				sectionRepository.save(section);
 
 				sectionRepository.updateOrders(document.getId(), document.getCurrentRevision(), section.getOrder());
 
 			} else if (commit.type.equals("UPDATE")) {
-				Section section = Section.createSection(
-					document,
-					commit.targetSectionId, //기존 섹션의 ID를 그대로 사용합니다.
-					newRevision,
-					commit.getHeading(),
-					commit.getTitle(),
-					commit.getContent(),
-					targetSection.getOrder()
-				);
+				Section section = Section.createSection(document, commit.targetSectionId, //기존 섹션의 ID를 그대로 사용합니다.
+					newRevision, commit.getHeading(), commit.getTitle(), commit.getContent(), targetSection.getOrder());
 
 				sectionRepository.save(section);
 
 			} else if (commit.type.equals("DELETE")) {
-				Section section = Section.createSection(
-					document,
-					targetSection.getId(),
-					newRevision,
-					null,
-					null,
-					null,
-					targetSection.getOrder()
-				);
+				Section section = Section.createSection(document, targetSection.getId(), newRevision, null, null, null,
+					targetSection.getOrder());
 
 				sectionRepository.save(section);
 			}
@@ -158,11 +133,8 @@ public class DocumentContentService {
 
 	/**
 	 * 최신 Document를 조회합니다.
-	 *
-	 * Redis의 캐싱 데이터를 조회합니다. -> DocumentCacheAspect 참조
-	 * 캐시는 Document에 대한 수정요청이 반영되는 시점에 invalidate 됩니다.
-	 * @param documentId
-	 * @return
+	 * @param documentId 조회할 Document의 ID
+	 * @return 최신 Document의 Response Object
 	 */
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
@@ -172,13 +144,22 @@ public class DocumentContentService {
 	}
 
 	/**
-	 * Document의 특정 버전을 조회합니다.
+	 * 특정 버전의 Document를 조회합니다.
+	 * @param documentId 조회할 Document의 ID
+	 * @param revision 조회할 Document의 버전
+	 * @return 특정 버전의 Document의 Response Object
 	 */
 	public DocumentResponse getDocument(Long documentId, Long revision) {
+		log.trace("DocumentService.getDocument called");
 
 		//문서가 존재하는지 확인합니다.
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
+
+		//버전이 존재하는지 확인합니다.
+		if (revision > document.getCurrentRevision()) {
+			throw new BaseException("존재하지 않는 버전입니다. 버전 : " + revision);
+		}
 
 		//해당 버전의 섹션들을 조회합니다.
 		List<SectionResponse> sections = sectionRepository.findByVersion(document, revision)
@@ -193,9 +174,10 @@ public class DocumentContentService {
 	/**
 	 * 특정 문자열을 포함하는 Document의 ID를 조회합니다. 최신 버전의 섹션만 조사의 대상이 됩니다.
 	 * @param keyword 검색할 키워드
-	 * @return 검색된 Document의 ID 목록
+	 * @return 키워드를 포함하고 있는 Document의 ID 목록
 	 */
 	public List<Long> findDocumentWhichContainsKeyword(String keyword) {
+		log.trace("DocumentService.findDocumentWhichContainsKeyword called");
 		return documentRepository.findDocumentIdWhichContainsKeywordInLatestVersion(keyword);
 	}
 

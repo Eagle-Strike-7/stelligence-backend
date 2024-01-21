@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.merge.handler;
+package goorm.eagle7.stelligence.common.merge.template;
 
 import org.springframework.stereotype.Component;
 
@@ -24,15 +24,16 @@ public abstract class AmendmentMergeTemplate {
 	/**
 	 * Amendment Type에 따라 서로 다른 방식의 Section을 생성합니다.
 	 * 이렇게 생성된 Section은 SectionRepository를 통해 저장됩니다.
-	 * @param document
-	 * @param amendment
-	 * @return
+	 *
+	 * @param document 섹션이 생성될 Document
+	 * @param amendment 섹션을 생성하기 위한 정보를 담고 있는 Amendment
+	 * @return 새로 생성된 섹션으로 DB에 저장되지 않은 상태입니다.
 	 */
 	abstract Section createSection(Document document, Amendment amendment);
 
 	/**
 	 * Amendment Type에 따라 서로 다른 방식의 추가 작업을 수행합니다.
-	 * @param section
+	 * @param section 병합된 섹션
 	 */
 	abstract void afterMerged(Section section);
 
