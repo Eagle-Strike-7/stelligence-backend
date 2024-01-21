@@ -119,6 +119,13 @@ public class DocumentGraphService {
 	@Transactional
 	public void deleteDocumentNode(Long documentId) {
 
-		documentNodeRepository.deleteByDocumentId(documentId);
+		boolean isRoot = documentNodeRepository.isRootNode(documentId)
+			.orElseThrow(() -> new IllegalArgumentException("삭제하려는 노드가 존재하지 않습니다."));
+
+		if (isRoot) {
+			documentNodeRepository.deleteRootNodeByDocumentId(documentId);
+		} else {
+			documentNodeRepository.deleteNonrootNodeByDocumentId(documentId);
+		}
 	}
 }
