@@ -57,6 +57,25 @@ class DocumentServiceReadTest {
 	}
 
 	@Test
+	@DisplayName("문서 조회 - content - 최신버전")
+	void getLatestDocumentContentSuccess() {
+
+		//when
+		String content = documentContentService.getDocument(1L).getContent();
+
+		//then
+		assertThat(content).isEqualTo(
+			"## document1_title2_update\n"
+				+ "document1_content2_update\n"
+				+ "### document1_title3\n"
+				+ "document1_content3\n"
+				+ "# document1_title4_insert\n"
+				+ "document1_content4_insert\n"
+		);
+
+	}
+
+	@Test
 	@DisplayName("문서 조회 - 구버전")
 	void getDocumentByVersionSuccess() {
 

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * * 문서 생성
  * * 문서 버전 별 조회
  */
+@Tag(name = "Document API", description = "문서를 생성하고 조회하는 API를 제공합니다")
 @Slf4j
 @RestController
 @RequestMapping("/api/documents")
@@ -46,11 +48,10 @@ public class DocumentController {
 	public ResponseTemplate<DocumentResponse> createDocument(
 		@RequestBody DocumentCreateRequest documentCreateRequest
 	) {
-		log.trace("requested /api/documents body={}", documentCreateRequest);
 		return ResponseTemplate.ok(documentService.createDocument(documentCreateRequest));
 	}
 
-	@Operation(summary = "문서 조회", description = "문서의 내용을 조회합니다")
+	@Operation(summary = "문서 내용 조회", description = "문서의 내용을 조회합니다")
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 조회 성공",
@@ -66,8 +67,6 @@ public class DocumentController {
 		@Parameter(description = "문서의 특정 버전을 가져올 수 있습니다. 전달되지 않는 경우 기본값으로 최신본을 반환합니다", example = "1")
 		@RequestParam(required = false) Long revision
 	) {
-		log.trace("requested /api/documents/{}?revision={}", documentId, revision);
-
 		//revision이 null인 경우는 service에서 최신값을 찾아 반환하도록 되어있습니다.
 		return ResponseTemplate.ok(documentService.getDocumentContent(documentId, revision));
 	}

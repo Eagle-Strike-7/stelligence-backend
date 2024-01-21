@@ -30,6 +30,8 @@ public class DocumentParser {
 	 * @return
 	 */
 	public List<SectionRequest> parse(String rawContent) {
+		log.trace("DocumentParser.parse called");
+		
 		List<SectionRequest> results = new ArrayList<>();
 		StringTokenizer tokenizer = new StringTokenizer(rawContent, "\n");
 

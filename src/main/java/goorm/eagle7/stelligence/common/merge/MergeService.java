@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.common.merge.handler.AmendmentMergeTemplateMapper;
+import goorm.eagle7.stelligence.common.merge.template.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
@@ -38,6 +38,8 @@ public class MergeService {
 	 */
 	@CacheEvict(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public void merge(Long documentId, Contribute contribute) {
+		log.trace("MergeService.merge called");
+		log.info("수정 요청을 반영합니다. documentId: {}, contributeId: {}", documentId, contribute.getId());
 
 		Document document = documentContentRepository.findForUpdate(documentId)
 			.orElseThrow(() -> new RuntimeException("Document가 존재하지 않습니다."));
