@@ -12,6 +12,8 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
+import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +50,12 @@ public class DocumentService {
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
 			documentCreateRequest.getContent(), author);
 
-		//DocumentLink 저장
-		documentGraphService.createDocumentNode(createdDocument);
+		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
+		if (documentCreateRequest.getParentDocumentId() == null) {
+			documentGraphService.createDocumentNode(createdDocument);
+		} else {
+			documentGraphService.createDocumentNodeWithParent(createdDocument, documentCreateRequest.getParentDocumentId());
+		}
 
 		//사용자의 기여 횟수를 증가시킵니다.
 		author.incrementContributes();
@@ -73,4 +79,37 @@ public class DocumentService {
 		}
 	}
 
+	/**
+	 * 문서 그래프를 조회합니다.
+	 * documentId가 null 이라면 최상위 문서를 기준으로 조회합니다.
+	 * 조회 대상 문서로부터 일정 깊이의 하위 문서까지 함께 조회합니다.
+	 * @param documentId: 조회 대상이 되는 문서의 id입니다.
+	 * @param depth: 함께 조회할 문서의 깊이입니다.
+	 * @return DocumentGraphResponse
+	 */
+	public DocumentGraphResponse getDocumentGraph(Long documentId, int depth) {
+		if (documentId == null) {
+			return documentGraphService.findFromRootNodesWithDepth(depth);
+		} else {
+			return documentGraphService.findGraphWithDepth(documentId, depth);
+		}
+	}
+
+	/**
+	 * 전체 문서 그래프를 조회합니다.
+	 * @return DocumentGraphResponse
+	 */
+	public DocumentGraphResponse getAllDocumentGraph() {
+		return documentGraphService.findAllGraph();
+	}
+
+	/**
+	 * 문서의 제목을 기준으로 그래프 노드를 조회합니다.
+	 * @param title: 문서의 제목
+	 * @param limit: 조회할 최대 결과의 개수를 제한합니다.
+	 * @return List&lt;DocumentNodeResponse&gt;
+	 */
+	public List<DocumentNodeResponse> getDocumentNodeByTitle(String title, int limit) {
+		return documentGraphService.findNodeByTitle(title, limit);
+	}
 }

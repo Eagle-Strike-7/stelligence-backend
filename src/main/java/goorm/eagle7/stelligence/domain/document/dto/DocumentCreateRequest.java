@@ -1,12 +1,15 @@
 package goorm.eagle7.stelligence.domain.document.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @Schema(description = "생성할 문서의 정보")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(staticName = "of")
 public class DocumentCreateRequest {
 
 	@Schema(description = "문서의 제목", example = "마리모")
