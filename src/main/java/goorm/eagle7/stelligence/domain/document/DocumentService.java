@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +29,7 @@ public class DocumentService {
 
 	private final DocumentContentService documentContentService;
 	private final DocumentGraphService documentGraphService;
+	private final MemberRepository memberRepository;
 
 	/**
 	 * Document를 생성합니다.
@@ -37,12 +41,18 @@ public class DocumentService {
 	 */
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
+		Member author = memberRepository.findById(loginMemberId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
+
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), loginMemberId);
+			documentCreateRequest.getContent(), author);
 
 		//DocumentLink 저장
 		documentGraphService.createDocumentNode(createdDocument);
+
+		//사용자의 기여 횟수를 증가시킵니다.
+		author.incrementContributes();
 
 		//DocumentResponse를 생성합니다.
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();

@@ -12,7 +12,6 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
-import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -38,20 +37,17 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
-	private final MemberRepository memberRepository;
 
 	/**
 	 * Document를 생성합니다.
+	 * DocumentService 내에서만 호출되어야 합니다.
+	 * 외부에서 호출시 DocumentGraph와 Content 간 일관성이 깨지는 문제가 발생될 수 있습니다.
 	 * @param title 문서의 제목
 	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Document createDocument(String title, String rawContent, Long loginMemberId) {
+	public Document createDocument(String title, String rawContent, Member author) {
 		log.trace("DocumentService.createDocument called");
-
-		//사용자 조회
-		Member author = memberRepository.findById(loginMemberId)
-			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
 
 		//document 생성
 		Document document = Document.createDocument(title, author);
