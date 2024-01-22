@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.document.graph;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,5 +128,50 @@ public class DocumentGraphService {
 		} else {
 			documentNodeRepository.deleteNonrootNodeByDocumentId(documentId);
 		}
+	}
+
+	/**
+	 * documentId에 따라 특정 문서를 찾습니다.
+	 * 찾은 특정 문서의 상위 문서를 parentDocumentId를 갖는 문서로 변경합니다.
+	 * parentDocumentId가 null이라면 링크를 삭제합니다.
+	 * @param documentId: 링크를 변경할 문서 ID
+	 * @param parentDocumentId: 링크를 연결할 문서 ID
+	 */
+	@Transactional
+	public void updateDocumentLink(Long documentId, Long parentDocumentId) {
+		if (parentDocumentId != null) {
+			changeLinkToParent(documentId, parentDocumentId);
+		} else {
+			removeLink(documentId);
+		}
+	}
+
+	/**
+	 * documentId에 따라 특정 문서를 찾아서 링크를 제거합니다.
+	 * 그리고, parentDocumentId에 따라 다른 문서와의 링크를 추가합니다.
+	 * @param documentId: 링크를 수정할 문서의 ID
+	 * @param parentDocumentId: 링크를 추가할 문서의 ID
+	 */
+	private void changeLinkToParent(Long documentId, Long parentDocumentId) {
+		Optional<DocumentNode> documentOptional = documentNodeRepository.findSingleNodeByDocumentId(documentId);
+		Optional<DocumentNode> parentDocumentOptional = documentNodeRepository.findSingleNodeByDocumentId(
+			parentDocumentId);
+		if (documentOptional.isEmpty() || parentDocumentOptional.isEmpty()) {
+			throw new IllegalArgumentException("존재하지 않는 노드에 대한 요청입니다.");
+		}
+
+		documentNodeRepository.changeLinkToUpdateParent(documentId, parentDocumentId);
+	}
+
+	/**
+	 * documentId에 따라 특정 문서를 찾아서 링크를 제거합니다.
+	 * @param documentId: 링크를 제거할 문서의 ID
+	 */
+	private void removeLink(Long documentId) {
+		Optional<DocumentNode> documentOptional = documentNodeRepository.findSingleNodeByDocumentId(documentId);
+		if (documentOptional.isEmpty()) {
+			throw new IllegalArgumentException("존재하지 않는 노드에 대한 요청입니다.");
+		}
+		documentNodeRepository.removeLink(documentId);
 	}
 }

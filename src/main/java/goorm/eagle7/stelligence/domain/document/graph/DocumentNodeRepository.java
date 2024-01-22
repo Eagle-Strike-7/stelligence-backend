@@ -99,4 +99,39 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 		+ " merge (parent)-[:HAS_CHILD]->(child)"
 		+ " detach delete deleteNode")
 	void deleteNonrootNodeByDocumentId(@Param("documentId") Long documentId);
+
+	/**
+	 * documentId를 갖는 노드의 기존 부모 관계를 삭제하고,
+	 * 새로운 부모 노드로 링크를 연결합니다.
+	 * 이후, 업데이트된 노드와 하위 노드의 그룹을 업데이트 합니다.
+	 * @param documentId: 링크를 수정할 문서의 ID
+	 * @param parentDocumentId: 새로운 부모 노드의 ID
+	 */
+	@Query("match (:DocumentNode)-[r:HAS_CHILD]->(n:DocumentNode)"
+		+ " where n.documentId = $documentId"
+		+ " delete r"
+		+ " "
+		+ " with n"
+		+ " match (parent:DocumentNode)"
+		+ " where parent.documentId = $parentDocumentId"
+		+ " merge (parent)-[:HAS_CHILD]->(n)"
+		+ " "
+		+ " with n, parent"
+		+ " match (n)-[:HAS_CHILD*0..]->(descendant:DocumentNode)"
+		+ " set descendant.group = parent.group")
+	void changeLinkToUpdateParent(@Param("documentId") Long documentId, @Param("parentDocumentId") Long parentDocumentId);
+
+	/**
+	 * documentId를 갖는 노드의 기존 부모 관계를 삭제하고,
+	 * 업데이트된 노드와 하위 노드의 그룹을 업데이트 합니다.
+	 * @param documentId: 링크를 삭제할 문서의 ID
+	 */
+	@Query("match (:DocumentNode)-[r:HAS_CHILD]->(n:DocumentNode)"
+		+ " where n.documentId = $documentId"
+		+ " delete r"
+		+ " "
+		+ " with n"
+		+ " match (n)-[:HAS_CHILD*0..]->(descendant:DocumentNode)"
+		+ " set descendant.group = n.title")
+	void removeLink(@Param("documentId") Long documentId);
 }
