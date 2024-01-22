@@ -4,6 +4,7 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -353,6 +354,65 @@ class DocumentGraphServiceTest {
 		//when - then
 		assertThatThrownBy(() -> documentGraphService.deleteDocumentNode(deleteTargetId))
 			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	@DisplayName("링크 수정 테스트")
+	void changeLinkToUpdateParent() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+		final Long newParentNodeId = 3L;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.updateDocumentLink(updateTargetId, newParentNodeId);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode updateNode = targetNodeOptional.get();
+		assertThat(updateNode.getParentDocumentNode().getDocumentId()).isEqualTo(newParentNodeId);
+		assertThat(updateNode.getGroup()).isEqualTo(updateNode.getParentDocumentNode().getGroup());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(updateNode.getGroup()));
+	}
+
+	@Test
+	@DisplayName("링크 삭제 테스트")
+	void removeLink() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.updateDocumentLink(updateTargetId, null);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode targetNode = targetNodeOptional.get();
+		assertThat(targetNode.getParentDocumentNode()).isNull();
+		assertThat(targetNode.getGroup()).isEqualTo(targetNode.getTitle());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {

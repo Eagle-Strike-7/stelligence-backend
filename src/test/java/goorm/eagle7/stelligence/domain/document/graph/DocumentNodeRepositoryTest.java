@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jClient;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
@@ -224,7 +223,6 @@ class DocumentNodeRepositoryTest {
 
 	@Test
 	@DisplayName("documentId의 리스트로 문서 노드들 검색")
-	@Rollback(false)
 	void findNodeByDocumentId() {
 		//given
 		final List<Long> searchDocumentIdList = new ArrayList<>();
@@ -330,6 +328,65 @@ class DocumentNodeRepositoryTest {
 		assertThat(isRootList)
 			.isNotEmpty()
 			.allMatch(b -> b);
+	}
+
+	@Test
+	@DisplayName("링크 수정 테스트")
+	void changeLinkToUpdateParent() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+		final Long newParentNodeId = 3L;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.changeLinkToUpdateParent(updateTargetId, newParentNodeId);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode updateNode = targetNodeOptional.get();
+		assertThat(updateNode.getParentDocumentNode().getDocumentId()).isEqualTo(newParentNodeId);
+		assertThat(updateNode.getGroup()).isEqualTo(updateNode.getParentDocumentNode().getGroup());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(updateNode.getGroup()));
+	}
+
+	@Test
+	@DisplayName("링크 삭제 테스트")
+	void removeLink() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.removeLink(updateTargetId);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode targetNode = targetNodeOptional.get();
+		assertThat(targetNode.getParentDocumentNode()).isNull();
+		assertThat(targetNode.getGroup()).isEqualTo(targetNode.getTitle());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
