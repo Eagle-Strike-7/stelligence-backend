@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class AmendmentResponse {
 
 	private Long amendmentId;
-	private Long contributeId;
 
 	private AmendmentType type;
 
@@ -30,7 +29,6 @@ public class AmendmentResponse {
 
 	private AmendmentResponse(Amendment amendment) {
 		this.amendmentId = amendment.getId();
-		this.contributeId = amendment.getContribute().getId();
 		this.type = amendment.getType();
 		this.targetSection = SectionResponse.of(amendment.getTargetSection());
 		this.requestedSectionHeading = amendment.getNewSectionHeading();

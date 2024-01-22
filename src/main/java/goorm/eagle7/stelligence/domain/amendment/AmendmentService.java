@@ -33,8 +33,7 @@ public class AmendmentService {
 	/**
 	 * 수정안 생성(새로운 문단 생성)
 	 */
-	@Transactional
-	public Amendment createAmendment(AmendmentRequest amendmentRequest) {
+	private Amendment createAmendment(AmendmentRequest amendmentRequest) {
 		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
 
 		return Amendment.forCreate(
@@ -49,8 +48,7 @@ public class AmendmentService {
 	/**
 	 * 수정안 생성(기존 문단 수정)
 	 */
-	@Transactional
-	public Amendment updateAmendment(AmendmentRequest amendmentRequest) {
+	private Amendment updateAmendment(AmendmentRequest amendmentRequest) {
 		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
 
 		return Amendment.forUpdate(
@@ -64,8 +62,7 @@ public class AmendmentService {
 	/**
 	 * 수정안 생성(기존 문단 삭제)
 	 */
-	@Transactional
-	public Amendment deleteAmendment(AmendmentRequest amendmentRequest) {
+	private Amendment deleteAmendment(AmendmentRequest amendmentRequest) {
 		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
 
 		return Amendment.forDelete(section);

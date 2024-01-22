@@ -58,7 +58,7 @@ class AmendmentServiceTest {
 		//given
 		AmendmentRequest request = new AmendmentRequest(
 			10L,
-			AmendmentType.CREATE,
+			AmendmentType.UPDATE,
 			Heading.H1,
 			"newTitle",
 			"newContent",
@@ -69,7 +69,7 @@ class AmendmentServiceTest {
 		Amendment amendment = amendmentService.processAmendment(request);
 
 		//then
-		assertThat(amendment.getType()).isEqualTo(AmendmentType.CREATE);
+		assertThat(amendment.getType()).isEqualTo(AmendmentType.UPDATE);
 		assertThat(amendment.getTargetSection().getId()).isEqualTo(10L);
 		assertThat(amendment.getNewSectionTitle()).isEqualTo("newTitle");
 		assertThat(amendment.getCreatingOrder()).isNull();
@@ -81,7 +81,7 @@ class AmendmentServiceTest {
 		//given
 		AmendmentRequest request = new AmendmentRequest(
 			10L,
-			AmendmentType.CREATE,
+			AmendmentType.DELETE,
 			null,
 			null,
 			null,
@@ -92,7 +92,7 @@ class AmendmentServiceTest {
 		Amendment amendment = amendmentService.processAmendment(request);
 
 		//then
-		assertThat(amendment.getType()).isEqualTo(AmendmentType.CREATE);
+		assertThat(amendment.getType()).isEqualTo(AmendmentType.DELETE);
 		assertThat(amendment.getTargetSection().getId()).isEqualTo(10L);
 		assertThat(amendment.getNewSectionTitle()).isNull();
 		assertThat(amendment.getCreatingOrder()).isNull();

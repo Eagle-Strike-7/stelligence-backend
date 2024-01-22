@@ -114,30 +114,4 @@ public class Amendment extends BaseTimeEntity {
 	public void setContribute(Contribute contribute) {
 		this.contribute = contribute;
 	}
-
-	// //수정안 수정
-	// public Amendment updateContent(String amendmentTitle, String amendmentDescription,
-	// 	Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
-	//
-	// 	//PENDING 상태가 아니면(REQUESTED) 수정할 수 없음
-	// 	if (this.status != AmendmentStatus.PENDING) {
-	// 		throw new IllegalStateException();
-	// 	}
-	//
-	// 	this.amendmentTitle = amendmentTitle;
-	// 	this.amendmentDescription = amendmentDescription;
-	// 	this.newSectionHeading = newSectionHeading;
-	// 	this.newSectionTitle = newSectionTitle;
-	// 	this.newSectionContent = newSectionContent;
-	//
-	// 	return this;
-	// }
-
-	// public boolean hasPermissionToDeleteOrUpdate(Long memberId) {
-	// 	return this.getMember().getId().equals(memberId);
-	// }
-
-	// public boolean isNotDeletable() {
-	// 	return this.getStatus() == AmendmentStatus.REQUESTED;
-	// }
 }
