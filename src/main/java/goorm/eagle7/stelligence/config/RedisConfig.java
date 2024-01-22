@@ -35,7 +35,7 @@ public class RedisConfig {
 	private RedisCacheConfiguration cacheConfiguration() {
 		return RedisCacheConfiguration.defaultCacheConfig()
 			.serializeKeysWith(fromSerializer(new StringRedisSerializer()))
-			.serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer())) //객체 직렬화에 ProtocolBuffer을 사용
+			.serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer()))
 			.entryTtl(Duration.ofSeconds(DEFAULT_EXPIRE_SEC)) //DEFAULT_EXPIRE_SEC 만큼 캐시 유지
 			.disableCachingNullValues();
 	}
