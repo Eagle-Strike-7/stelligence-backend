@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.amendment.dto;
 
+import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class AmendmentSaveCreateRequest { //수정안을 create로 생성할 때 dto
-	private String title;
-	private String description;
+public class AmendmentRequest {
 	private Long sectionId;
-	private Heading heading;
-	private String sectionTitle;
-	private String sectionContent;
+	private AmendmentType type;       // 수정안의 유형 (CREATE, DELETE, UPDATE)
+	private Heading newSectionHeading;
+	private String newSectionTitle;
+	private String newSectionContent;
+	private Integer creatingOrder;
 }

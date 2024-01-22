@@ -17,25 +17,25 @@ public class TestFixtureGenerator {
 		return Member.of("name", nickname, "email", "imageUrl", "socialId");
 	}
 
-	public static Document document(String title) {
-		return Document.createDocument(title);
+	public static Document document(String title, Member author) {
+		return Document.createDocument(title, author);
 	}
 
 	public static Section section(Document document, Long id, Long revision, String title, int order) {
 		return Section.createSection(document, id, revision, Heading.H1, title, "content", order);
 	}
 
-	public static Amendment amendment(Member member, Section section, String amendmentTitle, AmendmentType type,
-		Heading heading, String title, String content, Contribute contribute) {
+	public static Amendment amendment(Contribute contribute, AmendmentType type, Section section,
+		Heading heading, String title, String content, Integer order) {
 		Amendment amendment;
 
 		// AmendmentType에 따라 적절한 팩토리 메서드 호출
 		if (type == AmendmentType.CREATE) {
-			amendment = Amendment.forCreate(member, amendmentTitle, "description", section, heading, title, content);
+			amendment = Amendment.forCreate(section, heading, title, content, order);
 		} else if (type == AmendmentType.UPDATE) {
-			amendment = Amendment.forUpdate(member, amendmentTitle, "description", section, heading, title, content);
+			amendment = Amendment.forUpdate(section, heading, title, content);
 		} else {
-			amendment = Amendment.forDelete(member, amendmentTitle, "description", section);
+			amendment = Amendment.forDelete(section);
 		}
 
 		amendment.setContribute(contribute);

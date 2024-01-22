@@ -1,10 +1,12 @@
 package goorm.eagle7.stelligence.domain.document.content;
 
+import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @SpringBootTest
 @Transactional
@@ -32,6 +37,14 @@ class DocumentMergeConcurrencyTest {
 	@Autowired
 	private SectionRepository sectionRepository;
 
+	@PersistenceContext
+	private EntityManager em;
+
+	@BeforeEach
+	void setUp() {
+		em.persist(member("nickname"));
+	}
+
 	@AfterEach
 	void tearDown() {
 		sectionRepository.deleteAll();
@@ -40,6 +53,8 @@ class DocumentMergeConcurrencyTest {
 	@Test
 	@DisplayName("Merge 동시성 테스트")
 	void mergeConcurrency() {
+
+		Member author = em.find(Member.class, 1L);
 
 		String title = "title";
 
@@ -52,7 +67,7 @@ class DocumentMergeConcurrencyTest {
 				+ "### title3\n"
 				+ "content3";
 
-		Document document = documentContentService.createDocument(title, rawContent);
+		Document document = documentContentService.createDocument(title, rawContent, author);
 
 		//트랜잭션 종료를 통해 이후 쓰레드들이 정상적으로 동작할 수 있게 함
 		//em.flush(), em.clear() 사용시, 쓰레드들이 정상적으로 동작하지 않음
@@ -88,7 +103,7 @@ class DocumentMergeConcurrencyTest {
 		TestTransaction.start(); // 지연로딩을 위한 트랜잭션 재시작
 
 		Document findDocument = documentContentRepository.findById(document.getId()).get();
-		   
+
 		// 동시성 문제 발생시 2가 나옴
 		//DocumentRepository.findForUpdate의 @Lock을 없애보면 확인 가능
 		assertThat(findDocument.getCurrentRevision()).isEqualTo(3L);

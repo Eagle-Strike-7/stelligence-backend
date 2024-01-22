@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.domain.amendment.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import jakarta.persistence.Column;
@@ -29,19 +28,12 @@ public class Amendment extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "commit_id")
+	@Column(name = "amendment_id")
 	private Long id;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "contribute_id")
 	private Contribute contribute;
-
-	private String amendmentTitle;
-	private String amendmentDescription;
 
 	@Enumerated(EnumType.STRING)
 	private AmendmentType type;
@@ -59,104 +51,67 @@ public class Amendment extends BaseTimeEntity {
 	private String newSectionTitle;
 	private String newSectionContent;
 
-	@Enumerated(EnumType.STRING)
-	private AmendmentStatus status;
+	//create type으로 생성할 때만 발생
+	private Integer creatingOrder;
 
-	//수정안 생성(update, create)
-	private Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
-		Section targetSection,
-		Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
-		this.member = member;
-		this.amendmentTitle = amendmentTitle;
-		this.amendmentDescription = amendmentDescription;
+	//수정안 생성(create)
+	private Amendment(AmendmentType type, Section targetSection, Heading newSectionHeading,
+		String newSectionTitle, String newSectionContent, Integer creatingOrder) {
 		this.type = type;
 		this.targetSection = targetSection;
 		this.newSectionHeading = newSectionHeading;
 		this.newSectionTitle = newSectionTitle;
 		this.newSectionContent = newSectionContent;
-		//기본값 pending
-		this.status = AmendmentStatus.PENDING;
-	}
-
-	//수정안 생성(delete)
-	private Amendment(Member member, String amendmentTitle, String amendmentDescription, AmendmentType type,
-		Section targetSection) {
-		this.member = member;
-		this.amendmentTitle = amendmentTitle;
-		this.amendmentDescription = amendmentDescription;
-		this.type = type;
-		this.targetSection = targetSection;
-		this.status = AmendmentStatus.PENDING;
-	}
-
-	//수정안 생성(create)
-	public static Amendment forCreate(Member member, String title, String description,
-		Section section, Heading heading, String sectionTitle, String sectionContent) {
-		return new Amendment(
-			member,
-			title,
-			description,
-			AmendmentType.CREATE,
-			section,
-			heading,
-			sectionTitle,
-			sectionContent
-		);
+		this.creatingOrder = creatingOrder;
 	}
 
 	//수정안 생성(update)
-	public static Amendment forUpdate(Member member, String title, String description,
-		Section section, Heading heading, String sectionTitle, String sectionContent) {
-		return new Amendment(
-			member,
-			title,
-			description,
-			AmendmentType.UPDATE,
-			section,
-			heading,
-			sectionTitle,
-			sectionContent
-		);
-	}
-
-	//수정안 생성(delete)
-	public static Amendment forDelete(Member member, String title, String description, Section section) {
-		return new Amendment(
-			member,
-			title,
-			description,
-			AmendmentType.DELETE,
-			section
-		);
-	}
-
-	//수정안 수정
-	public Amendment updateContent(String amendmentTitle, String amendmentDescription,
-		Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
-
-		//PENDING 상태가 아니면(REQUESTED) 수정할 수 없음
-		if (this.status != AmendmentStatus.PENDING) {
-			throw new IllegalStateException();
-		}
-
-		this.amendmentTitle = amendmentTitle;
-		this.amendmentDescription = amendmentDescription;
+	private Amendment(AmendmentType type, Section targetSection, Heading newSectionHeading,
+		String newSectionTitle, String newSectionContent) {
+		this.type = type;
+		this.targetSection = targetSection;
 		this.newSectionHeading = newSectionHeading;
 		this.newSectionTitle = newSectionTitle;
 		this.newSectionContent = newSectionContent;
+	}
 
-		return this;
+	//수정안 생성(delete)
+	private Amendment(AmendmentType type, Section targetSection) {
+		this.type = type;
+		this.targetSection = targetSection;
+	}
+
+	public static Amendment forCreate(Section targetSection,
+		Heading newSectionHeading, String newSectionTitle, String newSectionContent, Integer creatingOrder) {
+		return new Amendment(
+			AmendmentType.CREATE,
+			targetSection,
+			newSectionHeading,
+			newSectionTitle,
+			newSectionContent,
+			creatingOrder
+		);
+	}
+
+	public static Amendment forUpdate(Section targetSection,
+		Heading newSectionHeading, String newSectionTitle, String newSectionContent) {
+		return new Amendment(
+			AmendmentType.UPDATE,
+			targetSection,
+			newSectionHeading,
+			newSectionTitle,
+			newSectionContent
+		);
+	}
+
+	public static Amendment forDelete(Section targetSection) {
+		return new Amendment(
+			AmendmentType.DELETE,
+			targetSection
+		);
 	}
 
 	public void setContribute(Contribute contribute) {
 		this.contribute = contribute;
-	}
-
-	public boolean hasPermissionToDeleteOrUpdate(Long memberId) {
-		return this.getMember().getId().equals(memberId);
-	}
-
-	public boolean isNotDeletable() {
-		return this.getStatus() == AmendmentStatus.REQUESTED;
 	}
 }

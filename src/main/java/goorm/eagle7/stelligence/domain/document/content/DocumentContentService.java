@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -39,14 +41,17 @@ public class DocumentContentService {
 
 	/**
 	 * Document를 생성합니다.
+	 * DocumentService 내에서만 호출되어야 합니다.
+	 * 외부에서 호출시 DocumentGraph와 Content 간 일관성이 깨지는 문제가 발생될 수 있습니다.
 	 * @param title 문서의 제목
 	 * @param rawContent 사용자가 작성한 글 내용
 	 */
 	@Transactional
-	public Document createDocument(String title, String rawContent) {
+	public Document createDocument(String title, String rawContent, Member author) {
 		log.trace("DocumentService.createDocument called");
+
 		//document 생성
-		Document document = Document.createDocument(title);
+		Document document = Document.createDocument(title, author);
 		documentRepository.save(document);
 
 		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
@@ -136,6 +141,7 @@ public class DocumentContentService {
 	 * @param documentId 조회할 Document의 ID
 	 * @return 최신 Document의 Response Object
 	 */
+	@Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));

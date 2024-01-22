@@ -41,7 +41,7 @@ class DocumentFacadeServiceGraphTest {
 				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest = DocumentCreateRequest.of(title, null, rawContent);
-		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest);
+		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest, 1L);
 
 		DocumentNode documentNode = documentNodeRepository.findById(documentResponse.getDocumentId()).get();
 
@@ -66,12 +66,12 @@ class DocumentFacadeServiceGraphTest {
 				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest1 = DocumentCreateRequest.of(parentTitle, null, rawContent);
-		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest1);
+		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest1, 1L);
 		Long parentNodeId = documentResponse.getDocumentId();
 
 		//when
 		DocumentCreateRequest documentCreateRequest2 = DocumentCreateRequest.of(childTitle, parentNodeId, rawContent);
-		DocumentResponse documentResponse2 = documentService.createDocument(documentCreateRequest2);
+		DocumentResponse documentResponse2 = documentService.createDocument(documentCreateRequest2, 1L);
 
 		//then
 		DocumentNode childDocumentNode = documentNodeRepository.findById(documentResponse2.getDocumentId()).get();
