@@ -73,7 +73,9 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 	Optional<Boolean> isRootNode(@Param("documentId") Long documentId);
 
 	/**
-	 * 루트 노드를 삭제하는데 사용되는 메서드
+	 * 루트 노드를 삭제하는데 사용되는 메서드.
+	 * 루트 노드가 삭제되면 모든 자식 노드가 루트 노드가 되고,
+	 * 모든 후손 노드의 그룹이 적절히 업데이트 됩니다.
 	 * @param documentId: 삭제할 문서의 ID
 	 */
 	@Query("match (deleteNode:DocumentNode)"
@@ -87,7 +89,8 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 	void deleteRootNodeByDocumentId(@Param("documentId") Long documentId);
 
 	/**
-	 * 루트 노드가 아닌 노드를 삭제하는데 사용되는 메서드
+	 * 루트 노드가 아닌 노드를 삭제하는데 사용되는 메서드.
+	 * 삭제할 노드의 자식 노드들은, 삭제할 노드의 기존 부모 노드와 직접 연결됩니다.
 	 * @param documentId: 삭제할 문서의 ID
 	 */
 	@Query("match (deleteNode:DocumentNode)"
