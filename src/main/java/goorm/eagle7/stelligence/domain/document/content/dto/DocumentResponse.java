@@ -19,7 +19,7 @@ public class DocumentResponse {
 	private Long documentId;
 	private String title;
 	private List<SectionResponse> sections;
-	
+
 	/**
 	 * Document의 모든 섹션의 내용을 하나의 문자열로 합친 내용입니다.
 	 * 사용자가 글 조회시 프론트엔드에서 섹션의 내용을 하나의 문자열로 합쳐서 보여주기 편리하게 만듦니다.
@@ -47,10 +47,6 @@ public class DocumentResponse {
 	 */
 	public static DocumentResponse of(Document document, List<SectionResponse> sections) {
 		return new DocumentResponse(document.getId(), document.getTitle(), sections);
-	}
-
-	public static DocumentResponse of(Long documentId, String title, List<SectionResponse> sections) {
-		return new DocumentResponse(documentId, title, sections);
 	}
 
 }

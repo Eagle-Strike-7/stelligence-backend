@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,6 +141,7 @@ public class DocumentContentService {
 	 * @param documentId 조회할 Document의 ID
 	 * @return 최신 Document의 Response Object
 	 */
+	@Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
