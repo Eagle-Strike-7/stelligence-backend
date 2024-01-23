@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.section;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -32,12 +33,12 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	/**
 	 * 특정 SectionId에 대해 가장 최근에 개정된 버전을 가져옵니다.
 	 * @param sectionId
-	 * @return
+	 * @return 최근 개정된 Section
 	 */
 	@Query("select s from Section s " +
 		"where s.id = :sectionId " +
 		"order by s.revision desc limit 1")
-	Section findLatestSection(Long sectionId);
+	Optional<Section> findLatestSection(Long sectionId);
 
 	/**
 	 * Section이 중간에 삽입되는 경우

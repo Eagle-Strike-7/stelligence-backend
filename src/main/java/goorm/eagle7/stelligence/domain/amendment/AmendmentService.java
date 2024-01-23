@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.amendment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -34,7 +35,8 @@ public class AmendmentService {
 	 * 수정안 생성(새로운 문단 생성)
 	 */
 	private Amendment createAmendment(AmendmentRequest amendmentRequest) {
-		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
+		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId())
+			.orElseThrow(() -> new BaseException("존재하지 않는 섹션입니다. 섹션 ID : " + amendmentRequest.getSectionId()));
 
 		return Amendment.forCreate(
 			section,
@@ -49,7 +51,8 @@ public class AmendmentService {
 	 * 수정안 생성(기존 문단 수정)
 	 */
 	private Amendment updateAmendment(AmendmentRequest amendmentRequest) {
-		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
+		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId())
+			.orElseThrow(() -> new BaseException("존재하지 않는 섹션입니다. 섹션 ID : " + amendmentRequest.getSectionId()));
 
 		return Amendment.forUpdate(
 			section,
@@ -63,7 +66,8 @@ public class AmendmentService {
 	 * 수정안 생성(기존 문단 삭제)
 	 */
 	private Amendment deleteAmendment(AmendmentRequest amendmentRequest) {
-		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId());
+		Section section = sectionRepository.findLatestSection(amendmentRequest.getSectionId())
+			.orElseThrow(() -> new BaseException("존재하지 않는 섹션입니다. 섹션 ID : " + amendmentRequest.getSectionId()));
 
 		return Amendment.forDelete(section);
 	}
