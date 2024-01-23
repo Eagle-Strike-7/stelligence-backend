@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
+import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
@@ -17,6 +18,7 @@ import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
+@WithMockData
 @Transactional
 @Slf4j
 @Import(TestConfig.class)
@@ -41,7 +43,7 @@ class DocumentFacadeServiceGraphTest {
 				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest = DocumentCreateRequest.of(title, null, rawContent);
-		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest);
+		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest, 1L);
 
 		DocumentNode documentNode = documentNodeRepository.findById(documentResponse.getDocumentId()).get();
 
@@ -66,12 +68,12 @@ class DocumentFacadeServiceGraphTest {
 				+ "content3";
 
 		DocumentCreateRequest documentCreateRequest1 = DocumentCreateRequest.of(parentTitle, null, rawContent);
-		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest1);
+		DocumentResponse documentResponse = documentService.createDocument(documentCreateRequest1, 1L);
 		Long parentNodeId = documentResponse.getDocumentId();
 
 		//when
 		DocumentCreateRequest documentCreateRequest2 = DocumentCreateRequest.of(childTitle, parentNodeId, rawContent);
-		DocumentResponse documentResponse2 = documentService.createDocument(documentCreateRequest2);
+		DocumentResponse documentResponse2 = documentService.createDocument(documentCreateRequest2, 1L);
 
 		//then
 		DocumentNode childDocumentNode = documentNodeRepository.findById(documentResponse2.getDocumentId()).get();

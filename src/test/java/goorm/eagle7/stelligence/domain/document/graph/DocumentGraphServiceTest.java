@@ -1,8 +1,10 @@
 package goorm.eagle7.stelligence.domain.document.graph;
 
+import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,7 @@ class DocumentGraphServiceTest {
 	@DisplayName("최상위 문서 노드 생성 서비스 테스트")
 	void createDocumentNode() {
 
-		Document createdDocument = Document.createDocument("제목1");
+		Document createdDocument = Document.createDocument("제목1", member(null, "Paul"));
 		documentContentRepository.save(createdDocument);
 
 		documentGraphService.createDocumentNode(createdDocument);
@@ -58,12 +60,12 @@ class DocumentGraphServiceTest {
 	void createDocumentNodeWithParent() {
 
 		// 기존에 존재하는 상위 문서
-		Document parentDocument = Document.createDocument("상위 문서 제목");
+		Document parentDocument = Document.createDocument("상위 문서 제목", member(null, "Paul"));
 		documentContentRepository.save(parentDocument);
 		documentGraphService.createDocumentNode(parentDocument);
 
 		// 하위 문서 생성
-		Document createdDocument = Document.createDocument("하위 문서 제목");
+		Document createdDocument = Document.createDocument("하위 문서 제목", member(null, "Paul"));
 		documentContentRepository.save(createdDocument);
 		documentGraphService.createDocumentNodeWithParent(createdDocument, parentDocument.getId());
 
@@ -278,6 +280,139 @@ class DocumentGraphServiceTest {
 		assertThat(graph.getDocumentNodes()).hasSize(3);
 		assertThat(graph.getLinks()).isEmpty();
 		assertThat(documentIdSet).hasSize(3).containsAll(rootNodeIdList);
+	}
+
+	@Test
+	@DisplayName("루트 노드를 정상적으로 삭제할 수 있다.")
+	void deleteRootNode() {
+		// given
+		final Long deleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(11L, 12L, 13L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.deleteDocumentNode(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<Boolean> isRootList = childNodeList.stream()
+			.map(DocumentNode::getDocumentId)
+			.map(id -> documentNodeRepository.isRootNode(id).get())
+			.toList();
+
+		assertThat(isRootList)
+			.isNotEmpty()
+			.allMatch(b -> b);
+	}
+
+	@Test
+	@DisplayName("루트 노드가 아닌 노드를 정상적으로 삭제할 수 있다.")
+	void deleteNonrootNode() {
+		//given
+		final Long deleteTargetId = 11L;
+		final Long parentIdOfDeleteTargetId = 1L;
+		final List<Long> childIdListOfDeleteTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.deleteDocumentNode(deleteTargetId);
+
+		//then
+		assertThat(documentNodeRepository.findById(deleteTargetId)).isEmpty();
+		List<DocumentNode> childNodeList = documentNodeRepository.findAllById(childIdListOfDeleteTarget);
+		List<DocumentNode> parentNodeList = childNodeList.stream().map(DocumentNode::getParentDocumentNode).toList();
+
+		assertThat(parentNodeList)
+			.isNotEmpty()
+			.allMatch(p -> p.getDocumentId().equals(parentIdOfDeleteTargetId));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 노드는 삭제할 수 없다.")
+	void deleteNotExistNode() {
+		//given
+		final Long deleteTargetId = -1L;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when - then
+		assertThatThrownBy(() -> documentGraphService.deleteDocumentNode(deleteTargetId))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	@DisplayName("링크 수정 테스트")
+	void changeLinkToUpdateParent() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+		final Long newParentNodeId = 3L;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.updateDocumentLink(updateTargetId, newParentNodeId);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode updateNode = targetNodeOptional.get();
+		assertThat(updateNode.getParentDocumentNode().getDocumentId()).isEqualTo(newParentNodeId);
+		assertThat(updateNode.getGroup()).isEqualTo(updateNode.getParentDocumentNode().getGroup());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(updateNode.getGroup()));
+	}
+
+	@Test
+	@DisplayName("링크 삭제 테스트")
+	void removeLink() {
+		// given
+		final Long updateTargetId = 11L;
+		final List<Long> childIdListOfUpdateTarget = List.of(111L, 112L, 113L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.updateDocumentLink(updateTargetId, null);
+
+		//then
+		Optional<DocumentNode> targetNodeOptional = documentNodeRepository.findById(updateTargetId);
+		assertThat(targetNodeOptional).isPresent();
+		DocumentNode targetNode = targetNodeOptional.get();
+		assertThat(targetNode.getParentDocumentNode()).isNull();
+		assertThat(targetNode.getGroup()).isEqualTo(targetNode.getTitle());
+
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
