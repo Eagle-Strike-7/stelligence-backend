@@ -3,6 +3,8 @@ package goorm.eagle7.stelligence.domain.document.graph;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ public class DocumentGraphService {
 	 * @param document: 생성된 문서를 나타냅니다.
 	 */
 	@Transactional
+	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
 	public void createDocumentNode(Document document) {
 
 		DocumentNode documentNode = new DocumentNode(document.getId(), document.getTitle());
@@ -43,6 +46,7 @@ public class DocumentGraphService {
 	 * @param parentDocumentId: 링크를 연결할 상위 문서의 id를 나타냅니다.
 	 */
 	@Transactional
+	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
 	public void createDocumentNodeWithParent(Document document, Long parentDocumentId) {
 
 		DocumentNode parentDocumentNode = documentNodeRepository.findSingleNodeByDocumentId(parentDocumentId)
@@ -70,6 +74,7 @@ public class DocumentGraphService {
 	 * 문서가 많아지면 부하가 발생할 수 있습니다.
 	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
 	 */
+	@Cacheable(value = "RootGraph", cacheManager = "cacheManager")
 	public DocumentGraphResponse findAllGraph() {
 
 		List<DocumentNodeResponse> documentNodes = documentNodeRepository.findAllDocumentNode();
@@ -104,6 +109,7 @@ public class DocumentGraphService {
 	 * @param depth: 루트 노드로부터 몇 번째 깊이까지를 조회할 것인지를 결정합니다.
 	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
 	 */
+	@Cacheable(value = "RootGraph", key = "#depth", cacheManager = "cacheManager")
 	public DocumentGraphResponse findFromRootNodesWithDepth(int depth) {
 
 		List<DocumentNodeResponse> documentNodes = documentNodeRepository.findDocumentNodeFromRootWithDepth(depth);
@@ -118,6 +124,7 @@ public class DocumentGraphService {
 	 * @param documentId: 삭제할 문서의 ID입니다.
 	 */
 	@Transactional
+	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
 	public void deleteDocumentNode(Long documentId) {
 
 		boolean isRoot = documentNodeRepository.isRootNode(documentId)
@@ -138,6 +145,7 @@ public class DocumentGraphService {
 	 * @param parentDocumentId: 링크를 연결할 문서 ID
 	 */
 	@Transactional
+	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
 	public void updateDocumentLink(Long documentId, Long parentDocumentId) {
 		if (parentDocumentId != null) {
 			changeLinkToParent(documentId, parentDocumentId);
