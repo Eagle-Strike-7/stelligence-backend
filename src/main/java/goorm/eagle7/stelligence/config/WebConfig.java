@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoArgumentResolver;
@@ -24,6 +25,20 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(memberInfoArgumentResolver);
+	}
+
+	/**
+	 * CORS 설정
+	 * @param registry CORS 설정을 등록할 CORS 레지스트리
+	 */
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+			.allowedOrigins("*")
+			.allowedMethods("GET", "POST", "PUT", "DELETE")
+			.allowedHeaders("Content-Type")
+			.allowCredentials(true)
+			.maxAge(3600);
 	}
 
 }
