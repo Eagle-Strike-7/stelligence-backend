@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class ContributeRequest {
 	private String title;
 	private String description;
-	private List<AmendmentRequest> amendmentRequests;
+	private List<AmendmentRequest> amendments;
 	private Long documentId;
 }

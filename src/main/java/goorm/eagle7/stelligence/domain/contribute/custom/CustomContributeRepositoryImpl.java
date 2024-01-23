@@ -20,7 +20,7 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 	}
 
 	@Override
-	public List<Contribute> findContributesByDocumentCreatedAtDesc(Long documentId, Pageable pageable) {
+	public List<Contribute> findContributesByDocument(Long documentId, Pageable pageable) {
 
 		QContribute contribute = QContribute.contribute;
 
@@ -33,7 +33,7 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 	}
 
 	@Override
-	public List<Contribute> findVotingContributesCreatedAtDesc(Pageable pageable) {
+	public List<Contribute> findVotingContributes(Pageable pageable) {
 		QContribute contribute = QContribute.contribute;
 
 		return queryFactory.selectFrom(contribute)

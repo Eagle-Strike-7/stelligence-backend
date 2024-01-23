@@ -52,7 +52,7 @@ public class ContributeService {
 			contributeRequest.getDescription()
 		);
 
-		for (AmendmentRequest request : contributeRequest.getAmendmentRequests()) {
+		for (AmendmentRequest request : contributeRequest.getAmendments()) {
 			Amendment amendment = amendmentService.processAmendment(request);
 			contribute.addAmendment(amendment);
 		}
@@ -92,7 +92,7 @@ public class ContributeService {
 	 * @return
 	 */
 	public ContributeResponse getContribute(Long contributeId) {
-		Contribute contribute = contributeRepository.findById(contributeId).orElseThrow(
+		Contribute contribute = contributeRepository.findByIdWithAmendmentsAndMember(contributeId).orElseThrow(
 			() -> new BaseException("존재하지 않는 수정 요청입니다. 수정요청 ID: " + contributeId)
 		);
 
@@ -107,7 +107,7 @@ public class ContributeService {
 	public List<ContributeResponse> getContributesByDocument(Long documentId, Pageable pageable) {
 
 		List<Contribute> contributesByDocument =
-			contributeRepository.findContributesByDocumentCreatedAtDesc(documentId, pageable);
+			contributeRepository.findContributesByDocument(documentId, pageable);
 
 		return contributesByDocument.stream()
 			.map(ContributeResponse::of)
@@ -120,7 +120,7 @@ public class ContributeService {
 	 */
 	public List<ContributeResponse> getVotingContributes(Pageable pageable) {
 
-		List<Contribute> votingContributes = contributeRepository.findVotingContributesCreatedAtDesc(pageable);
+		List<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
 
 		return votingContributes.stream()
 			.map(ContributeResponse::of)
