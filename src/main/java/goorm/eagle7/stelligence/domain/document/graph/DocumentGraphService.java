@@ -29,6 +29,7 @@ public class DocumentGraphService {
 	 * 생성된 Document 객체를 기준으로 새로운 문서 노드를 생성합니다.
 	 * 상위 문서가 없는 최상위 문서에 대한 노드를 생성할 때민 사용합니다.
 	 * 상위 문서가 존재하는 문서 노드는 {@link #createDocumentNodeWithParent} 메서드를 통해 생성해주세요.
+	 * (기존에 설정된 그래프 관련 캐시를 모두 무효화합니다.)
 	 * @param document: 생성된 문서를 나타냅니다.
 	 */
 	@Transactional
@@ -42,6 +43,7 @@ public class DocumentGraphService {
 	/**
 	 * 생성된 Document 객체를 기준으로 새로운 문서 노드를 생성합니다.
 	 * 추가로, parentDocumentId를 갖는 문서 노드와 생성된 문서 노드 간의 링크를 연결합니다.
+	 * (기존에 설정된 그래프 관련 캐시를 모두 무효화합니다.)
 	 * @param document: 생성된 문서를 나타냅니다.
 	 * @param parentDocumentId: 링크를 연결할 상위 문서의 id를 나타냅니다.
 	 */
@@ -72,6 +74,7 @@ public class DocumentGraphService {
 	/**
 	 * 모든 문서와 문서 간의 관계를 조회합니다.
 	 * 문서가 많아지면 부하가 발생할 수 있습니다.
+	 * (비슷한 요청이 반복될 것으로 예상되어 데이터를 캐싱합니다.)
 	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
 	 */
 	@Cacheable(value = "RootGraph", cacheManager = "cacheManager")
@@ -106,6 +109,7 @@ public class DocumentGraphService {
 
 	/**
 	 * 처음 그래프를 조회할 때에는 루트 노드로부터 특정 깊이까지를 조회할 수 있어야합니다.
+	 * (비슷한 요청이 반복될 것으로 예상되어 데이터를 캐싱합니다.)
 	 * @param depth: 루트 노드로부터 몇 번째 깊이까지를 조회할 것인지를 결정합니다.
 	 * @return DocumentGraphResponse: 문서 그래프와 관련된 응답 DTO입니다.
 	 */
@@ -121,6 +125,7 @@ public class DocumentGraphService {
 	/**
 	 * 문서 ID에 따라 특정 문서 노드를 삭제합니다.
 	 * 이때, 해당 문서의 하위 문서의 링크와 그룹을 함께 재정의합니다.
+	 * (기존에 설정된 그래프 관련 캐시를 모두 무효화합니다.)
 	 * @param documentId: 삭제할 문서의 ID입니다.
 	 */
 	@Transactional
@@ -141,6 +146,7 @@ public class DocumentGraphService {
 	 * documentId에 따라 특정 문서를 찾습니다.
 	 * 찾은 특정 문서의 상위 문서를 parentDocumentId를 갖는 문서로 변경합니다.
 	 * parentDocumentId가 null이라면 링크를 삭제합니다.
+	 * (기존에 설정된 그래프 관련 캐시를 모두 무효화합니다.)
 	 * @param documentId: 링크를 변경할 문서 ID
 	 * @param parentDocumentId: 링크를 연결할 문서 ID
 	 */
