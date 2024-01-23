@@ -25,14 +25,32 @@ import lombok.extern.slf4j.Slf4j;
 @WebFilter(filterName = "RequestCachingFilter", urlPatterns = "/*") // 애플리케이션의 모든 요청에 대해 매핑됨
 public class RequestCachingFilter extends OncePerRequestFilter {
 
+	// 로깅 제외 URL 패턴
+	private static final String[] EXCLUDE_URL_PATTERN = {
+		"/swagger-ui/",
+		"/api-docs",
+		"/v3/api-docs"
+	};
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		CachedHttpServletRequest cachedHttpServletRequest = new CachedHttpServletRequest(request);
 
+		// 로깅 제외 URL 패턴에 포함되어 있으면 로깅하지 않음
+		for (String pattern : EXCLUDE_URL_PATTERN) {
+			if (cachedHttpServletRequest.getRequestURI().startsWith(pattern)) {
+				filterChain.doFilter(cachedHttpServletRequest, response);
+				return;
+			}
+		}
+
+		String queryString =
+			cachedHttpServletRequest.getQueryString() == null ? "" : cachedHttpServletRequest.getQueryString();
+
 		// uri 출력
 		log.debug("REQUEST URI: {}",
-			cachedHttpServletRequest.getRequestURI() + "?" + cachedHttpServletRequest.getQueryString());
+			cachedHttpServletRequest.getRequestURI() + "?" + queryString);
 
 		// body 출력
 		log.debug("REQUEST DATA: {}",
