@@ -31,18 +31,18 @@ public class Member extends BaseTimeEntity {
 
 	// 기본값
 	@Enumerated(EnumType.STRING)
-	private Role role; // default: USER
+	private Role role; // default: USER // TODO List
 	private long contributes; // default: 0
 
 	// social login 시 받아오는 정보
 	private String name;
-	private String nickname; // TODO unique
+	private String nickname;
 	private String email;
 	private String imageUrl;
 	private String socialId; // unique
 
 	@Enumerated(EnumType.STRING)
-	private SocialType socialType; // default: kakao
+	private SocialType socialType;
 
 	private String refreshToken;
 
@@ -77,23 +77,25 @@ public class Member extends BaseTimeEntity {
 	/*
 	 * Member는 정적 팩토리 메서드로 생성하기
 	 * @param name
-	 * @param nickname // TODO service unique 검증 필요
+	 * @param nickname
 	 * @param email
 	 * @param imageUrl
 	 * @param socialId
-	 * default: role: USER, contributes: 0, socialType: KAKAO
-	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
+	 * @param socialType
+	 * default: role: USER, contributes: 0
+	 * refreshToken은 updateRefreshToken()으로 업데이트
 	 */
-	public static Member of(String name, String nickname, String email, String imageUrl, String socialId) {
+	public static Member of(String name, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
+
 		Member member = new Member();
 		member.name = name;
 		member.nickname = nickname;
 		member.email = email;
 		member.imageUrl = imageUrl;
 		member.socialId = socialId;
+		member.socialType = socialType;
 
 		// 기본값 설정
-		member.socialType = SocialType.KAKAO;
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
