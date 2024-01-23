@@ -29,7 +29,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 
 	// 로깅 제외 URL 패턴
 	private static final String[] EXCLUDE_URL_PATTERN = {"/swagger-ui/", "/api-docs", "/v3/api-docs"};
-	private static final int MAX_BODY_PRINT_LENGTH = 100;
+	private static final int MAX_BODY_PRINT_LENGTH = 100; // body 출력 길이 제한
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
