@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @Component
-@WebFilter(filterName = "RequestCachingFilter", urlPatterns = "/*") // 애플리케이션의 모든 요청에 대해 매핑됨
-public class RequestCachingFilter extends OncePerRequestFilter {
+@WebFilter(filterName = "RequestLoggingFilter", urlPatterns = "/*") // 애플리케이션의 모든 요청에 대해 매핑됨
+public class RequestLoggingFilter extends OncePerRequestFilter {
 
 	// 로깅 제외 URL 패턴
 	private static final String[] EXCLUDE_URL_PATTERN = {"/swagger-ui/", "/api-docs", "/v3/api-docs"};
