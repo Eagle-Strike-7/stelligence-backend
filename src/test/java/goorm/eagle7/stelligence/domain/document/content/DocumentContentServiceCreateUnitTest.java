@@ -83,6 +83,10 @@ class DocumentContentServiceCreateUnitTest {
 		assertThat(document.getSections().get(1).getTitle()).isEqualTo("title2");
 		assertThat(document.getSections().get(0).getOrder()).isEqualTo(1);
 		assertThat(document.getSections().get(1).getOrder()).isEqualTo(2);
+
+		//section의 member 값이 정상적으로 들어갔는지 확인
+		assertThat(document.getSections().get(0).getAuthor().getId()).isEqualTo(1L);
+		assertThat(document.getSections().get(1).getAuthor().getId()).isEqualTo(1L);
 	}
 
 }
