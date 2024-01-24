@@ -17,8 +17,14 @@ import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 public class SchedulingTargetContributeExtractor {
 
 	private final ContributeRepository contributeRepository;
+
+	// 투표 만료 시간
 	private final long voteExpirationMinutes;
+
+	// 스케쥴링 간격
 	private final long schedulingIntervalMinutes;
+
+	// 스케쥴링 중복 시간
 	private final long overlapMinutes;
 
 	public SchedulingTargetContributeExtractor(
