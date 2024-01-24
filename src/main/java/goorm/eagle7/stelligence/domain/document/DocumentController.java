@@ -19,9 +19,6 @@ import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +42,7 @@ public class DocumentController {
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 생성 성공",
-		content = @Content(
-			mediaType = "application/json",
-			schema = @Schema(implementation = DocumentResponse.class)
-		)
+		useReturnTypeSchema = true
 	)
 	@PostMapping
 	public ResponseTemplate<DocumentResponse> createDocument(
@@ -62,10 +56,7 @@ public class DocumentController {
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 조회 성공",
-		content = @Content(
-			mediaType = "application/json",
-			schema = @Schema(implementation = DocumentResponse.class)
-		)
+		useReturnTypeSchema = true
 	)
 	@GetMapping("/{documentId}")
 	public ResponseTemplate<DocumentResponse> getDocument(
@@ -82,10 +73,7 @@ public class DocumentController {
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 그래프 조회 성공",
-		content = @Content(
-			mediaType = "application/json",
-			schema = @Schema(implementation = DocumentGraphResponse.class)
-		)
+		useReturnTypeSchema = true
 	)
 	@GetMapping
 	public ResponseTemplate<DocumentGraphResponse> getDocumentGraph(
@@ -103,10 +91,7 @@ public class DocumentController {
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 노드 제목 조회 성공",
-		content = @Content(
-			mediaType = "application/json",
-			array = @ArraySchema(schema = @Schema(implementation = DocumentNodeResponse.class))
-		)
+		useReturnTypeSchema = true
 	)
 	@GetMapping("/search")
 	public ResponseTemplate<List<DocumentNodeResponse>> searchDocument(

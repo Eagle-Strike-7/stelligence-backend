@@ -41,6 +41,7 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    command: redis-server --maxmemory 500mb --maxmemory-policy volatile-lru
     restart: unless-stopped
     ports:
       - 6379:6379

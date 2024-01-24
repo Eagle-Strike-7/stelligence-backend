@@ -2,6 +2,8 @@ package goorm.eagle7.stelligence.domain.section;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,8 @@ class SectionRepositoryTest {
 	@Test
 	@DisplayName("최신 섹션 조회 - 성공")
 	void findLatestSectionSuccess() {
-		Section latestSection = sectionRepository.findLatestSection(1L);
+		Section latestSection = sectionRepository.findLatestSection(1L)
+			.orElseThrow(() -> new RuntimeException("존재하지 않는 섹션입니다."));
 
 		assertThat(latestSection.getId()).isEqualTo(1L);
 		assertThat(latestSection.getRevision()).isEqualTo(3L);
@@ -29,8 +32,8 @@ class SectionRepositoryTest {
 	@Test
 	@DisplayName("최신 섹션 조회 - 실패")
 	void findLatestSectionFail() {
-		Section latestSection = sectionRepository.findLatestSection(9999999L);
+		Optional<Section> latestSection = sectionRepository.findLatestSection(9999999L);
 
-		assertThat(latestSection).isNull();
+		assertThat(latestSection).isEmpty();
 	}
 }
