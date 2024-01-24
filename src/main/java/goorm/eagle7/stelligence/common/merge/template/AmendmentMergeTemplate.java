@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,11 @@ public abstract class AmendmentMergeTemplate {
 	 * 이렇게 생성된 Section은 SectionRepository를 통해 저장됩니다.
 	 *
 	 * @param document 섹션이 생성될 Document
+	 * @param contributor 섹션을 생성한 Member
 	 * @param amendment 섹션을 생성하기 위한 정보를 담고 있는 Amendment
 	 * @return 새로 생성된 섹션으로 DB에 저장되지 않은 상태입니다.
 	 */
-	abstract Section createSection(Document document, Amendment amendment);
+	abstract Section createSection(Document document, Member contributor, Amendment amendment);
 
 	/**
 	 * Amendment Type에 따라 서로 다른 방식의 추가 작업을 수행합니다.
@@ -37,17 +39,15 @@ public abstract class AmendmentMergeTemplate {
 	 */
 	abstract void afterMerged(Section section);
 
-	public final void handle(Document document, Amendment amendment) {
+	public final void handle(Document document, Member contributor, Amendment amendment) {
 		//템플릿에 따라 Section을 생성한다.
-		Section section = createSection(document, amendment);
+		Section section = createSection(document, contributor, amendment);
 
 		//템플릿에 상관없이 공통적으로 섹션을 저장한다.
 		sectionRepository.save(section);
 
-		/**
-		 * TODO : 이 부분에서 Member의 Contribute를 올려주는 코드 작성
-		 */
-
+		contributor.incrementContributes();
+		
 		//템플릿에 따라 추가적인 작업을 수행한다.
 		afterMerged(section);
 	}

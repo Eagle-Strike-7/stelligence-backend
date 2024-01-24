@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 
@@ -25,13 +26,15 @@ public class DeleteAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	 * 섹션의 heading, title, content는 null로 설정합니다.
 	 *
 	 * @param document 섹션이 생성될 Document
+	 * @param contributor 섹션을 생성한 Member
 	 * @param amendment 섹션을 생성하기 위한 정보를 담고 있는 Amendment
 	 * @return 새로 생성된 섹션으로 DB에 저장되지 않은 상태입니다.
 	 */
 	@Override
-	Section createSection(Document document, Amendment amendment) {
+	Section createSection(Document document, Member contributor, Amendment amendment) {
 		return Section.createSection(
 			document,
+			contributor,
 			amendment.getTargetSection().getId(),
 			document.getCurrentRevision() + 1,
 			null,

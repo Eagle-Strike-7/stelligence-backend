@@ -52,7 +52,7 @@ public class MergeService {
 		 */
 		amendments.forEach(amendment ->
 			amendmentMergeTemplateMapper.getTemplateForType(amendment.getType())
-				.handle(document, amendment)
+				.handle(document, contribute.getContributor(), amendment)
 		);
 
 		document.incrementCurrentRevision();
