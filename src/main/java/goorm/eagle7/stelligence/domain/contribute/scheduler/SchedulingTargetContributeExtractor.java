@@ -67,7 +67,6 @@ public class SchedulingTargetContributeExtractor {
 	 *
 	 * 1번을 채택하기로 하고,
 	 * from 의 시간에 overlapMinutes 만큼을 더 빼주어 누락된 Contribute를 가져올 수 있도록 한다.
-	 * 중복되어서 가져와지는 Contribute가 있을 수 있지만, 이는 ContributeScheduler에서 처리하도록 한다.
 	 *
 	 * @param now 현재 시간을 파라미터로 받을 것을 권장
 	 * @return 스케쥴링의 대상이 되는 Contribute
@@ -78,7 +77,7 @@ public class SchedulingTargetContributeExtractor {
 			voteExpirationMinutes + schedulingIntervalMinutes + overlapMinutes);
 		LocalDateTime to = now.minusMinutes(voteExpirationMinutes);
 
-		return contributeRepository.findByCreatedAtBetween(from, to);
+		return contributeRepository.findByStatusIsVotingAndCreatedAtBetween(from, to);
 	}
 
 }

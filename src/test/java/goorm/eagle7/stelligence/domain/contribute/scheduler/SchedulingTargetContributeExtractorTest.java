@@ -31,7 +31,7 @@ class SchedulingTargetContributeExtractorTest {
 
 		//then
 		// 2024년 3월 21일 8시 58분 10초 ~ 2024년 3월 21일 9시 10분 10초 사이에 생성된 Contribute를 가져와야한다.
-		verify(contributeRepository).findByCreatedAtBetween(
+		verify(contributeRepository).findByStatusIsVotingAndCreatedAtBetween(
 			LocalDateTime.of(2024, 3, 21, 8, 58, 10),
 			LocalDateTime.of(2024, 3, 21, 9, 10, 10)
 		);

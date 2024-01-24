@@ -16,6 +16,8 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	Optional<Contribute> findByIdWithAmendmentsAndMember(@Param("id") Long id);
 
 	// 생성시간이 from과 to 사이인 Contribute를 가져온다.
-	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH Amendment a LEFT JOIN FETCH Member m WHERE c.createdAt BETWEEN :from AND :to")
-	List<Contribute> findByCreatedAtBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH c.amendments LEFT JOIN FETCH c.member WHERE c.createdAt BETWEEN :from AND :to AND c.status = 'VOTING'")
+	List<Contribute> findByStatusIsVotingAndCreatedAtBetween(@Param("from") LocalDateTime from,
+		@Param("to") LocalDateTime to);
+
 }
