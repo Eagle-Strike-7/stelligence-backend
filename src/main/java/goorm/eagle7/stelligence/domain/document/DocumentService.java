@@ -38,8 +38,8 @@ public class DocumentService {
 	 * RDB에 Document를 생성한 뒤, 해당 ID를 기준으로 DocumentNode를 생성합니다.
 	 *
 	 * 두 요청을 하나의 트랜잭션으로 묶어 일관성을 보장합니다.
-	 * @param documentCreateRequest
-	 * @return
+	 * @param documentCreateRequest : 생성할 Document의 정보
+	 * @return 생성된 DocumentResponse
 	 */
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
@@ -54,13 +54,18 @@ public class DocumentService {
 		if (documentCreateRequest.getParentDocumentId() == null) {
 			documentGraphService.createDocumentNode(createdDocument);
 		} else {
-			documentGraphService.createDocumentNodeWithParent(createdDocument, documentCreateRequest.getParentDocumentId());
+			documentGraphService.createDocumentNodeWithParent(createdDocument,
+				documentCreateRequest.getParentDocumentId());
 		}
 
 		//사용자의 기여 횟수를 증가시킵니다.
 		author.incrementContributes();
 
 		//DocumentResponse를 생성합니다.
+		/*
+		 * Document가 Section의 목록을 가지고 있으며 이 값을 Response로 만드는 행동은 최초 생성시에만 유효합니다.
+		 * 추후에 코드가 변경될 여지가 있습니다. 자세한 내용은 Document.sections의 주석을 참고해주세요.
+		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
 		return DocumentResponse.of(createdDocument, sections);
 	}
@@ -69,7 +74,7 @@ public class DocumentService {
 	 * Document를 조회합니다.
 	 * @param documentId : 조회할 Document의 ID
 	 * @param revision : null이면 최신 버전을 조회합니다.
-	 * @return
+	 * @return DocumentResponse
 	 */
 	public DocumentResponse getDocumentContent(Long documentId, Long revision) {
 		if (revision == null) {
