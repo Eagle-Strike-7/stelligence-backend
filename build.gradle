@@ -29,6 +29,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'  //actuator 추가
 
+    implementation 'io.micrometer:micrometer-registry-prometheus'   //마이크로미터 프로메테우스 구현체
+
     //database driver
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
