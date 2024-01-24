@@ -54,7 +54,7 @@ public class DocumentContentService {
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
-			Section section = Section.createSection(document, sectionIdGenerator.getAndIncrementSectionId(), 1L,
+			Section section = Section.createSection(document, author, sectionIdGenerator.getAndIncrementSectionId(), 1L,
 				sectionRequests.get(order).getHeading(), sectionRequests.get(order).getTitle(),
 				sectionRequests.get(order).getContent(), order + 1);
 

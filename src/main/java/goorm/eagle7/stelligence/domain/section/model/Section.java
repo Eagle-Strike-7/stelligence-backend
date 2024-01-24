@@ -1,14 +1,15 @@
 package goorm.eagle7.stelligence.domain.section.model;
 
-import static jakarta.persistence.FetchType.*;
 import static lombok.AccessLevel.*;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -34,10 +35,15 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	@Id
 	private Long revision;
 
-	//Member
+	/**
+	 * Section의 작성자입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "author_id")
+	private Member author;
 
 	//Document
-	@ManyToOne(fetch = LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "document_id")
 	private Document document;
 
@@ -55,6 +61,7 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	//===생성===//
 	public static Section createSection(
 		Document document,
+		Member author,
 		Long id,
 		Long revision,
 		Heading heading,
@@ -64,6 +71,7 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	) {
 		Section section = new Section();
 		section.document = document;
+		section.author = author;
 		section.id = id;
 		section.revision = revision;
 		section.heading = heading;
