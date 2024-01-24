@@ -56,12 +56,12 @@ values ('section', 15);
 -- 5개의 contribute가 존재합니다.
 ------ 4번 Contribute는 5번 admentment를 갖고있는 수정요청으로, 거절되었습니다.
 ------ 5번은 6, 7번 admentment를 갖고 있는 수정요청으로, 투표중입니다.
-insert into contribute (id, status, created_at, updated_at)
-values (1, 'MERGED', NOW(), NOW()),
-       (2, 'MERGED', NOW(), NOW()),
-       (3, 'MERGED', NOW(), NOW()),
-       (4, 'REJECTED', NOW(), NOW()),
-       (5, 'VOTING', NOW(), NOW());
+insert into contribute (contribute_id, member_id, document_id, title, description, status, created_at, updated_at)
+values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', NOW(), NOW()),
+       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', NOW(), NOW()),
+       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', NOW(), NOW()),
+       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', NOW(), NOW()),
+       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', NOW(), NOW());
 
 
 -- 7개의 admentment가 존재합니다.
