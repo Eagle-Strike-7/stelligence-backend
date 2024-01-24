@@ -17,8 +17,14 @@ import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 public class SchedulingTargetContributeExtractor {
 
 	private final ContributeRepository contributeRepository;
+
+	// 투표 만료 시간
 	private final long voteExpirationMinutes;
+
+	// 스케쥴링 간격
 	private final long schedulingIntervalMinutes;
+
+	// 스케쥴링 중복 시간
 	private final long overlapMinutes;
 
 	public SchedulingTargetContributeExtractor(
@@ -39,13 +45,12 @@ public class SchedulingTargetContributeExtractor {
 	/**
 	 * Contribute 중 파라미터로 받은 시간을 기준으로 스케쥴링의 대상이 되는 Contribute를 가져온다.
 	 * 스케쥴링의 대상은 다음과 같이 결정한다.
-	 * - Contribute의 생성 시간이 투표
 	 *
 	 * ex)
 	 * 투표 기간이 1시간이고 스케쥴링 간격이 10분이라고 할 때, 현재 시각이 10:00이라면
 	 * 8:50 ~ 9:00 사이에 생성된 Contribute를 가져와 처리한다.
 	 *
-	 * * from 의 시간에 scheduling / 5 만큼을 더 빼주는 이유
+	 * * from 의 시간에 overlap time 만큼을 더 빼주는 이유
 	 * - 스케쥴링이 완벽하게 재시간에 동작한다는 보장이 안되기 때문에,
 	 * - 상황에 따라서 누락되는 Contribute가 있을 수 있다.
 	 *
