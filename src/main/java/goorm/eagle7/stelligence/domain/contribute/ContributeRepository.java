@@ -10,6 +10,6 @@ import goorm.eagle7.stelligence.domain.contribute.custom.CustomContributeReposit
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 
 public interface ContributeRepository extends JpaRepository<Contribute, Long>, CustomContributeRepository {
-	@Query("SELECT c FROM Contribute c JOIN FETCH c.amendments JOIN FETCH c.member WHERE c.id = :id")
+	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH c.amendments LEFT JOIN FETCH c.member WHERE c.id = :id")
 	Optional<Contribute> findByIdWithAmendmentsAndMember(@Param("id") Long id);
 }
