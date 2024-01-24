@@ -1,9 +1,9 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
-import java.util.List;
-
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,12 +87,12 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<List<ContributeResponse>> getContributes(
+	public ResponseTemplate<Page<ContributeResponse>> getContributes(
 		@Parameter(description = "특정 문서의 수정요청을 조회할 때 문서의 ID", example = "1")
 		@RequestParam(required = false) Long documentId,
 		@Parameter(description = "수정요청의 상태", example = "VOTING")
 		@RequestParam(required = false) ContributeStatus status,
-		@ParameterObject Pageable pageable
+		@ParameterObject @PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
 		if (status != null && documentId != null) {
 			return ResponseTemplate.fail("status와 documentId는 함께 사용할 수 없습니다.");

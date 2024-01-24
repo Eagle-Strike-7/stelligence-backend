@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,26 +103,22 @@ public class ContributeService {
 	 * @param documentId
 	 * @return
 	 */
-	public List<ContributeResponse> getContributesByDocument(Long documentId, Pageable pageable) {
+	public Page<ContributeResponse> getContributesByDocument(Long documentId, Pageable pageable) {
 
-		List<Contribute> contributesByDocument =
+		Page<Contribute> contributesByDocument =
 			contributeRepository.findContributesByDocument(documentId, pageable);
 
-		return contributesByDocument.stream()
-			.map(ContributeResponse::of)
-			.toList();
+		return contributesByDocument.map(ContributeResponse::of);
 	}
 
 	/**
 	 * Contribute 목록 조회: 투표중인 Contribute만 조회
 	 * @return
 	 */
-	public List<ContributeResponse> getVotingContributes(Pageable pageable) {
+	public Page<ContributeResponse> getVotingContributes(Pageable pageable) {
 
-		List<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
+		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
 
-		return votingContributes.stream()
-			.map(ContributeResponse::of)
-			.toList();
+		return votingContributes.map(ContributeResponse::of);
 	}
 }
