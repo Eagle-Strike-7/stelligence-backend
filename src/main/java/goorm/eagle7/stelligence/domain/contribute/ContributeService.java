@@ -9,6 +9,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -47,8 +48,8 @@ public class ContributeService {
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
-			contributeRequest.getTitle(),
-			contributeRequest.getDescription()
+			contributeRequest.getContributeTitle(),
+			contributeRequest.getContributeDescription()
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
@@ -103,22 +104,22 @@ public class ContributeService {
 	 * @param documentId
 	 * @return
 	 */
-	public Page<ContributeResponse> getContributesByDocument(Long documentId, Pageable pageable) {
+	public Page<ContributeListResponse> getContributesByDocument(Long documentId, Pageable pageable) {
 
 		Page<Contribute> contributesByDocument =
 			contributeRepository.findContributesByDocument(documentId, pageable);
 
-		return contributesByDocument.map(ContributeResponse::of);
+		return contributesByDocument.map(ContributeListResponse::of);
 	}
 
 	/**
 	 * Contribute 목록 조회: 투표중인 Contribute만 조회
 	 * @return
 	 */
-	public Page<ContributeResponse> getVotingContributes(Pageable pageable) {
+	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
 
 		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
 
-		return votingContributes.map(ContributeResponse::of);
+		return votingContributes.map(ContributeListResponse::of);
 	}
 }

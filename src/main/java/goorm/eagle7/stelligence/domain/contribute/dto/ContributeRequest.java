@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 public class ContributeRequest {
 
 	@Schema(description = "수정요청의 제목", example = "마리모는 식물이 아닌 동물입니다.")
-	private String title;
+	private String contributeTitle;
 
 	@Schema(description = "수정요청의 설명", example = "마리모는 동물입니다. 동물을 식물이라고 부르는 것은 마리모에게 실례입니다.")
-	private String description;
+	private String contributeDescription;
 
 	@Schema(description = "수정요청에 포함될 개별 수정안 목록")
 	private List<AmendmentRequest> amendments;
@@ -30,8 +30,8 @@ public class ContributeRequest {
 	@Override
 	public String toString() {
 		return "ContributeRequest{" +
-			"title='" + title + '\'' +
-			", description='" + description + '\'' +
+			"title='" + contributeTitle + '\'' +
+			", description='" + contributeDescription + '\'' +
 			", amendments=" + amendments +
 			", documentId=" + documentId +
 			'}';

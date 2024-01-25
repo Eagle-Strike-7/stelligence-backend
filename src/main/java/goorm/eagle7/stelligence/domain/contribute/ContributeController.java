@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -87,7 +88,7 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<Page<ContributeResponse>> getContributes(
+	public ResponseTemplate<Page<ContributeListResponse>> getContributes(
 		@Parameter(description = "특정 문서의 수정요청을 조회할 때 문서의 ID", example = "1")
 		@RequestParam(required = false) Long documentId,
 		@Parameter(description = "수정요청의 상태", example = "VOTING")
