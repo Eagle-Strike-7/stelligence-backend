@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 public class DummyVoteRepository implements VoteCustomRepository {
 	@Override
 	public VoteSummary getVoteSummary(Long contributeId) {
-		return new VoteSummary(100, 80);
+		return new VoteSummary(100L, 100, 80);
 	}
 }
