@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContributeResponse {
 	private Long contributeId;
-	private String title;
-	private String description;
+	private String contributeTitle;
+	private String contributeDescription;
 	private Long documentId;
 	private String documentTitle;
 	private MemberMyPageResponse contributor; //수정 요청한 멤버에 대한 정보
@@ -24,8 +24,8 @@ public class ContributeResponse {
 
 	private ContributeResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
-		this.title = contribute.getTitle();
-		this.description = contribute.getDescription();
+		this.contributeTitle = contribute.getTitle();
+		this.contributeDescription = contribute.getDescription();
 		this.documentId = contribute.getDocument().getId();
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributor = MemberMyPageResponse.from(contribute.getMember());

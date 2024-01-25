@@ -48,8 +48,8 @@ public class ContributeService {
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
-			contributeRequest.getTitle(),
-			contributeRequest.getDescription()
+			contributeRequest.getContributeTitle(),
+			contributeRequest.getContributeDescription()
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
