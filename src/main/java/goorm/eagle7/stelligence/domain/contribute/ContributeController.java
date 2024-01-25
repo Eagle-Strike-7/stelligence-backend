@@ -92,7 +92,8 @@ public class ContributeController {
 		@RequestParam(required = false) Long documentId,
 		@Parameter(description = "수정요청의 상태", example = "VOTING")
 		@RequestParam(required = false) ContributeStatus status,
-		@ParameterObject @PageableDefault(page = 0, size = 10) Pageable pageable
+		@ParameterObject
+		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
 		if (status != null && documentId != null) {
 			return ResponseTemplate.fail("status와 documentId는 함께 사용할 수 없습니다.");
