@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.merge.template;
+package goorm.eagle7.stelligence.domain.contribute.scheduler.template;
 
 import org.springframework.stereotype.Component;
 

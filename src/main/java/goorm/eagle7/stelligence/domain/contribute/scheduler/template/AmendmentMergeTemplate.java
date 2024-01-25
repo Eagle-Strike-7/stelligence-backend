@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.merge.template;
+package goorm.eagle7.stelligence.domain.contribute.scheduler.template;
 
 import org.springframework.stereotype.Component;
 
@@ -43,10 +43,6 @@ public abstract class AmendmentMergeTemplate {
 
 		//템플릿에 상관없이 공통적으로 섹션을 저장한다.
 		sectionRepository.save(section);
-
-		/**
-		 * TODO : 이 부분에서 Member의 Contribute를 올려주는 코드 작성
-		 */
 
 		//템플릿에 따라 추가적인 작업을 수행한다.
 		afterMerged(section);
