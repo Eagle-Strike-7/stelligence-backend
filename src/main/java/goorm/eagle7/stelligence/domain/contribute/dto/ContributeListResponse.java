@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContributeListResponse {
 	private Long contributeId;
-	private ContributeStatus contributeStatus;
 	private String title;
+	private String description;
+	private ContributeStatus contributeStatus;
 	private Long documentId;
 	private String documentTitle;
 	private Long contributorId;
@@ -21,8 +22,9 @@ public class ContributeListResponse {
 
 	private ContributeListResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
-		this.contributeStatus = contribute.getStatus();
 		this.title = contribute.getTitle();
+		this.description = contribute.getDescription();
+		this.contributeStatus = contribute.getStatus();
 		this.documentId = contribute.getDocument().getId();
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributorId = contribute.getMember().getId();
