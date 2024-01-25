@@ -83,7 +83,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		try {
 
 			// accessToken이 유효하지 않다면,in
-			if (!jwtTokenService.isValidateToken(accessToken)) {
+			if (!jwtTokenService.isTokenValidated(accessToken)) {
 
 				// refresh 토큰 추출 (null 포함)
 				String refreshToken = getTokenFromCookies(request, refreshTokenName);
@@ -94,7 +94,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			}
 
 			// 유효한 accessToken으로 검증
-			return jwtTokenService.getAuthentication(accessToken);
+			return jwtTokenService.makeAuthenticationFromToken(accessToken);
 		} catch (JwtException e) {
 			throw new AccessDeniedException(e.getMessage());
 		}
@@ -113,7 +113,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		// map 사용: Optional 객체가 비어있다면, 그대로 Optional 반환(null 반환으로 처리), 객체가 존재하면 함수 동작해 token 반환
 		return
 			CookieUtils.getCookieFromCookies(request, tokenName)
-				.map(jwtTokenService::extractJwtFromCookie)
+				.map(jwtTokenService::getTokenFromCookie)
 				.orElse(null);
 	}
 
