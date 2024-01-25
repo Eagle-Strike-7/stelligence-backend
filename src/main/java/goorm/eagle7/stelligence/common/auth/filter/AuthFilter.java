@@ -39,17 +39,15 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * 		-> 토큰 검증 X uri: ResourceMemoryRepository에서 가져온다.
 	 * 			-> GET: /api/contributes, /api/documents, /api/comments, /api/debates, /login/oauth2/code/**, /oauth2/**
 	 * 			-> POST: /api/login
-	 * 		-> 토큰 검증 X: 그 외
+	 * 		-> 토큰 검증 O: 그 외
 	 * -> 모든 결과에 대해 exception 발생하지 않는다면, doFilter 진행
 	 * 		-> exception 발생 시, doFilter 진행하지 않고, security exceptionHandler에서 처리
 	 */
 	protected void doFilterInternal(
-		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
-		ServletException,
-		IOException {
+		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-		// 토큰 검증이 필요 없는지 확인 후 필요하면 토큰 검증으로 in
-		if (!isTokenValidationPass(request)) {
+		// 토큰 검증이 필요 없는지 확인 후 필요하면 토큰 검증으로 진행
+		if (isTokenValidationRequired(request)) {
 
 			// accessToken 추출(null 포함)
 			String accessToken = getTokenFromCookies(request, accessTokenName);
@@ -89,8 +87,7 @@ public class AuthFilter extends OncePerRequestFilter {
 				String refreshToken = getTokenFromCookies(request, refreshTokenName);
 
 				// accessToken 재발급, refresh 토큰 만료 혹은 DB와 다르다면 throw
-				accessToken = jwtTokenReissueService.reissueAccessToken(response, refreshToken, accessTokenName,
-					refreshTokenName);
+				accessToken = jwtTokenReissueService.reissueAccessToken(response, refreshToken, accessTokenName, refreshTokenName);
 			}
 
 			// 유효한 accessToken으로 검증
@@ -121,7 +118,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
-	private boolean isTokenValidationPass(HttpServletRequest request) {
-		return requestMatcher.matches(request);
+	private boolean isTokenValidationRequired(HttpServletRequest request) {
+		return !requestMatcher.matches(request);
 	}
 }
