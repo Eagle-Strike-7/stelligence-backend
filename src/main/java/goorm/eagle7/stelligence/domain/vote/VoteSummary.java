@@ -13,5 +13,5 @@ public class VoteSummary {
 
 	private Long contributeId;
 	private int totalVotes;
-	private int agree;
+	private int agreements;
 }
