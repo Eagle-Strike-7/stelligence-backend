@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -60,7 +61,7 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
-			.requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**"," /assets/**");
+			.requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**", " /assets/**");
 	}
 
 	/**
@@ -80,7 +81,7 @@ public class SecurityConfig {
 	 * 6. exceptionHandling ->
 	 * 		- AuthenticationEntryPoint 인증되지 않은 사용자가 접근하면 401
 	 * 			- InvalidCookieException, JwtException, AuthenticationException
-	 * 		- AccessDeniedException 인가된 사용자가 접근하면 403
+	 * 		- AccessDeniedException 인가되지 않은 사용자가 접근하면 403
 	 * 7. oauth2Login ->
 	 * 		- userInfoEndpoint -> oauth2 로그인 성공 후 서비스 로직,
 	 * 			- OAuth2UserService: 각 OAuth2 제공자에 맞춰 oauth2User 정보를 가져오는 서비스
@@ -114,9 +115,11 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			) // for token
 			.authorizeHttpRequests(request -> request
+				.requestMatchers(HttpMethod.GET, "/api/documents/**", "/api/contributes/**", "/api/debates/**",
+					"/api/comments/**")
+				.permitAll()
 				.requestMatchers("/api/login", "/oauth2/**",
-					"/login/oauth2/code/**")
-				.permitAll() // /api/login은 test nickname 가입 용도
+					"/login/oauth2/code/**", "/api/logout").permitAll() // /api/login은 test nickname 가입 용도
 				.requestMatchers("/api/**").hasRole("USER")
 				.anyRequest().authenticated())
 
@@ -124,7 +127,7 @@ public class SecurityConfig {
 			.addFilterBefore(authFilter,
 				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능
 			.exceptionHandling(exceptionHandling -> exceptionHandling
-				.accessDeniedHandler(jwtAccessDeniedHandler)// 인가된 사용자가 접근하면 403
+				.accessDeniedHandler(jwtAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
 				.authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
 			)
 			.oauth2Login(oauth2 -> oauth2
