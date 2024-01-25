@@ -16,7 +16,7 @@ public class ContributeListResponse {
 	private Long documentId;
 	private String documentTitle;
 	private Long contributorId;
-	private String contributorName;
+	private String contributorNickname;
 
 	private ContributeListResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
@@ -26,7 +26,7 @@ public class ContributeListResponse {
 		this.documentId = contribute.getDocument().getId();
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributorId = contribute.getMember().getId();
-		this.contributorName = contribute.getMember().getName();
+		this.contributorNickname = contribute.getMember().getNickname();
 	}
 
 	public static ContributeListResponse of(Contribute contribute) {
