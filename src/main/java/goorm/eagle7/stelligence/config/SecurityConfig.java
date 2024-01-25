@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -15,8 +14,9 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
-import goorm.eagle7.stelligence.common.auth.jwt.JwtAccessDeniedHandler;
-import goorm.eagle7.stelligence.common.auth.jwt.JwtAuthenticationEntryPoint;
+import goorm.eagle7.stelligence.common.auth.filter.RequestMatcher;
+import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
+import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutCustomHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutSuccessHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.service.CustomOAuth2UserService;
@@ -43,9 +43,10 @@ public class SecurityConfig {
 	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 	private final OAuth2LogoutCustomHandler oAuth2LogoutCustomHandler;
 	private final OAuth2LogoutSuccessHandler oAuth2LogoutSuccessHandler;
-	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final RequestMatcher requestMatcher;
 
 	/**
 	 * .ignoring():
@@ -58,6 +59,9 @@ public class SecurityConfig {
 	 * 		- 보안 검사는 필요하지만 인증은 필요하지 않은 경우에 적합.
 	 * @return WebSecurityCustomizer : WebSecurityCustomizer
 	 */
+
+	// TODO error 페이지는 인증 없어도 접근 가능하게 해야함. webSecurityCustomizer()에서 어떤 처리?
+	// TODO 인증과 없는 페이지 에러 처리 중 어떤 게 먼저인 게 적절할지.
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
@@ -109,17 +113,15 @@ public class SecurityConfig {
 
 		http
 			.csrf(AbstractHttpConfigurer::disable) // csrf -> token 기반으로 비활성화
+			.formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인 비활성화
 			.httpBasic(
 				AbstractHttpConfigurer::disable) // BasicAuthenticationFilter 사용 X (대신 JWT 토큰, OAuth 방식 사용), formLoginFilter 사용 X(사용자 정의 로그인 페이지 이용)
 			.sessionManagement(sessionManagement -> sessionManagement
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			) // for token
 			.authorizeHttpRequests(request -> request
-				.requestMatchers(HttpMethod.GET, "/api/documents/**", "/api/contributes/**", "/api/debates/**",
-					"/api/comments/**")
+				.requestMatchers(requestMatcher)
 				.permitAll()
-				.requestMatchers("/api/login", "/oauth2/**",
-					"/login/oauth2/code/**", "/api/logout").permitAll() // /api/login은 test nickname 가입 용도
 				.requestMatchers("/api/**").hasRole("USER")
 				.anyRequest().authenticated())
 
@@ -127,8 +129,8 @@ public class SecurityConfig {
 			.addFilterBefore(authFilter,
 				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능
 			.exceptionHandling(exceptionHandling -> exceptionHandling
-				.accessDeniedHandler(jwtAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
-				.authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
+				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
+				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
 			)
 			.oauth2Login(oauth2 -> oauth2
 				.userInfoEndpoint(userInfo -> userInfo // userInfo == oauth2User // oauth2 로그인 성공 후 서비스 로직
