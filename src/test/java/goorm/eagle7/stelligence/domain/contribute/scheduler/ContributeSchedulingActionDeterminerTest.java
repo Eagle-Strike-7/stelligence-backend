@@ -30,7 +30,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(100, 80));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 80));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -43,7 +43,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(100, 79));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 79));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -56,7 +56,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(100, 29));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 29));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
