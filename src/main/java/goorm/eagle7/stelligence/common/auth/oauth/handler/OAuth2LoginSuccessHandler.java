@@ -58,7 +58,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		 */
 		loginService.login(response, oAuth2Request);
 
-		ResponseTemplate<String> responseTemplate = ResponseTemplate.ok("login success");
+		ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
 		ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
 
 	}
