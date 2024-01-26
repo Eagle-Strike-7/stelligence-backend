@@ -39,6 +39,7 @@ public class LoginService {
 
 		String socialId = oAuth2Request.getSocialId();
 
+		// TODO socialId, socialType으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		// socialId로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		Member member = memberRepository.findBySocialId(socialId)
 			.orElseGet(() -> signUpService.signUp(oAuth2Request));

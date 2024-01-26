@@ -86,24 +86,21 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 	}
 
 	/**
-	 * CustomOAuth2User의 equals 메서드를 오버라이딩하여, CustomOAuth2User의 소셜 ID가 같으면 같은 객체로 판단하도록 함.
+	 * CustomOAuth2User의 equals 메서드를 오버라이딩하여, CustomOAuth2User의 소셜 ID, SocailType이 같으면 같은 객체로 판단하도록 함.
 	 * -> 중복 회원 가입 방지
 	 * TODO 같은 객체로 판단할 때, 다른 필드 변경 시 DB 업데이트 확인 필요
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		if (!super.equals(o))
-			return false;
-		CustomOAuth2User that = (CustomOAuth2User)o;
-		return Objects.equals(socialId, that.socialId);
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		CustomOAuth2User that = (CustomOAuth2User) o;
+		return Objects.equals(socialId, that.socialId) && Objects.equals(socialType, that.socialType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), socialId);
+		return Objects.hash(super.hashCode(), socialId, socialType);
 	}
 }
