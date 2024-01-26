@@ -67,7 +67,7 @@ public class JwtTokenProvider {
 	 * @return String AccessToken
 	 */
 	public String createAccessToken(Long memberId) {
-		Date now = new Date();
+		Date now = new Date(System.currentTimeMillis());
 
 		return Jwts.builder()
 			.header()
@@ -116,7 +116,7 @@ public class JwtTokenProvider {
 	 * @return String refreshToken
 	 */
 	public String expireRefreshToken(Long memberId) {
-		Date now = new Date();
+		Date now = new Date(System.currentTimeMillis());
 
 		return Jwts.builder()
 			.header()

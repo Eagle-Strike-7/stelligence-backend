@@ -113,7 +113,8 @@ public class JwtTokenService {
 	 * @return Claims 서명이 포함된 클레임
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
-	private Claims getClaimsOrThrows(String token) {
+	// TODO getClaims에서 나는 만료 오류와 getExpiration에서 나는 만료 오류는 어떤 차이가 있는지
+	public Claims getClaimsOrThrows(String token) {
 
 		try {
 			return Jwts.parser()
@@ -135,7 +136,7 @@ public class JwtTokenService {
 	public void validateActiveToken(String token) {
 
 		boolean expired = getClaimsOrThrows(token)
-			.getExpiration().before(new Date());
+			.getExpiration().before(new Date(System.currentTimeMillis()));
 
 		if (expired) {
 			throw new BadJwtException(ERROR_MESSAGE);
