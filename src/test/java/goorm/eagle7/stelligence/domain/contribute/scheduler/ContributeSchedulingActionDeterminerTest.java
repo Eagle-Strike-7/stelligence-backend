@@ -12,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.vote.VoteCustomRepository;
 import goorm.eagle7.stelligence.domain.vote.VoteSummary;
+import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ContributeSchedulingActionDeterminerTest {

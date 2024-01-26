@@ -3,8 +3,8 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.vote.VoteCustomRepository;
 import goorm.eagle7.stelligence.domain.vote.VoteSummary;
+import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

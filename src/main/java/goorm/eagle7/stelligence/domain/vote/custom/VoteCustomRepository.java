@@ -1,4 +1,6 @@
-package goorm.eagle7.stelligence.domain.vote;
+package goorm.eagle7.stelligence.domain.vote.custom;
+
+import goorm.eagle7.stelligence.domain.vote.VoteSummary;
 
 /**
  * Vote의 데이터를 저장하고 조회하는 Repository 인터페이스 입니다.
