@@ -7,11 +7,13 @@ import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * CreateAmendmentMergeTemplate
  * 생성 타입의 수정안에 대해 병합을 수행합니다.
  */
+@Slf4j
 @Component
 public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 
@@ -46,7 +48,8 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 			amendment.getNewSectionHeading(),
 			amendment.getNewSectionTitle(),
 			amendment.getNewSectionContent(),
-			amendment.getTargetSection().getOrder() + 1 //섹션은 targetSection의 다음 위치에 삽입됩니다.
+			amendment.getTargetSection().getOrder() + amendment.getCreatingOrder()
+			//새로운 섹션의 순서는 기존 섹션의 순서 + creatingOrder입니다.
 		);
 	}
 
@@ -57,7 +60,9 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	@Override
 	void afterMerged(Section section) {
 		Document document = section.getDocument();
-		sectionRepository.updateOrders(document.getId(), document.getCurrentRevision(), section.getOrder());
+		int affectedRows = sectionRepository.updateOrders(document.getId(), document.getCurrentRevision(),
+			section.getOrder());
+		log.debug("Affected rows : {}", affectedRows);
 	}
 
 }

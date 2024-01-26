@@ -43,12 +43,12 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	/**
 	 * Section이 중간에 삽입되는 경우
 	 * 이후 순서인 섹션들의 순서를 변경하기 위한 메서드입니다.
-	 * @param documentId
-	 * @param revision
-	 * @param insertOrders
-	 * @return
+	 * @param documentId 문서 ID
+	 * @param revision 순서를 변경할 문서의 버전
+	 * @param insertOrders 순서를 변경할 기준 순서
+	 * @return 변경된 섹션의 개수
 	 */
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(nativeQuery = true,
 		value = "UPDATE section " +
 			"SET orders = (orders + 1) " +

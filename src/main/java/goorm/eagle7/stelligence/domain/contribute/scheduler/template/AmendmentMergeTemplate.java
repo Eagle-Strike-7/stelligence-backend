@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.domain.contribute.scheduler.template;
 
-import org.springframework.stereotype.Component;
-
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -15,7 +13,6 @@ import lombok.RequiredArgsConstructor;
  * sectionRepository.save 메서드나 member.contributes 증가시키는 로직과 같이
  * 공통적으로 수행되어야 하는 코드는 이곳에서 수행됩니다.
  */
-@Component
 @RequiredArgsConstructor
 public abstract class AmendmentMergeTemplate {
 
