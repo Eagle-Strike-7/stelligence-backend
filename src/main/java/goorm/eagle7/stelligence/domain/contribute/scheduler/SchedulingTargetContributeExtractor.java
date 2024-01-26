@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SchedulingTargetContributeExtractor
  * ContributeScheduler가 실행될 때, 실행 대상이 되는 Contribute를 가져오는 역할을 한다.
  */
+@Slf4j
 @Component
 public class SchedulingTargetContributeExtractor {
 
@@ -22,7 +24,7 @@ public class SchedulingTargetContributeExtractor {
 	private final long voteExpirationMinutes;
 
 	// 스케쥴링 간격
-	private final long schedulingIntervalMinutes;
+	private final long schedulingIntervalSeconds;
 
 	// 스케쥴링 중복 시간
 	private final long overlapMinutes;
@@ -38,7 +40,7 @@ public class SchedulingTargetContributeExtractor {
 	) {
 		this.contributeRepository = contributeRepository;
 		this.voteExpirationMinutes = voteExpirationMinutes;
-		this.schedulingIntervalMinutes = schedulingIntervalMilliSeconds / 60000;
+		this.schedulingIntervalSeconds = schedulingIntervalMilliSeconds / 1000;
 		this.overlapMinutes = overlapMinutes;
 	}
 
@@ -73,10 +75,14 @@ public class SchedulingTargetContributeExtractor {
 	 */
 	List<Contribute> extractContributes(LocalDateTime now) {
 
-		LocalDateTime from = now.minusMinutes(
-			voteExpirationMinutes + schedulingIntervalMinutes + overlapMinutes);
+		LocalDateTime from = now
+			.minusMinutes(voteExpirationMinutes)
+			.minusSeconds(schedulingIntervalSeconds)
+			.minusMinutes(overlapMinutes);
+
 		LocalDateTime to = now.minusMinutes(voteExpirationMinutes);
 
+		log.debug("스케쥴링 대상 Contribute 추출 쿼리 실행 : {} ~ {}", from, to);
 		return contributeRepository.findByStatusIsVotingAndCreatedAtBetween(from, to);
 	}
 
