@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+// TODO HttpStatusReturningServerLogoutSuccessHandler 사용도 가능.
 @Component
 @RequiredArgsConstructor
 public class OAuth2LogoutSuccessHandler implements LogoutSuccessHandler {
@@ -22,7 +23,7 @@ public class OAuth2LogoutSuccessHandler implements LogoutSuccessHandler {
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) {
 
-		ResponseTemplate<String> responseTemplate = ResponseTemplate.ok("logout success");
+		ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
 		ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
 	}
 
