@@ -109,4 +109,12 @@ public class Member extends BaseTimeEntity {
 	public void incrementContributes() {
 		this.contributes++;
 	}
+
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void expireRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 }
