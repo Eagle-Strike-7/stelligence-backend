@@ -5,6 +5,7 @@ import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * AmendmentMergeTemplate
@@ -13,10 +14,11 @@ import lombok.RequiredArgsConstructor;
  * sectionRepository.save 메서드나 member.contributes 증가시키는 로직과 같이
  * 공통적으로 수행되어야 하는 코드는 이곳에서 수행됩니다.
  */
+@Slf4j
 @RequiredArgsConstructor
 public abstract class AmendmentMergeTemplate {
 
-	private final SectionRepository sectionRepository;
+	protected final SectionRepository sectionRepository;
 
 	/**
 	 * Amendment Type에 따라 서로 다른 방식의 Section을 생성합니다.
@@ -36,12 +38,15 @@ public abstract class AmendmentMergeTemplate {
 
 	public final void handle(Document document, Amendment amendment) {
 		//템플릿에 따라 Section을 생성한다.
+		log.trace("템플릿에 따라 Section을 생성합니다.");
 		Section section = createSection(document, amendment);
 
 		//템플릿에 상관없이 공통적으로 섹션을 저장한다.
+		log.trace("생성한 섹션을 저장합니다.");
 		sectionRepository.save(section);
 
 		//템플릿에 따라 추가적인 작업을 수행한다.
+		log.trace("템플릿에 따라 추가적인 작업을 수행합니다.");
 		afterMerged(section);
 	}
 }

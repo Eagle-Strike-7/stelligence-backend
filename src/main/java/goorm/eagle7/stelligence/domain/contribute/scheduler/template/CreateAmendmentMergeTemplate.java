@@ -21,7 +21,6 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	 * 새로운 ID를 가진 섹션의 생성을 위해 SectionIdGenerator를 주입받습니다.
 	 */
 	private final SectionIdGenerator sectionIdGenerator;
-	private final SectionRepository sectionRepository;
 
 	public CreateAmendmentMergeTemplate(
 		SectionRepository sectionRepository,
@@ -29,7 +28,6 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	) {
 		super(sectionRepository);
 		this.sectionIdGenerator = sectionIdGenerator;
-		this.sectionRepository = sectionRepository;
 	}
 
 	/**
@@ -41,6 +39,7 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	 */
 	@Override
 	Section createSection(Document document, Amendment amendment) {
+		log.trace("새로운 섹션을 생성합니다.");
 		return Section.createSection(
 			document,
 			sectionIdGenerator.getAndIncrementSectionId(), //새로운 섹션의 삽입이므로 ID를 새로 생성합니다.
@@ -55,14 +54,16 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 
 	/**
 	 * 새로운 섹션의 생성에 따라 섹션의 순서를 업데이트합니다.
-	 * @param section
+	 * @param section 새롭게 생성된 섹션
 	 */
 	@Override
 	void afterMerged(Section section) {
+		log.trace("새로운 섹션의 생성에 따라 섹션의 순서를 업데이트합니다.");
 		Document document = section.getDocument();
-		int affectedRows = sectionRepository.updateOrders(document.getId(), document.getCurrentRevision(),
-			section.getOrder());
-		log.debug("Affected rows : {}", affectedRows);
+		sectionRepository.findByVersion(document, document.getCurrentRevision())
+			.stream()
+			.filter(s -> s.getOrder() >= section.getOrder())
+			.forEach(Section::incrementOrder);
 	}
 
 }
