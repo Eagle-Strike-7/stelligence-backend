@@ -45,6 +45,6 @@ public class DebateController {
 		@PathVariable("debateId") Long debateId,
 		@Auth MemberInfo memberInfo
 	) {
-		return ResponseTemplate.ok(null);
+		return ResponseTemplate.ok();
 	}
 }
