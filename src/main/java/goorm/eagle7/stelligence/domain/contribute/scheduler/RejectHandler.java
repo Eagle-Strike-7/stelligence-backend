@@ -2,7 +2,9 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import org.springframework.stereotype.Component;
 
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -11,11 +13,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RejectHandler implements ContributeSchedulingActionHandler {
 
+	private final ContributeRepository contributeRepository;
+
 	@Override
-	public void handle(Contribute contribute) {
-		log.debug("Contribute {} is rejected.", contribute.getId());
+	public void handle(Long contributeId) {
+		log.debug("Contribute {} is rejected.", contributeId);
+		Contribute contribute = contributeRepository.findById(contributeId).orElseThrow();
 		contribute.setStatusRejected();
 	}
 }
