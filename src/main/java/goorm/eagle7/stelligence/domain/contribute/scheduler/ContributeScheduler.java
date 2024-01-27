@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +46,6 @@ public class ContributeScheduler {
 		);
 	}
 
-	@Transactional
 	@Scheduled(fixedRateString = "${contribute.scheduler.scheduling-interval-ms:600000}")
 	// 분 단위로 받아서 ms로 변환
 	public void scheduleContribute() {
@@ -60,7 +58,7 @@ public class ContributeScheduler {
 		// 가져온 Contribute들에 대하여 병합, 토론, 반려를 수행한다.
 		for (Contribute contribute : contributes) {
 			ContributeSchedulingAction action = contributeConditionChecker.check(contribute);
-			handlers.get(action).handle(contribute);
+			handlers.get(action).handle(contribute.getId());
 		}
 	}
 
