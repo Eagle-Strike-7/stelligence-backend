@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 투표가 종료된 Contribute에 대한 토론을 생성합니다.
- *
- *
  */
 @Slf4j
 @Component

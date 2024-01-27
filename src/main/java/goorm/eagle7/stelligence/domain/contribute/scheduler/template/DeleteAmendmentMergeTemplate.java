@@ -8,7 +8,6 @@ import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 
 /**
- * DeleteAmendmentMergeTemplate
  * 삭제 타입의 수정안에 대해 병합을 수행합니다.
  */
 @Component

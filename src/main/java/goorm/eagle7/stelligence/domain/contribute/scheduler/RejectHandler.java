@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * RejectHandler
  * 투표가 종료된 Contribute를 반려 처리합니다.
  */
 @Slf4j

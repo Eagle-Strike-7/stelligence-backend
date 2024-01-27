@@ -51,7 +51,6 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	@Override
 	// @CacheEvict(value = "document", key = "#contribute.document.id", cacheManager = "cacheManager")
 	public void handle(Long contributeId) {
-		log.trace("MergeService.merge called");
 		log.info("Contribute {} is merging", contributeId);
 
 		//Contribute를 가져옵니다.

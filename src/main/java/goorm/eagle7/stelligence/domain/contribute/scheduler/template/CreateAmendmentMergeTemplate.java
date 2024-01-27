@@ -10,18 +10,20 @@ import goorm.eagle7.stelligence.domain.section.model.Section;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * CreateAmendmentMergeTemplate
  * 생성 타입의 수정안에 대해 병합을 수행합니다.
  */
 @Slf4j
 @Component
 public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 
-	/**
-	 * 새로운 ID를 가진 섹션의 생성을 위해 SectionIdGenerator를 주입받습니다.
-	 */
 	private final SectionIdGenerator sectionIdGenerator;
 
+	/**
+	 * 생성자
+	 * 자동 의존 주입 대상입니다.
+	 * @param sectionRepository 섹션의 저장소입니다.
+	 * @param sectionIdGenerator 새로운 ID를 가진 섹션의 생성을 위해 SectionIdGenerator를 주입받습니다.
+	 */
 	public CreateAmendmentMergeTemplate(
 		SectionRepository sectionRepository,
 		SectionIdGenerator sectionIdGenerator
@@ -62,7 +64,7 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 		Document document = section.getDocument();
 		sectionRepository.findByVersion(document, document.getCurrentRevision())
 			.stream()
-			.filter(s -> s.getOrder() >= section.getOrder())
+			.filter(s -> s.getOrder() >= section.getOrder()) //새로운 섹션의 순서보다 크거나 같은 순서를 가진 섹션들을 가져옵니다.
 			.forEach(Section::incrementOrder);
 	}
 

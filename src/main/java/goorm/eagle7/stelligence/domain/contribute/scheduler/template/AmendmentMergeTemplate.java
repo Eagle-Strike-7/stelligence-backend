@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * AmendmentMergeTemplate
  * 서로 다른 타입에 대하여 다르게 동작하는 병합과정을 분리해내고 공통적인 부분을 추출해낸 추상클래스입니다.
- * Template Method Pattern을 사용하여, 각 타입에 맞는 섹션의 생성은 createSection에서 수행하고
+ *
+ * <p>Template Method Pattern을 사용하여, 각 타입에 맞는 섹션의 생성은 createSection에서 수행하고
  * sectionRepository.save 메서드나 member.contributes 증가시키는 로직과 같이
  * 공통적으로 수행되어야 하는 코드는 이곳에서 수행됩니다.
  */

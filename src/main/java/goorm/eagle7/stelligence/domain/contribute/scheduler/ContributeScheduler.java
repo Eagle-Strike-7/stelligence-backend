@@ -47,13 +47,12 @@ public class ContributeScheduler {
 	}
 
 	@Scheduled(fixedRateString = "${contribute.scheduler.scheduling-interval-ms:600000}")
-	// 분 단위로 받아서 ms로 변환
 	public void scheduleContribute() {
 		log.info("ContributeScheduler가 수행됩니다.");
 
 		// 현재 시간을 기준으로 스케쥴링의 대상이 되는 Contribute를 가져온다.
 		List<Contribute> contributes = schedulingTargetContributeExtractor.extractContributes(LocalDateTime.now());
-		log.debug("스케쥴링 대상 Contribute : {}", contributes.stream().map(Contribute::getId).toList());
+		log.debug("스케쥴링 대상 Contribute ID : {}", contributes.stream().map(Contribute::getId).toList());
 
 		// 가져온 Contribute들에 대하여 병합, 토론, 반려를 수행한다.
 		for (Contribute contribute : contributes) {
