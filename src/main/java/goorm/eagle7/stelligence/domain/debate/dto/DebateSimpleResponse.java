@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 public class DebateSimpleResponse {
 
 	private Long debateId;
+	private LocalDateTime createdAt;
 	private Long documentId;
 	private String documentTitle;
 	private String contributeTitle;
-	private int commentCount;
-	private LocalDateTime createdAt;
+	private int commentsCount;
 
+	private Long contributorId;
+	private String contributorNickname;
 }
