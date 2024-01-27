@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
@@ -27,6 +28,9 @@ import goorm.eagle7.stelligence.domain.section.model.Section;
 
 @ExtendWith(MockitoExtension.class)
 class MergeHandlerTest {
+
+	@Mock
+	ContributeRepository contributeRepository;
 
 	@Mock
 	CreateAmendmentMergeTemplate createAmendmentMergeTemplate;
@@ -64,8 +68,10 @@ class MergeHandlerTest {
 			.thenReturn(updateAmendmentMergeTemplate);
 		when(amendmentMergeTemplateMapper.getTemplateForType(AmendmentType.DELETE))
 			.thenReturn(deleteAmendmentMergeTemplate);
+		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
+			java.util.Optional.of(contribute));
 
-		mergeHandler.handle(contribute);
+		mergeHandler.handle(contribute.getId());
 
 		//then
 
@@ -104,8 +110,10 @@ class MergeHandlerTest {
 		//when
 		when(amendmentMergeTemplateMapper.getTemplateForType(AmendmentType.CREATE))
 			.thenReturn(createAmendmentMergeTemplate);
+		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
+			java.util.Optional.of(contribute));
 
-		mergeHandler.handle(contribute);
+		mergeHandler.handle(contribute.getId());
 
 		//then
 
@@ -146,8 +154,10 @@ class MergeHandlerTest {
 			.thenReturn(updateAmendmentMergeTemplate);
 		when(amendmentMergeTemplateMapper.getTemplateForType(AmendmentType.DELETE))
 			.thenReturn(deleteAmendmentMergeTemplate);
+		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
+			java.util.Optional.of(contribute));
 
-		mergeHandler.handle(contribute);
+		mergeHandler.handle(contribute.getId());
 
 		//then
 		InOrder inOrder = inOrder(createAmendmentMergeTemplate, updateAmendmentMergeTemplate,

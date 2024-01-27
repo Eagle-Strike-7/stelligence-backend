@@ -72,7 +72,7 @@ class AmendmentServiceTest {
 		assertThat(amendment.getType()).isEqualTo(AmendmentType.UPDATE);
 		assertThat(amendment.getTargetSection().getId()).isEqualTo(10L);
 		assertThat(amendment.getNewSectionTitle()).isEqualTo("newTitle");
-		assertThat(amendment.getCreatingOrder()).isNull();
+		assertThat(amendment.getCreatingOrder()).isZero();
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class AmendmentServiceTest {
 		assertThat(amendment.getType()).isEqualTo(AmendmentType.DELETE);
 		assertThat(amendment.getTargetSection().getId()).isEqualTo(10L);
 		assertThat(amendment.getNewSectionTitle()).isNull();
-		assertThat(amendment.getCreatingOrder()).isNull();
+		assertThat(amendment.getCreatingOrder()).isZero();
 	}
 
 }
