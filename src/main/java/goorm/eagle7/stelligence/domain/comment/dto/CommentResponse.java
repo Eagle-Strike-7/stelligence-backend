@@ -10,9 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponse {
 
+	// 댓글 정보
 	private Long commentId;
+	private String content;
 	private LocalDateTime createdAt;
 
+	// 댓글 작성자 정보
 	private Long commenterId;
 	private String commenterNickname;
 	private String commenterImageUrl;
