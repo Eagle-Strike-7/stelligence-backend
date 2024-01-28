@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.LockModeType;
 
 public interface DocumentContentRepository extends JpaRepository<Document, Long> {
@@ -40,4 +41,16 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "and s.content like %:keyword%")
 	List<Long> findDocumentIdWhichContainsKeywordInLatestVersion(String keyword);
 
+	/**
+	 * 특정 Document에 기여한 사용자들을 조회합니다.
+	 * @param documentId 조회할 Document의 ID
+	 * @return 기여한 사용자 목록
+	 */
+	@Query("select distinct m from Contribute c "
+		+ "join c.member m "
+		+ "join c.document d "
+		+ "where d.id = :documentId "
+		+ "and c.status = 'MERGED' "
+		+ "order by m.nickname")
+	List<Member> findContributorsByDocumentId(Long documentId);
 }
