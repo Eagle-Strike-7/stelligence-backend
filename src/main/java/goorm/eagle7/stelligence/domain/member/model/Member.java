@@ -107,4 +107,8 @@ public class Member extends BaseTimeEntity {
 	public void incrementContributes() {
 		this.contributes++;
 	}
+
+public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
 }

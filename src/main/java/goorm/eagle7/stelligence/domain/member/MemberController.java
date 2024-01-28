@@ -1,0 +1,72 @@
+package goorm.eagle7.stelligence.domain.member;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api")
+public class MemberController {
+
+	@Value("${http.cookie.accessToken.name}")
+	private String accessCookieName;
+	@Value("${http.cookie.refreshToken.name}")
+	private String refreshCookieName;
+
+	private final MemberService memberService;
+
+	@GetMapping("/members/me/mini-profile")
+	public ResponseTemplate<MemberMiniProfileResponse> findMiniProfileFromMember(@Auth MemberInfo memberInfo) {
+		MemberMiniProfileResponse memberMiniProfileResponse = memberService.getMiniProfileById(memberInfo.getId());
+		return ResponseTemplate.ok(memberMiniProfileResponse);
+	}
+
+	@GetMapping("/members/me")
+	public ResponseTemplate<MemberMyPageResponse> findMember(@Auth MemberInfo memberInfo) {
+		MemberMyPageResponse memberMyPageResponse = memberService.getMyPageById(memberInfo.getId());
+		return ResponseTemplate.ok(memberMyPageResponse);
+	}
+
+	@DeleteMapping("/members/me")
+	public ResponseTemplate<Void> deleteMember(@Auth MemberInfo memberInfo,
+		HttpServletRequest request, HttpServletResponse response) {
+
+		memberService.delete(memberInfo.getId());
+
+		// 탈퇴 시 쿠키 제거
+		// CookieUtils.deleteCookie(request, response, accessCookieName);
+		// CookieUtils.deleteCookie(request, response, refreshCookieName);
+
+		// SecurityContext 초기화
+		// SecurityContextHolder.clearContext();
+
+		return ResponseTemplate.ok();
+	}
+
+	@PutMapping("/members/me/nickname")
+	public ResponseTemplate<Void> updateNickname(@Auth MemberInfo memberInfo, @RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
+		memberService.updateNickname(memberInfo.getId(), memberUpdateNicknameRequest);
+		return ResponseTemplate.ok();
+	}
+
+
+}
