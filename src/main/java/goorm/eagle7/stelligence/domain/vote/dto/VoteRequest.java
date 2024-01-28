@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.vote.dto;
 
+import goorm.eagle7.stelligence.domain.vote.model.VoteStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +14,6 @@ public class VoteRequest {
 	@Schema(description = "투표할 수정요청의 ID", example = "1")
 	private Long contributeId;
 
-	@Schema(description = "투표할 수정요청에 대한 동의 여부 (1: 찬성, 0: 반대, null: 취소)", example = "1")
-	private Short agree;
+	@Schema(description = "수정요청에 대한 사용자의 투표 상태", example = "AGREE")
+	private VoteStatus status;
 }
