@@ -1,13 +1,12 @@
 package goorm.eagle7.stelligence.domain.contribute.custom;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 
 public interface CustomContributeRepository {
-	List<Contribute> findContributesByDocument(Long documentId, Pageable pageable);
+	Page<Contribute> findContributesByDocument(Long documentId, Pageable pageable);
 
-	List<Contribute> findVotingContributes(Pageable pageable);
+	Page<Contribute> findVotingContributes(Pageable pageable);
 }

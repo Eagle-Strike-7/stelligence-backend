@@ -1,38 +1,35 @@
 package goorm.eagle7.stelligence.domain.contribute.dto;
 
-import java.util.List;
-
-import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContributeResponse {
+public class ContributeListResponse {
 	private Long contributeId;
 	private String contributeTitle;
 	private String contributeDescription;
+	private ContributeStatus contributeStatus;
 	private Long documentId;
 	private String documentTitle;
-	private MemberMyPageResponse contributor; //수정 요청한 멤버에 대한 정보
-	private List<AmendmentResponse> amendments;
+	private Long contributorId;
+	private String contributorNickname;
 
-	private ContributeResponse(Contribute contribute) {
+	private ContributeListResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
 		this.contributeTitle = contribute.getTitle();
 		this.contributeDescription = contribute.getDescription();
+		this.contributeStatus = contribute.getStatus();
 		this.documentId = contribute.getDocument().getId();
 		this.documentTitle = contribute.getDocument().getTitle();
-		this.contributor = MemberMyPageResponse.from(contribute.getMember());
-		this.amendments = contribute.getAmendments().stream()
-			.map(AmendmentResponse::of)
-			.toList();
+		this.contributorId = contribute.getMember().getId();
+		this.contributorNickname = contribute.getMember().getNickname();
 	}
 
-	public static ContributeResponse of(Contribute contribute) {
-		return new ContributeResponse(contribute);
+	public static ContributeListResponse of(Contribute contribute) {
+		return new ContributeListResponse(contribute);
 	}
 }

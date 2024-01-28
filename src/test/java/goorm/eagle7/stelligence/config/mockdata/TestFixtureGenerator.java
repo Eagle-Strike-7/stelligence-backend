@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.config.mockdata;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
@@ -161,7 +162,7 @@ public class TestFixtureGenerator {
 	}
 
 	public static Amendment amendment(Long id, Contribute contribute, AmendmentType type, Section section,
-		Heading heading, String title, String content, Integer order) {
+		Heading heading, String title, String content, Integer creatingOrder) {
 
 		try {
 			Class<?> amendmentClazz = Class.forName("goorm.eagle7.stelligence.domain.amendment.model.Amendment");
@@ -196,7 +197,11 @@ public class TestFixtureGenerator {
 			headingField.set(amendment, heading);
 			titleField.set(amendment, title);
 			contentField.set(amendment, content);
-			creatingOrderField.set(amendment, order);
+			creatingOrderField.set(amendment, creatingOrder);
+
+			if (contribute != null) {
+				contribute.getAmendments().add((Amendment)amendment);
+			}
 
 			return (Amendment)amendment;
 
@@ -205,7 +210,7 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Contribute contribute(Long id, Member contributor, ContributeStatus status) {
+	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -215,16 +220,22 @@ public class TestFixtureGenerator {
 			Object contribute = constructor.newInstance();
 
 			Field idField = contributeClazz.getDeclaredField("id");
-			Field contributorField = contributeClazz.getDeclaredField("contributor");
+			Field contributorField = contributeClazz.getDeclaredField("member");
 			Field statusField = contributeClazz.getDeclaredField("status");
+			Field documentField = contributeClazz.getDeclaredField("document");
+			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
+			documentField.setAccessible(true);
+			amendmentsField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
 			statusField.set(contribute, status);
+			documentField.set(contribute, document);
+			amendmentsField.set(contribute, new ArrayList<>());
 
 			return (Contribute)contribute;
 

@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -48,8 +48,8 @@ public class ContributeService {
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
-			contributeRequest.getTitle(),
-			contributeRequest.getDescription()
+			contributeRequest.getContributeTitle(),
+			contributeRequest.getContributeDescription()
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
@@ -104,26 +104,22 @@ public class ContributeService {
 	 * @param documentId
 	 * @return
 	 */
-	public List<ContributeResponse> getContributesByDocument(Long documentId, Pageable pageable) {
+	public Page<ContributeListResponse> getContributesByDocument(Long documentId, Pageable pageable) {
 
-		List<Contribute> contributesByDocument =
+		Page<Contribute> contributesByDocument =
 			contributeRepository.findContributesByDocument(documentId, pageable);
 
-		return contributesByDocument.stream()
-			.map(ContributeResponse::of)
-			.toList();
+		return contributesByDocument.map(ContributeListResponse::of);
 	}
 
 	/**
 	 * Contribute 목록 조회: 투표중인 Contribute만 조회
 	 * @return
 	 */
-	public List<ContributeResponse> getVotingContributes(Pageable pageable) {
+	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
 
-		List<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
+		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
 
-		return votingContributes.stream()
-			.map(ContributeResponse::of)
-			.toList();
+		return votingContributes.map(ContributeListResponse::of);
 	}
 }

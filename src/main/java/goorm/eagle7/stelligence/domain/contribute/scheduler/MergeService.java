@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.merge;
+package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.common.merge.template.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
