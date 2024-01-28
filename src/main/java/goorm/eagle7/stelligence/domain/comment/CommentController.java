@@ -39,7 +39,7 @@ public class CommentController {
 		return ResponseTemplate.ok();
 	}
 
-	@Operation(summary = "토론 댓글 삭제", description = "특정 토론 댓글을 삭제합니다.")
+	@Operation(summary = "토론 댓글 삭제", description = "특정 토론 댓글을 삭제합니다. 해당 댓글을 작성했던 회원의 삭제 요청만이 허용됩니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 댓글 삭제 성공",

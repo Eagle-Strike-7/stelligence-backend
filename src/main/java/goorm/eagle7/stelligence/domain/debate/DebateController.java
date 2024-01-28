@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DebateController {
 
-	@Operation(summary = "토론 리스트 조회", description = "토론의 상태에 따라 토론 리스트를 조회합니다.")
+	@Operation(summary = "토론 리스트 조회", description = "토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 조회합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 리스트 조회 성공",
@@ -62,7 +62,7 @@ public class DebateController {
 		return ResponseTemplate.ok(null);
 	}
 
-	@Operation(summary = "토론 종료", description = "특정 토론을 임의로 종료합니다.")
+	@Operation(summary = "토론 종료", description = "[OPEN] 상태인 특정 토론을 임의로 종료합니다. 해당 수정 요청을 작성했던 회원의 종료 요청만이 허용됩니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 종료 성공",
