@@ -13,6 +13,6 @@ public class VoteRequest {
 	@Schema(description = "투표할 수정요청의 ID", example = "1")
 	private Long contributeId;
 
-	@Schema(description = "투표할 수정요청에 대한 동의 여부 (0: 반대 1: 찬성)", example = "1")
+	@Schema(description = "투표할 수정요청에 대한 동의 여부 (1: 찬성, 0: 반대, null: 취소)", example = "1")
 	private Short agree;
 }
