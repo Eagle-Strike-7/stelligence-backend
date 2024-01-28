@@ -81,7 +81,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (!isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(httpMethod, uri)) {
 
 				Cookie[] cookies = request.getCookies();
 
@@ -138,8 +138,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				String accessToken = loginTokens.getAccessToken();
 				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
 
-				// header에 쿠키, nickname 저장
-				saveTokensOnResponseCookiesAndNicknameOnHeader(response, accessToken, refreshToken, nickname);
+				// header에 쿠키 저장 TODO nickname 수정 시 변경 필요.
+				saveTokensOnResponseCookiesOnHeader(response, accessToken, refreshToken);
 
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
@@ -194,6 +194,12 @@ public class DevAuthFilter extends OncePerRequestFilter {
 		response.setHeader("nickname", nickname);
 	}
 
+	private void saveTokensOnResponseCookiesOnHeader(HttpServletResponse response, String accessToken,
+		String refreshToken) {
+		CookieUtils.addCookie(response, accessTokenName, accessToken);
+		CookieUtils.addCookie(response, refreshTokenName, refreshToken);
+	}
+
 	/**
 	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
 	 * @param httpMethod String 타입으로 추출.
@@ -201,6 +207,6 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return resourceAntPathMatcher.match(httpMethod, uri);
+		return !resourceAntPathMatcher.match(httpMethod, uri);
 	}
 }
