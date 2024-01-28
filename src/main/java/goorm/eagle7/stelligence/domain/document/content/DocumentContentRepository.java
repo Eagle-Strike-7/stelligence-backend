@@ -50,7 +50,7 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "join c.member m "
 		+ "join c.document d "
 		+ "where d.id = :documentId "
-		+ "and c.status = 'MERGED' "
+		+ "and c.status = goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus.MERGED "
 		+ "order by m.nickname")
 	List<Member> findContributorsByDocumentId(Long documentId);
 }
