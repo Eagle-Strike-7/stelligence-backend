@@ -77,8 +77,8 @@ public class MemberController {
 		memberService.delete(memberInfo.getId());
 
 		// 탈퇴 시 쿠키 제거
-		// CookieUtils.deleteCookie(request, response, accessCookieName);
-		// CookieUtils.deleteCookie(request, response, refreshCookieName);
+		CookieUtils.deleteCookie(request, response, accessCookieName);
+		CookieUtils.deleteCookie(request, response, refreshCookieName);
 
 		// SecurityContext 초기화
 		// SecurityContextHolder.clearContext();
