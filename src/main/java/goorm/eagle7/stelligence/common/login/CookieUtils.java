@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * 테스트 용이성을 위해 ServletServerHttpResponse 사용
  *
  */
-public class CookieUtils {
+public final class CookieUtils {
 
 	// private static final String COOKIE_DOMAIN = "*"; // TODO 도메인 설정
 	private static final String COOKIE_PATH = "/";
