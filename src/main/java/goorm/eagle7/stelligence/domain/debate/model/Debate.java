@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.debate.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,4 +41,7 @@ public class Debate extends BaseTimeEntity {
 
 	@OneToMany(mappedBy = "debate")
 	private List<Comment> comments = new ArrayList<>();
+
+	// 종료 예정 시각 (종료된 토론이라면 실제 종료된 시각)
+	private LocalDateTime endAt;
 }

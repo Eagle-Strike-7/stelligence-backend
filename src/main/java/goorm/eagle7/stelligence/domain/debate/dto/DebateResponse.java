@@ -16,6 +16,7 @@ public class DebateResponse {
 	// 토론 정보
 	private Long debateId;
 	private LocalDateTime createdAt;
+	private LocalDateTime endAt;
 
 	// 문서 정보
 	private Long documentId;
