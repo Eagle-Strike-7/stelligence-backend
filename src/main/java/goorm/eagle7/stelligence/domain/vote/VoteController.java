@@ -18,10 +18,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Vote API", description = "투표를 생성하는 API를 제공합니다")
+@Tag(name = "Vote API", description = "투표를 생성하고 투표 현황을 조회하는 API를 제공합니다")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/votes")
+@RequestMapping("/api")
 public class VoteController {
 
 	@Operation(summary = "소중한 한 표 행사", description = "사용자가 투표를 하면 투표를 생성합니다")
@@ -30,7 +30,7 @@ public class VoteController {
 		description = "투표 생성 성공",
 		useReturnTypeSchema = true
 	)
-	@PostMapping
+	@PostMapping("/votes")
 	public ResponseTemplate<Void> vote(
 		@RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
@@ -44,10 +44,11 @@ public class VoteController {
 		description = "투표 현황 조회 성공",
 		useReturnTypeSchema = true
 	)
-	@GetMapping("/{contributeId}")
+	@GetMapping("/contributes/{contributeId}/votes")
 	public ResponseTemplate<VoteSummaryResponse> getVoteSummary(
 		@Parameter(description = "투표를 조회할 수정요청의 ID", example = "1")
-		@PathVariable Long contributeId
+		@PathVariable Long contributeId,
+		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok();
 	}
