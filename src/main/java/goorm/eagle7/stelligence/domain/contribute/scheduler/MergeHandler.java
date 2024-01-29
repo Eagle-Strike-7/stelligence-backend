@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import java.util.Comparator;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
@@ -49,6 +50,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	 * @param contributeId 반영할 Contribute의 ID
 	 */
 	@Override
+	@Transactional
 	// @CacheEvict(value = "document", key = "#contribute.document.id", cacheManager = "cacheManager")
 	public void handle(Long contributeId) {
 		log.info("Contribute {} is merging", contributeId);

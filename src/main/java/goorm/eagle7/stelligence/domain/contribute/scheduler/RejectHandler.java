@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -18,6 +19,7 @@ public class RejectHandler implements ContributeSchedulingActionHandler {
 	private final ContributeRepository contributeRepository;
 
 	@Override
+	@Transactional
 	public void handle(Long contributeId) {
 		log.debug("Contribute {} is rejected.", contributeId);
 		Contribute contribute = contributeRepository.findById(contributeId).orElseThrow();
