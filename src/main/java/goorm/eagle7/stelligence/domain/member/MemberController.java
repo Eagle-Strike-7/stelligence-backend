@@ -12,7 +12,6 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -100,6 +99,5 @@ public class MemberController {
 		memberService.updateNickname(memberInfo.getId(), memberUpdateNicknameRequest);
 		return ResponseTemplate.ok();
 	}
-
 
 }
