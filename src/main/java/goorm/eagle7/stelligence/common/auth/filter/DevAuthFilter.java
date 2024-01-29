@@ -123,7 +123,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 								// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
 								String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 								member.updateRefreshToken(refreshToken);
-								memberRepository.save(member); // TODO Transaction 문제 없는지 확인
+								memberRepository.save(member);
 
 							}
 						}
@@ -142,7 +142,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				String accessToken = loginTokens.getAccessToken();
 				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
 
-				// header에 쿠키 저장 TODO nickname 수정 시 변경 필요.
+				// header에 쿠키 저장
 				saveTokensOnResponseCookiesOnHeader(response, accessToken, refreshToken);
 
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
@@ -185,19 +185,11 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * response에 accessToken, refreshToken, nickname 추가
+	 * response 쿠키에 accessToken, refreshToken 추가
 	 * @param response response
 	 * @param accessToken accessToken
 	 * @param refreshToken refreshToken
-	 * @param nickname nickname
 	 */
-	private void saveTokensOnResponseCookiesAndNicknameOnHeader(HttpServletResponse response, String accessToken,
-		String refreshToken, String nickname) {
-		CookieUtils.addCookie(response, accessTokenName, accessToken,accessTokenMaxAge);
-		CookieUtils.addCookie(response, refreshTokenName, refreshToken, refreshTokenMaxAge);
-		response.setHeader("nickname", nickname);
-	}
-
 	private void saveTokensOnResponseCookiesOnHeader(HttpServletResponse response, String accessToken,
 		String refreshToken) {
 		CookieUtils.addCookie(response, accessTokenName, accessToken, accessTokenMaxAge);
