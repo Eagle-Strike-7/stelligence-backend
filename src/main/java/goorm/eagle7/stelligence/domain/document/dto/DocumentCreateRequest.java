@@ -16,7 +16,11 @@ public class DocumentCreateRequest {
 	private String title;
 	@Schema(description = "문서의 부모 문서 ID", example = "1")
 	private Long parentDocumentId;
-	@Schema(description = "문서의 내용", example = "# 마리모\n마리모는 조류의 일종이다.\n## 마리모의 생애\n마리모의 수명은 평균 1년이다.\n")
+	@Schema(description = "문서의 내용",
+		example = "<h1>마리모</h1>"
+			+ "<p>마리모는 조류의 일종이다.</p>"
+			+ "<h2>마리모의 생애</h2>"
+			+ "<p>마리모의 수명은 평균 1년이다.</p>")
 	private String content;
 
 	@Override
