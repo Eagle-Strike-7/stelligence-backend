@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.vote;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +11,9 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.vote.dto.VoteRequest;
+import goorm.eagle7.stelligence.domain.vote.dto.VoteSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,20 @@ public class VoteController {
 	public ResponseTemplate<Void> vote(
 		@RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
+	) {
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "투표 현황 조회", description = "현재 투표 현황을 조회합니다")
+	@ApiResponse(
+		responseCode = "200",
+		description = "투표 현황 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/{contributeId}")
+	public ResponseTemplate<VoteSummaryResponse> getVoteSummary(
+		@Parameter(description = "투표를 조회할 수정요청의 ID", example = "1")
+		@PathVariable Long contributeId
 	) {
 		return ResponseTemplate.ok();
 	}
