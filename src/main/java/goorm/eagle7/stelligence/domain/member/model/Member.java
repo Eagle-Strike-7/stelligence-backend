@@ -39,52 +39,54 @@ public class Member extends BaseTimeEntity {
 	private String nickname;
 	private String email;
 	private String imageUrl;
-	private String socialId; // unique
-
+	private String socialId; // unique지만, DB에서는 unique 제약 조건을 걸지 않음.
 	@Enumerated(EnumType.STRING)
-	private SocialType socialType; // default: kakao
+	private SocialType socialType;
 
+	// refresh token은 회원 가입/로그인 후 update로 진행
 	private String refreshToken;
 
 	// 1:M 연관 관계 설정
 
 	/**
-	 * MemberBadge (M)
-	 * enum으로 정의된 Badge를 member가 가질 수 있음.
-	 * 중복 방지 위해 SET 사용
-	 *
+	 * <h2>MemberBadge (M)</h2>
+	 * <p>- 중복 방지 위해 SET 사용</p>
+	 * <p>- @ElementCollection: 값 타입 컬렉션 사용으로 Member와 생명 주기가 같음.</p>
+	 * <p>- @Collectiontable: badges는 Member의 FK를 관리하는 테이블 생성</p>
+	 * <p>- @Enumerated: EnumType.STRING으로 관리.</p>
 	 */
 	@ElementCollection
-	@Enumerated(EnumType.STRING)
 	@CollectionTable(
 		name = "member_badge",
 		joinColumns = @JoinColumn(name = "member_id"))
+	@Enumerated(EnumType.STRING)
 	private Set<Badge> badges = new HashSet<>();
 
-	// /*
+	// /**
 	//  * Bookmark (M)
 	//  * mappedBy: member, Bookmark 엔티티가 Member의 FK를 관리.
-	//  * orphanRemoval: true, Member의 list에서 Bookmark이 방출되면 해당 Bookmark는 블랙홀로.
-	//  * cascade: REMOVE, Member가 삭제되면 관련 있는 Bookmark들이 블랙홀로.
-	//  * fetch: LAZY, Member를 조회한 후, bookmark를 조회할 때 bookmark 가져오기.
 	//  * TODO bookmark 삭제 시 member에서도 삭제되는 건 bookmark에서 담당.
 	//  */
-	// @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+	// @OneToMany(mappedBy = "member")
 	// private List<Bookmark> bookmarks = new ArrayList<>();
 
-	// member 생성 시, role은 기본적으로 user로, contributes는 0으로, SocialType은 KAKAO로 설정.
-	/*
-	 * Member는 정적 팩토리 메서드로 생성하기
-	 * @param name
-	 * @param nickname
-	 * @param email
-	 * @param imageUrl
-	 * @param socialId
-	 * @param socialType
-	 * default: role: USER, contributes: 0
+	/**
+	 * <h2>Member는 정적 팩토리 메서드로 생성하기</h2>
+	 * <p>member 생성 시, role은 USER, contributes는 0으로  설정.</p>
+	 * <p>refreshToken은 회원 가입 후 update로 진행</p>
+	 * @param name 이름
+	 * @param nickname 닉네임
+	 * @param email 이메일
+	 * @param imageUrl 프로필 사진 url
+	 * @param socialId 소셜 id
+	 * @param socialType 소셜 타입
 	 */
-	public static Member of(String name, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
+	public static Member of(
+		String name, String nickname, String email, String imageUrl,
+		String socialId, SocialType socialType) {
+
 		Member member = new Member();
+
 		member.name = name;
 		member.nickname = nickname;
 		member.email = email;
@@ -96,7 +98,9 @@ public class Member extends BaseTimeEntity {
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
+
 		return member;
+
 	}
 
 	public void updateRefreshToken(String refreshToken) {
