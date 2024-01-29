@@ -13,7 +13,7 @@ import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -58,9 +58,9 @@ public class MemberController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping("/members/me")
-	public ResponseTemplate<MemberMyPageResponse> findMember(@Auth MemberInfo memberInfo) {
-		MemberMyPageResponse memberMyPageResponse = memberService.getMyPageById(memberInfo.getId());
-		return ResponseTemplate.ok(memberMyPageResponse);
+	public ResponseTemplate<MemberProfileResponse> findMember(@Auth MemberInfo memberInfo) {
+		MemberProfileResponse memberProfileResponse = memberService.getProfileById(memberInfo.getId());
+		return ResponseTemplate.ok(memberProfileResponse);
 	}
 
 	@Operation(summary = "회원 탈퇴", description = "회원을 삭제합니다.")

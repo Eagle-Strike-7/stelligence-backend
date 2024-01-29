@@ -4,7 +4,7 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.SectionResponseConcatenator;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,9 +33,9 @@ public class DocumentResponse {
 	private String content;
 
 	// 최초 기여자
-	private MemberMyPageResponse originalAuthor;
+	private MemberProfileResponse originalAuthor;
 
-	private List<MemberMyPageResponse> contributors;
+	private List<MemberProfileResponse> contributors;
 
 	/**
 	 * DocumentResponse를 생성합니다.
@@ -49,14 +49,14 @@ public class DocumentResponse {
 	public static DocumentResponse of(
 		Document document,
 		List<SectionResponse> sections,
-		List<MemberMyPageResponse> contributors
+		List<MemberProfileResponse> contributors
 	) {
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
 			sections,
 			SectionResponseConcatenator.concat(sections),
-			MemberMyPageResponse.from(document.getAuthor()),
+			MemberProfileResponse.from(document.getAuthor()),
 			contributors
 		);
 	}

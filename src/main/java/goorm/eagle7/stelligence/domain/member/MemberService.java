@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,9 @@ public class MemberService {
 	 * @param memberId 회원 id
 	 * @return MemberMyPageResponse (닉네임, 이메일, 프로필 사진, 가입한 소셜 타입)
 	 */
-	public MemberMyPageResponse getMyPageById(Long memberId) {
+	public MemberProfileResponse getProfileById(Long memberId) {
 		Member member = findMemberById(memberId);
-		return MemberMyPageResponse.from(member);
+		return MemberProfileResponse.from(member);
 	}
 
 	/**
