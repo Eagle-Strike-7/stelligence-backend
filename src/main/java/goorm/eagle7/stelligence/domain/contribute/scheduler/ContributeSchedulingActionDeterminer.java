@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * ContributionConditionChecker
  * Contribute와 Vote 상태를 확인하여 병합, 토론, 반려를 결정합니다.
  */
 @Slf4j

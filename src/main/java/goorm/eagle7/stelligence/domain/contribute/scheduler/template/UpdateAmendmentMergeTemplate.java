@@ -8,9 +8,7 @@ import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
 
 /**
- * UpdateAmendmentMergeTemplate
  * 수정 타입의 수정안에 대해 병합을 수행합니다.
- *
  */
 @Component
 public class UpdateAmendmentMergeTemplate extends AmendmentMergeTemplate {
@@ -22,7 +20,7 @@ public class UpdateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	/**
 	 * 수정안의 정보를 바탕으로 새로운 섹션을 생성합니다.
 	 *
-	 * 수정 타입의 경우, 기존 섹션의 ID를 그대로 사용합니다.
+	 * <p>수정 타입의 경우, 기존 섹션의 ID를 그대로 사용합니다.
 	 * 기존 섹션 ID와 함께 변경된 내용을 갖는 새로운 섹션을 생성합니다.
 	 * 순서는 기존의 순서를 따라야합니다.
 	 *

@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.document;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class DocumentService {
 		 * 추후에 코드가 변경될 여지가 있습니다. 자세한 내용은 Document.sections의 주석을 참고해주세요.
 		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
-		return DocumentResponse.of(createdDocument, sections);
+		return DocumentResponse.of(createdDocument, sections, Collections.emptyList());
 	}
 
 	/**

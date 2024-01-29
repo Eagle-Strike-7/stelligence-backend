@@ -6,9 +6,7 @@ import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import lombok.RequiredArgsConstructor;
 
 /**
- * AmendmentMergeTemplateMapper
- *
- * Amendment 타입에 따라 적합한 AmendmentMergeTemplate을 반환합니다.
+ * Amendment 타입에 따라 적합한 AmendmentMergeTemplate 구현체를 반환합니다.
  */
 @Component
 @RequiredArgsConstructor
