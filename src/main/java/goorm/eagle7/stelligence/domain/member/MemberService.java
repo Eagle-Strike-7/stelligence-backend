@@ -19,6 +19,7 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE =  "해당 멤버를 찾을 수 없습니다. MemberId= %s";
+	// TODO 401 error - 프론트와 어떤 uri가 로그인 필요한 건지 다시 한번 협의
 
 	/**
 	 * 회원의 정보를 조회합니다.
@@ -48,7 +49,7 @@ public class MemberService {
 	 */
 	@Transactional
 	public void updateNickname(Long memberId, MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
-
+		// TODO 409 Error 혹은 닉네임 중복 검사 논의 필요.
 		String nickname = memberUpdateNicknameRequest.getNickname();
 		if (memberRepository.existsByNickname(nickname)) {
 			// 이미 사용 중인 닉네임이면 예외 발생
