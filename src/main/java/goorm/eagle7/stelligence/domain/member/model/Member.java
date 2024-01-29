@@ -36,7 +36,7 @@ public class Member extends BaseTimeEntity {
 
 	// social login 시 받아오는 정보
 	private String name;
-	private String nickname; // TODO unique
+	private String nickname;
 	private String email;
 	private String imageUrl;
 	private String socialId; // unique
@@ -51,8 +51,7 @@ public class Member extends BaseTimeEntity {
 	/**
 	 * MemberBadge (M)
 	 * enum으로 정의된 Badge를 member가 가질 수 있음.
-	 * 중복 방지 위해 SET 사용,
-	 * TODO badges에 add하는 메서드 필요
+	 * 중복 방지 위해 SET 사용
 	 *
 	 */
 	@ElementCollection
@@ -77,23 +76,23 @@ public class Member extends BaseTimeEntity {
 	/*
 	 * Member는 정적 팩토리 메서드로 생성하기
 	 * @param name
-	 * @param nickname // TODO service unique 검증 필요
+	 * @param nickname
 	 * @param email
 	 * @param imageUrl
 	 * @param socialId
-	 * default: role: USER, contributes: 0, socialType: KAKAO
-	 * // TODO 추후 2개 이상 구현 시 DEFault 아니고 필수로.
+	 * @param socialType
+	 * default: role: USER, contributes: 0
 	 */
-	public static Member of(String name, String nickname, String email, String imageUrl, String socialId) {
+	public static Member of(String name, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
 		Member member = new Member();
 		member.name = name;
 		member.nickname = nickname;
 		member.email = email;
 		member.imageUrl = imageUrl;
 		member.socialId = socialId;
+		member.socialType = socialType;
 
 		// 기본값 설정
-		member.socialType = SocialType.KAKAO;
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
@@ -108,7 +107,7 @@ public class Member extends BaseTimeEntity {
 		this.contributes++;
 	}
 
-public void updateNickname(String nickname) {
+	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
 }
