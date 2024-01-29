@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
-import goorm.eagle7.stelligence.domain.comment.dto.CommentResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,9 +32,6 @@ public class DebateResponse {
 
 	// 수정안 정보
 	private List<AmendmentResponse> amendments;
-
-	// 토론 댓글 정보
-	private List<CommentResponse> comments;
 
 	// 이전/다음 토론 정보
 	private DebateSimpleResponse prevDebate;
