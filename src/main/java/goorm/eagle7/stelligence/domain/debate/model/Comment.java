@@ -1,7 +1,6 @@
-package goorm.eagle7.stelligence.domain.comment.model;
+package goorm.eagle7.stelligence.domain.debate.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

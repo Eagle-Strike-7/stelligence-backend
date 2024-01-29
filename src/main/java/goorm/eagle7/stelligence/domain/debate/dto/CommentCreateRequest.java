@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.comment.dto;
+package goorm.eagle7.stelligence.domain.debate.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentCreateRequest {
 
-	@Schema(description = "댓글을 추가할 토론의 ID", example = "1")
-	private Long debateId;
 	@Schema(description = "추가할 댓글 내용", example = "저도 동의합니다.")
 	private String content;
 }

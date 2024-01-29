@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import goorm.eagle7.stelligence.domain.comment.model.Comment;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

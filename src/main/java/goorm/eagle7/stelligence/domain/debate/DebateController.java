@@ -7,6 +7,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentCreateRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateSimpleResponse;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -24,7 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Tag(name = "Debate API", description = "토론을 조회하고 종료하는 API를 제공합니다.")
+@Tag(name = "Debate API", description = "토론을 조회하고 종료하는 API를 제공합니다. 추가로 토론에 댓글을 작성/조회/삭제하는 API도 함께 제공합니다.")
 @RequestMapping("/api/debates")
 @RestController
 @Slf4j
@@ -72,6 +75,39 @@ public class DebateController {
 	public ResponseTemplate<Void> closeDebate(
 		@Parameter(description = "종료할 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId,
+		@Auth MemberInfo memberInfo
+	) {
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "토론 댓글 작성", description = "토론에 새로운 댓글을 작성합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "토론 댓글 작성 성공",
+		useReturnTypeSchema = true
+	)
+	@PostMapping("/{debateId}/comments")
+	public ResponseTemplate<Void> addComment(
+		@Parameter(description = "댓글을 추가할 토론의 ID", example = "1")
+		@PathVariable("debateId") Long debateId,
+		@RequestBody CommentCreateRequest commentCreateRequest,
+		@Auth MemberInfo memberInfo
+	) {
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "토론 댓글 삭제", description = "특정 토론의 특정 댓글을 삭제합니다. 해당 댓글을 작성했던 회원의 삭제 요청만이 허용됩니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "토론 댓글 삭제 성공",
+		useReturnTypeSchema = true
+	)
+	@DeleteMapping("/{debateId}/comments/{commentId}")
+	public ResponseTemplate<Void> deleteComment(
+		@Parameter(description = "삭제할 댓글이 있는 토론 ID", example = "1")
+		@PathVariable("debateId") Long debateId,
+		@Parameter(description = "삭제할 댓글의 ID", example = "1")
+		@PathVariable("commentId") Long commentId,
 		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok();
