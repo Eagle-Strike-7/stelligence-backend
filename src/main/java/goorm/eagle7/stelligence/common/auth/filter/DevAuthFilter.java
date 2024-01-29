@@ -44,9 +44,9 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	@Value("${jwt.refreshToken.name}")
 	private String refreshTokenName;
 	@Value("${http.cookie.accessToken.maxAge}")
-	private String accessTokenMaxAge;
+	private Integer accessTokenMaxAge;
 	@Value("${http.cookie.refreshToken.maxAge}")
-	private String refreshTokenMaxAge;
+	private Integer refreshTokenMaxAge;
 
 	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
@@ -193,15 +193,15 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	 */
 	private void saveTokensOnResponseCookiesAndNicknameOnHeader(HttpServletResponse response, String accessToken,
 		String refreshToken, String nickname) {
-		CookieUtils.addCookie(response, accessTokenName, accessToken, Integer.parseInt(accessTokenMaxAge));
-		CookieUtils.addCookie(response, refreshTokenName, refreshToken, Integer.parseInt(refreshTokenMaxAge));
+		CookieUtils.addCookie(response, accessTokenName, accessToken,accessTokenMaxAge);
+		CookieUtils.addCookie(response, refreshTokenName, refreshToken, refreshTokenMaxAge);
 		response.setHeader("nickname", nickname);
 	}
 
 	private void saveTokensOnResponseCookiesOnHeader(HttpServletResponse response, String accessToken,
 		String refreshToken) {
-		CookieUtils.addCookie(response, accessTokenName, accessToken, Integer.parseInt(accessTokenMaxAge));
-		CookieUtils.addCookie(response, refreshTokenName, refreshToken, Integer.parseInt(refreshTokenMaxAge));
+		CookieUtils.addCookie(response, accessTokenName, accessToken, accessTokenMaxAge);
+		CookieUtils.addCookie(response, refreshTokenName, refreshToken, refreshTokenMaxAge);
 	}
 
 	/**
