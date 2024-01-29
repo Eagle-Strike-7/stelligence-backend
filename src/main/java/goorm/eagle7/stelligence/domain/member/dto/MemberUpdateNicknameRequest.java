@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Schema(description = "수정할 닉네임 정보")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "from")
 public class MemberUpdateNicknameRequest {
 
 	@Schema(description = "수정할 닉네임", example = "은하세계")
