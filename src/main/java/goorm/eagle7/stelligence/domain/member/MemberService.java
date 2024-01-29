@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버가 없습니다. id=";
+	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE =  "해당 멤버를 찾을 수 없습니다. MemberId= %s";
 
 	/**
 	 * 회원의 정보를 조회합니다.
@@ -26,9 +26,7 @@ public class MemberService {
 	 * @return MemberMyPageResponse (닉네임, 이메일, 프로필 사진, 가입한 소셜 타입)
 	 */
 	public MemberMyPageResponse getMyPageById(Long memberId) {
-		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE + memberId)
-		);
+		Member member = findMemberById(memberId);
 		return MemberMyPageResponse.from(member);
 	}
 
@@ -57,9 +55,7 @@ public class MemberService {
 			throw new BaseException("이미 사용 중인 닉네임입니다. nickname=" + nickname);
 		}
 		// 사용 중이지 않은 닉네임이면 닉네임 변경
-		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE + memberId)
-		);
+		Member member = findMemberById(memberId);
 		member.updateNickname(nickname);
 	}
 
@@ -70,11 +66,23 @@ public class MemberService {
 	 * @return MemberMiniProfileResponse (닉네임, 프로필 사진)
 	 */
 	public MemberMiniProfileResponse getMiniProfileById(Long memberId) {
-		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE + memberId));
+		Member member = findMemberById(memberId);
 		return MemberMiniProfileResponse.of(
 			member.getNickname(),
 			member.getImageUrl()
+		);
+	}
+
+	/**
+	 * 회원 id로 회원을 조회합니다.
+	 * 해당 Service에서 findById를 호출하는 경우가 많고, 해당 요구 사항에 대한 Exception을 일관적으로 유지하기 위해 메서드로 분리.
+	 * @param memberId 회원 id
+	 * @return Member 회원
+	 * @throws BaseException 회원을 찾을 수 없는 경우
+	 */
+	private Member findMemberById(Long memberId) {
+		return memberRepository.findById(memberId).orElseThrow(
+			() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
 		);
 	}
 }
