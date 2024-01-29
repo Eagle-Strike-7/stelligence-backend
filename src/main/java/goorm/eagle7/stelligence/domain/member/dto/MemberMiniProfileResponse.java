@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(staticName = "of")
 public class MemberMiniProfileResponse {
 	private String nickname;
-	private String profileUrl;
+	private String profileImgUrl;
 }

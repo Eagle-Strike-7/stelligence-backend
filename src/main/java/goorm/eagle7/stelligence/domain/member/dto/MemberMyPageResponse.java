@@ -14,7 +14,7 @@ public class MemberMyPageResponse {
 
 	private String nickname;
 	private String email;
-	private String profileUrl;
+	private String profileImgUrl;
 	private SocialType socialType;
 
 	public static MemberMyPageResponse from(Member member) {
