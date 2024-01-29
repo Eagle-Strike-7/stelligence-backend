@@ -62,9 +62,8 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	void afterMerged(Section section) {
 		log.trace("새로운 섹션의 생성에 따라 섹션의 순서를 업데이트합니다.");
 		Document document = section.getDocument();
-		sectionRepository.findByVersion(document, document.getCurrentRevision())
-			.stream()
-			.filter(s -> s.getOrder() >= section.getOrder()) //새로운 섹션의 순서보다 크거나 같은 순서를 가진 섹션들을 가져옵니다.
+		sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getCurrentRevision(),
+				section.getOrder())
 			.forEach(Section::incrementOrder);
 	}
 

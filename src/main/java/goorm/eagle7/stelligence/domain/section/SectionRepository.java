@@ -20,16 +20,33 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	 * @param revision
 	 * @return
 	 */
-	@Query("select s from Section s " +
-		"where s.document = :document " +
-		"and s.content is not null " +
-		"and s.revision = (" +
-		"   select max(s2.revision) " +
-		"   from Section s2 " +
-		"   where s2.id = s.id " +
-		"   AND s2.revision <= :revision " +
-		") ")
+	@Query("select s from Section s "
+		+ "where s.document = :document "
+		+ "and s.content is not null "
+		+ "and s.revision = ("
+		+ "   select max(s2.revision) "
+		+ "   from Section s2 "
+		+ "   where s2.id = s.id "
+		+ "   AND s2.revision <= :revision "
+		+ ") ")
 	List<Section> findByVersion(Document document, Long revision);
+
+	/**
+	 * Document의 특정 버전의 글 중 order가 특정 값보다 크거나 같은 글을 조회하는 메서드입니다.
+	 * @param document
+	 * @param revision
+	 * @return
+	 */
+	@Query("select s from Section s "
+		+ "where s.document = :document "
+		+ "and s.order >= :order "
+		+ "and s.revision = ("
+		+ "   select max(s2.revision) "
+		+ "   from Section s2 "
+		+ "   where s2.id = s.id "
+		+ "   AND s2.revision <= :revision "
+		+ ") ")
+	List<Section> findByVersionWhereOrderGreaterEqualThan(Document document, Long revision, int order);
 
 	/**
 	 * 특정 SectionId에 대해 가장 최근에 개정된 버전을 가져옵니다.

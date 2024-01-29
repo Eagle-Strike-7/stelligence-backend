@@ -73,8 +73,8 @@ class CreateAmendmentMergeTemplateTest {
 		Section s4 = section(5L, 1L, document, Heading.H4, "title", "content", 4);
 
 		//when
-		when(sectionRepository.findByVersion(document, document.getCurrentRevision()))
-			.thenReturn(List.of(s1, s2, s3, s4));
+		when(sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getCurrentRevision(), 3))
+			.thenReturn(List.of(s3, s4));
 
 		createAmendmentMergeTemplate.afterMerged(section);
 
