@@ -76,6 +76,10 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 		return section;
 	}
 
+	public void incrementOrder() {
+		this.order++;
+	}
+
 	@Override
 	public int compareTo(Section section) {
 		return this.order - section.order;

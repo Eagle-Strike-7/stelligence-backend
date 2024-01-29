@@ -380,7 +380,8 @@ class DocumentGraphServiceTest {
 		assertThat(updateNode.getParentDocumentNode().getDocumentId()).isEqualTo(newParentNodeId);
 		assertThat(updateNode.getGroup()).isEqualTo(updateNode.getParentDocumentNode().getGroup());
 
-		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(
+			childIdListOfUpdateTarget);
 		assertThat(childDocuments)
 			.isNotEmpty()
 			.allMatch(n -> n.getGroup().equals(updateNode.getGroup()));
@@ -409,7 +410,8 @@ class DocumentGraphServiceTest {
 		assertThat(targetNode.getParentDocumentNode()).isNull();
 		assertThat(targetNode.getGroup()).isEqualTo(targetNode.getTitle());
 
-		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(childIdListOfUpdateTarget);
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(
+			childIdListOfUpdateTarget);
 		assertThat(childDocuments)
 			.isNotEmpty()
 			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
