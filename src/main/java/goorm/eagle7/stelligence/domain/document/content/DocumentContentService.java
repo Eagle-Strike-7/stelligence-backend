@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +12,7 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
+import goorm.eagle7.stelligence.domain.member.dto.MemberMyPageResponse;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -69,7 +69,7 @@ public class DocumentContentService {
 	 * @param documentId 조회할 Document의 ID
 	 * @return 최신 Document의 Response Object
 	 */
-	@Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
+	// @Cacheable(value = "document", key = "#documentId", cacheManager = "cacheManager")
 	public DocumentResponse getDocument(Long documentId) {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
@@ -102,7 +102,13 @@ public class DocumentContentService {
 			.map(SectionResponse::of)
 			.toList();
 
-		return DocumentResponse.of(document, sections);
+		//해당 문서의 기여자들을 조회합니다.
+		List<MemberMyPageResponse> contributors = documentRepository.findContributorsByDocumentId(documentId)
+			.stream()
+			.map(MemberMyPageResponse::from)
+			.toList();
+
+		return DocumentResponse.of(document, sections, contributors);
 	}
 
 	/**

@@ -4,6 +4,8 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,17 +65,24 @@ class CreateAmendmentMergeTemplateTest {
 	void afterMerged() {
 		//given
 		Document document = document(1L, null, "title", 3L);
-		Section section = section(1L, 1L, document, Heading.H1, "title", "content", 4);
+		Section section = section(1L, 1L, document, Heading.H1, "title", "content", 3);
+
+		Section s1 = section(2L, 1L, document, Heading.H1, "title", "content", 1);
+		Section s2 = section(3L, 1L, document, Heading.H2, "title", "content", 2);
+		Section s3 = section(4L, 1L, document, Heading.H3, "title", "content", 3);
+		Section s4 = section(5L, 1L, document, Heading.H4, "title", "content", 4);
 
 		//when
+		when(sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getCurrentRevision(), 3))
+			.thenReturn(List.of(s3, s4));
+
 		createAmendmentMergeTemplate.afterMerged(section);
 
 		//then
-		//updateOrders가 호출되었는지 확인한다.
-		verify(sectionRepository, times(1)).updateOrders(
-			document.getId(),
-			document.getCurrentRevision(),
-			section.getOrder()
-		);
+		//section의 order보다 높은 order를 가진 section들의 order가 1씩 증가했는지 확인
+		assertThat(s1.getOrder()).isEqualTo(1);
+		assertThat(s2.getOrder()).isEqualTo(2);
+		assertThat(s3.getOrder()).isEqualTo(4);
+		assertThat(s4.getOrder()).isEqualTo(5);
 	}
 }

@@ -49,10 +49,10 @@ public class SectionResponse {
 
 	/**
 	 * 섹션의 내용을 하나의 문자열로 합칩니다.
-	 * @return
+	 * @return 섹션의 내용을 하나의 문자열로 합친 결과
 	 */
 	@JsonIgnore
 	public String getFullContentString() {
-		return heading.getSymbol() + " " + title + "\n" + content;
+		return heading.getFullHeadingTag(title) + content;
 	}
 }
