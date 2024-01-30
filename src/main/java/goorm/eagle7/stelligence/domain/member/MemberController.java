@@ -14,6 +14,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -110,8 +111,9 @@ public class MemberController {
 	)
 	@GetMapping("/members/me/badges")
 	public ResponseTemplate<List<MemberBadgesResponse>> findMemberBadges(@Auth MemberInfo memberInfo) {
-		List<MemberBadgesResponse> badgesById = memberService.getBadgesById(memberInfo.getId());
-		return ResponseTemplate.ok(badgesById);
+		// List<MemberBadgesResponse> badgesById = memberService.getBadgesById(memberInfo.getId());
+		// return ResponseTemplate.ok(badgesById);
+		return ResponseTemplate.ok();
 	}
 
 }

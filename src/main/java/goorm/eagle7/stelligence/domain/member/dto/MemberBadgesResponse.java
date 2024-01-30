@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberBadgesResponse {
-	private String badgeType;
-	private String badgeTitle;
+	private String badgeType; // Badge enum name(type)
+	private String badgeTitle; // Badge 사용자에게 제공하는 이름
 
 	public static MemberBadgesResponse from(Badge badge) {
 		return new MemberBadgesResponse(badge.name(), badge.getTitle());

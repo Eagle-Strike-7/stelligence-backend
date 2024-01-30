@@ -1,8 +1,5 @@
 package goorm.eagle7.stelligence.domain.member.model;
 
-import lombok.Getter;
-
-@Getter
 public enum Badge {
 
 	ASTRONAUT("우주 여행자"),
