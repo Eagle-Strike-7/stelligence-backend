@@ -43,6 +43,10 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	private String accessTokenName;
 	@Value("${jwt.refreshToken.name}")
 	private String refreshTokenName;
+	@Value("${http.cookie.accessToken.maxAge}")
+	private Integer accessTokenMaxAge;
+	@Value("${http.cookie.refreshToken.maxAge}")
+	private Integer refreshTokenMaxAge;
 
 	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
@@ -81,7 +85,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (!isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(httpMethod, uri)) {
 
 				Cookie[] cookies = request.getCookies();
 
@@ -119,7 +123,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 								// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
 								String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 								member.updateRefreshToken(refreshToken);
-								memberRepository.save(member); // TODO Transaction 문제 없는지 확인
+								memberRepository.save(member);
 
 							}
 						}
@@ -138,8 +142,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				String accessToken = loginTokens.getAccessToken();
 				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
 
-				// header에 쿠키, nickname 저장
-				saveTokensOnResponseCookiesAndNicknameOnHeader(response, accessToken, refreshToken, nickname);
+				// header에 쿠키 저장
+				saveTokensOnResponseCookiesOnHeader(response, accessToken, refreshToken);
 
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
@@ -181,17 +185,15 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * response에 accessToken, refreshToken, nickname 추가
+	 * response 쿠키에 accessToken, refreshToken 추가
 	 * @param response response
 	 * @param accessToken accessToken
 	 * @param refreshToken refreshToken
-	 * @param nickname nickname
 	 */
-	private void saveTokensOnResponseCookiesAndNicknameOnHeader(HttpServletResponse response, String accessToken,
-		String refreshToken, String nickname) {
-		CookieUtils.addCookie(response, accessTokenName, accessToken);
-		CookieUtils.addCookie(response, refreshTokenName, refreshToken);
-		response.setHeader("nickname", nickname);
+	private void saveTokensOnResponseCookiesOnHeader(HttpServletResponse response, String accessToken,
+		String refreshToken) {
+		CookieUtils.addCookie(response, accessTokenName, accessToken, accessTokenMaxAge);
+		CookieUtils.addCookie(response, refreshTokenName, refreshToken, refreshTokenMaxAge);
 	}
 
 	/**
@@ -201,6 +203,6 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return resourceAntPathMatcher.match(httpMethod, uri);
+		return !resourceAntPathMatcher.match(httpMethod, uri);
 	}
 }

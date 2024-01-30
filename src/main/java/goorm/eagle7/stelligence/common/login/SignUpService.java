@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,9 +24,9 @@ public class SignUpService {
 			nickname = generateUniqueNickname(nickname);
 		}
 
-		// member 생성 TODO OAuth2.0 테스트용 하드 코딩
+		// member 생성 OAuth2.0 테스트용 하드 코딩
 		Member newMember = Member.of("영민", nickname, "sbslc2000@stelligence.com", "star.com",
-			"eeunzzi");
+			"eeunzzi", SocialType.KAKAO);
 
 		// 해당 닉네임으로 저장
 		return memberRepository.save(newMember);
