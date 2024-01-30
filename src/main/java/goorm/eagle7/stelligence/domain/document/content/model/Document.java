@@ -5,6 +5,9 @@ import static jakarta.persistence.GenerationType.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -40,6 +43,7 @@ public class Document extends BaseTimeEntity {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "author_id")
+	@OnDelete(action = OnDeleteAction.SET_NULL)
 	private Member author;
 
 	private String title;

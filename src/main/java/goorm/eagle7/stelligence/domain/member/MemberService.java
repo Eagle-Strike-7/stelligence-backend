@@ -39,7 +39,7 @@ public class MemberService {
 	 * <p>- 회원 삭제 시, 글 제외한 해당 회원만 삭제.</p> TODO 모든 정보인지, null 처리 등 확인 필요.
 	 * <p>- 존재하지 않는 회원 id여도 Exception은 발생하지 않음.</p>
 	 * @param memberId 회원 id
-	 */
+	 */ // TODO 탈퇴 시 다른 DB에 저장, 기존은 기본 값 설정 혹은 findById 등으로 조회할 때 null이면 기본값 처리 등.
 	@Transactional
 	public void delete(Long memberId) {
 		memberRepository.deleteById(memberId);
