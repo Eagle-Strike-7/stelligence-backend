@@ -57,14 +57,20 @@ public class MemberService {
 	@Transactional
 	public void updateNickname(Long memberId, MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		// TODO 409 Error 혹은 닉네임 중복 검사 논의 필요.
+
+		// 현재 있는 member인지 확인
+		Member member = findMemberById(memberId);
+
+		// nickname 검사
 		String nickname = memberUpdateNicknameRequest.getNickname();
 		if (memberRepository.existsByNickname(nickname)) {
 			// 이미 사용 중인 닉네임이면 예외 발생
 			throw new BaseException("이미 사용 중인 닉네임입니다. nickname=" + nickname);
 		}
+
 		// 사용 중이지 않은 닉네임이면 닉네임 변경
-		Member member = findMemberById(memberId);
 		member.updateNickname(nickname);
+
 	}
 
 	/**
