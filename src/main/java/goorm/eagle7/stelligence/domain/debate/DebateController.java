@@ -64,21 +64,6 @@ public class DebateController {
 		return ResponseTemplate.ok(null);
 	}
 
-	@Operation(summary = "토론 종료", description = "[OPEN] 상태인 특정 토론을 임의로 종료합니다. 해당 수정 요청을 작성했던 회원의 종료 요청만이 허용됩니다.")
-	@ApiResponse(
-		responseCode = "200",
-		description = "토론 종료 성공",
-		useReturnTypeSchema = true
-	)
-	@DeleteMapping("/{debateId}")
-	public ResponseTemplate<Void> closeDebate(
-		@Parameter(description = "종료할 토론의 ID", example = "1")
-		@PathVariable("debateId") Long debateId,
-		@Auth MemberInfo memberInfo
-	) {
-		return ResponseTemplate.ok();
-	}
-
 	@Operation(summary = "토론 댓글 작성", description = "토론에 새로운 댓글을 작성합니다.")
 	@ApiResponse(
 		responseCode = "200",
