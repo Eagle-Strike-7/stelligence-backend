@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE =  "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
+	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
 
 	// TODO 401 error - 프론트와 어떤 uri가 로그인 필요한 건지 다시 한번 협의
 	/**

@@ -18,8 +18,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	// Optional<Member> findByIdWithBadgesAndBookmarks(@Param("id") Long id);
 
 	/**
-	 * <h2>Member nickname으로 Member를 찾는다..</h2>
-	 * @param  nickname  Member nickname
+	 * <h2>Member nickname으로 Member를 찾는다.</h2>
+	 * @param  nickname Member nickname
 	 * @return Optional<Member> Member 정보
 	 */
 	Optional<Member> findByNickname(String nickname);
