@@ -4,7 +4,9 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.SectionResponseConcatenator;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DocumentResponse {
 
 	private Long documentId;
@@ -29,12 +32,10 @@ public class DocumentResponse {
 	 */
 	private String content;
 
-	private DocumentResponse(Long documentId, String title, List<SectionResponse> sections) {
-		this.documentId = documentId;
-		this.title = title;
-		this.sections = sections;
-		this.content = SectionResponseConcatenator.concat(sections);
-	}
+	// 최초 기여자
+	private MemberDetailResponse originalAuthor;
+
+	private List<MemberDetailResponse> contributors;
 
 	/**
 	 * DocumentResponse를 생성합니다.
@@ -45,8 +46,19 @@ public class DocumentResponse {
 	 * @param sections : 특정 버전에 해당하는 섹션들
 	 * @return 생성된 DocumentResponse
 	 */
-	public static DocumentResponse of(Document document, List<SectionResponse> sections) {
-		return new DocumentResponse(document.getId(), document.getTitle(), sections);
+	public static DocumentResponse of(
+		Document document,
+		List<SectionResponse> sections,
+		List<MemberDetailResponse> contributors
+	) {
+		return new DocumentResponse(
+			document.getId(),
+			document.getTitle(),
+			sections,
+			SectionResponseConcatenator.concat(sections),
+			MemberDetailResponse.from(document.getAuthor()),
+			contributors
+		);
 	}
 
 }
