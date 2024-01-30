@@ -1,9 +1,7 @@
 package goorm.eagle7.stelligence.domain.debate;
 
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +15,10 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentCreateRequest;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentOrderCondition;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentPageResponse;
+import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
-import goorm.eagle7.stelligence.domain.debate.dto.DebateSimpleResponse;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,13 +41,12 @@ public class DebateController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<Page<DebateSimpleResponse>> getDebateList(
+	public ResponseTemplate<DebatePageResponse> getDebateList(
 		@Parameter(description = "조회할 토론의 상태", example = "OPEN")
 		@RequestParam("status") DebateStatus status,
 		@ParameterObject
-		@PageableDefault(page = 0, size = 4) Pageable pageable
+		Pageable pageable
 	) {
-
 		return ResponseTemplate.ok(null);
 	}
 
@@ -109,6 +108,27 @@ public class DebateController {
 		@Parameter(description = "삭제할 댓글의 ID", example = "1")
 		@PathVariable("commentId") Long commentId,
 		@Auth MemberInfo memberInfo
+	) {
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "토론 댓글 조회", description = "특정 토론의 댓글을 조회합니다. 무한 스크롤을 위한 커서 페이징이 적용되어,"
+		+ " 조회를 시작할 댓글 ID를 받아 해당 댓글로부터 size 개수 만큼 조회를 시작합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "토론 댓글 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/{debateId}/comments")
+	public ResponseTemplate<CommentPageResponse> getComments(
+		@Parameter(description = "삭제할 댓글이 있는 토론 ID", example = "1")
+		@PathVariable("debateId") Long debateId,
+		@Parameter(description = "이전에 조회한 마지막 댓글의 ID, null이면 처음부터 조회", example = "1")
+		@RequestParam(value = "cursor", required = false) Long cursor,
+		@Parameter(description = "한번에 가져올 댓글의 개수", example = "10")
+		@RequestParam(value = "size", defaultValue = "10") int size,
+		@Parameter(description = "정렬 기준, 등록순이면 EARLIEST, 최신순이면 LATEST", example = "EARLIEST")
+		@RequestParam("order") CommentOrderCondition order
 	) {
 		return ResponseTemplate.ok();
 	}
