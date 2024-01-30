@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.debate.dto;
 
 import java.time.LocalDateTime;
 
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,6 @@ public class CommentResponse {
 	private LocalDateTime createdAt;
 
 	// 댓글 작성자 정보
-	private Long commenterId;
-	private String commenterNickname;
-	private String commenterImageUrl;
+	private MemberSimpleResponse commenter;
 
 }

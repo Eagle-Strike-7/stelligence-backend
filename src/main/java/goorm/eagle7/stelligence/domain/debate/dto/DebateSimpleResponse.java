@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.debate.dto;
 
 import java.time.LocalDateTime;
 
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,5 @@ public class DebateSimpleResponse {
 	private int commentsCount;
 
 	// 수정요청자 정보
-	private Long contributorId;
-	private String contributorNickname;
+	private MemberSimpleResponse contributor;
 }

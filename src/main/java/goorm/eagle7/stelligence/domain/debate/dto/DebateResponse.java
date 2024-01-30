@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +23,7 @@ public class DebateResponse {
 	private String documentTitle;
 
 	// 수정요청자 정보
-	private Long contributorId;
-	private String contributorNickname;
+	private MemberSimpleResponse contributor;
 
 	// 수정요청 정보
 	private Long contributeId;
