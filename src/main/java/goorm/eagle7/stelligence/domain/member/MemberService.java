@@ -58,7 +58,7 @@ public class MemberService {
 	public void updateNickname(Long memberId, MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		// TODO 409 Error 혹은 닉네임 중복 검사 논의 필요.
 
-		// 현재 있는 member인지 확인
+		// 현재 있는 member인지 확인 // TODO existsByNickname() 와 findById() 순서
 		Member member = findMemberById(memberId);
 
 		// nickname 검사
