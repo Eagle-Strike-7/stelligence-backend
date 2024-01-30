@@ -10,21 +10,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberMyPageResponse {
+public class MemberDetailResponse {
 
-	private String name;
 	private String nickname;
 	private String email;
-	private String imageUrl;
+	private String profileImgUrl;
 	private SocialType socialType;
 
-	// TODO private long contributes;
-	// TODO badges
-	// TODO bookmarks
-
-	public static MemberMyPageResponse from(Member member) {
-		return new MemberMyPageResponse(
-			member.getName(),
+	public static MemberDetailResponse from(Member member) {
+		return new MemberDetailResponse(
 			member.getNickname(),
 			member.getEmail(),
 			member.getImageUrl(),
