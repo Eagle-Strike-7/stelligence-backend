@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.debate;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +46,7 @@ public class DebateController {
 		@Parameter(description = "조회할 토론의 상태", example = "OPEN")
 		@RequestParam("status") DebateStatus status,
 		@ParameterObject
-		Pageable pageable
+		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
 		return ResponseTemplate.ok(null);
 	}
@@ -114,7 +115,7 @@ public class DebateController {
 		@Parameter(description = "한번에 가져올 댓글의 개수", example = "10")
 		@RequestParam(value = "size", defaultValue = "10") int size,
 		@Parameter(description = "정렬 기준, 등록순이면 EARLIEST, 최신순이면 LATEST", example = "EARLIEST")
-		@RequestParam("order") CommentOrderCondition order
+		@RequestParam(value = "order", defaultValue = "EARLIEST") CommentOrderCondition order
 	) {
 		return ResponseTemplate.ok();
 	}
