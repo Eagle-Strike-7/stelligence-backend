@@ -113,7 +113,8 @@ public class DebateController {
 	}
 
 	@Operation(summary = "토론 댓글 조회", description = "특정 토론의 댓글을 조회합니다. 무한 스크롤을 위한 커서 페이징이 적용되어,"
-		+ " 조회를 시작할 댓글 ID를 받아 해당 댓글로부터 size 개수 만큼 조회를 시작합니다.")
+		+ " 조회를 시작할 댓글 ID를 받아 해당 댓글로부터 size 개수 만큼 조회를 시작합니다."
+		+ " order가 EARLIEST면 등록순, LATEST면 최신순으로 조회합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 댓글 조회 성공",
