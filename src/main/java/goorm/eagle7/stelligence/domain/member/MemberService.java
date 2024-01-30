@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +29,9 @@ public class MemberService {
 	 * @throws BaseException 회원을 찾을 수 없는 경우 400
 	 * @see MemberService#findMemberById(Long)
 	 */
-	public MemberProfileResponse getProfileById(Long memberId) {
+	public MemberDetailResponse getProfileById(Long memberId) {
 		Member member = findMemberById(memberId);
-		return MemberProfileResponse.from(member);
+		return MemberDetailResponse.from(member);
 	}
 
 	/**
@@ -75,9 +75,10 @@ public class MemberService {
 	 * @throws BaseException 회원을 찾을 수 없는 경우 400
 	 * @see MemberService#findMemberById(Long)
 	 */
-	public MemberMiniProfileResponse getMiniProfileById(Long memberId) {
+	public MemberSimpleResponse getMiniProfileById(Long memberId) {
 		Member member = findMemberById(memberId);
-		return MemberMiniProfileResponse.of(
+		return MemberSimpleResponse.of(
+			member.getId(),
 			member.getNickname(),
 			member.getImageUrl()
 		);

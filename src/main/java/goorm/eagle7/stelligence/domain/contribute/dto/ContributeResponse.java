@@ -4,7 +4,7 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ public class ContributeResponse {
 	private String contributeDescription;
 	private Long documentId;
 	private String documentTitle;
-	private MemberProfileResponse contributor; //수정 요청한 멤버에 대한 정보
+	private MemberDetailResponse contributor; //수정 요청한 멤버에 대한 정보
 	private List<AmendmentResponse> amendments;
 
 	private ContributeResponse(Contribute contribute) {
@@ -26,7 +26,7 @@ public class ContributeResponse {
 		this.contributeDescription = contribute.getDescription();
 		this.documentId = contribute.getDocument().getId();
 		this.documentTitle = contribute.getDocument().getTitle();
-		this.contributor = MemberProfileResponse.from(contribute.getMember());
+		this.contributor = MemberDetailResponse.from(contribute.getMember());
 		this.amendments = contribute.getAmendments().stream()
 			.map(AmendmentResponse::of)
 			.toList();

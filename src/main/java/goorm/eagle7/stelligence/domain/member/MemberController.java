@@ -12,8 +12,8 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
-import goorm.eagle7.stelligence.domain.member.dto.MemberMiniProfileResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberProfileResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,9 +46,9 @@ public class MemberController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping("/members/me/mini-profile")
-	public ResponseTemplate<MemberMiniProfileResponse> findMiniProfileFromMember(@Auth MemberInfo memberInfo) {
-		MemberMiniProfileResponse memberMiniProfileResponse = memberService.getMiniProfileById(memberInfo.getId());
-		return ResponseTemplate.ok(memberMiniProfileResponse);
+	public ResponseTemplate<MemberSimpleResponse> findMiniProfileFromMember(@Auth MemberInfo memberInfo) {
+		MemberSimpleResponse memberSimpleResponse = memberService.getMiniProfileById(memberInfo.getId());
+		return ResponseTemplate.ok(memberSimpleResponse);
 	}
 
 	@Operation(summary = "회원 정보 조회", description = "회원 정보를 조회합니다")
@@ -58,9 +58,9 @@ public class MemberController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping("/members/me")
-	public ResponseTemplate<MemberProfileResponse> findMember(@Auth MemberInfo memberInfo) {
-		MemberProfileResponse memberProfileResponse = memberService.getProfileById(memberInfo.getId());
-		return ResponseTemplate.ok(memberProfileResponse);
+	public ResponseTemplate<MemberDetailResponse> findMember(@Auth MemberInfo memberInfo) {
+		MemberDetailResponse memberDetailResponse = memberService.getProfileById(memberInfo.getId());
+		return ResponseTemplate.ok(memberDetailResponse);
 	}
 
 	@Operation(summary = "회원 탈퇴", description = "회원을 삭제합니다.")

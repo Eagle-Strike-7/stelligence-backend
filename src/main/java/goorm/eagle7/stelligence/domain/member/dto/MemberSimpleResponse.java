@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
-public class MemberMiniProfileResponse {
+public class MemberSimpleResponse {
+	private Long memberId;
 	private String nickname;
 	private String profileImgUrl;
 }
