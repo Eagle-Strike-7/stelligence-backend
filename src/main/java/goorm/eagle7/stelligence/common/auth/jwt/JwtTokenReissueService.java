@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 public class JwtTokenReissueService {
+
+	@Value("${http.cookie.accessToken.maxAge}")
+	private String accessCookieMaxAge;
+	@Value("${http.cookie.refreshToken.maxAge}")
+	private String refreshCookieMaxAge;
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenService jwtTokenService;
@@ -89,8 +95,8 @@ public class JwtTokenReissueService {
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
 		// 쿠키에 저장
-		CookieUtils.addCookie(response, accessTokenName, accessToken);
-		CookieUtils.addCookie(response, refreshTokenName, newRefreshToken);
+		CookieUtils.addCookie(response, accessTokenName, accessToken, Integer.parseInt(accessCookieMaxAge));
+		CookieUtils.addCookie(response, refreshTokenName, newRefreshToken, Integer.parseInt(refreshCookieMaxAge));
 
 		// DB에 저장
 		member.updateRefreshToken(newRefreshToken);
