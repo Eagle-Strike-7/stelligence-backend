@@ -33,4 +33,7 @@ public class Comment extends BaseTimeEntity {
 	private Member commenter;
 
 	private String content;
+
+	@Column(name = "sequences")
+	private int sequence;
 }

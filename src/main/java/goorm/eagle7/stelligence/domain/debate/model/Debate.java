@@ -37,4 +37,7 @@ public class Debate extends BaseTimeEntity {
 
 	// 종료 예정 시각 (종료된 토론이라면 실제 종료된 시각)
 	private LocalDateTime endAt;
+
+	// 댓글의 순서를 부여하기 위한 시퀀스
+	private int commentSequence;
 }

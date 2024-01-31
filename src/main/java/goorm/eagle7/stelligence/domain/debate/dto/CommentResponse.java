@@ -15,6 +15,7 @@ public class CommentResponse {
 	private Long commentId;
 	private String content;
 	private LocalDateTime createdAt;
+	private int sequence;
 
 	// 댓글 작성자 정보
 	private MemberSimpleResponse commenter;
