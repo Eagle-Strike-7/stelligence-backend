@@ -58,4 +58,14 @@ public class Debate extends BaseTimeEntity {
 		}
 		return new Debate(contribute);
 	}
+
+	// 특정 토론을 닫습니다.
+	public void close() {
+		// 이미 종료된 토론이라면 그대로 유지
+		if (DebateStatus.CLOSED.equals(this.status)) {
+			return;
+		}
+		this.status = DebateStatus.CLOSED;
+		this.endAt = LocalDateTime.now();
+	}
 }
