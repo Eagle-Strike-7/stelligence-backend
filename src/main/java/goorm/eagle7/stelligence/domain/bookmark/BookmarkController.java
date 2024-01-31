@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/bookmarks")
 public class BookmarkController {
 
-	private final BookmarkService bookmarkService;
+	// private final BookmarkService bookmarkService;
 
 	@Operation(summary = "북마크 목록 조회", description = "로그인한 사용자의 북마크 목록을 조회합니다.")
 	@ApiResponse(
@@ -58,7 +58,7 @@ public class BookmarkController {
 		@Auth MemberInfo memberInfo,
 		@RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
 
-		bookmarkService.createBookmark(memberInfo.getId(), bookmarkCreateRequest);
+		// bookmarkService.createBookmark(memberInfo.getId(), bookmarkCreateRequest);
 		return ResponseTemplate.ok();
 
 	}
@@ -75,7 +75,7 @@ public class BookmarkController {
 		@Parameter(description = "삭제할 북마크의 ID", example = "1")
 		@PathVariable Long bookmarkId) {
 
-		bookmarkService.delete(memberInfo.getId(), bookmarkId);
+		// bookmarkService.delete(memberInfo.getId(), bookmarkId);
 		return ResponseTemplate.ok();
 
 	}
