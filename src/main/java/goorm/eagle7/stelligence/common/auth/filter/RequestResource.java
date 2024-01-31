@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of") // 정적 팩토리 메서드
-public class Resource {
+public class RequestResource {
 	private String httpMethod;
 	private String uri;
 }
