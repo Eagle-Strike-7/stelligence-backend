@@ -48,7 +48,7 @@ public class DebateService {
 	/**
 	 * 특정 토론을 ID로 찾아서 조회합니다.
 	 * @param debateId: 조회할 토론의 ID
-	 * @return DebateResponse:
+	 * @return DebateResponse: 조회된 토론 응답 DTO
 	 */
 	@Transactional(readOnly = true)
 	public DebateResponse getDebateDetailById(Long debateId) {
@@ -57,6 +57,12 @@ public class DebateService {
 		return DebateResponse.of(findDebate);
 	}
 
+	/**
+	 * 토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 페이징을 적용하여 조회합니다.
+	 * @param status: 조회하려는 토론의 상태(OPEN / CLOSED)
+	 * @param pageable: 조회하려는 토론의 페이지 정보
+	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
+	 */
 	@Transactional(readOnly = true)
 	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable) {
 
