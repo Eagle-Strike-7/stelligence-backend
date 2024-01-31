@@ -29,15 +29,15 @@ public class VoteService {
 	 * @param loginMemberId
 	 */
 	public void vote(VoteRequest voteRequest, Long loginMemberId) {
+		if (voteRequest.getAgree() == null) {
+			throw new BaseException("투표 요청은 찬성(true), 반대(false) 중 하나여야 합니다.");
+		}
+		
 		Member member = memberRepository.findById(loginMemberId).orElseThrow(
 			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + loginMemberId));
 
 		Contribute contribute = contributeRepository.findById(voteRequest.getContributeId()).orElseThrow(
 			() -> new BaseException("존재하지 않는 Contribute의 요청입니다. Contribute ID: " + voteRequest.getContributeId()));
-
-		if (voteRequest.getAgree() == null) {
-			throw new BaseException("투표 요청은 찬성(true), 반대(false) 중 하나여야 합니다.");
-		}
 
 		Optional<Vote> existingVote = voteRepository.findByMemberAndContribute(member, contribute);
 
