@@ -1,9 +1,7 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +14,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
-import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkPageResponse;
+import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkSimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,13 +34,11 @@ public class BookmarkController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<BookmarkPageResponse> getBookmarks(
-		@Auth MemberInfo memberInfo,
-		@ParameterObject
-		@PageableDefault(page = 0, size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseTemplate<List<BookmarkSimpleResponse>> getBookmarks(
+		@Auth MemberInfo memberInfo) {
 
-		// BookmarkPageResponse bookmarkPageResponse = bookmarkService.getBookmarks(memberInfo.getId(), pageable);
-		// return ResponseTemplate.ok(bookmarkPageResponse);
+		// List<BookmarkSimpleResponse> bookmarks = bookmarkService.getBookmarks(memberInfo.getId());
+		// return ResponseTemplate.ok(bookmarks);
 		return ResponseTemplate.ok();
 
 	}
