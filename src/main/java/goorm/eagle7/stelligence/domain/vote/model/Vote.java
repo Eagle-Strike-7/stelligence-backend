@@ -34,15 +34,23 @@ public class Vote extends BaseTimeEntity {
 	@JoinColumn(name = "contribute_id")
 	private Contribute contribute;
 
-	private Short agree; // 찬성 여부 (1: 찬성, 0: 반대)
+	private Boolean agree; //1: 찬성, 0: 반대, null: 취소
 
-	private Vote(Member member, Contribute contribute, Short agree) {
+	private Vote(Member member, Contribute contribute, Boolean agree) {
 		this.member = member;
 		this.contribute = contribute;
 		this.agree = agree;
 	}
 
-	public static Vote createVote(Member member, Contribute contribute, Short agree) {
+	public static Vote createVote(Member member, Contribute contribute, Boolean agree) {
 		return new Vote(member, contribute, agree);
+	}
+
+	public void updateAgree(Boolean agree) {
+		if (this.agree.equals(agree)) { //요청된 값이 이미 같은 값이면 취소
+			this.agree = null;
+		} else { //다른 값이면 그 값으로 변경
+			this.agree = agree;
+		}
 	}
 }
