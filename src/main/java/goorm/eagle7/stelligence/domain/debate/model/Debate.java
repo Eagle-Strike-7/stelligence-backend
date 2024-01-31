@@ -1,6 +1,8 @@
 package goorm.eagle7.stelligence.domain.debate.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -14,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,6 +44,9 @@ public class Debate extends BaseTimeEntity {
 
 	// 댓글의 순서를 부여하기 위한 시퀀스
 	private int commentSequence;
+
+	@OneToMany(mappedBy = "debate")
+	private List<Comment> comments = new ArrayList<>();
 
 	// 수정 요청으로부터 토론을 생성합니다.
 	private Debate(Contribute contribute) {

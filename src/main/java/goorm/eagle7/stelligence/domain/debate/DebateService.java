@@ -1,12 +1,16 @@
 package goorm.eagle7.stelligence.domain.debate;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,5 +55,12 @@ public class DebateService {
 		Debate findDebate = debateRepository.findByIdWithContribute(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 조회 요청입니다. Debate ID: " + debateId));
 		return DebateResponse.of(findDebate);
+	}
+
+	@Transactional(readOnly = true)
+	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable) {
+
+		Page<Debate> debatePage = debateRepository.findPageByStatus(status, pageable);
+		return DebatePageResponse.from(debatePage);
 	}
 }
