@@ -23,13 +23,30 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	@Query("select s from Section s "
 		+ "where s.document = :document "
 		+ "and s.content is not null "
-		+ "and s.revision = ("
+		+ "and s.revision = ( "
 		+ "   select max(s2.revision) "
 		+ "   from Section s2 "
 		+ "   where s2.id = s.id "
 		+ "   AND s2.revision <= :revision "
 		+ ") ")
 	List<Section> findByVersion(Document document, Long revision);
+
+	/**
+	 * Document의 특정 버전의 글에서 ID만을 조회하는 메서드입니다.
+	 * @param document 문서
+	 * @param revision 버전
+	 * @return 해당 버전 섹션의 ID 목록
+	 */
+	@Query("select s.id from Section s "
+		+ "where s.document = :document "
+		+ "and s.content is not null "
+		+ "and s.revision = ( "
+		+ "   select max(s2.revision) "
+		+ "   from Section s2 "
+		+ "   where s2.id = s.id "
+		+ "   AND s2.revision <= :revision "
+		+ ") ")
+	List<Long> findSectionIdByVersion(Document document, Long revision);
 
 	/**
 	 * Document의 특정 버전의 글 중 order가 특정 값보다 크거나 같은 글을 조회하는 메서드입니다.
@@ -53,9 +70,9 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	 * @param sectionId
 	 * @return 최근 개정된 Section
 	 */
-	@Query("select s from Section s " +
-		"where s.id = :sectionId " +
-		"order by s.revision desc limit 1")
+	@Query("select s from Section s "
+		+ "where s.id = :sectionId "
+		+ "order by s.revision desc limit 1")
 	Optional<Section> findLatestSection(Long sectionId);
 
 	/**
@@ -96,18 +113,18 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Transactional
 	@Query(nativeQuery = true,
-		value = "UPDATE section " +
-			"SET orders = (orders + 1) " +
-			"WHERE document_id = :documentId " +
-			"AND orders >= :insertOrders" +
-			"  AND revision = ( " +
-			"    SELECT max_revision FROM ( " +
-			"                                 SELECT MAX(revision) AS max_revision " +
-			"                                 FROM section AS s2 " +
-			"                                 WHERE s2.section_id = section.section_id " +
-			"                                   AND s2.revision <= :revision " +
-			"                             ) AS subquery\n" +
-			");")
+		value = "UPDATE section "
+			+ "SET orders = (orders + 1) "
+			+ "WHERE document_id = :documentId "
+			+ "AND orders >= :insertOrders"
+			+ "  AND revision = ( "
+			+ "    SELECT max_revision FROM ( "
+			+ "                                 SELECT MAX(revision) AS max_revision "
+			+ "                                 FROM section AS s2 "
+			+ "                                 WHERE s2.section_id = section.section_id "
+			+ "                                   AND s2.revision <= :revision "
+			+ "                             ) AS subquery\n"
+			+ ");")
 	int updateOrders(Long documentId, Long revision, int insertOrders);
 
 }
