@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,4 +41,21 @@ public class Debate extends BaseTimeEntity {
 
 	// 댓글의 순서를 부여하기 위한 시퀀스
 	private int commentSequence;
+
+	// 수정 요청으로부터 토론을 생성합니다.
+	private Debate(Contribute contribute) {
+		contribute.setStatusDebating();
+		this.contribute = contribute;
+		this.status = DebateStatus.OPEN;
+		this.endAt = LocalDateTime.now().plusDays(1L);
+		this.commentSequence = 1;
+	}
+
+	// 특정 수정 요청으로부터 토론을 개시합니다.
+	public static Debate openFrom(Contribute contribute) {
+		if (!ContributeStatus.VOTING.equals(contribute.getStatus())) {
+			throw new IllegalStateException("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
+		}
+		return new Debate(contribute);
+	}
 }
