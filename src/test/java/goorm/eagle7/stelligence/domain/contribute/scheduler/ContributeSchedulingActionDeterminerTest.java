@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.vote.VoteSummary;
+import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
 import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +30,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 80));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 80));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -43,7 +43,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 79));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 79));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -56,7 +56,7 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteSummary(1L, 100, 29));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 29));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then

@@ -10,5 +10,5 @@ public class VoteSummaryResponse {
 
 	private Long agreeCount;    //찬성 개수
 	private Long disagreeCount;    //반대 개수
-	private Boolean agree;    //내 투표 상태
+	private Boolean myVote; //내 투표 상태
 }

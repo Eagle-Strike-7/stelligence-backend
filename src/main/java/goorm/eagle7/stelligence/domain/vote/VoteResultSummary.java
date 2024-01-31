@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class VoteSummary {
+public class VoteResultSummary {
 
 	private Long contributeId;
 	private int totalVotes; // 총 투표 수

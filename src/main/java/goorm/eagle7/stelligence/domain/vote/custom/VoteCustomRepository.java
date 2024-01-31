@@ -1,6 +1,6 @@
 package goorm.eagle7.stelligence.domain.vote.custom;
 
-import goorm.eagle7.stelligence.domain.vote.VoteSummary;
+import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
 
 /**
  * Vote의 데이터를 저장하고 조회하는 Repository 인터페이스 입니다.
@@ -13,5 +13,5 @@ public interface VoteCustomRepository {
 	 * @param contributeId Contribute의 ID
 	 * @return 투표 결과 (총 투표 수, 찬성 투표 수)
 	 */
-	VoteSummary getVoteSummary(Long contributeId);
+	VoteResultSummary getVoteSummary(Long contributeId);
 }
