@@ -19,9 +19,9 @@ public class BookmarkPageResponse {
 
 	public static BookmarkPageResponse from(Page<Bookmark> page) {
 		List<BookmarkSimpleResponse> bookmarks =
-			page
+			page.getContent().stream()
 				.map(BookmarkSimpleResponse::from)
-				.getContent();
+				.toList();
 		int totalPages = page.getTotalPages();
 		return new BookmarkPageResponse(bookmarks, totalPages);
 	}
