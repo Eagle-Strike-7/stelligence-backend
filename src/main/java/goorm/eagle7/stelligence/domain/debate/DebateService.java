@@ -3,7 +3,9 @@ package goorm.eagle7.stelligence.domain.debate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,5 +39,17 @@ public class DebateService {
 			.orElseThrow(() -> new IllegalArgumentException("삭제하려는 토론이 존재하지 않습니다. Debate ID: " + debateId));
 
 		targetDebate.close();
+	}
+
+	/**
+	 * 특정 토론을 ID로 찾아서 조회합니다.
+	 * @param debateId: 조회할 토론의 ID
+	 * @return DebateResponse:
+	 */
+	@Transactional(readOnly = true)
+	public DebateResponse getDebateDetailById(Long debateId) {
+		Debate findDebate = debateRepository.findByIdWithContribute(debateId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 조회 요청입니다. Debate ID: " + debateId));
+		return DebateResponse.of(findDebate);
 	}
 }
