@@ -15,12 +15,16 @@ import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationDeleteRequest;
 import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationReadRequest;
 import goorm.eagle7.stelligence.domain.notification.dto.response.NotificationResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Notification 관련 API를 제공하는 컨트롤러 클래스입니다.
  */
+@Tag(name = "Notification API", description = "알림 관련 API를 제공합니다.")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +37,12 @@ public class NotificationController {
 	 * @param memberInfo 로그인한 사용자의 정보
 	 * @return 알림 목록
 	 */
+	@Operation(summary = "알림 조회", description = "로그인한 사용자의 알림을 조회합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "알림 조회 성공",
+		useReturnTypeSchema = true
+	)
 	@GetMapping
 	public ResponseTemplate<List<NotificationResponse>> getNotifications(
 		@Auth MemberInfo memberInfo
@@ -46,6 +56,12 @@ public class NotificationController {
 	 * @param memberInfo 로그인한 사용자의 정보
 	 * @return 성공 여부
 	 */
+	@Operation(summary = "알림 읽음 처리", description = "사용자의 알림을 읽음 처리합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "알림 읽음 처리 성공",
+		useReturnTypeSchema = true
+	)
 	@PatchMapping
 	public ResponseTemplate<Void> readNotifications(
 		@RequestBody NotificationReadRequest notificationReadRequest,
@@ -60,6 +76,12 @@ public class NotificationController {
 	 * @param memberInfo 로그인한 사용자의 정보
 	 * @return 성공 여부
 	 */
+	@Operation(summary = "알림 삭제", description = "사용자의 알림을 삭제합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "알림 삭제 성공",
+		useReturnTypeSchema = true
+	)
 	@DeleteMapping
 	public ResponseTemplate<Void> deleteNotifications(
 		@RequestBody NotificationDeleteRequest notificationDeleteRequest,
