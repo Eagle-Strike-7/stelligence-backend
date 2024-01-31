@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -97,6 +100,19 @@ public class MemberController {
 		@Parameter(description = "변경할 닉네임", example = "은하수")
 		@RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		memberService.updateNickname(memberInfo.getId(), memberUpdateNicknameRequest);
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "회원의 뱃지 조회", description = "회원의 뱃지를 조회합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "회원의 뱃지 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/members/me/badges")
+	public ResponseTemplate<List<MemberBadgesResponse>> findMemberBadges(@Auth MemberInfo memberInfo) {
+		// List<MemberBadgesResponse> badgesById = memberService.getBadgesById(memberInfo.getId());
+		// return ResponseTemplate.ok(badgesById);
 		return ResponseTemplate.ok();
 	}
 
