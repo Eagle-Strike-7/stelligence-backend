@@ -4,9 +4,7 @@ import goorm.eagle7.stelligence.domain.vote.VoteSummary;
 
 /**
  * Vote의 데이터를 저장하고 조회하는 Repository 인터페이스 입니다.
- * 추후에 이를 구현하여 Redis 혹은 DB에 저장하고 조회하도록 합니다.
  *
- * 필요한 메서드를 추가해주세요.
  */
 public interface VoteCustomRepository {
 
