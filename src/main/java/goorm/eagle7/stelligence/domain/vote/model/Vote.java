@@ -34,7 +34,7 @@ public class Vote extends BaseTimeEntity {
 	@JoinColumn(name = "contribute_id")
 	private Contribute contribute;
 
-	private Boolean agree; //1: 찬성, 0: 반대, null: 취소
+	private Boolean agree; //true: 찬성, false: 반대, null: 취소
 
 	private Vote(Member member, Contribute contribute, Boolean agree) {
 		this.member = member;
