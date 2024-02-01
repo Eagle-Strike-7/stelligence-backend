@@ -89,18 +89,20 @@ class DebateServiceTest {
 
 		// LocalDateTime::now 모킹
 		LocalDateTime expectedEndAt = LocalDateTime.of(2024, 1, 14, 22, 0);
-		MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class);
-		mockedLocalDateTime.when(LocalDateTime::now).thenReturn(expectedEndAt);
 
-		// when
-		debateService.closeDebateById(debateId);
+		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)) {
+			mockedLocalDateTime.when(LocalDateTime::now).thenReturn(expectedEndAt);
 
-		// then
-		// 변환하고 나면 debate의 상태가 닫힘으로 바뀌고 닫힌 시간이 현재 시간이 되어야한다.
-		assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-		assertThat(debate.getEndAt()).isEqualTo(expectedEndAt);
-		// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
-		verify(debateRepository, times(1)).findById(debateId);
+			// when
+			debateService.closeDebateById(debateId);
+
+			// then
+			// 변환하고 나면 debate의 상태가 닫힘으로 바뀌고 닫힌 시간이 현재 시간이 되어야한다.
+			assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
+			assertThat(debate.getEndAt()).isEqualTo(expectedEndAt);
+			// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
+			verify(debateRepository, times(1)).findById(debateId);
+		}
 	}
 
 	@Test

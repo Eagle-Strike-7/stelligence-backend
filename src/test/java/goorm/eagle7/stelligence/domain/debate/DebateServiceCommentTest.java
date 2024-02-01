@@ -53,26 +53,27 @@ class DebateServiceCommentTest {
 		Member commenter = TestFixtureGenerator.member(memberId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, endAt, 1, createdAt);
 
-		MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class);
-		mockedLocalDateTime.when(LocalDateTime::now).thenReturn(commentedAt);
+		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)) {
+			mockedLocalDateTime.when(LocalDateTime::now).thenReturn(commentedAt);
 
-		when(memberRepository.findById(memberId)).thenReturn(Optional.of(commenter));
-		when(debateRepository.findDebateByIdForUpdate(debateId)).thenReturn(Optional.of(debate));
+			when(memberRepository.findById(memberId)).thenReturn(Optional.of(commenter));
+			when(debateRepository.findDebateByIdForUpdate(debateId)).thenReturn(Optional.of(debate));
 
-		// when
-		debateService.addComment(commentRequest, debateId, memberId);
+			// when
+			debateService.addComment(commentRequest, debateId, memberId);
 
-		// then
-		// 댓글은 commentRepository의 save 메서드에 의해 저장된다.
-		verify(commentRepository, times(1)).save(any(Comment.class));
-		verify(debateRepository, times(1)).findDebateByIdForUpdate(debateId);
-		verify(memberRepository, times(1)).findById(memberId);
+			// then
+			// 댓글은 commentRepository의 save 메서드에 의해 저장된다.
+			verify(commentRepository, times(1)).save(any(Comment.class));
+			verify(debateRepository, times(1)).findDebateByIdForUpdate(debateId);
+			verify(memberRepository, times(1)).findById(memberId);
 
-		assertThat(debate.getComments()).isNotEmpty();
-		// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점의 하루 뒤로 반영되어야한다.
-		assertThat(debate.getEndAt()).isEqualTo(commentedAt.plusDays(1L));
-		// 댓글을 작성하고 나면 debate의 commentSequence가 1 증가한다.
-		assertThat(debate.getCommentSequence()).isEqualTo(2);
+			assertThat(debate.getComments()).isNotEmpty();
+			// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점의 하루 뒤로 반영되어야한다.
+			assertThat(debate.getEndAt()).isEqualTo(commentedAt.plusDays(1L));
+			// 댓글을 작성하고 나면 debate의 commentSequence가 1 증가한다.
+			assertThat(debate.getCommentSequence()).isEqualTo(2);
+		}
 	}
 
 	@Test
@@ -90,19 +91,20 @@ class DebateServiceCommentTest {
 		Member commenter = TestFixtureGenerator.member(memberId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, endAt, 1, createdAt);
 
-		MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class);
-		mockedLocalDateTime.when(LocalDateTime::now).thenReturn(commentedAt);
+		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)){
+			mockedLocalDateTime.when(LocalDateTime::now).thenReturn(commentedAt);
 
-		when(memberRepository.findById(memberId)).thenReturn(Optional.of(commenter));
-		when(debateRepository.findDebateByIdForUpdate(debateId)).thenReturn(Optional.of(debate));
+			when(memberRepository.findById(memberId)).thenReturn(Optional.of(commenter));
+			when(debateRepository.findDebateByIdForUpdate(debateId)).thenReturn(Optional.of(debate));
 
-		// when
-		debateService.addComment(commentRequest, debateId, memberId);
+			// when
+			debateService.addComment(commentRequest, debateId, memberId);
 
-		// then
-		// 토론의 최대 지속시간은 7일이다.
-		assertThat(debate.getEndAt()).isEqualTo(createdAt.plusDays(7L));
-		assertThat(debate.getEndAt()).isNotEqualTo(commentedAt.plusDays(1L));
+			// then
+			// 토론의 최대 지속시간은 7일이다.
+			assertThat(debate.getEndAt()).isEqualTo(createdAt.plusDays(7L));
+			assertThat(debate.getEndAt()).isNotEqualTo(commentedAt.plusDays(1L));
+		}
 	}
 
 	@Test
