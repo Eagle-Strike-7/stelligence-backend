@@ -71,6 +71,8 @@ class DebateServiceCommentTest {
 		assertThat(debate.getComments()).isNotEmpty();
 		// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점의 하루 뒤로 반영되어야한다.
 		assertThat(debate.getEndAt()).isEqualTo(commentedAt.plusDays(1L));
+		// 댓글을 작성하고 나면 debate의 commentSequence가 1 증가한다.
+		assertThat(debate.getCommentSequence()).isEqualTo(2);
 	}
 
 	@Test
@@ -122,5 +124,50 @@ class DebateServiceCommentTest {
 		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, memberId))
 			.isInstanceOf(BaseException.class)
 			.hasMessage("이미 닫힌 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId);
+	}
+
+	@Test
+	@DisplayName("토론 댓글 삭제")
+	void deleteComment() {
+		// given
+		String commentContent = "댓글 내용1";
+		Long commentId = 2L;
+		Long debateId = 1L;
+		Long commenterId = 3L;
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
+		Comment comment = TestFixtureGenerator.comment(commentId, debate, commenter, commentContent, 1);
+
+		when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+
+		// when
+		debateService.deleteComment(commentId, commenterId);
+
+		// then
+		verify(commentRepository, times(1)).findById(commentId);
+		verify(commentRepository, times(1)).delete(comment);
+	}
+
+	@Test
+	@DisplayName("토론 댓글 삭제 권한 없음")
+	void deleteOtherMemberComment() {
+		// given
+		String commentContent = "댓글 내용1";
+		Long commentId = 2L;
+		Long debateId = 1L;
+		Long commenterId = 3L;
+		Long attackerId = 4L;
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
+		Comment comment = TestFixtureGenerator.comment(commentId, debate, commenter, commentContent, 1);
+
+		when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+
+		// when
+
+		// then
+		assertThatThrownBy(() -> debateService.deleteComment(commentId, attackerId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 대한 삭제 권한이 없습니다. Member ID: " + attackerId);
 	}
 }
