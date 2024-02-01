@@ -133,9 +133,9 @@ public class Member extends BaseTimeEntity {
 		this.email = "";
 		this.imageUrl = "";
 		this.socialId = "";
-		this.socialType = null;
+		this.socialType = SocialType.WHITDRAWN;
 		this.refreshToken = "";
-		this.role = Role.WITHDRAWN;
+		// this.role = this.role;
 		this.contributes = 0;
 		this.badges.clear();
 		this.bookmarks.clear();
