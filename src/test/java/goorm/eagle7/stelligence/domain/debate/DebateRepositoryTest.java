@@ -2,7 +2,9 @@ package goorm.eagle7.stelligence.domain.debate;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
@@ -28,6 +30,8 @@ class DebateRepositoryTest {
 		Debate findDebate = debateRepository.findByIdWithContribute(debateId).get();
 
 		assertThat(findDebate.getId()).isEqualTo(debateId);
+
+		// 페치 조인 잘 되었는지 테스트
 		assertThat(AopUtils.isAopProxy(findDebate.getContribute())).isFalse();
 		assertThat(AopUtils.isAopProxy(findDebate.getContribute().getMember())).isFalse();
 		assertThat(AopUtils.isAopProxy(findDebate.getContribute().getAmendments().stream().findAny())).isFalse();
@@ -37,21 +41,33 @@ class DebateRepositoryTest {
 	void findPageByOpenStatus() {
 		Page<Debate> debatePage = debateRepository.findPageByStatus(DebateStatus.OPEN, PageRequest.of(0, 2));
 		List<Debate> debates = debatePage.getContent();
+		Set<Debate> debateSet = new HashSet<>(debates);
 
 		assertThat(debates)
 			.isNotEmpty()
 			.hasSize(2)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.OPEN));
+
+		// 중복이 없는지 테스트
+		assertThat(debateSet)
+			.isNotEmpty()
+			.hasSize(2);
 	}
 
 	@Test
 	void findPageByCloseStatus() {
 		Page<Debate> debatePage = debateRepository.findPageByStatus(DebateStatus.CLOSED, PageRequest.of(0, 2));
 		List<Debate> debates = debatePage.getContent();
+		Set<Debate> debateSet = new HashSet<>(debates);
 
 		assertThat(debates)
 			.isNotEmpty()
 			.hasSize(2)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.CLOSED));
+
+		// 중복이 없는지 테스트
+		assertThat(debateSet)
+			.isNotEmpty()
+			.hasSize(2);
 	}
 }
