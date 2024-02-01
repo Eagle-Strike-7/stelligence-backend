@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.domain.debate.dto.CommentCreateRequest;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentPageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
@@ -77,10 +78,10 @@ public class DebateController {
 	public ResponseTemplate<Void> addComment(
 		@Parameter(description = "댓글을 추가할 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId,
-		@RequestBody CommentCreateRequest commentCreateRequest,
+		@RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
-		debateService.addComment(commentCreateRequest, debateId, memberInfo.getId());
+		debateService.addComment(commentRequest, debateId, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 
@@ -120,6 +121,24 @@ public class DebateController {
 		@RequestParam(value = "size", defaultValue = "10") int size,
 		@Parameter(description = "정렬 기준, 등록순이면 EARLIEST, 최신순이면 LATEST", example = "EARLIEST")
 		@RequestParam(value = "order", defaultValue = "EARLIEST") CommentOrderCondition order
+	) {
+		return ResponseTemplate.ok();
+	}
+
+	@Operation(summary = "토론 댓글 수정", description = "특정 토론의 댓글을 수정합니다. 해당 댓글을 작성했던 회원의 수정 요청만이 허용됩니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "토론 댓글 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@PatchMapping("/{debateId}/comments/{commentId}")
+	public ResponseTemplate<Void> updateComment(
+		@Parameter(description = "수정할 댓글이 있는 토론의 ID", example = "1")
+		@PathVariable("debateId") Long debateId,
+		@Parameter(description = "수정할 댓글의 ID", example = "1")
+		@PathVariable("commentId") Long commentId,
+		@RequestBody CommentRequest commentRequest,
+		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok();
 	}

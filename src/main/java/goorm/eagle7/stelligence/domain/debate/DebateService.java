@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.debate.dto.CommentCreateRequest;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
@@ -78,11 +78,11 @@ public class DebateService {
 
 	/**
 	 * 특정 열린 토론에 댓글을 작성합니다.
-	 * @param commentCreateRequest: 댓글 작성에 필요한 정보를 담은 요청 DTO
+	 * @param commentRequest: 댓글 작성에 필요한 정보를 담은 요청 DTO
 	 * @param debateId: 댓글을 달 토론의 ID
 	 * @param loginMemberId: 현재 로그인한 회원의 ID
 	 */
-	public void addComment(CommentCreateRequest commentCreateRequest, Long debateId, Long loginMemberId) {
+	public void addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
 		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
@@ -94,7 +94,7 @@ public class DebateService {
 		Member loginMember = memberRepository.findById(loginMemberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원에 대한 댓글 작성요청입니다. Member ID: " + loginMemberId));
 
-		Comment comment = Comment.createComment(commentCreateRequest.getContent(), findDebate, loginMember);
+		Comment comment = Comment.createComment(commentRequest.getContent(), findDebate, loginMember);
 		commentRepository.save(comment);
 	}
 
