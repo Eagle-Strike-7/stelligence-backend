@@ -49,7 +49,7 @@ class DebateServiceCommentTest {
 		LocalDateTime commentedAt = LocalDateTime.of(2024, 1, 14, 3, 0);
 
 		Long debateId = 1L;
-		Long memberId = 1L;
+		Long memberId = 2L;
 		Member commenter = TestFixtureGenerator.member(memberId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, endAt, 1, createdAt);
 
@@ -87,7 +87,7 @@ class DebateServiceCommentTest {
 		LocalDateTime commentedAt = createdAt.plusDays(6L).plusHours(23L);
 
 		Long debateId = 1L;
-		Long memberId = 1L;
+		Long memberId = 2L;
 		Member commenter = TestFixtureGenerator.member(memberId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, endAt, 1, createdAt);
 
@@ -116,13 +116,14 @@ class DebateServiceCommentTest {
 		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
 
 		Long debateId = 1L;
-		Long memberId = 1L;
+		Long memberId = 2L;
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.CLOSED, endAt, 1);
 
 		// when
 		when(debateRepository.findDebateByIdForUpdate(debateId)).thenReturn(Optional.of(debate));
 
 		// then
+		// 이미 닫힌 토론에는 댓글을 작성할 수 없다.
 		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, memberId))
 			.isInstanceOf(BaseException.class)
 			.hasMessage("이미 닫힌 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId);
@@ -133,8 +134,8 @@ class DebateServiceCommentTest {
 	void deleteComment() {
 		// given
 		String commentContent = "댓글 내용1";
-		Long commentId = 2L;
-		Long debateId = 1L;
+		Long commentId = 1L;
+		Long debateId = 2L;
 		Long commenterId = 3L;
 		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
@@ -146,6 +147,7 @@ class DebateServiceCommentTest {
 		debateService.deleteComment(commentId, commenterId);
 
 		// then
+		// 댓글의 작성자는 댓글을 삭제할 수 있다.
 		verify(commentRepository, times(1)).findById(commentId);
 		verify(commentRepository, times(1)).delete(comment);
 	}
@@ -155,8 +157,8 @@ class DebateServiceCommentTest {
 	void deleteOtherMemberComment() {
 		// given
 		String commentContent = "댓글 내용1";
-		Long commentId = 2L;
-		Long debateId = 1L;
+		Long commentId = 1L;
+		Long debateId = 2L;
 		Long commenterId = 3L;
 		Long attackerId = 4L;
 		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
@@ -168,6 +170,7 @@ class DebateServiceCommentTest {
 		// when
 
 		// then
+		// 권한이 없는 댓글은 삭제할 수 없다.
 		assertThatThrownBy(() -> debateService.deleteComment(commentId, attackerId))
 			.isInstanceOf(BaseException.class)
 			.hasMessage("댓글에 대한 삭제 권한이 없습니다. Member ID: " + attackerId);
@@ -180,8 +183,8 @@ class DebateServiceCommentTest {
 		String originalCommentContent = "댓글 내용1";
 		String updatedCommentContent = "수정된 댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(updatedCommentContent);
-		Long commentId = 2L;
-		Long debateId = 1L;
+		Long commentId = 1L;
+		Long debateId = 2L;
 		Long commenterId = 3L;
 		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
@@ -205,8 +208,8 @@ class DebateServiceCommentTest {
 		String originalCommentContent = "댓글 내용1";
 		String updatedCommentContent = "수정된 댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(updatedCommentContent);
-		Long commentId = 2L;
-		Long debateId = 1L;
+		Long commentId = 1L;
+		Long debateId = 2L;
 		Long commenterId = 3L;
 		Long attackerId = 4L;
 		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
