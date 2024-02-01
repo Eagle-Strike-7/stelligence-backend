@@ -68,6 +68,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer
     implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1'
 
+    // 탈퇴 회원 테이블 생성 위해 Jdbc 추가
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+
 }
 
 tasks.named('test') {
