@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.debate;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
@@ -131,5 +134,17 @@ public class DebateService {
 		}
 
 		updateComment.updateContentTo(commentRequest.getContent());
+	}
+
+	/**
+	 * 특정 토론의 댓글들을 조회합니다.
+	 * @param debateId: 댓글을 조회할 토론의 ID
+	 * @return List&lt;CommentResponse&gt;: 조회된 댓글의 리스트
+	 */
+	public List<CommentResponse> getComments(Long debateId) {
+
+		List<Comment> comments = commentRepository.findAllByDebateId(debateId);
+
+		return comments.stream().map(CommentResponse::from).toList();
 	}
 }
