@@ -69,21 +69,21 @@ public class DebateController {
 		return ResponseTemplate.ok(debateService.getDebateDetailById(debateId));
 	}
 
-	@Operation(summary = "토론 댓글 작성", description = "토론에 새로운 댓글을 작성합니다.")
+	@Operation(summary = "토론 댓글 작성", description = "토론에 새로운 댓글을 작성합니다."
+		+ " 댓글을 작성하는 사이에 작성된 다른 댓글을 위해 전체 댓글 리스트를 반환합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 댓글 작성 성공",
 		useReturnTypeSchema = true
 	)
 	@PostMapping("/{debateId}/comments")
-	public ResponseTemplate<Void> addComment(
+	public ResponseTemplate<List<CommentResponse>> addComment(
 		@Parameter(description = "댓글을 추가할 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId,
 		@RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
-		debateService.addComment(commentRequest, debateId, memberInfo.getId());
-		return ResponseTemplate.ok();
+		return ResponseTemplate.ok(debateService.addComment(commentRequest, debateId, memberInfo.getId()));
 	}
 
 	@Operation(summary = "토론 댓글 삭제", description = "특정 토론의 특정 댓글을 삭제합니다. 해당 댓글을 작성했던 회원의 삭제 요청만이 허용됩니다.")

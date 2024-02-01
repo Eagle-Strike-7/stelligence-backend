@@ -85,7 +85,7 @@ public class DebateService {
 	 * @param debateId: 댓글을 달 토론의 ID
 	 * @param loginMemberId: 현재 로그인한 회원의 ID
 	 */
-	public void addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
+	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
 		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
@@ -99,6 +99,9 @@ public class DebateService {
 
 		Comment comment = Comment.createComment(commentRequest.getContent(), findDebate, loginMember);
 		commentRepository.save(comment);
+
+		List<Comment> comments = commentRepository.findAllByDebateId(debateId);
+		return comments.stream().map(CommentResponse::from).toList();
 	}
 
 	/**
