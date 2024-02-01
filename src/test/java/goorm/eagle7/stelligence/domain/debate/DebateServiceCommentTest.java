@@ -91,7 +91,7 @@ class DebateServiceCommentTest {
 		Member commenter = TestFixtureGenerator.member(memberId, "commenter1");
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, endAt, 1, createdAt);
 
-		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)){
+		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)) {
 			mockedLocalDateTime.when(LocalDateTime::now).thenReturn(commentedAt);
 
 			when(memberRepository.findById(memberId)).thenReturn(Optional.of(commenter));
@@ -171,5 +171,57 @@ class DebateServiceCommentTest {
 		assertThatThrownBy(() -> debateService.deleteComment(commentId, attackerId))
 			.isInstanceOf(BaseException.class)
 			.hasMessage("댓글에 대한 삭제 권한이 없습니다. Member ID: " + attackerId);
+	}
+
+	@Test
+	@DisplayName("댓글 수정 테스트")
+	void updateComment() {
+		// given
+		String originalCommentContent = "댓글 내용1";
+		String updatedCommentContent = "수정된 댓글 내용1";
+		CommentRequest commentRequest = CommentRequest.of(updatedCommentContent);
+		Long commentId = 2L;
+		Long debateId = 1L;
+		Long commenterId = 3L;
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
+		Comment comment = TestFixtureGenerator.comment(commentId, debate, commenter, originalCommentContent, 1);
+
+		when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+
+		// when
+		debateService.updateComment(commentId, commentRequest, commenterId);
+
+		// then
+		// 댓글이 수정되면 댓글의 내용이 변경된다.
+		verify(commentRepository, times(1)).findById(commentId);
+		assertThat(comment.getContent()).isEqualTo(updatedCommentContent);
+	}
+
+	@Test
+	@DisplayName("토론 댓글 수정 권한 없음")
+	void updateOtherMemberComment() {
+		// given
+		String originalCommentContent = "댓글 내용1";
+		String updatedCommentContent = "수정된 댓글 내용1";
+		CommentRequest commentRequest = CommentRequest.of(updatedCommentContent);
+		Long commentId = 2L;
+		Long debateId = 1L;
+		Long commenterId = 3L;
+		Long attackerId = 4L;
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter1");
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 1, null);
+		Comment comment = TestFixtureGenerator.comment(commentId, debate, commenter, originalCommentContent, 1);
+
+		when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
+
+		// when
+
+		// then
+		// 권한이 없는 댓글은 수정할 수 없고, 내용이 변경되지 않는다.
+		assertThatThrownBy(() -> debateService.updateComment(commentId, commentRequest, attackerId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 대한 수정 권한이 없습니다. Member ID: " + attackerId);
+		assertThat(comment.getContent()).isEqualTo(originalCommentContent);
 	}
 }

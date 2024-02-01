@@ -127,7 +127,7 @@ public class DebateService {
 			.orElseThrow(() -> new BaseException("존재하지 않는 댓글에 대한 수정 요청입니다. Comment ID: " + commentId));
 
 		if (!updateComment.hasPermissionToModify(loginMemberId)) {
-			throw new BaseException("댓글에 대한 삭제 권한이 없습니다. Member ID: " + loginMemberId);
+			throw new BaseException("댓글에 대한 수정 권한이 없습니다. Member ID: " + loginMemberId);
 		}
 
 		updateComment.updateContentTo(commentRequest.getContent());
