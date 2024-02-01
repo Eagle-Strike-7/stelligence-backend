@@ -84,7 +84,7 @@ public class DebateService {
 	 */
 	public void addComment(CommentCreateRequest commentCreateRequest, Long debateId, Long loginMemberId) {
 
-		Debate findDebate = debateRepository.findById(debateId)
+		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
 
 		if (DebateStatus.CLOSED.equals(findDebate.getStatus())) {
