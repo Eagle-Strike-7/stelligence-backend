@@ -130,7 +130,8 @@ public class Member extends BaseTimeEntity {
 
 	/**
 	 * <h2>Member 탈퇴</h2>
-	 * <p>Member의 정보를 초기화하고, role을 WITHDRAWN으로 변경.</p>
+	 * <p>Member의 정보를 초기화, socialType을 WITHDRAWN으로 변경.</p>
+	 * <p>role은 그대로 유지(권한 문제), delete는 이미 true라 따로 건들지 않음.</p>
 	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
 	 */
 	public void withdraw() {
