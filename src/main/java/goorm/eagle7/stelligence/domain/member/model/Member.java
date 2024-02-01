@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.badges.model.Badge;
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
