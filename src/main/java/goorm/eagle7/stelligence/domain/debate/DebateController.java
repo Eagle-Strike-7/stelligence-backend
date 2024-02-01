@@ -126,7 +126,7 @@ public class DebateController {
 		useReturnTypeSchema = true
 	)
 	@PatchMapping("/{debateId}/comments/{commentId}")
-	public ResponseTemplate<Void> updateComment(
+	public ResponseTemplate<CommentResponse> updateComment(
 		@Parameter(description = "수정할 댓글이 있는 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId,
 		@Parameter(description = "수정할 댓글의 ID", example = "1")
@@ -134,7 +134,6 @@ public class DebateController {
 		@RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
-		debateService.updateComment(commentId, commentRequest, memberInfo.getId());
-		return ResponseTemplate.ok();
+		return ResponseTemplate.ok(debateService.updateComment(commentId, commentRequest, memberInfo.getId()));
 	}
 }

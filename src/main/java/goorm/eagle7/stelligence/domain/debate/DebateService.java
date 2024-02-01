@@ -124,7 +124,7 @@ public class DebateService {
 	 * @param commentRequest: 수정할 댓글의 내용을 담은 요청 DTO
 	 * @param loginMemberId: 로그인한 회원의 ID
 	 */
-	public void updateComment(Long commentId, CommentRequest commentRequest, Long loginMemberId) {
+	public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, Long loginMemberId) {
 
 		Comment updateComment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 댓글에 대한 수정 요청입니다. Comment ID: " + commentId));
@@ -134,6 +134,7 @@ public class DebateService {
 		}
 
 		updateComment.updateContentTo(commentRequest.getContent());
+		return CommentResponse.from(updateComment);
 	}
 
 	/**
