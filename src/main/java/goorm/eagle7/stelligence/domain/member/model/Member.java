@@ -120,4 +120,26 @@ public class Member extends BaseTimeEntity {
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
+
+	/**
+	 * <h2>Member 탈퇴</h2>
+	 * <p>Member의 정보를 초기화하고, role을 WITHDRAWN으로 변경.</p>
+	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
+	 */
+	public void withdraw() {
+
+		this.name = "";
+		this.nickname = "";
+		this.email = "";
+		this.imageUrl = "";
+		this.socialId = "";
+		this.socialType = null;
+		this.refreshToken = "";
+		this.role = Role.WITHDRAWN;
+		this.contributes = 0;
+		this.badges.clear();
+		this.bookmarks.clear();
+
+	}
+
 }
