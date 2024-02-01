@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -193,12 +195,13 @@ class DebateServiceCommentTest {
 		when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
 
 		// when
-		debateService.updateComment(commentId, commentRequest, commenterId);
+		CommentResponse commentResponse = debateService.updateComment(commentId, commentRequest, commenterId);
 
 		// then
 		// 댓글이 수정되면 댓글의 내용이 변경된다.
 		verify(commentRepository, times(1)).findById(commentId);
 		assertThat(comment.getContent()).isEqualTo(updatedCommentContent);
+		assertThat(commentResponse.getContent()).isEqualTo(updatedCommentContent);
 	}
 
 	@Test
@@ -226,5 +229,19 @@ class DebateServiceCommentTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage("댓글에 대한 수정 권한이 없습니다. Member ID: " + attackerId);
 		assertThat(comment.getContent()).isEqualTo(originalCommentContent);
+	}
+
+	@Test
+	@DisplayName("토론 리스트 조회")
+	void getComments() {
+		// given
+		Long debateId = 1L;
+		when(commentRepository.findAllByDebateId(1L)).thenReturn(List.of());
+
+		// when
+		List<CommentResponse> comments = debateService.getComments(debateId);
+
+		// then
+		verify(commentRepository, times(1)).findAllByDebateId(debateId);
 	}
 }
