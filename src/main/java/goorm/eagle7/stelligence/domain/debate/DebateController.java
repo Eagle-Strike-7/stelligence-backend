@@ -80,6 +80,7 @@ public class DebateController {
 		@RequestBody CommentCreateRequest commentCreateRequest,
 		@Auth MemberInfo memberInfo
 	) {
+		debateService.addComment(commentCreateRequest, debateId, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 

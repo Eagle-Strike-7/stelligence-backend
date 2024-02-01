@@ -36,4 +36,17 @@ public class Comment extends BaseTimeEntity {
 
 	@Column(name = "sequences")
 	private int sequence;
+
+	public static Comment createComment(String content, Debate debate, Member commenter) {
+		return new Comment(content, debate, commenter);
+	}
+
+	public Comment(String content, Debate debate, Member commenter) {
+		this.content = content;
+		this.debate = debate;
+		this.commenter = commenter;
+		this.sequence = debate.getNextCommentSequence();
+		debate.updateEndAt();
+		debate.getComments().add(this);
+	}
 }

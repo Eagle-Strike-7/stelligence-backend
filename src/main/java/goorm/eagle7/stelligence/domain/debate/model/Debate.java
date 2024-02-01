@@ -74,4 +74,24 @@ public class Debate extends BaseTimeEntity {
 		this.status = DebateStatus.CLOSED;
 		this.endAt = LocalDateTime.now();
 	}
+
+	/**
+	 * 댓글이 업데이트 될때, 토론 종료시간도 업데이트됩니다.
+	 * 단, 토론을 유지할 수 있는 최대 기간은 7일입니다.
+	 */
+	public void updateEndAt() {
+		LocalDateTime extendEndAt = LocalDateTime.now().plusDays(1L);
+		LocalDateTime limitEndAt = this.createdAt.plusDays(7L);
+
+		if (extendEndAt.isBefore(limitEndAt)) {
+			this.endAt = extendEndAt;
+		} else {
+			this.endAt = limitEndAt;
+		}
+	}
+
+	// commentSequence를 사용하고 나면 commentSequence가 자동으로 업데이트됩니다.
+	public int getNextCommentSequence() {
+		return commentSequence++;
+	}
 }

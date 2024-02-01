@@ -7,10 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.debate.dto.CommentCreateRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
+import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 public class DebateService {
 
 	private final DebateRepository debateRepository;
+	private final CommentRepository commentRepository;
+	private final MemberRepository memberRepository;
 
 	/**
 	 * 수정요청을 토론으로 전환합니다.
@@ -68,5 +74,27 @@ public class DebateService {
 
 		Page<Debate> debatePage = debateRepository.findPageByStatus(status, pageable);
 		return DebatePageResponse.from(debatePage);
+	}
+
+	/**
+	 * 특정 열린 토론에 댓글을 작성합니다.
+	 * @param commentCreateRequest: 댓글 작성에 필요한 정보를 담은 요청 DTO
+	 * @param debateId: 댓글을 달 토론의 ID
+	 * @param loginMemberId: 현재 로그인한 회원의 ID
+	 */
+	public void addComment(CommentCreateRequest commentCreateRequest, Long debateId, Long loginMemberId) {
+
+		Debate findDebate = debateRepository.findById(debateId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
+
+		if (DebateStatus.CLOSED.equals(findDebate.getStatus())) {
+			throw new BaseException("이미 닫힌 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId);
+		}
+
+		Member loginMember = memberRepository.findById(loginMemberId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 회원에 대한 댓글 작성요청입니다. Member ID: " + loginMemberId));
+
+		Comment comment = Comment.createComment(commentCreateRequest.getContent(), findDebate, loginMember);
+		commentRepository.save(comment);
 	}
 }
