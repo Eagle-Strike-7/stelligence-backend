@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +13,9 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
+import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkDeleteRequest;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkSimpleResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -65,13 +64,12 @@ public class BookmarkController {
 		description = "북마크 삭제 성공",
 		useReturnTypeSchema = true
 	)
-	@DeleteMapping("/{bookmarkId}")
+	@DeleteMapping
 	public ResponseTemplate<Void> deleteBookmark(
 		@Auth MemberInfo memberInfo,
-		@Parameter(description = "삭제할 북마크의 ID", example = "1")
-		@PathVariable Long bookmarkId) {
+		@RequestBody BookmarkDeleteRequest bookmarkDeleteRequest) {
 
-		// bookmarkService.delete(memberInfo.getId(), bookmarkId);
+		// bookmarkService.delete(memberInfo.getId(), bookmarkDeleteRequest);
 		return ResponseTemplate.ok();
 
 	}
