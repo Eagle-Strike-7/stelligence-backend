@@ -35,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DebateController {
 
+	private final DebateService debateService;
+
 	@Operation(summary = "토론 리스트 조회", description = "토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 조회합니다.")
 	@ApiResponse(
 		responseCode = "200",
@@ -48,7 +50,7 @@ public class DebateController {
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		return ResponseTemplate.ok(null);
+		return ResponseTemplate.ok(debateService.getDebatePage(status, pageable));
 	}
 
 	@Operation(summary = "토론 상세 조회", description = "특정 토론을 조회합니다.")
@@ -62,7 +64,7 @@ public class DebateController {
 		@Parameter(description = "조회할 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId
 	) {
-		return ResponseTemplate.ok(null);
+		return ResponseTemplate.ok(debateService.getDebateDetailById(debateId));
 	}
 
 	@Operation(summary = "토론 댓글 작성", description = "토론에 새로운 댓글을 작성합니다.")
