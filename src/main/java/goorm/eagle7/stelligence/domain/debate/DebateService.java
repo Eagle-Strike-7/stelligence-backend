@@ -84,6 +84,7 @@ public class DebateService {
 	 * @param commentRequest: 댓글 작성에 필요한 정보를 담은 요청 DTO
 	 * @param debateId: 댓글을 달 토론의 ID
 	 * @param loginMemberId: 현재 로그인한 회원의 ID
+	 * @return List&lt;CommentResponse&gt;: 댓글이 달린 토론의 전체 댓글 리스트
 	 */
 	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
@@ -126,6 +127,7 @@ public class DebateService {
 	 * @param commentId: 수정할 댓글의 ID
 	 * @param commentRequest: 수정할 댓글의 내용을 담은 요청 DTO
 	 * @param loginMemberId: 로그인한 회원의 ID
+	 * @return CommentResponse: 수정된 댓글
 	 */
 	public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, Long loginMemberId) {
 
@@ -141,7 +143,7 @@ public class DebateService {
 	}
 
 	/**
-	 * 특정 토론의 댓글들을 조회합니다.
+	 * 특정 토론의 댓글들을 모두 조회합니다.
 	 * @param debateId: 댓글을 조회할 토론의 ID
 	 * @return List&lt;CommentResponse&gt;: 조회된 댓글의 리스트
 	 */
