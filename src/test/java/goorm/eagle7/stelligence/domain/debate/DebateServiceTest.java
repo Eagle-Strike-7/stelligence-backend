@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,13 +87,18 @@ class DebateServiceTest {
 		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 0);
 		when(debateRepository.findById(debateId)).thenReturn(Optional.of(debate));
 
+		// LocalDateTime::now 모킹
+		LocalDateTime expectedEndAt = LocalDateTime.of(2024, 1, 14, 22, 0);
+		MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class);
+		mockedLocalDateTime.when(LocalDateTime::now).thenReturn(expectedEndAt);
+
 		// when
 		debateService.closeDebateById(debateId);
 
 		// then
 		// 변환하고 나면 debate의 상태가 닫힘으로 바뀌고 닫힌 시간이 현재 시간이 되어야한다.
 		assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-		assertThat(debate.getEndAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+		assertThat(debate.getEndAt()).isEqualTo(expectedEndAt);
 		// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
 		verify(debateRepository, times(1)).findById(debateId);
 	}
