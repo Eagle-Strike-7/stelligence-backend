@@ -287,9 +287,11 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate withCreatedAt(Debate debate, LocalDateTime createdAt) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence, LocalDateTime createdAt) {
 
 		try {
+			Debate debate = TestFixtureGenerator.debate(id, contribute, status, endAt, commentSequence);
+
 			Class<?> debateClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Debate");
 
 			Class<?> baseTimeEntityClazz = debateClazz.getSuperclass();
