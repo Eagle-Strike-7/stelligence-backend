@@ -108,10 +108,28 @@ public class DebateService {
 		Comment targetComment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 댓글에 대한 삭제 요청입니다. Comment ID: " + commentId));
 
-		if (!targetComment.hasPermissionToDelete(loginMemberId)) {
+		if (!targetComment.hasPermissionToModify(loginMemberId)) {
 			throw new BaseException("댓글에 대한 삭제 권한이 없습니다. Member ID: " + loginMemberId);
 		}
 
 		commentRepository.delete(targetComment);
+	}
+
+	/**
+	 * 특정 토론 댓글의 내용을 수정합니다. 댓글을 작성했던 회원만이 수정할 수 있습니다.
+	 * @param commentId: 수정할 댓글의 ID
+	 * @param commentRequest: 수정할 댓글의 내용을 담은 요청 DTO
+	 * @param loginMemberId: 로그인한 회원의 ID
+	 */
+	public void updateComment(Long commentId, CommentRequest commentRequest, Long loginMemberId) {
+
+		Comment updateComment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 댓글에 대한 수정 요청입니다. Comment ID: " + commentId));
+
+		if (!updateComment.hasPermissionToModify(loginMemberId)) {
+			throw new BaseException("댓글에 대한 삭제 권한이 없습니다. Member ID: " + loginMemberId);
+		}
+
+		updateComment.updateContentTo(commentRequest.getContent());
 	}
 }

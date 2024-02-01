@@ -50,8 +50,12 @@ public class Comment extends BaseTimeEntity {
 		debate.getComments().add(this);
 	}
 
-	// 해당 회원이 댓글을 삭제할 권한이 있는지를 확인
-	public boolean hasPermissionToDelete(Long memberId) {
+	// 해당 회원이 댓글을 수정하거나 삭제할 권한이 있는지를 확인
+	public boolean hasPermissionToModify(Long memberId) {
 		return this.commenter.getId().equals(memberId);
+	}
+
+	public void updateContentTo(String content) {
+		this.content = content;
 	}
 }

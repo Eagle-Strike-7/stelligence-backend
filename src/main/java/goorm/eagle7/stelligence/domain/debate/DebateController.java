@@ -140,6 +140,7 @@ public class DebateController {
 		@RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
+		debateService.updateComment(commentId, commentRequest, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 }
