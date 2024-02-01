@@ -14,7 +14,7 @@ import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.member.model.Badge;
+import goorm.eagle7.stelligence.domain.badges.model.Badge;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
