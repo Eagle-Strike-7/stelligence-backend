@@ -51,6 +51,8 @@ public class Member extends BaseTimeEntity {
 	// refresh token은 회원 가입/로그인 후 update로 진행
 	private String refreshToken;
 
+	private boolean deleted; // default: false, for soft delete
+
 	// 1:M 연관 관계 설정
 
 	/**
@@ -104,6 +106,7 @@ public class Member extends BaseTimeEntity {
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
+		member.deleted = false;
 
 		return member;
 
@@ -119,6 +122,10 @@ public class Member extends BaseTimeEntity {
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void delete() {
+		this.deleted = true;
 	}
 
 	/**
