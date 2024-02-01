@@ -49,4 +49,9 @@ public class Comment extends BaseTimeEntity {
 		debate.updateEndAt();
 		debate.getComments().add(this);
 	}
+
+	// 해당 회원이 댓글을 삭제할 권한이 있는지를 확인
+	public boolean hasPermissionToDelete(Long memberId) {
+		return this.commenter.getId().equals(memberId);
+	}
 }

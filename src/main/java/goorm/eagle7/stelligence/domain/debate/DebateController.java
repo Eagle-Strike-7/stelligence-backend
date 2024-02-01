@@ -98,6 +98,7 @@ public class DebateController {
 		@PathVariable("commentId") Long commentId,
 		@Auth MemberInfo memberInfo
 	) {
+		debateService.deleteComment(commentId, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 

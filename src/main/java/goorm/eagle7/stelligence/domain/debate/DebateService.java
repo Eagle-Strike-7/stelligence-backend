@@ -97,4 +97,21 @@ public class DebateService {
 		Comment comment = Comment.createComment(commentCreateRequest.getContent(), findDebate, loginMember);
 		commentRepository.save(comment);
 	}
+
+	/**
+	 * 특정 토론 댓글을 삭제합니다. 댓글을 작성했던 회원만이 삭제할 수 있습니다.
+	 * @param commentId: 삭제할 댓글의 ID
+	 * @param loginMemberId: 로그인한 회원의 ID
+	 */
+	public void deleteComment(Long commentId, Long loginMemberId) {
+
+		Comment targetComment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 댓글에 대한 삭제 요청입니다. Comment ID: " + commentId));
+
+		if (!targetComment.hasPermissionToDelete(loginMemberId)) {
+			throw new BaseException("댓글에 대한 삭제 권한이 없습니다. Member ID: " + loginMemberId);
+		}
+
+		commentRepository.delete(targetComment);
+	}
 }
