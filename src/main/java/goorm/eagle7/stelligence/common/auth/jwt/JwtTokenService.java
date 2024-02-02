@@ -64,8 +64,7 @@ public class JwtTokenService {
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
 	public Long getMemberId(String token) {
-		Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
-		return Long.parseLong(claims.getSubject());
+		return jwtTokenParser.getSubject(token);
 	}
 
 	/**
