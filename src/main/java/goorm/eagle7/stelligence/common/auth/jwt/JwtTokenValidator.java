@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.util.Optional;
-
 import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
