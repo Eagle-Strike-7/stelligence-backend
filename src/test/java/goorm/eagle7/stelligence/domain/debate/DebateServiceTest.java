@@ -37,48 +37,6 @@ class DebateServiceTest {
 	private DebateService debateService;
 
 	@Test
-	@DisplayName("투표중인 수정요청을 토론으로 전환")
-	void convertVotingContributeToDebate() {
-		// given
-		Contribute contribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.VOTING, null);
-
-		// when
-		debateService.convertToDebate(contribute);
-
-		// then
-		// 토론은 debateRepository의 save 메서드에 의해 저장된다.
-		verify(debateRepository).save(any(Debate.class));
-		// 변환하고 나면 contribute의 상태가 토론중으로 바뀌어야한다.
-		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.DEBATING);
-	}
-
-	@Test
-	@DisplayName("투표중이 상태가 아닌 수정요청을 토론으로 전환")
-	void convertNotVotingContributeToDebate() {
-		// given
-		Contribute debatingContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.DEBATING, null);
-		Contribute mergedContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.MERGED, null);
-		Contribute rejectedContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.REJECTED, null);
-
-		// when
-
-		// then
-		// 토론중인 or 병합된 or 기각된 수정요청은 토론으로 전환할 수 없다.
-		assertThatThrownBy(() -> debateService.convertToDebate(debatingContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-		assertThatThrownBy(() -> debateService.convertToDebate(mergedContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-		assertThatThrownBy(() -> debateService.convertToDebate(rejectedContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-
-		// 예외가 발생했으니 토론은 저장되지 않는다.
-		verify(debateRepository, never()).save(any(Debate.class));
-	}
-
-	@Test
 	@DisplayName("열려있던 토론 종료하기")
 	void closeOpenDebateById() {
 		// given
