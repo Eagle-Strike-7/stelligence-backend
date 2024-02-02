@@ -11,10 +11,10 @@ import org.springframework.util.AntPathMatcher;
 @Component
 public class ResourceAntPathMatcher extends AntPathMatcher {
 
-	private final List<Resource> resources;
+	private final List<RequestResource> requestResources;
 
 	public ResourceAntPathMatcher(ResourceMemoryRepository resourceMemoryRepository){
-		this.resources = resourceMemoryRepository.findAll();
+		this.requestResources = resourceMemoryRepository.findAll();
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class ResourceAntPathMatcher extends AntPathMatcher {
 	 */
 	@Override
 	public boolean match(String httpMethod, String uri) {
-		return resources.stream()
+		return requestResources.stream()
 			.anyMatch(r -> r.getHttpMethod().equals(httpMethod) && super.match(r.getUri(), uri));
 	}
 
