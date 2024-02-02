@@ -26,14 +26,12 @@ class JwtTokenValidator {
 	/**
 	 * <h2>token 유효성 검사</h2>
 	 * @param token 검사할 token
-	 * @return Optional<Claims> 서명이 포함된 클레임 반환
+	 * @return Claims 서명이 포함된 클레임 반환
+	 * @throws ExpiredJwtException 만료된 토큰입니다.
 	 *
 	 */ // TODO token null이면 어떤 error인지 확인 필요.
-	public Optional<Claims> validateAndExtractClaims(String token) {
-		if(isTokenExist(token)) {
-			return getClaimsOrNullUnlessExpired(token);
-		}
-		return Optional.empty();
+	public Claims validateAndExtractClaims(String token) {
+		return getClaimsOrNullUnlessExpired(token);
 	}
 
 	/**
@@ -63,26 +61,12 @@ class JwtTokenValidator {
 	 * @throws UnsupportedJwtException 예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.
 	 * @throws JwtException 상기 셋 중 어느 것도 아닐 때, 유효하지 않은 토큰입니다.
 	 */
-	private Optional<Claims> getClaimsOrNullUnlessExpired(String token) {
-
-		try {
-			return Optional.ofNullable(
-				Jwts.parser()
+	private Claims getClaimsOrNullUnlessExpired(String token) {
+		return
+			Jwts.parser()
 				.verifyWith(key) // 서명 검증 시 사용할 키
 				.build()
 				.parseSignedClaims(token) // 서명의 유효성 검증
-				.getPayload());
-		} catch (ExpiredJwtException e) {
-			log.debug("만료된 토큰입니다. {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			log.debug("토큰 값 형식이 잘못되었습니다. {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			log.debug(
-				"예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다. {}",
-				e.getMessage());
-		} catch (JwtException e) {
-			log.debug("유효하지 않은 토큰입니다. {}", e.getMessage());
-		}
-		return Optional.empty();
+				.getPayload();
 	}
 }
