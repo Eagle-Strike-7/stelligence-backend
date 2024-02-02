@@ -50,7 +50,7 @@ class DebateHandlerTest {
 	}
 
 	@Test
-	@DisplayName("투표중이 상태가 아닌 수정요청을 토론으로 전환")
+	@DisplayName("투표중인 상태가 아닌 수정요청을 토론으로 전환")
 	void convertNotVotingContributeToDebate() {
 		// given
 		Long debatingContributeId = 1L;
