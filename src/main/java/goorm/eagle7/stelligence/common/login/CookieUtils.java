@@ -62,9 +62,9 @@ public class CookieUtils {
 			ResponseCookie responseCookie = ResponseCookie.from(name, content)
 				.httpOnly(COOKIE_HTTP_ONLY) // XSS 방지
 				.maxAge(maxAge) //
-				.domain(COOKIE_DOMAIN) // localhost
+				// .domain(COOKIE_DOMAIN) // localhost
 				.path(COOKIE_PATH)
-				.sameSite(COOKIE_SAME_SITE) // CSRF 방지
+				// .sameSite(COOKIE_SAME_SITE) // CSRF 방지
 				// .secure(COOKIE_SECURE) // HTTPS
 				.build();
 			servletServerHttpResponse.getServletResponse().addHeader(HEADER_NAME, responseCookie.toString());
@@ -77,9 +77,9 @@ public class CookieUtils {
 				ResponseCookie responseCookie = ResponseCookie.from(name, "")
 					.httpOnly(COOKIE_HTTP_ONLY) // XSS 방지
 					.maxAge(0)
-					.domain(COOKIE_DOMAIN)
+					// .domain(COOKIE_DOMAIN)
 					.path(COOKIE_PATH)
-					.sameSite(COOKIE_SAME_SITE) // CSRF 방지
+					// .sameSite(COOKIE_SAME_SITE) // CSRF 방지
 					// .secure(COOKIE_SECURE) // HTTPS
 					.build();
 				servletServerHttpResponse.getServletResponse().addHeader(HEADER_NAME, responseCookie.toString());
