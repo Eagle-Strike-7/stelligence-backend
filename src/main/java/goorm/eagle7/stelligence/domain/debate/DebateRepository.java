@@ -30,8 +30,12 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
 			+ " where d.status = :status")
 	Page<Debate> findPageByStatus(@Param("status") DebateStatus status, Pageable pageable);
 
-	// 토론의 sequence를 이용해 다음 댓글의 sequence를 얻기 위해 조회합니다.
-	// 동시에 댓글을 작성할 때 같은 sequence를 갖지 못하도록 lock을 건 상태에서 조회합니다.
+	/**
+	 * 토론의 sequence를 이용해 다음 댓글의 sequence를 얻기 위해 조회합니다.
+	 * 여러 사용자가 동시에 댓글 작성 요청을 보낼 때 같은 sequence를 갖지 못하도록 lock을 건 상태에서 조회합니다.
+	 * @param debateId: 조회하려는 토론의 ID
+	 * @return Optional<Debate>
+	 */
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query(value = "select d from Debate d where d.id = :debateId")
 	Optional<Debate> findDebateByIdForUpdate(@Param("debateId") Long debateId);
