@@ -1,6 +1,6 @@
 package goorm.eagle7.stelligence.common.auth.filter;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
  */
 @Repository
 @NoArgsConstructor
-public class ResourceMemoryRepository {
-	private static final List<RequestResource> REQUEST_RESOURCES = List.of(
+class ResourceMemoryRepository {
+	private static final Set<RequestResource> REQUEST_RESOURCES =
+		Set.of(
 		RequestResource.of(HttpMethod.GET.name(), "/api/documents"),
 		RequestResource.of(HttpMethod.GET.name(), "/api/contributes"),
 		RequestResource.of(HttpMethod.GET.name(), "/api/comments"),
@@ -29,7 +30,7 @@ public class ResourceMemoryRepository {
 		RequestResource.of(HttpMethod.POST.name(), "/api/login")
 	);
 
-	public List<RequestResource> findAll() {
-		return REQUEST_RESOURCES;
+	public boolean exist(RequestResource requestResource) {
+		return REQUEST_RESOURCES.contains(requestResource);
 	}
 }
