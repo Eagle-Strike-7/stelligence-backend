@@ -44,6 +44,7 @@ class DebateHandlerTest {
 		debateHandler.handle(contributeId);
 
 		//then
+		// 토론으로 전환된 수정요청은 상태가 토론중으로 변경되며, 토론은 debateRepository에 의해 저장된다.
 		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.DEBATING);
 		verify(debateRepository, times(1)).save(any(Debate.class));
 	}
