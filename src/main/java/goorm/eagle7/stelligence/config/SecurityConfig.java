@@ -17,11 +17,11 @@ import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
 import goorm.eagle7.stelligence.common.auth.filter.RequestMatcher;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
+import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginFailureHandler;
+import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginSuccessHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutCustomHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutSuccessHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.service.CustomOAuth2UserService;
-import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginFailureHandler;
-import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

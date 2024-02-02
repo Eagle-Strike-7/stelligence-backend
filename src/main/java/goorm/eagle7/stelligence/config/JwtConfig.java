@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * jwtSecret을 Base64로 디코딩하여 바이트 배열로 변환한 후 SecretKey를 생성한다.
  *
  */
+// TODO SecurityConfigurerAdapter를 상속 받는 것과 아닌 것의 차이
 @Configuration
 public class JwtConfig {
 

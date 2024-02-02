@@ -73,12 +73,14 @@ public class Amendment extends BaseTimeEntity {
 		this.newSectionHeading = newSectionHeading;
 		this.newSectionTitle = newSectionTitle;
 		this.newSectionContent = newSectionContent;
+		this.creatingOrder = 0;
 	}
 
 	//수정안 생성(delete)
 	private Amendment(AmendmentType type, Section targetSection) {
 		this.type = type;
 		this.targetSection = targetSection;
+		this.creatingOrder = 0;
 	}
 
 	public static Amendment forCreate(Section targetSection,

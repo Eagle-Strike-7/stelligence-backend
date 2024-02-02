@@ -7,7 +7,6 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +18,8 @@ import lombok.RequiredArgsConstructor;
  * 	- JWT 액세스 토큰과 리프레시 토큰 생성
  * 	- 토큰의 기본 설정(예: 유효 시간, 클레임 등) 관리
  */
+// TODO Date를 동시에 관리하는 법
+// TODO role 추출
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -30,16 +31,16 @@ public class JwtTokenProvider {
 	@Value("${jwt.header.algorithm}")
 	private String algorithm;
 	@Value("${jwt.header.tokenType}")
-	private String tokenType; // 토큰의 유형
+	private String tokenType; // 토큰 유형
 
 	@Value("${jwt.header.algorithmType}")
-	private String algorithmType; // 해시 알고리즘
+	private String algorithmType; // 알고리즘 타입
 
 	@Value("${jwt.accessToken.expiration}")
-	private int accessTokenExpiredTime; //1시간
+	private int accessTokenExpiredTime;
 
 	@Value("${jwt.refreshToken.expiration}")
-	private int refreshTokenExpiredTime; //2주
+	private int refreshTokenExpiredTime;
 
 	@Value("${jwt.claim.role}")
 	private String claimRole; // 사용자 정의 claim, ROLE
@@ -52,57 +53,35 @@ public class JwtTokenProvider {
 	 * AccessToken은 주로 인증에 사용되는 토큰, 일반적으로 짧은 유효기간을 가지며, 사용자 식별, 주요 인증 정보(사용자의 권한, 역할, 기타 접근 제어에 필요한 정보)를 포함
 	 * AccessToken은 서버에서 발급하고, 서버에 요청할 때마다 AccessToken을 함께 전달해 서버에 부담을 줄 수 있음.
 	 * header, payload, signature
-	 * - header: 토큰의 유형과 해시 알고리즘(type:JWT, alg: HS256)
+	 * - header: 토큰의 유형과 해시 알고리즘(type:토큰 유형, alg: 알고리즘 종류)
 	 * - payload: 토큰에 담을 정보(claim)
 	 * 		- subject: 사용자를 식별하는 값 (memberId)
-	 * 		- issuedAt: 토큰 발급 시간
+	 * 		- issuedAt: 토큰 발급 시간, 유효성 검증 시 사용 (현재 시각)
 	 * 		- expiration: 토큰 만료 시간
 	 * 		- claim: 사용자 정의 claim role, user 추가
 	 * 		- 이 외에도 사용자 정의 claim을 추가해 사용자의 권한, 역할, 기타 접근 제어에 필요한 정보를 포함할 수 있음
-	 * - signature: 토큰의 유효성 검증을 위한 암호화된 문자열(SecretKey)
+	 * - signature: JWT를 서명하는 데 사용할 키 지정, 토큰의 유효성 검증을 위한 암호화된 문자열, 서명 과정은 토큰의 무결성과 인증을 보장하는 데 중요, 헤더와 페이로드를 기반으로 생성됨(SecretKey)
+	 * - compact: 헤더, 페이로드, 서명을 하나의 문자열로 변환
+	 *
 	 * @param memberId 사용자 식별자
 	 * @return String AccessToken
 	 */
 	public String createAccessToken(Long memberId) {
-		Date now = new Date();
+		Date now = new Date(System.currentTimeMillis());
 
 		return Jwts.builder()
-			.header() //header 설정
-			.add(type, tokenType) // 토큰의 유형, JWT
-			.add(algorithm, algorithmType) // 해시 알고리즘, HS256
-			.and()
-			// header 끝, 페이로드 시작
-			.subject(memberId.toString()) // 토큰이 나타내는 주제나 사용자를 식별하는 값, 토큰 해석 시 참조
-			.issuedAt(now) // 토큰이 발급된 시간, 토큰의 유효성을 검증할 때 사용
-			.expiration(new Date(now.getTime() + accessTokenExpiredTime)) // 토큰의 만료 시간, 현재 1시간
-			.claim(claimRole, claimRoleUser.toUpperCase()) // 사용자 정의 claim 추가, 사용자의 권한, 역할, 기타 접근 제어에 필요한 정보를 포함할 수 있음
+			.header()
+			.add(type, tokenType)
+			.add(algorithm, algorithmType)
+			.and() // header 끝, payload 시작
+			.subject(memberId.toString())
+			.issuedAt(now)
+			.expiration(new Date(System.currentTimeMillis()
+				+ accessTokenExpiredTime))
+			.claim(claimRole, claimRoleUser.toUpperCase())
 			// payload 끝, signature 시작
-			.signWith(key) // signature 설정,  JWT를 서명하는 데 사용할 키를 지정, 서명 과정은 토큰의 무결성과 인증을 보장하는 데 중요, 헤더와 페이로드를 기반으로 생성됨
-			.compact(); // 헤더, 페이로드, 서명 설정 완료, 압축되어 String으로 반환
-
-	}
-
-	/**
-	 * 요구 사항에 맞춰 SocialType Token 생성, accessToken과 그 구조 같음.
-	 * @param socialType SocialType(카카오, 네이버, 구글)
-	 * @return String SocialType Token
-	 */
-	public String createSocialTypeToken(SocialType socialType) {
-		Date now = new Date();
-
-		return Jwts.builder()
-			.header() //header 설정
-			.add(type, tokenType) // 토큰의 유형, JWT
-			.add(algorithm, algorithmType) // 해시 알고리즘, HS256
-			.and()
-			// header 끝, 페이로드 시작
-			.subject(socialType.toString()) // 토큰이 나타내는 주제나 사용자를 식별하는 값, 토큰 해석 시 참조
-			.issuedAt(now) // 토큰이 발급된 시간, 토큰의 유효성을 검증할 때 사용
-			.expiration(new Date(now.getTime() + accessTokenExpiredTime)) // 토큰의 만료 시간, 현재 1시간
-			.claim(claimRole, claimRoleUser.toUpperCase()) // 사용자 정의 claim 추가, 사용자의 권한, 역할, 기타 접근 제어에 필요한 정보를 포함할 수 있음
-			// payload 끝, signature 시작
-			.signWith(key) // signature 설정,  JWT를 서명하는 데 사용할 키를 지정, 서명 과정은 토큰의 무결성과 인증을 보장하는 데 중요, 헤더와 페이로드를 기반으로 생성됨
-			.compact(); // 헤더, 페이로드, 서명 설정 완료, 압축되어 String으로 반환
+			.signWith(key)
+			.compact();
 
 	}
 
@@ -116,20 +95,38 @@ public class JwtTokenProvider {
 	 * @return String RefreshToken
 	 */
 	public String createRefreshToken(Long memberId) {
-		Date now = new Date();
+		Date now = new Date(System.currentTimeMillis());
 
 		return Jwts.builder()
-			.header() //header 설정
-			.add(type, tokenType) // 토큰의 유형, JWT
-			.add(algorithm, algorithmType) // 해시 알고리즘, HS256
+			.header()
+			.add(type, tokenType)
+			.add(algorithm, algorithmType)
 			.and()
-			// header 끝, 페이로드 시작
-			.subject(memberId.toString()) // 토큰이 나타내는 주제나 사용자를 식별하는 값, 토큰 해석 시 참조
-			.issuedAt(now) // 토큰이 발급된 시간, 토큰의 유효성을 검증할 때 사용
-			.expiration(new Date(now.getTime() + refreshTokenExpiredTime)) // 토큰의 만료 시간, 현재 2주
-			// payload 끝, signature 시작
-			.signWith(key) // signature 설정,  JWT를 서명하는 데 사용할 키를 지정, 서명 과정은 토큰의 무결성과 인증을 보장하는 데 중요, 헤더와 페이로드를 기반으로 생성됨
-			.compact(); // 헤더, 페이로드, 서명 설정 완료, 압축되어 String으로 반환
+			.subject(memberId.toString())
+			.issuedAt(now)
+			.expiration(new Date(System.currentTimeMillis() + refreshTokenExpiredTime))
+			.signWith(key)
+			.compact();
 	}
 
+	/**
+	 * refreshToken 만료 시키기
+	 *  - 만료 후 DB에 저장하기 위함.
+	 * @param memberId 사용자 식별자
+	 * @return String refreshToken
+	 */
+	public String expireRefreshToken(Long memberId) {
+		Date now = new Date(System.currentTimeMillis());
+
+		return Jwts.builder()
+			.header()
+			.add(type, tokenType)
+			.add(algorithm, algorithmType)
+			.and()
+			.subject(memberId.toString())
+			.issuedAt(now)
+			.expiration(now) // 만료 시간을 현재 시간으로 설정
+			.signWith(key)
+			.compact();
+	}
 }
