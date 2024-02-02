@@ -84,12 +84,12 @@ values (1, 1, 2, 1, null, 'H2', 'document1_title2_update', 'document1_content2_u
        (6, 5, 4, 1, 2, 'H1', 'document2_title4_insert', 'document2_content4_insert', 'CREATE', NOW(), NOW()),
        (7, 5, 6, 1, null, 'H1', 'document2_title3_update', 'document2_content3_update', 'UPDATE', NOW(), NOW());
 
-insert into debate (debate_id, contribute_id, status, end_at, comment_sequence)
-values (1, 1, 'OPEN', NOW(), 1),
-       (2, 2, 'OPEN', NOW(), 1),
-       (3, 3, 'OPEN', NOW(), 1),
-       (4, 4, 'CLOSED', NOW(), 1),
-       (5, 5, 'CLOSED', NOW(), 1);
+insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at)
+values (1, 1, 'OPEN', NOW(), 1, NOW()),
+       (2, 2, 'OPEN', NOW(), 1, NOW()),
+       (3, 3, 'OPEN', NOW(), 1, NOW()),
+       (4, 4, 'CLOSED', NOW(), 1, NOW()),
+       (5, 5, 'CLOSED', NOW(), 1, NOW());
 
 insert into comment (comment_id, debate_id, commenter_id, content, sequences)
 values (1, 1, 1, '댓글1', 1),
