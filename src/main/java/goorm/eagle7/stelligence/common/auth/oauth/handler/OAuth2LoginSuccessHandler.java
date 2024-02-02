@@ -1,5 +1,8 @@
 package goorm.eagle7.stelligence.common.auth.oauth.handler;
 
+import java.io.IOException;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -58,8 +61,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		 */
 		loginService.login(response, oAuth2Request);
 
-		ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
-		ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
+		try {
+			response.sendRedirect("http://3.39.192.156/ ");
+		} catch (IOException e) {
+			throw new AccessDeniedException("Redirect failed");
+		}
+
+		// ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
+		// ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
 
 	}
 }
