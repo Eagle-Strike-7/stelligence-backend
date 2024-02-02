@@ -3,13 +3,12 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.vote.VoteCustomRepository;
-import goorm.eagle7.stelligence.domain.vote.VoteSummary;
+import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
+import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * ContributionConditionChecker
  * Contribute와 Vote 상태를 확인하여 병합, 토론, 반려를 결정합니다.
  */
 @Slf4j
@@ -31,11 +30,11 @@ public class ContributeSchedulingActionDeterminer {
 	public ContributeSchedulingAction check(Contribute contribute) {
 
 		//contribute의 vote 수를 가져온다.
-		VoteSummary voteSummary = voteRepository.getVoteSummary(contribute.getId());
+		VoteResultSummary voteResultSummary = voteRepository.getVoteSummary(contribute.getId());
 
-		double agreeRate = (double)voteSummary.getAgreements() / voteSummary.getTotalVotes();
-		log.debug("Contribute {}의 투표 결과 : {} / {} = {}", contribute.getId(), voteSummary.getAgreements(),
-			voteSummary.getTotalVotes(), agreeRate);
+		double agreeRate = (double)voteResultSummary.getAgreements() / voteResultSummary.getTotalVotes();
+		log.debug("Contribute {}의 투표 결과 : {} / {} = {}", contribute.getId(), voteResultSummary.getAgreements(),
+			voteResultSummary.getTotalVotes(), agreeRate);
 
 		// 투표 결과에 따라 병합, 토론, 반려를 결정한다.
 		if (agreeRate >= MERGE_RATE) {

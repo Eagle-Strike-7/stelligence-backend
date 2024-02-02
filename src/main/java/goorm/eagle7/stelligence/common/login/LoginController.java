@@ -15,16 +15,19 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api") // TODO /auth
+@RequestMapping("/api")
 public class LoginController {
 
 	private final LoginService loginService;
 
 	@Value("${jwt.accessToken.name}")
 	private String accessTokenCookieName;
-
 	@Value("${jwt.refreshToken.name}")
 	private String refreshTokenCookieName;
+	@Value("${http.cookie.accessToken.maxAge}")
+	private String accessCookieMaxAge;
+	@Value("${http.cookie.refreshToken.maxAge}")
+	private String refreshCookieMaxAge;
 
 	/**
 	 * 로그인 혹은 회원 가입
@@ -40,8 +43,10 @@ public class LoginController {
 		LoginTokens loginTokens = loginService.login(devLoginRequest);
 
 		// cookie에 access 토큰, refreshToken 저장
-		CookieUtils.addCookie(response, accessTokenCookieName, loginTokens.getAccessToken());
-		CookieUtils.addCookie(response, refreshTokenCookieName, loginTokens.getRefreshToken());
+		CookieUtils.addCookie(response, accessTokenCookieName, loginTokens.getAccessToken(),
+			Integer.parseInt(accessCookieMaxAge));
+		CookieUtils.addCookie(response, refreshTokenCookieName, loginTokens.getRefreshToken(),
+			Integer.parseInt(refreshCookieMaxAge));
 
 		return ResponseTemplate.ok(LoginTokenResponse.from(loginTokens.getSocialType()));
 	}

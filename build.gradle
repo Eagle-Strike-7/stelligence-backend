@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'jacoco'
 }
 
 group = 'goorm.eagle7'
@@ -69,10 +70,16 @@ dependencies {
     // OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+
+    //html sanitizer
+    // https://mvnrepository.com/artifact/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer
+    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20220608.1'
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
 }
 
 // === ⭐ QueryDsl 빌드 옵션 (선택) ===
@@ -88,4 +95,37 @@ tasks.withType(JavaCompile) {
 
 clean.doLast {
     file(querydslDir).deleteDir()
+}
+
+// jacoco 설정
+jacoco {
+    // JaCoCo 버전
+    toolVersion = "0.8.11"
+
+    //  테스트결과 리포트를 저장할 경로 변경
+    //  default는 "$/jacoco"
+    //  reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+/**
+ * 바이너리 커버리지 결과를 사람이 읽기 좋은 형태의 리포트로 저장합니다.
+ * html 파일로 생성해 사람이 쉽게 눈으로 확인할 수도 있고,
+ * SonarQube 등으로 연동하기 위해 xml, csv 같은 형태로도 리포트를 생성할 수 있습니다.
+ */
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [ // 필터링할 파일 목록
+                               '**/dto/**',
+                               '**/Q*',
+                               'goorm/eagle7/stelligence/api/**',
+                    ])
+        }))
+    }
+    reports {
+        html {
+            enabled true
+        }
+    }
 }

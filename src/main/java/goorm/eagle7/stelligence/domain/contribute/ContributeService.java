@@ -28,6 +28,7 @@ public class ContributeService {
 	private final AmendmentService amendmentService;
 	private final MemberRepository memberRepository;
 	private final DocumentContentRepository documentContentRepository;
+	private final ContributeRequestValidator contributeRequestValidator;
 
 	/**
 	 * Contribute 생성
@@ -37,6 +38,9 @@ public class ContributeService {
 	 */
 	@Transactional
 	public ContributeResponse createContribute(ContributeRequest contributeRequest, Long loginMemberId) {
+		
+		contributeRequestValidator.validate(contributeRequest);
+
 		Member member = memberRepository.findById(loginMemberId).orElseThrow(
 			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + loginMemberId)
 		);

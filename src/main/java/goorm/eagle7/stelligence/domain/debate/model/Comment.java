@@ -1,6 +1,7 @@
-package goorm.eagle7.stelligence.domain.member.model;
+package goorm.eagle7.stelligence.domain.debate.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,19 +17,23 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bookmark extends BaseTimeEntity {
+public class Comment extends BaseTimeEntity {
 
 	@Id
-	@Column(name = "bookmark_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "comment_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+	@JoinColumn(name = "debate_id")
+	private Debate debate;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "document_id")
-	// private Document document;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "commenter_id")
+	private Member commenter;
 
+	private String content;
+
+	@Column(name = "sequences")
+	private int sequence;
 }

@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 
 import goorm.eagle7.stelligence.domain.contribute.custom.CustomContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 
 public interface ContributeRepository extends JpaRepository<Contribute, Long>, CustomContributeRepository {
 	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH c.amendments LEFT JOIN FETCH c.member WHERE c.id = :id")
@@ -20,4 +22,11 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	List<Contribute> findByStatusIsVotingAndCreatedAtBetween(@Param("from") LocalDateTime from,
 		@Param("to") LocalDateTime to);
 
+	/**
+	 * document와 status를 통해 Contribute가 존재하는지 확인한다.
+	 * @param document 문서
+	 * @param status Contribute 상태
+	 * @return 존재 여부
+	 */
+	boolean existsByDocumentAndStatus(Document document, ContributeStatus status);
 }

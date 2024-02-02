@@ -129,4 +129,18 @@ class DocumentContentServiceReadUnitTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage("존재하지 않는 버전입니다. 버전 : 4");
 	}
+
+	@Test
+	@DisplayName("특정 내용을 담고 있는 문서의 ID 목록 조회")
+	void getDocumentIdWhichContainsKeywordInLatestVersionSuccess() {
+		//given
+		when(documentContentRepository.findDocumentIdWhichContainsKeywordInLatestVersion("keyword"))
+			.thenReturn(List.of(1L, 2L, 3L));
+
+		//when
+		List<Long> documentIds = documentContentService.findDocumentWhichContainsKeyword("keyword");
+		//then
+		assertThat(documentIds).hasSize(3);
+		assertThat(documentIds).containsExactly(1L, 2L, 3L);
+	}
 }
