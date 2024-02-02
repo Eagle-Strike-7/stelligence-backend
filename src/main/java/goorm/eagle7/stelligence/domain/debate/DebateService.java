@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
