@@ -1,24 +1,17 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.util.Date;
-
-import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +43,6 @@ public class JwtTokenService {
 	private final JwtTokenValidator jwtTokenValidator;
 	private final JwtTokenParser jwtTokenParser;
 
-	private final SecretKey key;
 	@Value("${http.header.field}")
 	private String authorization;
 	@Value("${jwt.claim.role}")
@@ -58,13 +50,14 @@ public class JwtTokenService {
 	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
 
 	/**
-	 * token에서 sub(memberId) 추출
+	 * <h2>token에서 sub(memberId) 추출</h2>
 	 * @param token token
-	 * @return memberId Long
+	 * @return memberId 현재 로그인한 사용자의 memberId
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
 	public Long getMemberId(String token) {
-		return jwtTokenParser.getSubject(token);
+		String subject = jwtTokenParser.getSubject(token);
+		return Long.parseLong(subject);
 	}
 
 	/**
@@ -75,8 +68,7 @@ public class JwtTokenService {
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
 	public void validateTokenOrThrows(String token) {
-		validateExistsToken(token);
-		validateActiveToken(token);
+		jwtTokenValidator.validateAndExtractClaims(token);
 	}
 
 	/**
@@ -89,42 +81,13 @@ public class JwtTokenService {
 	 */
 	public boolean isTokenValidated(String token) {
 		try {
-			validateExistsToken(token);
-			validateActiveToken(token);
+			jwtTokenValidator.validateAndExtractClaims(token);
 			return true;
-		} catch (BadJwtException e) {
+		} catch (JwtException e) {
 			return false;
 		}
 	}
 
-	/**
-	 * token의 null or empty("") or blank(" ") 조사
-	 * @param token 검사할 token
-	 * @throws BadJwtException 유효하지 않은 사용자입니다.
-	 */
-	public void validateExistsToken(String token) {
-		if (!StringUtils.hasText(token)) {
-			throw new BadJwtException(ERROR_MESSAGE);
-		}
-	}
-
-	/**
-	 * Token token 검증 - 현재 시간으로부터 만료 검증
-	 * @param token 검증할 token
-	 * @throws BadJwtException 유효하지 않은 사용자입니다.
-	 */
-	public void validateActiveToken(String token) {
-
-		boolean expired = jwtTokenValidator.validateAndExtractClaims(token)
-			.getExpiration().before(new Date(System.currentTimeMillis()));
-
-		if (expired) {
-			throw new BadJwtException(ERROR_MESSAGE);
-		}
-	}
-
-
-	// 하기 메서드는 dev에서 사용
 	/**
 	 * token 정보에서 Authentication 만들어 반환
 	 * @param token token
@@ -155,6 +118,8 @@ public class JwtTokenService {
 
 	}
 
+	// 하기 메서드는 dev에서 사용
+
 	/**
 	 * "Authorization"의 헤더 값에서 Bearer를 제외한 token 추출
 	 * @param request HttpServletRequest 객체
@@ -171,41 +136,26 @@ public class JwtTokenService {
 	}
 
 	/**
-	 * 만료된 토큰에서 subject(memberId) 추출
-	 *  - 만료된 토큰은 claims null이기 때문에 Token으로만 받아야 함.
+	 * <h2>만료된 토큰에서 memberId 추출</h2>
 	 * @param token 만료된 토큰
 	 * @return String subject(memberId)
 	 */
-	public String extractSubFromExpiredToken(String token) {
-
-		try {
-			return Jwts.parser()
-				.verifyWith(key)
-				.build()
-				.parseSignedClaims(token)
-				.getPayload()
-				.getSubject();
-		} catch (ExpiredJwtException e) {
-			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
-			return e.getClaims().getSubject();
-		}
+	public String getMemberIdFromExpiredToken(String token) {
+		return jwtTokenParser.extractSubFromExpiredToken(token);
 	}
 
 	/**
-	 * token에서 MemberInfo로 조립
-	 * @param token token
-	 * @return MemberInfo
-	 * @throws BadJwtException 유효하지 않은 사용자입니다.
+	 * <h2>token에서 MemberInfo로 조립</h2>
+	 * @param token 추출할 token
+	 * @return MemberInfo memberId, role
 	 */
 	public MemberInfo extractMemberInfo(String token) {
-		try {
-			Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
-			return MemberInfo.of(
-				Long.parseLong(claims.getSubject()),
-				Role.getRoleFromString(claims.get(claimRole, String.class)));
-		} catch (NumberFormatException e) {
-			log.debug("JWT에 저장된 사용자 식별자가 올바르지 않습니다. {}", e.getMessage());
-			throw new BadJwtException(ERROR_MESSAGE);
-		}
+
+		Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
+		return MemberInfo.of(
+			Long.parseLong(claims.getSubject()),
+			Role.getRoleFromString(claims.get(claimRole, String.class))); // TODO valueOf로 변경
+
 	}
+
 }
