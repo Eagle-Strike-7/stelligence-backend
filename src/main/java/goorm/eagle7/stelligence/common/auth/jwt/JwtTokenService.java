@@ -47,6 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtTokenService {
 
+	private final JwtTokenValidator jwtTokenValidator;
+	private final JwtTokenParser jwtTokenParser;
+
 	private final SecretKey key;
 	@Value("${http.header.field}")
 	private String authorization;
@@ -61,7 +64,7 @@ public class JwtTokenService {
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
 	public Long getMemberId(String token) {
-		Claims claims = getClaimsOrThrows(token);
+		Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
 		return Long.parseLong(claims.getSubject());
 	}
 
@@ -107,35 +110,13 @@ public class JwtTokenService {
 	}
 
 	/**
-	 * 토큰에서 서명 검증 후 Claims 추출(파싱)
-	 * 	- 파싱: 데이터 해석, 클레임 추출, 서명 검증
-	 * @param token 토큰
-	 * @return Claims 서명이 포함된 클레임
-	 * @throws BadJwtException 유효하지 않은 사용자입니다.
-	 */
-	// TODO getClaims에서 나는 만료 오류와 getExpiration에서 나는 만료 오류는 어떤 차이가 있는지
-	public Claims getClaimsOrThrows(String token) {
-
-		try {
-			return Jwts.parser()
-				.verifyWith(key) // 서명 검증 시 사용할 키
-				.build()
-				.parseSignedClaims(token) // 서명의 유효성 검증
-				.getPayload();
-		} catch (ExpiredJwtException | MalformedJwtException e) {
-			log.debug("validateAndGetClaims 만료된 토큰입니다. {}", e.getMessage());
-			throw new BadJwtException(ERROR_MESSAGE);
-		}
-	}
-
-	/**
 	 * Token token 검증 - 현재 시간으로부터 만료 검증
 	 * @param token 검증할 token
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
 	public void validateActiveToken(String token) {
 
-		boolean expired = getClaimsOrThrows(token)
+		boolean expired = jwtTokenValidator.validateAndExtractClaims(token)
 			.getExpiration().before(new Date(System.currentTimeMillis()));
 
 		if (expired) {
@@ -153,7 +134,7 @@ public class JwtTokenService {
 	 */
 	public Authentication makeAuthenticationFromToken(String token) {
 
-		Claims claims = getClaimsOrThrows(token);
+		Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
 
 		UserDetails user = User.builder()
 			.username(claims.getSubject())
@@ -219,7 +200,7 @@ public class JwtTokenService {
 	 */
 	public MemberInfo extractMemberInfo(String token) {
 		try {
-			Claims claims = getClaimsOrThrows(token);
+			Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
 			return MemberInfo.of(
 				Long.parseLong(claims.getSubject()),
 				Role.getRoleFromString(claims.get(claimRole, String.class)));
