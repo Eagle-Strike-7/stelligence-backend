@@ -7,7 +7,7 @@ public enum NotificationType {
 
 	/**
 	 * 수정요청이 원본에 반영되었음
-	 * 대상 : 수정 요청자
+	 제	 * 대상 : 수정 요청자, 투표자
 	 */
 	CONTRIBUTE_MERGED,
 
