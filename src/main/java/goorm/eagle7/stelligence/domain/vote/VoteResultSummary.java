@@ -9,9 +9,9 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class VoteSummary {
+public class VoteResultSummary {
 
 	private Long contributeId;
-	private int totalVotes;
-	private int agreements;
+	private int totalVotes; // 총 투표 수
+	private int agreements; // 찬성 투표 수
 }

@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.config.mockdata;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -9,6 +10,9 @@ import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Comment;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Badge;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -240,6 +244,80 @@ public class TestFixtureGenerator {
 			return (Contribute)contribute;
 
 		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence) {
+
+		try {
+			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Debate");
+
+			Constructor<?> constructor = contributeClazz.getDeclaredConstructor();
+			constructor.setAccessible(true);
+
+			Object debate = constructor.newInstance();
+
+			Field idField = contributeClazz.getDeclaredField("id");
+			Field contributeField = contributeClazz.getDeclaredField("contribute");
+			Field statusField = contributeClazz.getDeclaredField("status");
+			Field endAtField = contributeClazz.getDeclaredField("endAt");
+			Field commentSequenceField = contributeClazz.getDeclaredField("commentSequence");
+			Field commentsField = contributeClazz.getDeclaredField("comments");
+
+			idField.setAccessible(true);
+			contributeField.setAccessible(true);
+			statusField.setAccessible(true);
+			endAtField.setAccessible(true);
+			commentSequenceField.setAccessible(true);
+			commentsField.setAccessible(true);
+
+			idField.set(debate, id);
+			contributeField.set(debate, contribute);
+			statusField.set(debate, status);
+			endAtField.set(debate, endAt);
+			commentSequenceField.set(debate, commentSequence);
+			commentsField.set(debate, new ArrayList<>());
+
+			return (Debate)debate;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static Comment comment(Long id, Debate debate, Member member, String content, int sequence) {
+		try {
+			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Comment");
+
+			Constructor<?> constructor = contributeClazz.getDeclaredConstructor();
+			constructor.setAccessible(true);
+
+			Object comment = constructor.newInstance();
+
+			Field idField = contributeClazz.getDeclaredField("id");
+			Field debateField = contributeClazz.getDeclaredField("debate");
+			Field commenterField = contributeClazz.getDeclaredField("commenter");
+			Field contentField = contributeClazz.getDeclaredField("content");
+			Field sequenceField = contributeClazz.getDeclaredField("sequence");
+
+			idField.setAccessible(true);
+			debateField.setAccessible(true);
+			commenterField.setAccessible(true);
+			contentField.setAccessible(true);
+			sequenceField.setAccessible(true);
+
+			idField.set(comment, id);
+			debateField.set(comment, debate);
+			commenterField.set(comment, member);
+			contentField.set(comment, content);
+			sequenceField.set(comment, sequence);
+
+			return (Comment)comment;
+
+		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
