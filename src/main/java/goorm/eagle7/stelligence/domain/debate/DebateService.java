@@ -147,6 +147,7 @@ public class DebateService {
 	 * @param debateId: 댓글을 조회할 토론의 ID
 	 * @return List&lt;CommentResponse&gt;: 조회된 댓글의 리스트
 	 */
+	@Transactional(readOnly = true)
 	public List<CommentResponse> getComments(Long debateId) {
 
 		List<Comment> comments = commentRepository.findAllByDebateId(debateId);

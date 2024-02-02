@@ -41,11 +41,11 @@ public class Comment extends BaseTimeEntity {
 		return new Comment(content, debate, commenter);
 	}
 
-	public Comment(String content, Debate debate, Member commenter) {
+	private Comment(String content, Debate debate, Member commenter) {
 		this.content = content;
 		this.debate = debate;
 		this.commenter = commenter;
-		this.sequence = debate.getNextCommentSequence();
+		this.sequence = debate.getAndIncrementCommentSequence();
 		debate.updateEndAt();
 		debate.getComments().add(this);
 	}

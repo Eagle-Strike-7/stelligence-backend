@@ -21,10 +21,12 @@ import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public class Debate extends BaseTimeEntity {
 
 	@Id
@@ -69,6 +71,7 @@ public class Debate extends BaseTimeEntity {
 	public void close() {
 		// 이미 종료된 토론이라면 그대로 유지
 		if (DebateStatus.CLOSED.equals(this.status)) {
+			log.warn("이미 종료된 토론에 대한 토론 종료 요청이 발생했습니다. 토론 ID: {}", this.id);
 			return;
 		}
 		this.status = DebateStatus.CLOSED;
@@ -91,7 +94,7 @@ public class Debate extends BaseTimeEntity {
 	}
 
 	// commentSequence를 사용하고 나면 commentSequence가 자동으로 업데이트됩니다.
-	public int getNextCommentSequence() {
+	public int getAndIncrementCommentSequence() {
 		return commentSequence++;
 	}
 }
