@@ -2,6 +2,8 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import java.util.Comparator;
 
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +12,7 @@ import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
+import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 
 	private final AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
 	private final ContributeRepository contributeRepository;
+	private final CacheManager cacheManager;
 
 	/**
 	 * Amendment의 정렬은 Merge 과정에서 중요합니다. 정렬이 제대로 되지 않으면
@@ -46,12 +50,14 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	 * Contribute의 Amendment들을 원본에 반영합니다.
 	 *
 	 * <p><b>CACHE EVICTION</b> 이 메서드가 수행되면 해당 문서 내용의 캐시가 삭제됩니다.
+	 * 기존에는 @CacheEvict 애노테이션을 사용했으나, 현재는 파라미터인 contributeId만으로 삭제할 캐시의
+	 * 고유 ID를 알 수 없어서 CacheManager를 통해 직접 삭제하도록 변경하였습니다.
 	 *
+	 * @see DocumentContentService#getDocument(Long) 문서의 캐시가 생성되는 메서드
 	 * @param contributeId 반영할 Contribute의 ID
 	 */
 	@Override
 	@Transactional
-	// @CacheEvict(value = "document", key = "#contribute.document.id", cacheManager = "cacheManager")
 	public void handle(Long contributeId) {
 		log.info("Contribute {} is merging", contributeId);
 
@@ -76,6 +82,23 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 
 		//Contribute의 상태를 MERGED로 변경합니다.
 		contribute.setStatusMerged();
+
+		//cache를 삭제합니다.
+		evictCache(document.getId());
+	}
+
+	/**
+	 * 해당 문서의 캐시를 삭제합니다.
+	 * @param documentId 캐시를 삭제할 문서의 ID
+	 */
+	private void evictCache(Long documentId) {
+		Cache cache = cacheManager.getCache("document");
+		if (cache != null) {
+			cache.evict(documentId);
+			log.debug("document cache evicted. documentId : {}", documentId);
+		} else {
+			log.debug("document cache not found. documentId : {}", documentId);
+		}
 	}
 }
 

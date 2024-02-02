@@ -11,6 +11,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
@@ -31,6 +32,9 @@ class MergeHandlerTest {
 
 	@Mock
 	ContributeRepository contributeRepository;
+
+	@Mock
+	CacheManager cacheManager;
 
 	@Mock
 	CreateAmendmentMergeTemplate createAmendmentMergeTemplate;
