@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Filter에서 사용, 인증이 필요한 리소스 정보를 담는 객체
- * CustomAntPathMatcher에서 사용
+ * RequestMatcher에서 사용
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
