@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ResourceAntPathMatcher extends AntPathMatcher {
 
-	private final ResourceMemoryRepository resourceMemoryRepository;
+	private final PermitPathStore permitPathStore;
 
 	/**
 	 * 요청의 (method, path) 쌍이 리소스 리스트 중 어느 하나라도 일치하는 게 있는지 확인
@@ -23,7 +23,7 @@ public class ResourceAntPathMatcher extends AntPathMatcher {
 	@Override
 	public boolean match(String httpMethod, String uri) {
 
-		return resourceMemoryRepository.exist(RequestResource.of(httpMethod, uri));
+		return permitPathStore.exist(RequestResource.of(httpMethod, uri));
 
 	}
 

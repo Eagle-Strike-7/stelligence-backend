@@ -48,7 +48,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	@Value("${http.cookie.refreshToken.maxAge}")
 	private Integer refreshTokenMaxAge;
 
-	private final ResourceMemoryRepository resourceMemoryRepository;
+	private final PermitPathStore permitPathStore;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LoginService loginService;
@@ -203,7 +203,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return !resourceMemoryRepository.exist(RequestResource.of(httpMethod, uri));
+		return !permitPathStore.exist(RequestResource.of(httpMethod, uri));
 	}
 
 }
