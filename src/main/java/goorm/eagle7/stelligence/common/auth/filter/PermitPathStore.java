@@ -28,7 +28,7 @@ class PermitPathStore {
 			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**"),
 
 			// oauth2
-			RequestResource.of(HttpMethod.GET.name(), "/oauth2/authorization/google"),
+			RequestResource.of(HttpMethod.GET.name(), "/oauth2/authorization/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/login/oauth2/code/**"),
 
 			// swagger
