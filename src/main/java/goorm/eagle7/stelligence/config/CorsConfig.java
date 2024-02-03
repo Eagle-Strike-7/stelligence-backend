@@ -18,7 +18,8 @@ public class CorsConfig {
 		config.setAllowedOrigins(java.util.List.of("**", "*"));
 
 		// 특정 헤더만 허용. 클라이언트가 서버로 전송할 수 있는 HTTP 헤더를 제한함. "Authorization" 등
-		config.setAllowedHeaders(java.util.List.of("Cache-Control", "Content-Type", "Cookie", "Set-Cookie"));
+		// config.setAllowedHeaders(java.util.List.of("Cache-Control", "Content-Type", "Cookie", "Set-Cookie"));
+		config.setAllowedHeaders(java.util.List.of("Cache-Control", "Content-Type", "Cookie", "Set-Cookie", "Authorization", "custom-header"));
 
 		// 쿠키와 같은 인증 정보를 포함할 지 여부. 대부분의 경우 false로 설정해야 함.
 		config.setAllowCredentials(true);

@@ -13,6 +13,8 @@ import goorm.eagle7.stelligence.common.auth.filter.ResponseTemplateUtils;
 import goorm.eagle7.stelligence.common.auth.oauth.CustomOAuth2User;
 import goorm.eagle7.stelligence.common.login.LoginService;
 import goorm.eagle7.stelligence.common.login.OAuth2Request;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +64,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		loginService.login(response, oAuth2Request);
 
 		try {
-			response.sendRedirect("http://3.39.192.156/ ");
-		} catch (IOException e) {
+			response.setHeader("custom-header", "success");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("http://3.39.192.156/");
+			dispatcher.forward(request, response);
+		} catch (ServletException | IOException e) {
 			throw new AccessDeniedException("Redirect failed");
 		}
 
