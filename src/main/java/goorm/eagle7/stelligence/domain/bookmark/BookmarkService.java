@@ -1,8 +1,5 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -11,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkPageResponse;
-import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkSimpleResponse;
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -64,7 +60,8 @@ public class BookmarkService {
 		Bookmark bookmark = bookmarkRepository
 			.findByMemberIdAndDocumentId(memberId, documentId)
 			.orElseThrow(
-				() -> new BaseException("해당 북마크를 찾을 수 없습니다. MemberId= " + memberId + ", DocumentId= " + documentId));
+				() -> new BaseException(String.format(
+					"해당 북마크를 찾을 수 없습니다. MemberId= %s, DocumentId= %s", memberId, documentId)));
 		bookmark.delete(); // member의 bookmark 목록에서 삭제
 		bookmarkRepository.delete(bookmark);
 
