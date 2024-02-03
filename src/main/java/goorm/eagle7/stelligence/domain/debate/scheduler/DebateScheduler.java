@@ -20,7 +20,7 @@ public class DebateScheduler {
 
 	@Scheduled(fixedRateString = "${contribute.scheduler.scheduling-interval-ms:600000}")
 	@Transactional
-	public void closeTargetDebate() {
+	public void detectAndCloseTargetDebate() {
 
 		List<Long> targetDebateIdList = debateRepository.findOpenDebateIdByEndAt(LocalDateTime.now());
 		if (!targetDebateIdList.isEmpty()) {
