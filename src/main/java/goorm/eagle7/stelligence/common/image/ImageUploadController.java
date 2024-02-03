@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.common.image;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +28,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
  *
  * <p>PNG, JPEG, GIF 이미지 파일만 업로드할 수 있습니다.
  *
- * <p>이미지 파일은 5MB 이하만 업로드할 수 있습니다.
+ * <p>이미지 파일은 MAX_IMAGE_MB 이하만 업로드할 수 있습니다.
+ * MAX_IMAGE_MB는 클래스 내에 정의된 상수입니다.
  *
  * <p>어떠한 섹션에도 포함되지 않는 고아 이미지가 존재할 수 있습니다.
  * 불필요한 이미지를 청소하는 방법은 추후 고민해봐야 할 것 같습니다.
@@ -42,9 +46,21 @@ public class ImageUploadController {
 	@Value("${aws.s3.bucketUrl}")
 	private String bucketUrl;
 
-	private static final long MAX_IMAGE_MB = 1; // 1MB 이하만 업로드 가능
+	/**
+	 * 이미지 파일 최대 크기 (MB)
+	 */
+	private static final long MAX_IMAGE_MB = 3;
 
 	private static final long MAX_IMAGE_BYTE = MAX_IMAGE_MB * 1024 * 1024;
+
+	/**
+	 * 이미지 파일 컨텐츠 타입
+	 */
+	private static final List<String> IMAGE_CONTENT_TYPES = List.of(
+		MediaType.IMAGE_JPEG_VALUE,
+		MediaType.IMAGE_PNG_VALUE,
+		MediaType.IMAGE_GIF_VALUE
+	);
 
 	private final S3Client s3Client;
 
@@ -60,7 +76,15 @@ public class ImageUploadController {
 		useReturnTypeSchema = true
 	)
 	@PostMapping("/api/images/upload")
-	public ResponseTemplate<String> uploadImage(HttpServletRequest request) {
+	public ResponseTemplate<String> uploadImage(
+		HttpServletRequest request,
+		@Auth MemberInfo memberInfo
+	) {
+
+		// 로그인한 사용자인지 확인
+		if (memberInfo == null) {
+			throw new BaseException("로그인한 사용자만 이미지를 업로드할 수 있습니다.");
+		}
 
 		// 이미지 파일인지 확인
 		String contentType = request.getContentType();
@@ -102,9 +126,7 @@ public class ImageUploadController {
 	 * @return 이미지 파일이면 true
 	 */
 	private boolean isValidImageContentType(String contentType) {
-		return contentType.equals(MediaType.IMAGE_JPEG_VALUE)
-			|| contentType.equals(MediaType.IMAGE_PNG_VALUE)
-			|| contentType.equals(MediaType.IMAGE_GIF_VALUE);
+		return IMAGE_CONTENT_TYPES.contains(contentType);
 	}
 
 }
