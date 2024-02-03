@@ -28,16 +28,24 @@ public class BookmarkService {
 	private final MemberRepository memberRepository;
 	private final DocumentContentRepository documentContentRepository;
 
-	// TODO : 한 번씩 눌렀을 때 저장, 삭제 - 확인하기
+	/**
+	 * <h2>북마크 생성</h2>
+	 * <p> - 로그인한 사용자의 북마크 생성, 사용자의 북마크 목록에 추가</p>
+	 * <p> - {documentId, memberId} 중복이면 error 발생</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param bookmarkCreateRequest - 북마크 생성할 문서의 ID
+	 * @throws DataIntegrityViolationException - memberId, documentId 중복시
+	 */
 	@Transactional
 	public void createBookmark(Long memberId, BookmarkCreateRequest bookmarkCreateRequest) {
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new BaseException("해당 멤버를 찾을 수 없습니다. MemberId= " + memberId));
+			.orElseThrow(() -> new BaseException(String.format(
+				"해당 사용자를 찾을 수 없습니다. MemberId= %s", memberId)));
 
 		Document document = documentContentRepository.findById(bookmarkCreateRequest.getDocumentId())
 			.orElseThrow(() -> new BaseException(
-				"해당 문서를 찾을 수 없습니다. DocumentId= " + bookmarkCreateRequest.getDocumentId()));
+				String.format("해당 문서를 찾을 수 없습니다. DocumentId= %s", bookmarkCreateRequest.getDocumentId())));
 
 		Bookmark bookmark = Bookmark.of(member, document);
 		bookmarkRepository.save(bookmark);
@@ -46,6 +54,7 @@ public class BookmarkService {
 	/**
 	 * <h2>북마크 삭제</h2>
 	 * <p> - 로그인한 사용자의 북마크 삭제, 사용자의 북마크 목록에서도 삭제</p>
+	 * <p> - memberId, documentId가 없어도 exception X</p>
 	 * @param memberId - 로그인한 사용자의 ID
 	 * @param documentId - 북마크 삭제할 문서의 ID
 	 */
