@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  */
 @Repository
 @NoArgsConstructor
-class PermitPathStore {
+class PermittedPathStore {
 
 	private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
 	private static final Set<RequestResource> REQUEST_RESOURCES =
@@ -48,21 +48,19 @@ class PermitPathStore {
 	 * <h2>허용하는 uri 확인</h2>
 	 * <p>- 요청의 httpMethod, uri가 리소스 리스트 중 어느 하나라도 일치하는 게 있는지 확인</p>
 	 * <p>- 허용하는 uri가 /**로 끝나면, basePath 비교</p>
-	 * @param requestResource 요청의 httpMethod, uri
+	 * @param httpMethod
+	 * @param uri
 	 * @return boolean 리소스 리스트에 있으면 true, 없으면 false
 	 */
-	public boolean exist(RequestResource requestResource) {
-
-		String requestResourceHttpMethod = requestResource.getHttpMethod();
-		String requestResourceUri = requestResource.getUri();
+	public boolean exist(String httpMethod, String uri) {
 
 		for (RequestResource resource : REQUEST_RESOURCES) {
 
-			String httpMethod = resource.getHttpMethod();
-			String uri = resource.getUri();
+			String permittedHttpMethod = resource.getHttpMethod();
+			String permittedUri = resource.getUri();
 
-			if (httpMethod.equals(requestResourceHttpMethod) &&
-				antPathMatcher.match(uri, requestResourceUri)) {
+			if (permittedHttpMethod.equals(httpMethod) &&
+				antPathMatcher.match(permittedUri, uri)) {
 				return true;
 			}
 		}

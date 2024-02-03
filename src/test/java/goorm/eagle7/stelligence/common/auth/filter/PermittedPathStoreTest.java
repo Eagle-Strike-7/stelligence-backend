@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.common.auth.filter;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,20 +13,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * <p>method, BaseUri 인식하는지 위주로 테스트 진행</p>
  */
 @ExtendWith(MockitoExtension.class)
-class PermitPathStoreTest {
+class PermittedPathStoreTest {
 
 	@InjectMocks
-	private PermitPathStore permitPathStore;
+	private PermittedPathStore permittedPathStore;
 
 	@Test
 	@DisplayName("[정상] Base uri, 메서드가 같은 경우")
 	void existBaseSameTrue() {
 
 		// given
-		RequestResource resource = RequestResource.of("GET", "/api/documents");
+		String httpMethod = "GET";
+		String uri = "/api/documents";
 
 		// when
-		boolean result = permitPathStore.exist(resource);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();
@@ -39,10 +39,11 @@ class PermitPathStoreTest {
 	void existBaseQueryStringSameTrue() {
 
 		// given
-		RequestResource resource = RequestResource.of("GET", "/api/documents/search?query=1");
+		String httpMethod = "GET";
+		String uri = "/api/documents/search?query=1";
 
 		// when
-		boolean result = permitPathStore.exist(resource);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();
@@ -54,10 +55,11 @@ class PermitPathStoreTest {
 	void existDifferMethodFalse() {
 
 		// given
-		RequestResource methodDiffer = RequestResource.of("POST", "/api/documents");
+		String httpMethod = "POST";
+		String uri = "/api/documents";
 
 		// when
-		boolean result = permitPathStore.exist(methodDiffer);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -69,10 +71,11 @@ class PermitPathStoreTest {
 	void existDifferUriFalse() {
 
 		// given
-		RequestResource uriDiffer = RequestResource.of("GET", "/api/notin");
+		String httpMethod = "GET";
+		String uri = "/api/notin";
 
 		// when
-		boolean result = permitPathStore.exist(uriDiffer);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -84,10 +87,11 @@ class PermitPathStoreTest {
 	void existDifferUriOnlyOneFalse() {
 
 		// given
-		RequestResource uriDiffer = RequestResource.of("GET", "/api/document");
+		String httpMethod = "GET";
+		String uri = "/api/document";
 
 		// when
-		boolean result = permitPathStore.exist(uriDiffer);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -99,10 +103,11 @@ class PermitPathStoreTest {
 	void existApiDifferUriFalse() {
 
 		// given
-		RequestResource uriDiffer = RequestResource.of("GET", "/notin");
+		String httpMethod = "GET";
+		String uri = "/notin";
 
 		// when
-		boolean result = permitPathStore.exist(uriDiffer);
+		boolean result = permittedPathStore.exist(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
