@@ -1,5 +1,8 @@
 package goorm.eagle7.stelligence.domain.bookmark.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -29,6 +32,7 @@ public class Bookmark extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -45,8 +49,8 @@ public class Bookmark extends BaseTimeEntity {
 		return bookmark;
 	}
 
-	public boolean isSameMember(Long memberId) {
-		return this.member.getId().equals(memberId);
+	public void delete() {
+		this.member.getBookmarks().remove(this);
 	}
 
 }
