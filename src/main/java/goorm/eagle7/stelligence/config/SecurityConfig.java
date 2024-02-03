@@ -65,7 +65,11 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
-			.requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**", " /assets/**");
+			.requestMatchers( "/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**", " /assets/**","/favicon.ico",
+				"/error",
+				"/swagger-ui/**",
+				"/swagger-resources/**",
+				"/v3/api-docs/**");
 	}
 
 	/**
@@ -106,8 +110,6 @@ public class SecurityConfig {
 	 * @return SecurityFilterChain
 	 * @throws Exception : Exception
 	 */
-	//
-	//
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -127,7 +129,7 @@ public class SecurityConfig {
 
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(authFilter,
-				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능
+				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능 TODO permitall 이용할 수 있도록 수정
 			.exceptionHandling(exceptionHandling -> exceptionHandling
 				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
 				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
