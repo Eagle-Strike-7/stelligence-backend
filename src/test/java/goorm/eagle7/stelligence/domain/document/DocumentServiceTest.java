@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -65,5 +66,45 @@ class DocumentServiceTest {
 
 		//기여한 글 개수가 올라야 합니다.
 		assertThat(author.getContributes()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("Document 내용 조회 - 최신버전")
+	void getRecentDocumentContent() {
+		//when
+		documentService.getDocumentContent(1L, null);
+
+		//then
+		verify(documentContentService, times(1)).getDocument(1L);
+	}
+
+	@Test
+	@DisplayName("Document 내용 조회 - 특정 버전")
+	void getSpecificDocumentContent() {
+		//when
+		documentService.getDocumentContent(1L, 1L);
+
+		//then
+		verify(documentContentService, times(1)).getDocument(1L, 1L);
+	}
+
+	@Test
+	@DisplayName("graph 조회 - 최상위 문서")
+	void getDocumentGraphRoot() {
+		//when
+		documentService.getDocumentGraph(null, 3);
+
+		//then
+		verify(documentGraphService, times(1)).findFromRootNodesWithDepth(3);
+	}
+
+	@Test
+	@DisplayName("graph 조회 - 특정 문서")
+	void getDocumentGraphSpecific() {
+		//when
+		documentService.getDocumentGraph(1L, 3);
+
+		//then
+		verify(documentGraphService, times(1)).findGraphWithDepth(1L, 3);
 	}
 }
