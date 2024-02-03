@@ -9,7 +9,6 @@ import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -73,7 +72,7 @@ public class Member extends BaseTimeEntity {
 	 * <p>cascade: Member 삭제 시, Bookmark도 삭제.</p>
 	 * <p>orphanRemoval: Member와 연관 관계가 끊어지면, Bookmark도 삭제.</p>
 	 */
-	@OneToMany(mappedBy = "member",  cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@OneToMany(mappedBy = "member")
 	private List<Bookmark> bookmarks = new ArrayList<>();
 
 	/**
