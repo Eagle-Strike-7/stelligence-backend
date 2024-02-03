@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.AntPathMatcher;
 
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Repository
 @NoArgsConstructor
 class ResourceMemoryRepository {
+
+	private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
 	private static final Set<RequestResource> REQUEST_RESOURCES =
 		Set.of(
 
@@ -50,24 +53,17 @@ class ResourceMemoryRepository {
 	 */
 	public boolean exist(RequestResource requestResource) {
 
-		for (RequestResource resource : REQUEST_RESOURCES) {
-			// httpMethod가 다르면 다음 리소스로
-			if (!resource.getHttpMethod().equals(requestResource.getHttpMethod())) {
-				continue;
-			}
+		String requestResourceHttpMethod = requestResource.getHttpMethod();
+		String requestResourceUri = requestResource.getUri();
 
-			// uri가 다르면 다음 리소스로
-			// 허용하는 uri가 /**로 끝나면 basePath만 비교
-			if (resource.getUri().endsWith("/**")) {
-				String basePath = resource.getUri().substring(0, resource.getUri().length() - 3);
-				if (requestResource.getUri().startsWith(basePath)) {
-					return true;
-				}
-			} else {
-				// 그 외의 경우는 uri 전체 비교
-				if (resource.getUri().equals(requestResource.getUri())) {
-					return true;
-				}
+		for (RequestResource resource : REQUEST_RESOURCES) {
+
+			String httpMethod = resource.getHttpMethod();
+			String uri = resource.getUri();
+
+			if (antPathMatcher.match(httpMethod,requestResourceHttpMethod) &&
+				antPathMatcher.match(uri, requestResourceUri)) {
+				return true;
 			}
 		}
 		return false;
