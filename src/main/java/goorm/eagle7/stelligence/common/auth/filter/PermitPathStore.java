@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 
 /**
  * <h2>허용 리소스 정보 메모리 저장소</h2>
- * <p>인증이 필요한 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
- * <p>인증이 필요한 리소스인지 확인하는 메소드(exist) 제공</p>
+ * <p>로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
+ * <p>(개발) 저장된 리소스인지 확인하는 메소드(exist) 제공, 운영은 matcher 따로 필요.</p>
  */
 @Repository
 @NoArgsConstructor
-class ResourceMemoryRepository {
+class PermitPathStore {
 
 	private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
 	private static final Set<RequestResource> REQUEST_RESOURCES =
@@ -61,7 +61,7 @@ class ResourceMemoryRepository {
 			String httpMethod = resource.getHttpMethod();
 			String uri = resource.getUri();
 
-			if (antPathMatcher.match(httpMethod,requestResourceHttpMethod) &&
+			if (httpMethod.equals(requestResourceHttpMethod) &&
 				antPathMatcher.match(uri, requestResourceUri)) {
 				return true;
 			}
