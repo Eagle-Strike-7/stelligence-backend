@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
  * <p>어떠한 섹션에도 포함되지 않는 고아 이미지가 존재할 수 있습니다.
  * 불필요한 이미지를 청소하는 방법은 추후 고민해봐야 할 것 같습니다.
  */
+@Tag(name = "이미지 업로드", description = "이미지 파일을 업로드합니다.")
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +48,17 @@ public class ImageUploadController {
 
 	private final S3Client s3Client;
 
+	@Operation(
+		summary = "이미지 업로드",
+		description = "이미지를 업로드 합니다.  "
+			+ "이미지 파일은 PNG, JPEG, GIF 형식만 업로드할 수 있으며, " + MAX_IMAGE_MB + "MB 이하만 업로드할 수 있습니다. "
+			+ "업로드된 이미지의 URL을 반환합니다. "
+			+ "Content-Type: image/jpeg, image/png, image/gif 만 지원합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "이미지 업로드 성공",
+		useReturnTypeSchema = true
+	)
 	@PostMapping("/api/images/upload")
 	public ResponseTemplate<String> uploadImage(HttpServletRequest request) {
 
