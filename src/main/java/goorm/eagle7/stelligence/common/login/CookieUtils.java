@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor // final 필드가 없지만, 우선 선언. TODO 적절한지 확인
 public class CookieUtils {
 
-	@Value("${jwt.accessToken.name}")
+	@Value("${http.cookie.accessToken.name}")
 	private String accessTokenCookieName;
-	@Value("${jwt.refreshToken.name}")
+	@Value("${http.cookie.refreshToken.name}")
 	private String refreshTokenCookieName;
 	@Value("${http.cookie.accessToken.maxAge}")
 	private Long accessCookieMaxAge;
