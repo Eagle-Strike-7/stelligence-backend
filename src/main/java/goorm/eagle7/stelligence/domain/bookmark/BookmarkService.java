@@ -44,6 +44,7 @@ public class BookmarkService {
 				String.format("해당 문서를 찾을 수 없습니다. DocumentId= %s", bookmarkCreateRequest.getDocumentId())));
 
 		Bookmark bookmark = Bookmark.of(member, document);
+		bookmark.addTo(member); // member의 bookmark 목록에 추가
 		bookmarkRepository.save(bookmark);
 	}
 

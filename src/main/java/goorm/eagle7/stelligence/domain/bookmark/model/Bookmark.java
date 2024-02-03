@@ -53,4 +53,7 @@ public class Bookmark extends BaseTimeEntity {
 		this.member.getBookmarks().remove(this);
 	}
 
+	public void addTo(Member member) {
+		this.member.getBookmarks().add(this);
+	}
 }
