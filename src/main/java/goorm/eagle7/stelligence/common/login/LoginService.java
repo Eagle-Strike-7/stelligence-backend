@@ -8,7 +8,6 @@ import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
@@ -20,7 +19,7 @@ public class LoginService {
 	private final SignUpService signUpService;
 	private final CookieUtils cookieUtils;
 
-	public void login(DevLoginRequest devLoginRequest) {
+	public String login(DevLoginRequest devLoginRequest) {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		// nickname 중복이면 로그인
@@ -28,15 +27,15 @@ public class LoginService {
 			.orElseGet(() -> signUpService.signUp(devLoginRequest.getNickname()));
 
 		// token 생성 후 저장, 쿠키 저장
-		generateAndSaveTokens(member);
+		return generateAndSaveTokens(member);
 	}
 
 	/**
 	 * 토큰 생성 후 저장
 	 * @param member 회원
-	 * @return 토큰
+	 * @return access 토큰 - for dev
 	 */
-	private void generateAndSaveTokens(Member member) {
+	private String generateAndSaveTokens(Member member) {
 
 		// Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
@@ -49,6 +48,7 @@ public class LoginService {
 		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
 		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
 
+		return accessToken;
 	}
 
 }
