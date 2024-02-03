@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
@@ -24,6 +25,8 @@ import goorm.eagle7.stelligence.domain.member.model.SocialType;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
+	@Mock
+	private CookieUtils cookieUtils; // doNothing()을 위해 필요, TODO 따로 test
 	@Mock
 	private MemberRepository memberRepository;
 
@@ -109,6 +112,7 @@ class MemberServiceTest {
 		// given
 		Long memberId = stdMember.getId();
 		doNothing().when(memberRepository).deleteById(memberId);
+		doNothing().when(cookieUtils).deleteCookieBy(any());
 
 		// when
 		memberService.delete(memberId);
@@ -130,6 +134,7 @@ class MemberServiceTest {
 
 		// given - 존재하지 않는 memberId
 		Long nonExistentMemberId = 999L;
+		doNothing().when(cookieUtils).deleteCookieBy(any());
 
 		// when
 		memberService.delete(nonExistentMemberId);
