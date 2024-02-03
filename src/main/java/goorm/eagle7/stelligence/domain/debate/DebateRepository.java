@@ -1,11 +1,14 @@
 package goorm.eagle7.stelligence.domain.debate;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -39,4 +42,15 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query(value = "select d from Debate d where d.id = :debateId")
 	Optional<Debate> findDebateByIdForUpdate(@Param("debateId") Long debateId);
+
+	@Modifying
+	@Query("update Debate d"
+		+ " set d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.CLOSED"
+		+ " where d.id in :debateIdList")
+	void closeDebateById(@Param("debateIdList") List<Long> debateIdList);
+
+	@Query("select d.id from Debate d"
+		+ " where d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.OPEN"
+		+ " and d.endAt <= :now")
+	List<Long> findOpenDebateIdByEndAt(@Param("now") LocalDateTime now);
 }
