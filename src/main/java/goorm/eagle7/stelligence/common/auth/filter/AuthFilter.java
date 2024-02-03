@@ -70,7 +70,7 @@ public class AuthFilter extends OncePerRequestFilter {
 					String refreshToken = jwtTokenService.extractJwtFromCookie(request, refreshTokenName);
 
 					// accessToken 재발급, refresh 토큰 만료라면 throw BaseException
-					 accessToken = jwtTokenReissueService.reissueAccessToken(response, refreshToken, accessTokenName, refreshTokenName);
+					 accessToken = jwtTokenReissueService.reissueAccessToken( refreshToken);
 
 				}
 
