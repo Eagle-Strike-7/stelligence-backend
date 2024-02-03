@@ -34,6 +34,12 @@ public class BookmarkController {
 
 	private final BookmarkService bookmarkService;
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseTemplate<Void> handleException(Exception e) {
+		log.debug("Exception catched in BookmarkController : {}", e.getMessage());
+		return ResponseTemplate.fail(e.getMessage());
+	}
 
 	@Operation(summary = "북마크 목록 조회",
 		description = """
