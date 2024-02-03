@@ -67,17 +67,6 @@ public class Debate extends BaseTimeEntity {
 		return new Debate(contribute);
 	}
 
-	// 특정 토론을 닫습니다.
-	public void close() {
-		// 이미 종료된 토론이라면 그대로 유지
-		if (DebateStatus.CLOSED.equals(this.status)) {
-			log.warn("이미 종료된 토론에 대한 토론 종료 요청이 발생했습니다. 토론 ID: {}", this.id);
-			return;
-		}
-		this.status = DebateStatus.CLOSED;
-		this.endAt = LocalDateTime.now();
-	}
-
 	/**
 	 * 댓글이 업데이트 될때, 토론 종료시간도 업데이트됩니다.
 	 * 단, 토론을 유지할 수 있는 최대 기간은 7일입니다.
