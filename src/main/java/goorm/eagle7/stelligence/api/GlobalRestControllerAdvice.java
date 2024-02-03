@@ -1,6 +1,10 @@
 package goorm.eagle7.stelligence.api;
 
+import java.util.List;
+
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,5 +32,17 @@ public class GlobalRestControllerAdvice {
 	public ResponseTemplate<String> handleBaseException(BaseException ex) {
 		log.debug("Exception catched in RestControllerAdvice : {}", ex.getMessage());
 		return ResponseTemplate.fail(ex.getMessage());
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseTemplate<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+		List<String> validationErrorMessages = ex.getBindingResult()
+			.getAllErrors()
+			.stream()
+			.map(DefaultMessageSourceResolvable::getDefaultMessage)
+			.toList();
+
+		return ResponseTemplate.fail(validationErrorMessages, "입력값이 올바르지 않습니다.");
 	}
 }
