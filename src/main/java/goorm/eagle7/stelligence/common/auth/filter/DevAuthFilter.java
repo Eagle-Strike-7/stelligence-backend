@@ -31,9 +31,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.
- * 모든 리소스에서 토큰 검증 진행
- * 	- 하지 않는 건 CustomAntPathMatcher에서 정의, 현재는 /login 뿐.
+ * <h2>개발용 토큰 검증 필터</h2>
+ * <p>토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.</p>
+ * <p>repository에 저장되지 않은 httpmethod, uri에 대해 토큰 검증 진행</p>
  */
 @Component
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	@Value("${http.cookie.refreshToken.maxAge}")
 	private Integer refreshTokenMaxAge;
 
-	private final ResourceAntPathMatcher resourceAntPathMatcher;
+	private final ResourceMemoryRepository resourceMemoryRepository;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LoginService loginService;
@@ -197,12 +197,13 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
+	 * repository에 저장된 RequestResource set 기준으로 토큰 검증이 필요한 httpMethod, uri인지 확인
 	 * @param httpMethod String 타입으로 추출.
 	 * @param uri uri String 타입으로 추출.
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return !resourceAntPathMatcher.match(httpMethod, uri);
+		return !resourceMemoryRepository.exist(RequestResource.of(httpMethod, uri));
 	}
+
 }
