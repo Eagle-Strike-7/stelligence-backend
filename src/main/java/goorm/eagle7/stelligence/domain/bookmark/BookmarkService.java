@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,37 +43,37 @@ public class BookmarkService {
 		bookmarkRepository.save(bookmark);
 	}
 
+	/**
+	 * <h2>북마크 삭제</h2>
+	 * <p> - 로그인한 사용자의 북마크 삭제, 사용자의 북마크 목록에서도 삭제</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param documentId - 북마크 삭제할 문서의 ID
+	 */
 	@Transactional
-	public void delete(Long memberId, Long bookmarkId) {
+	public void delete(Long memberId, Long documentId) {
 
-		Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-			.orElseThrow(() -> new BaseException("해당 북마크를 찾을 수 없습니다. BookmarkId= " + bookmarkId));
-
-		// 다른 member의 bookmark를 삭제하려고 시도하는 경우, BaseException
-		validatePermissionForDelete(memberId, bookmark);
-
+		Bookmark bookmark = bookmarkRepository
+			.findByMemberIdAndDocumentId(memberId, documentId)
+			.orElseThrow(
+				() -> new BaseException("해당 북마크를 찾을 수 없습니다. MemberId= " + memberId + ", DocumentId= " + documentId));
+		bookmark.delete(); // member의 bookmark 목록에서 삭제
 		bookmarkRepository.delete(bookmark);
 
 	}
 
-	private void validatePermissionForDelete(Long memberId, Bookmark bookmark) {
-		Long bookmarkId = bookmark.getId();
-		if (!bookmark.isSameMember(memberId)) {
-			throw new BaseException("해당 북마크에 대한 권한이 없습니다. BookmarkId= " + bookmarkId);
-		}
-	}
+	/**
+	 * <h2>북마크 목록 조회</h2>
+	 * <p> - 로그인한 사용자의 북마크 목록을 페이지네이션을 적용해 조회.</p>
+	 * <p> - 더보기로 구현해 Slice 이용(count 쿼리 X)</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param pageable - page, size, sort
+	 * @return BookmarkPageRespons - List<BookmarkSimpleResponse> bookmarks, boolean hasNext
+	 */
+	public BookmarkPageResponse getBookmarks(Long memberId, Pageable pageable) {
 
-	public List<BookmarkSimpleResponse> getBookmarks(Long memberId) {
+		Slice<Bookmark> sliceBookmarks = bookmarkRepository.findSliceByMemberIdWithPageable(memberId, pageable);
 
-		// TODO : 페이징 처리, totalPage, isLast 등 필요한 정보 확인하기.
-		// 페이징은 적절히 나눠서 가져 오는데, 끝을 아는 게 중요하다.
-		// 데이터를 효율적으로 가져오기 위함이다. 그러므로 페이징을 하지 않는다면, 데이터를 모두 가져오는 것이다.
-		// slice == count 쿼리를 날리지 않음, size+1로 조회해서 다음 페이지가 있는지 확인, hasNext, isFirst, isLast 등 확인 - 버튼 비활성화 가능.
-
-		return bookmarkRepository.findByMemberId(memberId)
-			.stream()
-			.map(BookmarkSimpleResponse::from)
-			.toList();
+		return BookmarkPageResponse.from(sliceBookmarks);
 
 	}
 
