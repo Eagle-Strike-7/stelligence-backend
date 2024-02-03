@@ -13,6 +13,8 @@ import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
+import goorm.eagle7.stelligence.common.login.CookieType;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,6 +35,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
+	private final CookieUtils cookieUtils;
 
 	/**
 	 * 1. request의 header에서 토큰 검증이 필요한 리소스인지 확인
@@ -56,21 +59,22 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
 			if (!isTokenValidationRequired(httpMethod, uri)) {
 
-				Cookie[] cookies = request.getCookies();
+				Cookie cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN).orElseThrow(
+					() -> new BaseException("로그인이 필요합니다.")
+				);
 
 				String accessToken = null;
-				if (cookies != null) {
-					// request에서 accessToken 추출
-					accessToken = jwtTokenService.extractJwtFromCookie(request, accessTokenName);
-				}
+
+				// request에서 accessToken 추출
+				accessToken = jwtTokenService.extractJwtFromCookie(cookie, CookieType.ACCESS_TOKEN);
 
 				// accessToken이 유효하지 않다면
 				if (!jwtTokenService.validateToken(accessToken)) {
 
-					String refreshToken = jwtTokenService.extractJwtFromCookie(request, refreshTokenName);
+					String refreshToken = jwtTokenService.extractJwtFromCookie(cookie, CookieType.REFRESH_TOKEN);
 
 					// accessToken 재발급, refresh 토큰 만료라면 throw BaseException
-					 accessToken = jwtTokenReissueService.reissueAccessToken( refreshToken);
+					accessToken = jwtTokenReissueService.reissueAccessToken(refreshToken);
 
 				}
 
