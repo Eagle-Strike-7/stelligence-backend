@@ -32,7 +32,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
-	private final RequestMatcher requestMatcher;
+	private final CustomRequestMatcher customRequestMatcher;
 
 	/**
 	 * 토큰 검증이 필요한 리소스에 대해서만 검증 진행.
@@ -111,7 +111,9 @@ public class AuthFilter extends OncePerRequestFilter {
 		return
 			CookieUtils.getCookieFromCookies(request, tokenName)
 				.map(jwtTokenService::getTokenFromCookie)
-				.orElse(null);
+				.orElseThrow(
+					() -> new AccessDeniedException("Token is not found")
+				);
 	}
 
 	/**
@@ -119,6 +121,6 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(HttpServletRequest request) {
-		return !requestMatcher.matches(request);
+		return !customRequestMatcher.matches(request);
 	}
 }

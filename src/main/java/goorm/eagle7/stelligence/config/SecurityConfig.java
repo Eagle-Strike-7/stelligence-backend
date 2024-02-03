@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
-import goorm.eagle7.stelligence.common.auth.filter.RequestMatcher;
+import goorm.eagle7.stelligence.common.auth.filter.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginFailureHandler;
@@ -46,7 +46,7 @@ public class SecurityConfig {
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomOAuth2UserService customOAuth2UserService;
-	private final RequestMatcher requestMatcher;
+	private final CustomRequestMatcher customRequestMatcher;
 
 	/**
 	 * .ignoring():
@@ -120,7 +120,7 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			) // for token
 			.authorizeHttpRequests(request -> request
-				.requestMatchers(requestMatcher)
+				.requestMatchers(customRequestMatcher)
 				.permitAll()
 				.requestMatchers("/api/**").hasRole("USER")
 				.anyRequest().authenticated())
