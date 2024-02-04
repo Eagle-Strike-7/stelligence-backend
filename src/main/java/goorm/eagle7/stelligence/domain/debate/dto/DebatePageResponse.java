@@ -19,6 +19,7 @@ public class DebatePageResponse {
 	private boolean hasNext;
 	private boolean hasPrevious;
 	private int currentPage;
+	private int size;
 	private DebateStatus status;
 	private DebateOrderCondition order;
 
@@ -33,6 +34,7 @@ public class DebatePageResponse {
 		this.currentPage = debatePage.getNumber();
 		this.hasNext = debatePage.hasNext();
 		this.hasPrevious = debatePage.hasPrevious();
+		this.size = debatePage.getSize();
 		this.status = status;
 		this.order = orderCondition;
 	}
