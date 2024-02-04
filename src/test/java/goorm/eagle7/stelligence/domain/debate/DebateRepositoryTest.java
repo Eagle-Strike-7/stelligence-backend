@@ -94,11 +94,11 @@ class DebateRepositoryTest {
 
 	@Test
 	@DisplayName("토론 종료")
-	void closeDebateById() {
+	void closeAllById() {
 
 		// when
 		List<Long> debateIdList = debateRepository.findOpenDebateIdByEndAt(LocalDateTime.now());
-		debateRepository.closeDebateById(debateIdList);
+		debateRepository.closeAllById(debateIdList);
 
 		// then
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);

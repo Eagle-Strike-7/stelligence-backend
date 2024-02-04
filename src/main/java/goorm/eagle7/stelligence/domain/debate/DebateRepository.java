@@ -52,7 +52,7 @@ public interface DebateRepository extends JpaRepository<Debate, Long> {
 	@Query("update Debate d"
 		+ " set d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.CLOSED"
 		+ " where d.id in :debateIdList")
-	void closeDebateById(@Param("debateIdList") List<Long> debateIdList);
+	void closeAllById(@Param("debateIdList") List<Long> debateIdList);
 
 	/**
 	 * 시간에 따라 종료되어야하는 토론의 ID를 조회합니다.

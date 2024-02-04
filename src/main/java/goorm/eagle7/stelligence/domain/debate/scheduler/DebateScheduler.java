@@ -32,7 +32,7 @@ public class DebateScheduler {
 		List<Long> targetDebateIdList = debateRepository.findOpenDebateIdByEndAt(LocalDateTime.now());
 		if (!targetDebateIdList.isEmpty()) {
 			log.info("[DebateScheduler] 종료 대상 토론을 모두 종료합니다. 대상 토론 ID: {}", targetDebateIdList);
-			debateRepository.closeDebateById(targetDebateIdList);
+			debateRepository.closeAllById(targetDebateIdList);
 		} else {
 			log.info("[DebateScheduler] 종료 대상 토론이 없습니다.");
 		}

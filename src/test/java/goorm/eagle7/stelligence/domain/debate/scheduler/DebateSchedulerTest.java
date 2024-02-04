@@ -58,7 +58,7 @@ class DebateSchedulerTest {
 
 			// then
 			verify(debateRepository, times(1)).findOpenDebateIdByEndAt(now);
-			verify(debateRepository, times(1)).closeDebateById(targetDebateIdList);
+			verify(debateRepository, times(1)).closeAllById(targetDebateIdList);
 		}
 	}
 }
