@@ -44,10 +44,9 @@ public class BookmarkController {
 
 	@Operation(summary = "북마크 목록 조회",
 		description = """
-  			- 로그인한 사용자의 북마크 목록을 페이지네이션을 적용하여 조회합니다.
-  			- 기본값: page = 0, size = 10, sort = "id"(bookmarkId),ASC(오름차순)
-  			- 예시: /api/bookmarks?page=0&sort=id,desc&size=8
-  			- 이때, sort 시 필드명과 정렬 방식을 콤마로 구분하여 입력합니다. 대소문자는 관계 없습니다. 정렬방식은 asc(오름차순) 또는 desc(내림차순)을 입력합니다.
+  			- 로그인한 사용자의 북마크 목록을 페이지네이션을 적용해 bookmarkId 기준 오름차순으로 조회합니다.
+  			- 기본값: page = 0, size = 10
+  			- 예시: /api/bookmarks?page=1&size=8
 		"""
 	)
 	@ApiResponse(
@@ -59,7 +58,7 @@ public class BookmarkController {
 	public ResponseTemplate<BookmarkPageResponse> getBookmarks(
 		@Auth MemberInfo memberInfo,
 		@ParameterObject
-		@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) // sort는 entity의 필드명 기준
+		@PageableDefault(page = 0, size = 10)
 		Pageable pageable) {
 
 		BookmarkPageResponse bookmarksResponse = bookmarkService.getBookmarks(memberInfo.getId(), pageable);

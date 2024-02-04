@@ -21,7 +21,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	 * @return Slice<Bookmark> - 사용자의 북마크 목록
 	 */
 	@Query(
-		value = "select b from Bookmark b join fetch b.document d where b.member.id = :memberId")
+		value = "select b from Bookmark b join fetch b.document d where b.member.id = :memberId order by b.id asc")
 	Slice<Bookmark> findSliceByMemberIdWithPageable(Long memberId, Pageable pageable);
 
 	/**
