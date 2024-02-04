@@ -103,22 +103,7 @@ public class MemberService {
 		return memberRepository.findById(memberId).orElseThrow(
 			() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
 		);
-	}
 
-	/**
-	 * <h2>회원이 획득한 badge 목록 조회</h2>
-	 * @param memberId 회원 id
-	 * @return  MemberBadgesListResponse 회원이 획득한 badge 목록
-	 * @throws BaseException 회원을 찾을 수 없는 경우 400
-	 */
-	// public MemberBadgesListResponse getBadgesById(Long memberId) {
-	//
-	// 	Member member = findMemberById(memberId);
-	// 	Set<Badge> badges = member.getBadges();
-	// 	List<MemberBadgesResponse> list = badges.stream().map(MemberBadgesResponse::from).toList();
-	//
-	// 	return MemberBadgesListResponse.from(list);
-	//
-	// }
+	}
 
 }
