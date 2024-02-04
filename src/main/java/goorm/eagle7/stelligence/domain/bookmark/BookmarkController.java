@@ -39,7 +39,7 @@ public class BookmarkController {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseTemplate<Void> handleException(Exception e) {
 		log.debug("Exception catched in BookmarkController : {}", e.getMessage());
-		return ResponseTemplate.fail(e.getMessage());
+		return ResponseTemplate.fail("이미 북마크한 문서입니다.");
 	}
 
 	@Operation(summary = "북마크 목록 조회",
