@@ -57,17 +57,14 @@ public class DebateService {
 
 	/**
 	 * 토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 페이징을 적용하여 조회합니다.
+	 * 이때 정렬 기준(LATEST;최신토론순 / RECENT;최신댓글순)에 따라 정렬하여 페이징합니다.
 	 * @param status: 조회하려는 토론의 상태(OPEN / CLOSED)
 	 * @param pageable: 조회하려는 토론의 페이지 정보
+	 * @param orderCondition: 토론 정렬 기준
 	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
 	 */
 	@Transactional(readOnly = true)
 	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable, DebateOrderCondition orderCondition) {
-
-		// Page<Debate> debatePage = switch (orderCondition) {
-		// 	case LATEST -> debateRepository.findPageByStatus(status, pageable);
-		// 	case RECENT -> debateRepository.findPageByStatusOrderByRecentComment(status, pageable);
-		// };
 
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(status, orderCondition, pageable);
 
