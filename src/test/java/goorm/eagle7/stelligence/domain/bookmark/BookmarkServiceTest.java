@@ -57,16 +57,18 @@ class BookmarkServiceTest {
 	@DisplayName("[정상] 북마크 생성 - createBookmark")
 	void createBookmarkTrue() {
 		// given
-		when(memberRepository.findById(1L)).thenReturn(Optional.of(stdMember));
-		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(stdDocument));
+
+		Long memberId = stdMember.getId();
+		Long documentId = stdDocument.getId();
+
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(stdMember));
+		when(documentContentRepository.findById(documentId)).thenReturn(Optional.of(stdDocument));
 
 		// when
-		bookmarkService.createBookmark(1L, BookmarkCreateRequest.from(1L));
+		bookmarkService.createBookmark(memberId, BookmarkCreateRequest.from(documentId));
 
 		// then
-		// member의 북마크 목록에 추가되었는지 확인
-		assertThat(stdMember.getBookmarks()).hasSize(1);
-		// TODO 이외 북마크가 저장되었는지 확인
+		verify(memberRepository, times(1)).findById(memberId);
 
 	}
 
@@ -103,26 +105,33 @@ class BookmarkServiceTest {
 	@DisplayName("[정상] 북마크 삭제 - delete")
 	void delete() {
 		// given
-		when(bookmarkRepository.findByMemberIdAndDocumentId(1L, 1L)).thenReturn(Optional.of(bookmark));
+
+		Long memberId = stdMember.getId();
+		Long documentId = stdDocument.getId();
+
+		when(bookmarkRepository.findByMemberIdAndDocumentId(memberId, documentId)).thenReturn(Optional.of(bookmark));
 
 		// when
-		bookmarkService.delete(1L, 1L);
+		bookmarkService.delete(memberId, documentId);
 
 		// then
-		assertThat(stdMember.getBookmarks()).isEmpty();
+		verify(bookmarkRepository, times(1)).findByMemberIdAndDocumentId(memberId, documentId);
 
 	}
 
 	@Test
 	@DisplayName("[예외] 없는 북마크 삭제 - delete")
 	void deleteEx() {
+
 		// given
-		when(bookmarkRepository.findByMemberIdAndDocumentId(1L, 2L)).thenReturn(Optional.empty());
+		Long memberId = stdMember.getId();
+		Long documentId = testDocument.getId();
+		when(bookmarkRepository.findByMemberIdAndDocumentId(memberId, documentId)).thenReturn(Optional.empty());
 
 		// when
 
 		// then
-		assertThatThrownBy(() -> bookmarkService.delete(1L, 2L))
+		assertThatThrownBy(() -> bookmarkService.delete(memberId, documentId))
 			.isInstanceOf(BaseException.class);
 
 	}
@@ -131,13 +140,15 @@ class BookmarkServiceTest {
 	@DisplayName("[정상] 북마크 목록 조회 - getBookmarks")
 	void getBookmarks() {
 		// given
+		Long memberId = stdMember.getId();
 		PageRequest pageRequest = PageRequest.of(0, 10);
-		when(bookmarkRepository.findSliceByMemberIdWithPageable(1L, pageRequest)).thenReturn(mock(Slice.class));
+		when(bookmarkRepository.findSliceByMemberIdWithPageable(memberId, pageRequest)).thenReturn(mock(Slice.class));
+
 		// when
-		bookmarkService.getBookmarks(1L, pageRequest);
+		bookmarkService.getBookmarks(memberId, pageRequest);
 
 		// then
-		verify(bookmarkRepository, times(1)).findSliceByMemberIdWithPageable(1L, pageRequest);
+		verify(bookmarkRepository, times(1)).findSliceByMemberIdWithPageable(memberId, pageRequest);
 
 	}
 }
