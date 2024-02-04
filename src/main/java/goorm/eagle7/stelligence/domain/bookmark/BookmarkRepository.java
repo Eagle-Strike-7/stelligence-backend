@@ -13,6 +13,16 @@ import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
 	/**
+	 * <h2>북마크 존재 여부 조회</h2>
+	 * <p> - memberId, documentId를 이용해 북마크 존재 여부 조회</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param documentId - 북마크 조회할 문서의 ID
+	 * @return boolean - true or false
+	 */
+	@Query(value = "select b from Bookmark b where b.member.id = :memberId and b.document.id = :documentId")
+	boolean existsByMemberIdAndDocumentId(Long memberId, Long documentId);
+
+	/**
 	 * <h2>사용자의 북마크 목록 조회</h2>
 	 * <p> - memberId를 이용해 사용자의 북마크 목록을 조회, Slice로 반환</p>
 	 * <p> - Slice는 count 쿼리 따로 안 나감.</p>

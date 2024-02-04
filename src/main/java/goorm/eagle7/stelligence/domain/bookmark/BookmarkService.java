@@ -27,10 +27,10 @@ public class BookmarkService {
 	/**
 	 * <h2>북마크 생성</h2>
 	 * <p> - 로그인한 사용자의 북마크 생성, 사용자의 북마크 목록에 추가</p>
-	 * <p> - {documentId, memberId} 중복이면 error 발생</p>
+	 * <p> - {documentId, memberId} 중복이면 BaseException 발생</p>
 	 * @param memberId - 로그인한 사용자의 ID
 	 * @param bookmarkCreateRequest - 북마크 생성할 문서의 ID
-	 * @throws DataIntegrityViolationException - memberId, documentId 중복시
+	 * @throws BaseException - memberId, documentId 중복시
 	 */
 	@Transactional
 	public void createBookmark(Long memberId, BookmarkCreateRequest bookmarkCreateRequest) {
@@ -43,7 +43,14 @@ public class BookmarkService {
 			.orElseThrow(() -> new BaseException(
 				String.format("해당 문서를 찾을 수 없습니다. DocumentId= %s", bookmarkCreateRequest.getDocumentId())));
 
+		if (!bookmarkRepository
+			.existsByMemberIdAndDocumentId(
+				memberId, bookmarkCreateRequest.getDocumentId())) {
+			throw new BaseException("이미 북마크한 문서입니다.");
+		}
+
 		Bookmark bookmark = Bookmark.of(member, document);
+
 		bookmarkRepository.save(bookmark);
 	}
 
