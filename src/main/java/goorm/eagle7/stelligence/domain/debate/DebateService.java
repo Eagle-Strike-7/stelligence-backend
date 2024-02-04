@@ -33,17 +33,6 @@ public class DebateService {
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
 
-	/**
-	 * 특정 토론을 ID로 찾아서 종료합니다.
-	 * 토론의 스케쥴러에 의해서만 호출되어야하는 메서드입니다.
-	 * @param debateId: 종료할 토론의 ID
-	 */
-	public void closeDebateById(Long debateId) {
-		Debate targetDebate = debateRepository.findById(debateId)
-			.orElseThrow(() -> new IllegalArgumentException("삭제하려는 토론이 존재하지 않습니다. Debate ID: " + debateId));
-
-		targetDebate.close();
-	}
 
 	/**
 	 * 특정 토론을 ID로 찾아서 조회합니다.
