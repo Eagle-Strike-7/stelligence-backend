@@ -44,6 +44,7 @@ class DebateRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("닫힌 토론을 최신순으로 조회")
 	void findPageByCloseStatusOrderByLatest() {
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(
 			DebateStatus.CLOSED, DebateOrderCondition.LATEST, PageRequest.of(0, 2));
@@ -62,6 +63,7 @@ class DebateRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("열린 토론을 최근 댓글순으로 조회")
 	void findPageByOpenStatusOrderByRecent() {
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(
 			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, PageRequest.of(0, 2));
@@ -98,7 +100,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(2)
+			.hasSize(3)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.OPEN))
 			.allMatch(d -> d.getEndAt().isBefore(LocalDateTime.now()));
 	}
@@ -115,7 +117,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(2)
+			.hasSize(3)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.CLOSED));
 	}
 
