@@ -3,7 +3,9 @@ package goorm.eagle7.stelligence.domain.member;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
+// import goorm.eagle7.stelligence.domain.badges.model.Badge;
+// import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
+import goorm.eagle7.stelligence.domain.badges.model.Badge;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -219,6 +225,38 @@ class MemberServiceTest {
 		assertThat(actualResponse.getNickname()).isEqualTo("stdNickname");
 		assertThat(actualResponse.getProfileImgUrl()).isEqualTo("imageUrl");
 
+	}
+
+	/**
+	 * <h2>[정상] memberId로 배지 조회 테스트</h2>
+	 * <p>결과: MemberBadgesListResponse 반환</p>
+	 * <p>검증 방식: stdBadges를 가진 Member를 반환하도록 하고, service의 결과가 해당 stdBadges의 크기와 같은지 비교</p>
+	 */
+	@Test
+	@DisplayName("[정상] 배지 조회 - getBadgesById")
+	void getBadgesById() {
+
+		// given
+		// 테스트용 배지 Set
+		Set<Badge> stdBadges = new HashSet<>();
+		stdBadges.add(Badge.MERCURY);
+		stdBadges.add(Badge.VENUS);
+		stdBadges.add(Badge.NEPTUNE);
+		stdBadges.add(Badge.ANDROMEDA);
+		stdBadges.add(Badge.GALAXY);
+
+		// stdMember를 Mock 객체로 변경, stdBadges를 반환하도록 설정
+		Member stdMember = mock(Member.class);
+		when(stdMember.getId()).thenReturn(1L);
+		when(stdMember.getBadges()).thenReturn(stdBadges);
+		// Repository에서 findById()가 호출되면 stdMember를 반환하도록 설정
+		when(memberRepository.findById(stdMember.getId())).thenReturn(Optional.of(stdMember));
+
+		// when
+		MemberBadgesListResponse badgesListResponse = memberService.getBadgesById(stdMember.getId());
+
+		// then
+		assertThat(badgesListResponse.getBadges()).hasSize(5);
 
 	}
 
