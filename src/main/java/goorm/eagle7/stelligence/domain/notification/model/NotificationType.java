@@ -18,10 +18,10 @@ public enum NotificationType {
 	CONTRIBUTE_DEBATED,
 
 	/**
-	 * 수정요청이 거절됨
+	 * 수정요청이 반려됨
 	 * 대상 : 수정 요청자, 투표자
 	 */
-	CONTRIBUTE_REJECT,
+	CONTRIBUTE_REJECTED,
 
 	/**
 	 * 토론이 종료됨
