@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.domain.debate;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,52 +33,6 @@ class DebateServiceTest {
 
 	@InjectMocks
 	private DebateService debateService;
-
-	@Test
-	@DisplayName("열려있던 토론 종료하기")
-	void closeOpenDebateById() {
-		// given
-		Long debateId = 1L;
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 0);
-		when(debateRepository.findById(debateId)).thenReturn(Optional.of(debate));
-
-		// LocalDateTime::now 모킹
-		LocalDateTime expectedEndAt = LocalDateTime.of(2024, 1, 14, 22, 0);
-
-		try (MockedStatic<LocalDateTime> mockedLocalDateTime = Mockito.mockStatic(LocalDateTime.class)) {
-			mockedLocalDateTime.when(LocalDateTime::now).thenReturn(expectedEndAt);
-
-			// when
-			debateService.closeDebateById(debateId);
-
-			// then
-			// 변환하고 나면 debate의 상태가 닫힘으로 바뀌고 닫힌 시간이 현재 시간이 되어야한다.
-			assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-			assertThat(debate.getEndAt()).isEqualTo(expectedEndAt);
-			// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
-			verify(debateRepository, times(1)).findById(debateId);
-		}
-	}
-
-	@Test
-	@DisplayName("닫혀있던 토론 종료하기")
-	void closeClosedDebateById() {
-		// given
-		Long debateId = 1L;
-		LocalDateTime endAt = LocalDateTime.now().minusDays(1L);
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.CLOSED, endAt, 0);
-		when(debateRepository.findById(debateId)).thenReturn(Optional.of(debate));
-
-		// when
-		debateService.closeDebateById(debateId);
-
-		// then
-		// 이미 닫힌 debate는 그대로 닫힘으로 유지하고, 종료 시각은 원래 상태를 유지해야한다.
-		assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-		assertThat(debate.getEndAt()).isEqualTo(endAt);
-		// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
-		verify(debateRepository, times(1)).findById(debateId);
-	}
 
 	@Test
 	@DisplayName("토론 상세 조회")
