@@ -60,7 +60,7 @@ public class DebateRepositoryImpl implements DebateRepositoryCustom {
 					+ " right outer join Debate d"
 					+ " on d.id = rc.debateId"
 					+ " where d.status = :status"
-					+ " order by rc.recentCommentedAt desc", Debate.class)
+					+ " order by rc.recentCommentedAt desc, d.createdAt desc", Debate.class)
 			.setParameter("status", status)
 			.setFirstResult((int)pageable.getOffset())
 			.setMaxResults(pageable.getPageSize())
