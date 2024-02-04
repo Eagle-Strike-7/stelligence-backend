@@ -51,13 +51,14 @@ public class MemberService {
 	 */
 	@Transactional
 	public void delete(Long memberId) {
-		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
-		);
-		withdrawnMemberRepository.insertWithdrawnMember(member);
-		String nickname = "탈퇴한 회원NeutronStar"+ member.getId();
-		member.withdraw();
-		member.updateNickname(nickname);
+		// Member member = memberRepository.findById(memberId).orElseThrow(
+		// 	() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
+		// );
+		memberRepository.deleteById	(memberId); // TODO 탈퇴 테이블 구현 후 상세 진행 예정
+		// withdrawnMemberRepository.insertWithdrawnMember(member);
+		// String nickname = "탈퇴한 회원NeutronStar"+ member.getId();
+		// member.withdraw();
+		// member.updateNickname(nickname);
 	}
 
 	/**
@@ -128,6 +129,14 @@ public class MemberService {
 
 		Member member = findMemberById(memberId);
 		Set<Badge> badges = member.getBadges();
+
+		// Badge 추가는 이벤트로만 가능해 개발용으로 스웨거에서 확인 위해 임시로 추가
+		badges.add(Badge.MERCURY);
+		badges.add(Badge.VENUS);
+		badges.add(Badge.NEPTUNE);
+		badges.add(Badge.ANDROMEDA);
+		badges.add(Badge.GALAXY);
+
 		List<MemberBadgesResponse> list = badges.stream().map(MemberBadgesResponse::from).toList();
 
 		return MemberBadgesListResponse.from(list);
