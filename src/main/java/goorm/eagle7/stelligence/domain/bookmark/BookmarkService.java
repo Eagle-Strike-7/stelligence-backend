@@ -71,10 +71,10 @@ public class BookmarkService {
 	/**
 	 * <h2>북마크 목록 조회</h2>
 	 * <p> - 로그인한 사용자의 북마크 목록을 페이지네이션을 적용해 조회.</p>
-	 * <p> - 더보기로 구현해 Slice 이용(count 쿼리 X)</p>
+	 * <p> - 더보기로 구현해 Slice 이용</p>
 	 * @param memberId - 로그인한 사용자의 ID
 	 * @param pageable - page, size, sort
-	 * @return BookmarkPageRespons - List<BookmarkSimpleResponse> bookmarks, boolean hasNext
+	 * @return BookmarkPageResponse - List<BookmarkSimpleResponse> bookmarks, boolean hasNext
 	 */
 	public BookmarkPageResponse getBookmarks(Long memberId, Pageable pageable) {
 
