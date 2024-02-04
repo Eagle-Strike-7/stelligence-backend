@@ -50,11 +50,11 @@ public class DebateController {
 	@GetMapping
 	public ResponseTemplate<DebatePageResponse> getDebateList(
 		@Parameter(description = "조회할 토론의 상태", example = "OPEN")
-		@RequestParam("status") DebateStatus status,
+		@RequestParam(value = "status", defaultValue = "OPEN") DebateStatus status,
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
 		@Parameter(description = "조회 정렬 조건. LATEST면 최신순, RECENT면 최근댓글순", example = "LATEST")
-		@RequestParam("order") DebateOrderCondition order
+		@RequestParam(value = "order", defaultValue = "LATEST") DebateOrderCondition order
 	) {
 		return ResponseTemplate.ok(debateService.getDebatePage(status, pageable, order));
 	}
