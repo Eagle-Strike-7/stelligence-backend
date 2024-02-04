@@ -49,11 +49,4 @@ public class Bookmark extends BaseTimeEntity {
 		return bookmark;
 	}
 
-	public void delete() {
-		this.member.getBookmarks().remove(this);
-	}
-
-	public void addTo(Member member) {
-		this.member.getBookmarks().add(this);
-	}
 }

@@ -44,7 +44,6 @@ public class BookmarkService {
 				String.format("해당 문서를 찾을 수 없습니다. DocumentId= %s", bookmarkCreateRequest.getDocumentId())));
 
 		Bookmark bookmark = Bookmark.of(member, document);
-		bookmark.addTo(member); // member의 bookmark 목록에 추가
 		bookmarkRepository.save(bookmark);
 	}
 
@@ -63,7 +62,6 @@ public class BookmarkService {
 			.orElseThrow(
 				() -> new BaseException(String.format(
 					"해당 북마크를 찾을 수 없습니다. MemberId= %s, DocumentId= %s", memberId, documentId)));
-		bookmark.delete(); // member의 bookmark 목록에서 삭제
 		bookmarkRepository.delete(bookmark);
 
 	}
