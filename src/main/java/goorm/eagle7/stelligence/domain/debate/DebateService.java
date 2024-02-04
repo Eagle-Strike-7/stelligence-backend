@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
+import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
@@ -61,9 +62,15 @@ public class DebateService {
 	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
 	 */
 	@Transactional(readOnly = true)
-	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable) {
+	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable, DebateOrderCondition orderCondition) {
 
-		Page<Debate> debatePage = debateRepository.findPageByStatus(status, pageable);
+		// Page<Debate> debatePage = switch (orderCondition) {
+		// 	case LATEST -> debateRepository.findPageByStatus(status, pageable);
+		// 	case RECENT -> debateRepository.findPageByStatusOrderByRecentComment(status, pageable);
+		// };
+
+		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(status, orderCondition, pageable);
+
 		return DebatePageResponse.from(debatePage);
 	}
 

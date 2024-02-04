@@ -20,6 +20,7 @@ import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
+import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -39,7 +40,8 @@ public class DebateController {
 
 	private final DebateService debateService;
 
-	@Operation(summary = "토론 리스트 조회", description = "토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 조회합니다.")
+	@Operation(summary = "토론 리스트 조회", description = "토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 조회합니다. "
+		+ "토론은 최신순(LATEST) / 최근댓글순(RECENT)으로 조회할 수 있습니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 리스트 조회 성공",
@@ -50,9 +52,11 @@ public class DebateController {
 		@Parameter(description = "조회할 토론의 상태", example = "OPEN")
 		@RequestParam("status") DebateStatus status,
 		@ParameterObject
-		@PageableDefault(page = 0, size = 10) Pageable pageable
+		@PageableDefault(page = 0, size = 10) Pageable pageable,
+		@Parameter(description = "조회 정렬 조건. LATEST면 최신순, RECENT면 최근댓글순", example = "LATEST")
+		@RequestParam("order") DebateOrderCondition order
 	) {
-		return ResponseTemplate.ok(debateService.getDebatePage(status, pageable));
+		return ResponseTemplate.ok(debateService.getDebatePage(status, pageable, order));
 	}
 
 	@Operation(summary = "토론 상세 조회", description = "특정 토론을 조회합니다.")
