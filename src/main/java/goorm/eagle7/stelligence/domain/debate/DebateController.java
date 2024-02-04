@@ -41,7 +41,7 @@ public class DebateController {
 	private final DebateService debateService;
 
 	@Operation(summary = "토론 리스트 조회", description = "토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 조회합니다. "
-		+ "토론은 최신순(LATEST) / 최근댓글순(RECENT)으로 조회할 수 있습니다.")
+		+ "토론은 최신순(LATEST) / 최근댓글순(RECENT_COMMENTED)으로 조회할 수 있습니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 리스트 조회 성공",
@@ -51,7 +51,7 @@ public class DebateController {
 	public ResponseTemplate<DebatePageResponse> getDebateList(
 		@Parameter(description = "조회할 토론의 상태", example = "OPEN")
 		@RequestParam(value = "status", defaultValue = "OPEN") DebateStatus status,
-		@Parameter(description = "조회 정렬 조건. LATEST면 최신순, RECENT면 최근댓글순", example = "LATEST")
+		@Parameter(description = "조회 정렬 조건. LATEST면 최신순, RECENT_COMMENTED면 최근댓글순", example = "LATEST")
 		@RequestParam(value = "order", defaultValue = "LATEST") DebateOrderCondition order,
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable

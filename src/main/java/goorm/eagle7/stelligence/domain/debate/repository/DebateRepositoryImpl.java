@@ -26,7 +26,7 @@ public class DebateRepositoryImpl implements DebateRepositoryCustom {
 
 		return switch (orderCondition) {
 			case LATEST -> findPageByStatusOrderByLatest(status, pageable);
-			case RECENT -> findPageByStatusOrderByRecentComment(status, pageable);
+			case RECENT_COMMENTED -> findPageByStatusOrderByRecentComment(status, pageable);
 		};
 
 	}

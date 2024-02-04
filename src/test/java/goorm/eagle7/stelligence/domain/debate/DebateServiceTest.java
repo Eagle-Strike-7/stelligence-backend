@@ -141,11 +141,11 @@ class DebateServiceTest {
 		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
 			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 	@Test
@@ -155,22 +155,22 @@ class DebateServiceTest {
 		Page mockPage = mock(Page.class);
 		Pageable pageable = mock(Pageable.class);
 		when(debateRepository.findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable))
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable))
 			.thenReturn(mockPage);
 
 		// when
 		DebatePageResponse debatePage = debateService.getDebatePage(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 
 		// then
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 	@Test
@@ -191,11 +191,11 @@ class DebateServiceTest {
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
 			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 	@Test
@@ -205,22 +205,22 @@ class DebateServiceTest {
 		Page mockPage = mock(Page.class);
 		Pageable pageable = mock(Pageable.class);
 		when(debateRepository.findPageByStatusAndOrderCondition(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable))
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable))
 			.thenReturn(mockPage);
 
 		// when
 		DebatePageResponse debatePage = debateService.getDebatePage(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 
 		// then
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
 			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
 		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
-			DebateStatus.CLOSED, DebateOrderCondition.RECENT, pageable);
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 }

@@ -17,7 +17,6 @@ import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @DataJpaTest
@@ -62,7 +61,7 @@ class DebateRepositoryTest {
 	@Test
 	void findPageByOpenStatusOrderByRecent() {
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(
-			DebateStatus.OPEN, DebateOrderCondition.RECENT, PageRequest.of(0, 2));
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, PageRequest.of(0, 2));
 
 		List<Debate> debates = debatePage.getContent();
 		Set<Debate> debateSet = new HashSet<>(debates);
