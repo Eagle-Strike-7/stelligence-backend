@@ -7,7 +7,7 @@ import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 
-public interface DebateRepositoryCustom {
+public interface CustomDebateRepository {
 
 	Page<Debate> findPageByStatusAndOrderCondition(
 		DebateStatus status, DebateOrderCondition orderCondition, Pageable pageable);

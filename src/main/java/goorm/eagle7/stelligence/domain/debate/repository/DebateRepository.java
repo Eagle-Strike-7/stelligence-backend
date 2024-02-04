@@ -8,10 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepositoryCustom;
 import jakarta.persistence.LockModeType;
 
-public interface DebateRepository extends JpaRepository<Debate, Long>, DebateRepositoryCustom {
+public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDebateRepository {
 
 	@Query("select d from Debate d"
 		+ " join fetch d.contribute c"

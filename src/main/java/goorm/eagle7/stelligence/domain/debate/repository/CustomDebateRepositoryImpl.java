@@ -15,7 +15,7 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DebateRepositoryImpl implements DebateRepositoryCustom {
+public class CustomDebateRepositoryImpl implements CustomDebateRepository {
 
 	@PersistenceContext
 	private final EntityManager em;
