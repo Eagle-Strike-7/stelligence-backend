@@ -43,7 +43,7 @@ public class BookmarkService {
 			.orElseThrow(() -> new BaseException(
 				String.format("해당 문서를 찾을 수 없습니다. DocumentId= %s", bookmarkCreateRequest.getDocumentId())));
 
-		if (!bookmarkRepository
+		if (bookmarkRepository
 			.existsByMemberIdAndDocumentId(
 				memberId, bookmarkCreateRequest.getDocumentId())) {
 			throw new BaseException("이미 북마크한 문서입니다.");
