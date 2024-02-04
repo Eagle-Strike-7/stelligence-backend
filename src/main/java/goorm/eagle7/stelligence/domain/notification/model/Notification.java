@@ -21,8 +21,6 @@ public class Notification extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String title;
-
 	private String content;
 
 	private String uri;
@@ -34,15 +32,14 @@ public class Notification extends BaseTimeEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	private Notification(String title, String content, String uri, Member member) {
-		this.title = title;
+	private Notification(String content, String uri, Member member) {
 		this.content = content;
 		this.uri = uri;
 		isRead = false;
 		this.member = member;
 	}
 
-	public static Notification createNotification(String title, String content, String uri, Member member) {
-		return new Notification(title, content, uri, member);
+	public static Notification createNotification(String content, String uri, Member member) {
+		return new Notification(content, uri, member);
 	}
 }
