@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.domain.bookmark;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -95,7 +94,7 @@ public class BookmarkController {
 		@Parameter(description = "삭제할 북마크의 documentId를 입력합니다.", example = "1")
 		@RequestParam Long documentId) {
 
-		bookmarkService.delete(memberInfo.getId(), documentId);
+		bookmarkService.deleteBookmark(memberInfo.getId(), documentId);
 		return ResponseTemplate.ok();
 
 	}

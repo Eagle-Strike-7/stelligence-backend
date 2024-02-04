@@ -55,14 +55,9 @@ public class BookmarkService {
 	 * @param documentId - 북마크 삭제할 문서의 ID
 	 */
 	@Transactional
-	public void delete(Long memberId, Long documentId) {
+	public void deleteBookmark(Long memberId, Long documentId) {
 
-		Bookmark bookmark = bookmarkRepository
-			.findByMemberIdAndDocumentId(memberId, documentId)
-			.orElseThrow(
-				() -> new BaseException(String.format(
-					"해당 북마크를 찾을 수 없습니다. MemberId= %s, DocumentId= %s", memberId, documentId)));
-		bookmarkRepository.delete(bookmark);
+		bookmarkRepository.deleteByMemberIdAndDocumentId(memberId, documentId);
 
 	}
 

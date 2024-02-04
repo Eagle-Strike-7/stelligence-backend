@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
@@ -33,5 +34,15 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	 */
 	@Query(value = "select b from Bookmark b where b.member.id = :memberId and b.document.id = :documentId")
 	Optional<Bookmark> findByMemberIdAndDocumentId(Long memberId, Long documentId);
+
+	/**
+	 * <h2>북마크 삭제</h2>
+	 * <p> - memberId, documentId를 이용해 북마크 삭제</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param documentId - 북마크 삭제할 문서의 ID
+	 */
+	@Modifying
+	@Query(value = "delete from Bookmark b where b.member.id = :memberId and b.document.id = :documentId")
+	void deleteByMemberIdAndDocumentId(Long memberId, Long documentId);
 
 }
