@@ -16,13 +16,12 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	 * <p> - memberId를 이용해 사용자의 북마크 목록을 조회, Slice로 반환</p>
 	 * <p> - Slice는 count 쿼리 따로 안 나감.</p>
 	 * <p> - join fetch를 사용해 document를 함께 조회</p>
-	 * <p> - member는 Bookmark가 이미 가지고 있어서 join fetch 안 해도 됨</p>
 	 * @param memberId - 로그인한 사용자의 ID
 	 * @param pageable - 페이지 정보
 	 * @return Slice<Bookmark> - 사용자의 북마크 목록
 	 */
 	@Query(
-		value = "select b from Bookmark b join fetch b.document d where b.member.id = :memberId") // 이미
+		value = "select b from Bookmark b join fetch b.document d where b.member.id = :memberId")
 	Slice<Bookmark> findSliceByMemberIdWithPageable(Long memberId, Pageable pageable);
 
 	/**
