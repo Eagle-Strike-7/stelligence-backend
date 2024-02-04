@@ -16,9 +16,9 @@ public class DebatePageResponse {
 
 	private List<DebateSimpleResponse> debates;
 	private int totalPages;
+	private int currentPage;
 	private boolean hasNext;
 	private boolean hasPrevious;
-	private int currentPage;
 	private int size;
 	private DebateStatus status;
 	private DebateOrderCondition order;
