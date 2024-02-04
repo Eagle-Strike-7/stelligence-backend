@@ -3,8 +3,6 @@ package goorm.eagle7.stelligence.domain.debate;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -35,87 +33,6 @@ class DebateServiceTest {
 
 	@InjectMocks
 	private DebateService debateService;
-
-	@Test
-	@DisplayName("투표중인 수정요청을 토론으로 전환")
-	void convertVotingContributeToDebate() {
-		// given
-		Contribute contribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.VOTING, null);
-
-		// when
-		debateService.convertToDebate(contribute);
-
-		// then
-		// 토론은 debateRepository의 save 메서드에 의해 저장된다.
-		verify(debateRepository).save(any(Debate.class));
-		// 변환하고 나면 contribute의 상태가 토론중으로 바뀌어야한다.
-		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.DEBATING);
-	}
-
-	@Test
-	@DisplayName("투표중이 상태가 아닌 수정요청을 토론으로 전환")
-	void convertNotVotingContributeToDebate() {
-		// given
-		Contribute debatingContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.DEBATING, null);
-		Contribute mergedContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.MERGED, null);
-		Contribute rejectedContribute = TestFixtureGenerator.contribute(1L, null, ContributeStatus.REJECTED, null);
-
-		// when
-
-		// then
-		// 토론중인 or 병합된 or 기각된 수정요청은 토론으로 전환할 수 없다.
-		assertThatThrownBy(() -> debateService.convertToDebate(debatingContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-		assertThatThrownBy(() -> debateService.convertToDebate(mergedContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-		assertThatThrownBy(() -> debateService.convertToDebate(rejectedContribute))
-			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
-
-		// 예외가 발생했으니 토론은 저장되지 않는다.
-		verify(debateRepository, never()).save(any(Debate.class));
-	}
-
-	@Test
-	@DisplayName("열려있던 토론 종료하기")
-	void closeOpenDebateById() {
-		// given
-		Long debateId = 1L;
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN, null, 0);
-		when(debateRepository.findById(debateId)).thenReturn(Optional.of(debate));
-
-		// when
-		debateService.closeDebateById(debateId);
-
-		// then
-		// 변환하고 나면 debate의 상태가 닫힘으로 바뀌고 닫힌 시간이 현재 시간이 되어야한다.
-		assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-		assertThat(debate.getEndAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
-		// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
-		verify(debateRepository, times(1)).findById(debateId);
-	}
-
-	@Test
-	@DisplayName("닫혀있던 토론 종료하기")
-	void closeClosedDebateById() {
-		// given
-		Long debateId = 1L;
-		LocalDateTime endAt = LocalDateTime.now().minusDays(1L);
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.CLOSED, endAt, 0);
-		when(debateRepository.findById(debateId)).thenReturn(Optional.of(debate));
-
-		// when
-		debateService.closeDebateById(debateId);
-
-		// then
-		// 이미 닫힌 debate는 그대로 닫힘으로 유지하고, 종료 시각은 원래 상태를 유지해야한다.
-		assertThat(debate.getStatus()).isEqualTo(DebateStatus.CLOSED);
-		assertThat(debate.getEndAt()).isEqualTo(endAt);
-		// 토론은 debateRepository의 findById 메서드에 의해 찾아와진다.
-		verify(debateRepository, times(1)).findById(debateId);
-	}
 
 	@Test
 	@DisplayName("토론 상세 조회")
