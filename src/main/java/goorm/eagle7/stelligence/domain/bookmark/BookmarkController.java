@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -57,6 +58,7 @@ public class BookmarkController {
 	@GetMapping
 	public ResponseTemplate<BookmarkPageResponse> getBookmarks(
 		@Auth MemberInfo memberInfo,
+		@ParameterObject
 		@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) // sort는 entity의 필드명 기준
 		Pageable pageable) {
 
