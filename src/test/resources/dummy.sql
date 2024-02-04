@@ -89,7 +89,8 @@ values (1, 1, 'OPEN', NOW(), 1, NOW()),
        (2, 2, 'OPEN', NOW(), 1, NOW()),
        (3, 3, 'OPEN', NOW(), 1, NOW()),
        (4, 4, 'CLOSED', NOW(), 1, NOW()),
-       (5, 5, 'CLOSED', NOW(), 1, NOW());
+       (5, 5, 'CLOSED', NOW(), 1, NOW()),
+       (6, 5, 'OPEN', NOW(), 1, NOW());
 
 insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at)
 values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
