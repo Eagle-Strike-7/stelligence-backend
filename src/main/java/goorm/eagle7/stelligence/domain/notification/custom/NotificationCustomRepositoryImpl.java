@@ -20,11 +20,15 @@ public class NotificationCustomRepositoryImpl implements NotificationCustomRepos
 
 	/**
 	 * 알림 등록
-	 * <p>JdbcTemplate의 batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록합니다.
+	 * <p>JdbcTemplate의 batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록합니다.  참고
 	 * memberId에 대한 검증이 이루어지지 않으므로, 사용하는 측에서 철저히 검증해야 합니다.
 	 *
 	 * <p>혹시나 알림을 생성하는데에 실패한 경우 (주로 memberId가 존재하지 않는 경우) 모든 알림이 전송되지 않습니다.
 	 * 이 경우 개별적으로 알림을 생성하도록 시도합니다.
+	 *
+	 * <p> <a href="https://hyos-dev-log.tistory.com/1">batchUpdate</a> batchUpdate는 DB Driver와
+	 * 환경변수 속성에 따라 다르게 동작합니다. MySQL의 경우 rewriteBatchedStatements=true로 설정하면 여러행을 삽입하는
+	 * SQL이 생성되며, 해당 속성이 없다면 각각의 SQL을 실행합니다. 이 때문에 성능상의 차이가 발생할 수 있습니다.
 	 *
 	 * @param message 알림 메시지
 	 * @param uri 알림 링크
