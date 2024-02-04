@@ -1,18 +1,14 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
@@ -33,13 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class BookmarkController {
 
 	private final BookmarkService bookmarkService;
-
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseTemplate<Void> handleException(Exception e) {
-		log.debug("Exception catched in BookmarkController : {}", e.getMessage());
-		return ResponseTemplate.fail("이미 북마크한 문서입니다.");
-	}
 
 	@Operation(summary = "북마크 목록 조회",
 		description = """
