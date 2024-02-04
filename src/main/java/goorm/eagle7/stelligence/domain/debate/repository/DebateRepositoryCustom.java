@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.debate.model.repository;
+package goorm.eagle7.stelligence.domain.debate.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

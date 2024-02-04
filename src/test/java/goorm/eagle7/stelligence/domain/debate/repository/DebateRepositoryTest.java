@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.debate;
+package goorm.eagle7.stelligence.domain.debate.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -17,6 +17,7 @@ import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @DataJpaTest

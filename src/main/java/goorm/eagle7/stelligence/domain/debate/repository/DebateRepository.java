@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.debate;
+package goorm.eagle7.stelligence.domain.debate.repository;
 
 import java.util.Optional;
 
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
-import goorm.eagle7.stelligence.domain.debate.model.repository.DebateRepositoryCustom;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepositoryCustom;
 import jakarta.persistence.LockModeType;
 
 public interface DebateRepository extends JpaRepository<Debate, Long>, DebateRepositoryCustom {
