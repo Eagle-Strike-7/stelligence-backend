@@ -1,18 +1,13 @@
 package goorm.eagle7.stelligence.domain.member;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-// import goorm.eagle7.stelligence.domain.withdrawnmember.WithdrawnMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-	// private final WithdrawnMemberRepository withdrawnMemberRepository;
+
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
 
 	// TODO 401 error - 프론트와 어떤 uri가 로그인 필요한 건지 다시 한번 협의
@@ -42,20 +37,13 @@ public class MemberService {
 
 	/**
 	 * <h2>회원 탈퇴 요청 시 회원 삭제</h2>
-	 * <p>- 글 제외한 해당 회원만 soft delete.</p>
-	 * <p>- 탈퇴한 회원 Table로 따로 저장. </p>
-	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경.</p>
+	 * <p>- 글 제외한 해당 회원만 soft delete. - but 지금 그냥 delete</p>
+	 * <p>- 탈퇴한 회원 Table로 따로 저장. - 예정 </p>
+	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경. - 예정</p>
 	 * @param memberId 회원 id
 	 */
 	@Transactional
 	public void delete(Long memberId) {
-		Member member = memberRepository.findById(memberId).orElseThrow(
-			() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
-		);
-		// withdrawnMemberRepository.insertWithdrawnMember(member);
-		// String nickname = "탈퇴한 회원NeutronStar"+ member.getId();
-		// member.withdraw();
-		// member.updateNickname(nickname);
 		memberRepository.deleteById(memberId);
 	}
 
