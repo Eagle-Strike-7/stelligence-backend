@@ -20,14 +20,14 @@ public class DatabaseInitializer implements CommandLineRunner {
 				original_member_id BIGINT NOT NULL,
 				joined_at DATETIME(6) NOT NULL,
 				withdrawn_at DATETIME(6) NOT NULL,
-			    name VARCHAR(255) NOT NULL,
-			    nickname VARCHAR(255) NOT NULL,
-			    email VARCHAR(255) NOT NULL,
-			    social_id VARCHAR(255) NOT NULL,
-			    social_type ENUM('GOOGLE', 'NAVER', 'KAKAO') NOT NULL,
-			    role ENUM('ADMIN', 'USER') NOT NULL,
-			    image_url VARCHAR(255) NOT NULL,
-			    contributes BIGINT NOT NULL
+			    name VARCHAR(255) NULL,
+			    nickname VARCHAR(255) NULL,
+			    email VARCHAR(255) NULL,
+			    social_id VARCHAR(255) NULL,
+			    social_type ENUM('GOOGLE', 'NAVER', 'KAKAO') NULL,
+			    role ENUM('ADMIN', 'USER') NULL,
+			    image_url VARCHAR(255) NULL,
+			    contributes BIGINT NULL
 			)
 			""";
 
