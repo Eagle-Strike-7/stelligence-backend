@@ -2,7 +2,7 @@ package goorm.eagle7.stelligence.domain.notification.custom;
 
 import java.util.Set;
 
-public interface NotificationCustomRepository {
+public interface CustomNotificationRepository {
 
 	/**
 	 * 알림 등록

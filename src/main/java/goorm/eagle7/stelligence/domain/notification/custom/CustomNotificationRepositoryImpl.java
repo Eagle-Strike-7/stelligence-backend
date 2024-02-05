@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class NotificationCustomRepositoryImpl implements NotificationCustomRepository {
+public class CustomNotificationRepositoryImpl implements CustomNotificationRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 
