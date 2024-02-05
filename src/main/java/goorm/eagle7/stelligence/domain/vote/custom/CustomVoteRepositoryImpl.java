@@ -8,11 +8,11 @@ import goorm.eagle7.stelligence.domain.vote.model.QVote;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 import jakarta.persistence.EntityManager;
 
-public class VoteCustomRepositoryImpl implements VoteCustomRepository {
+public class CustomVoteRepositoryImpl implements CustomVoteRepository {
 
 	private final JPAQueryFactory queryFactory;
 
-	public VoteCustomRepositoryImpl(EntityManager entityManager) {
+	public CustomVoteRepositoryImpl(EntityManager entityManager) {
 		this.queryFactory = new JPAQueryFactory(entityManager);
 	}
 

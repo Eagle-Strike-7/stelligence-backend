@@ -12,14 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
+import goorm.eagle7.stelligence.domain.vote.custom.CustomVoteRepository;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 
 @ExtendWith(MockitoExtension.class)
 class ContributeSchedulingActionDeterminerTest {
 
 	@Mock
-	VoteCustomRepository voteCustomRepository;
+	CustomVoteRepository voteCustomRepository;
 
 	@InjectMocks
 	ContributeSchedulingActionDeterminer contributeSchedulingActionDeterminer;
