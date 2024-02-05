@@ -68,6 +68,13 @@ public class CookieUtils {
 
 		HttpServletRequest request = RequestScopeUtils.getHttpServletRequest();
 
+		Cookie[] cookies = request.getCookies();
+
+		// 쿠키가 없는 경우
+		if (cookies == null) {
+			return Optional.empty();
+		}
+
 		// 쿠키 이름으로 필터링, 일치하는 쿠키 아무거나 반환, 없으면 empty 반환
 		return Arrays.stream(request.getCookies())
 			.filter(cookie -> cookie.getName().equals(cookieName))
