@@ -19,7 +19,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	 * @param documentId - 북마크 조회할 문서의 ID
 	 * @return boolean - true or false
 	 */
-	@Query(value = "select b from Bookmark b where b.member.id = :memberId and b.document.id = :documentId")
 	boolean existsByMemberIdAndDocumentId(Long memberId, Long documentId);
 
 	/**
