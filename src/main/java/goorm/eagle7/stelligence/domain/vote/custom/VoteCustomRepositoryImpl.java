@@ -53,7 +53,7 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 	public VoteSummary getVoteSummary(Long contributeId) {
 
 		Long agreements = getAgreeCount(contributeId);
-		Long disagreements = getTotalVotes(contributeId) - getAgreeCount(contributeId); //반대 표
+		Long disagreements = getTotalVotes(contributeId) - agreements; //반대 표
 
 		return new VoteSummary(Objects.requireNonNull(agreements).intValue(),
 			Objects.requireNonNull(disagreements).intValue());
