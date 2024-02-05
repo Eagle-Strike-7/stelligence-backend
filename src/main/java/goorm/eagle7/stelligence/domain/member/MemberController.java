@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.domain.member;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -24,8 +19,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,14 +71,6 @@ public class MemberController {
 	public ResponseTemplate<Void> deleteMember(@Auth MemberInfo memberInfo) {
 
 		memberService.delete(memberInfo.getId());
-
-		// 탈퇴 시 쿠키 제거
-		CookieUtils.deleteCookie(request, response, accessCookieName);
-		CookieUtils.deleteCookie(request, response, refreshCookieName);
-
-		// SecurityContext 초기화
-		// SecurityContextHolder.clearContext();
-
 		return ResponseTemplate.ok();
 
 	}

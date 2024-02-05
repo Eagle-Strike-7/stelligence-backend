@@ -1,11 +1,18 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.domain.badges.model.Badge;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +60,9 @@ public class MemberService {
 		// String nickname = "탈퇴한 회원NeutronStar"+ member.getId();
 		// member.withdraw();
 		// member.updateNickname(nickname);
+
+		// SecurityContext 초기화
+		// SecurityContextHolder.clearContext();
 	}
 
 	/**
