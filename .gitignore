@@ -47,3 +47,5 @@ out/
 /redis/
 /mysql/
 /neo4j/
+
+/src/main/resources/logback-spring.xml
