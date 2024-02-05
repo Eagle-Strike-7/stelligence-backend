@@ -17,24 +17,33 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 		this.queryFactory = new JPAQueryFactory(entityManager);
 	}
 
-	@Override
-	public VoteResultSummary getVoteResultSummary(Long contributeId) {
-
+	//찬성 표를 가져오는 메서드
+	private Long getAgreeCount(Long contributeId) {
 		QVote vote = QVote.vote;
 
-		// 총 투표 수를 가져오는 쿼리
-		Long totalVotes = queryFactory
-			.select(vote.count())
-			.from(vote)
-			.where(vote.contribute.id.eq(contributeId), vote.agree.isNotNull())
-			.fetchOne();
-
-		// 찬성 투표 수를 가져오는 쿼리
-		Long agreements = queryFactory
+		return queryFactory
 			.select(vote.count())
 			.from(vote)
 			.where(vote.contribute.id.eq(contributeId), vote.agree.isTrue())
 			.fetchOne();
+	}
+
+	//전체 표를 가져오는 메서드
+	private Long getTotalVotes(Long contributeId) {
+		QVote vote = QVote.vote;
+
+		return queryFactory
+			.select(vote.count())
+			.from(vote)
+			.where(vote.contribute.id.eq(contributeId), vote.agree.isNotNull())
+			.fetchOne();
+	}
+
+	@Override
+	public VoteResultSummary getVoteResultSummary(Long contributeId) {
+
+		Long totalVotes = getTotalVotes(contributeId);
+		Long agreements = getAgreeCount(contributeId);
 
 		return new VoteResultSummary(contributeId, Objects.requireNonNull(totalVotes).intValue(),
 			Objects.requireNonNull(agreements).intValue());
@@ -43,21 +52,8 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 	@Override
 	public VoteSummary getVoteSummary(Long contributeId) {
 
-		QVote vote = QVote.vote;
-
-		// 찬성 투표 수를 가져오는 쿼리
-		Long agreements = queryFactory
-			.select(vote.count())
-			.from(vote)
-			.where(vote.contribute.id.eq(contributeId), vote.agree.isTrue())
-			.fetchOne();
-
-		// 반대 투표 수를 가져오는 쿼리
-		Long disagreements = queryFactory
-			.select(vote.count())
-			.from(vote)
-			.where(vote.contribute.id.eq(contributeId), vote.agree.isFalse())
-			.fetchOne();
+		Long agreements = getAgreeCount(contributeId);
+		Long disagreements = getTotalVotes(contributeId) - getAgreeCount(contributeId); //반대 표
 
 		return new VoteSummary(Objects.requireNonNull(agreements).intValue(),
 			Objects.requireNonNull(disagreements).intValue());
