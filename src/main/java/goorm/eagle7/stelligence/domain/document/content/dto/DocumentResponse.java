@@ -43,6 +43,12 @@ public class DocumentResponse {
 	private List<MemberSimpleResponse> contributors;
 
 	/**
+	 * 사용자가 글을 수정할 수 있는지 여부입니다.
+	 * 투표 중 혹은 토론 종료 1일 전까지는 수정이 제한됩니다.
+	 */
+	private boolean isEditable;
+
+	/**
 	 * DocumentResponse를 생성합니다.
 	 *
 	 * DocumentResponse의 sections는 해당 Document와 연결된 모든 Section을 담지 않습니다.
@@ -54,7 +60,8 @@ public class DocumentResponse {
 	public static DocumentResponse of(
 		Document document,
 		List<SectionResponse> sections,
-		List<MemberSimpleResponse> contributors
+		List<MemberSimpleResponse> contributors,
+		boolean isEditable
 	) {
 		return new DocumentResponse(
 			document.getId(),
@@ -63,7 +70,8 @@ public class DocumentResponse {
 			sections,
 			SectionResponseConcatenator.concat(sections),
 			MemberSimpleResponse.from(document.getAuthor()),
-			contributors
+			contributors,
+			isEditable
 		);
 	}
 
