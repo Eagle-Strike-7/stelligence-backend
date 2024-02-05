@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.login.CookieType;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final CookieUtils cookieUtils;
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
 
 	// TODO 401 error - 프론트와 어떤 uri가 로그인 필요한 건지 다시 한번 협의
@@ -42,6 +45,14 @@ public class MemberService {
 	 */ // TODO 탈퇴 시 다른 DB에 저장, 기존은 기본 값 설정 혹은 findById 등으로 조회할 때 null이면 기본값 처리 등.
 	@Transactional
 	public void delete(Long memberId) {
+
+		// 탈퇴 시 쿠키 제거
+		cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
+		cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
+
+		// SecurityContext 초기화
+		// SecurityContextHolder.clearContext();
+
 		memberRepository.deleteById(memberId);
 	}
 

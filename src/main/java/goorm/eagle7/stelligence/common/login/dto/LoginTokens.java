@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
 public class LoginTokens {
-
 	private String accessToken;
 	private String refreshToken;
-	private String socialType;
 }
