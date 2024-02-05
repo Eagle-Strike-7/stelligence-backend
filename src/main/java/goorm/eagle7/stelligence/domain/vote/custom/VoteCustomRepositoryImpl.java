@@ -27,14 +27,14 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 			.fetchOne();
 	}
 
-	//전체 표를 가져오는 메서드
-	private Long getTotalVotes(Long contributeId) {
+	//반대 표를 가져오는 메서드
+	private Long getDisagreeCount(Long contributeId) {
 		QVote vote = QVote.vote;
 
 		return queryFactory
 			.select(vote.count())
 			.from(vote)
-			.where(vote.contribute.id.eq(contributeId), vote.agree.isNotNull())
+			.where(vote.contribute.id.eq(contributeId), vote.agree.isFalse())
 			.fetchOne();
 	}
 
@@ -42,7 +42,7 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 	public VoteSummary getVoteSummary(Long contributeId) {
 
 		Long agreements = getAgreeCount(contributeId);
-		Long disagreements = getTotalVotes(contributeId) - agreements; //반대 표
+		Long disagreements = getDisagreeCount(contributeId);
 
 		return new VoteSummary(Objects.requireNonNull(agreements).intValue(),
 			Objects.requireNonNull(disagreements).intValue());
