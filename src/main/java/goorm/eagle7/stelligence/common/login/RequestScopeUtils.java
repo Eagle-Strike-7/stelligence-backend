@@ -7,13 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * <h2>RequestScope Util - 현재 request, response.</h2>
+ * <h2>RequestScopeUtils - 현재 request, response.</h2>
  * <p>RequestContextHolder를 이용해 request, response를 가져온다.</p>
  * <p> request가 없으면 IllegalStateException 반환</p>
  */
-public final class RequestScopeUtil {
+public final class RequestScopeUtils {
 
-	private RequestScopeUtil() {
+	private RequestScopeUtils() {
 		throw new IllegalStateException("Utility class");
 	}
 
