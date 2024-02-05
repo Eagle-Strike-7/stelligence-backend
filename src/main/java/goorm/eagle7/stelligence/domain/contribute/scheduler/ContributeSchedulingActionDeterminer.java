@@ -3,8 +3,8 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
 import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
+import goorm.eagle7.stelligence.domain.vote.model.VoteResultSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +30,7 @@ public class ContributeSchedulingActionDeterminer {
 	public ContributeSchedulingAction check(Contribute contribute) {
 
 		//contribute의 vote 수를 가져온다.
-		VoteResultSummary voteResultSummary = voteRepository.getVoteSummary(contribute.getId());
+		VoteResultSummary voteResultSummary = voteRepository.getVoteResultSummary(contribute.getId());
 
 		double agreeRate = (double)voteResultSummary.getAgreements() / voteResultSummary.getTotalVotes();
 		log.debug("Contribute {}의 투표 결과 : {} / {} = {}", contribute.getId(), voteResultSummary.getAgreements(),

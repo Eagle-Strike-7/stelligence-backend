@@ -1,10 +1,10 @@
-package goorm.eagle7.stelligence.domain.vote;
+package goorm.eagle7.stelligence.domain.vote.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * VoteSummary
+ * VoteResultSummary
  * 투표 결과를 나타내는 클래스입니다.
  */
 @AllArgsConstructor
