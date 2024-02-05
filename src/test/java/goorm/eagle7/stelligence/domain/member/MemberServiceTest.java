@@ -112,6 +112,7 @@ class MemberServiceTest {
 
 		// given
 		Long memberId = stdMember.getId();
+		doNothing().when(memberRepository).deleteById(memberId);
 
 		// when
 		memberService.delete(memberId);
