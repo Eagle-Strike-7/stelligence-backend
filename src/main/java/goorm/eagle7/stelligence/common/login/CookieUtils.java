@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.common.login;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -60,22 +61,22 @@ public class CookieUtils {
 	 * <h2>쿠키 조회</h2>
 	 * <p>쿠키 이름으로 조회</p>
 	 * @param cookieName 쿠키 이름
-	 * @return 쿠키, 없으면 Optional.empty()
+	 * @return cookie List 혹은 해당하는 cookie가 없으면 Optional.empty()
 	 * @throws IllegalStateException request가 없는 경우
 	 */
 	private Optional<Cookie> getCookie(String cookieName) {
 
 		HttpServletRequest request = RequestScopeUtils.getHttpServletRequest();
 
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(cookieName)) {
-					return Optional.of(cookie);
-				}
-			}
-		}
-		return Optional.empty();
+		return Arrays.stream(
+				// request.getCookies()가 null이면 빈 배열 반환
+				Optional.ofNullable(request.getCookies())
+					.orElseGet(() -> new Cookie[0])
+			)
+			// 쿠키 이름으로 필터링, 일치하는 쿠키 아무거나 반환, 없으면 empty 반환
+			.filter(cookie -> cookie.getName().equals(cookieName))
+			.findAny();
+
 	}
 
 	/**
