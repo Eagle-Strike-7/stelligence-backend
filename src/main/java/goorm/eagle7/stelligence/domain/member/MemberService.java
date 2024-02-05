@@ -1,20 +1,13 @@
 package goorm.eagle7.stelligence.domain.member;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
-import goorm.eagle7.stelligence.domain.badges.model.Badge;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-// import goorm.eagle7.stelligence.domain.withdrawnmember.WithdrawnMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final CookieUtils cookieUtils;
 	// private final WithdrawnMemberRepository withdrawnMemberRepository;
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
 

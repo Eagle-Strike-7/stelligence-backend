@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
@@ -71,10 +75,7 @@ public class MemberController {
 		useReturnTypeSchema = true
 	)
 	@DeleteMapping("/members/me")
-	public ResponseTemplate<Void> deleteMember(
-		@Auth MemberInfo memberInfo,
-		HttpServletRequest request,
-		HttpServletResponse response) {
+	public ResponseTemplate<Void> deleteMember(@Auth MemberInfo memberInfo) {
 
 		memberService.delete(memberInfo.getId());
 
@@ -86,6 +87,7 @@ public class MemberController {
 		// SecurityContextHolder.clearContext();
 
 		return ResponseTemplate.ok();
+
 	}
 
 	@Operation(summary = "회원 가입 이후 닉네임 수정", description = "회원 가입 이후 닉네임을 수정합니다.")
