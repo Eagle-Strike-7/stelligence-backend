@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VoteSummaryResponse {
 
-	private Integer agreeCount;    //찬성 개수
-	private Integer disagreeCount;    //반대 개수
+	private int agreeCount;    //찬성 개수
+	private int disagreeCount;    //반대 개수
 	private Boolean myVote; //내 투표 상태
 
-	private VoteSummaryResponse(Integer agreeCount, Integer disagreeCount, Boolean myVote) {
+	private VoteSummaryResponse(int agreeCount, int disagreeCount, Boolean myVote) {
 		this.agreeCount = agreeCount;
 		this.disagreeCount = disagreeCount;
 		this.myVote = myVote;
 	}
 
-	public static VoteSummaryResponse of(Integer agreeCount, Integer disagreeCount, Boolean myVote) {
+	public static VoteSummaryResponse of(int agreeCount, int disagreeCount, Boolean myVote) {
 		return new VoteSummaryResponse(agreeCount, disagreeCount, myVote);
 	}
 }
