@@ -43,8 +43,6 @@ public class JwtTokenService {
 	private final JwtTokenValidator jwtTokenValidator;
 	private final JwtTokenParser jwtTokenParser;
 
-	@Value("${http.header.field}")
-	private String authorization;
 	@Value("${jwt.claim.role}")
 	private String claimRole;
 	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
@@ -119,21 +117,6 @@ public class JwtTokenService {
 	}
 
 	// 하기 메서드는 dev에서 사용
-
-	/**
-	 * "Authorization"의 헤더 값에서 Bearer를 제외한 token 추출
-	 * @param request HttpServletRequest 객체
-	 * @return token Bearer 접두어 제외한 token
-	 */
-	public String extractJwtFromHeader(HttpServletRequest request) {
-		try {
-			return JwtTokenUtil.removeBearerPrefix(
-				request.getHeader(authorization));
-		} catch (Exception e) {
-			log.debug("Authorization 헤더가 없거나 잘못된 형식입니다. {}", e.getMessage());
-			throw new BadJwtException(ERROR_MESSAGE);
-		}
-	}
 
 	/**
 	 * <h2>만료된 토큰에서 memberId 추출</h2>
