@@ -65,7 +65,7 @@ public class CookieUtils {
 	 */
 	private Optional<Cookie> getCookie(String cookieName) {
 
-		HttpServletRequest request = RequestScopeUtil.getHttpServletRequest();
+		HttpServletRequest request = RequestScopeUtils.getHttpServletRequest();
 
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -104,7 +104,7 @@ public class CookieUtils {
 	 */
 	private void addCookie(String name, String value, long maxAge) {
 
-		HttpServletResponse response = RequestScopeUtil.getHttpServletResponse();
+		HttpServletResponse response = RequestScopeUtils.getHttpServletResponse();
 
 		ResponseCookie responseCookie = ResponseCookie.from(name, value)
 			.httpOnly(cookieHttpOnly) // XSS 방지
@@ -142,7 +142,7 @@ public class CookieUtils {
 	 */
 	private void deleteCookie(String cookieName) {
 
-		HttpServletResponse response = RequestScopeUtil.getHttpServletResponse();
+		HttpServletResponse response = RequestScopeUtils.getHttpServletResponse();
 
 		ResponseCookie responseCookie = ResponseCookie.from(cookieName, "")
 			.httpOnly(cookieHttpOnly) // XSS 방지
