@@ -6,9 +6,16 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * <h2>탈퇴 회원 테이블 초기화</h2>
+ * <p> - 탈퇴 회원 테이블이 없으면 생성, 회원 탈퇴 시, 회원 정보를 저장함.</p>
+ * <p> - 탈퇴 회원 테이블: original_member_id, joined_at, withdrawn_at, name, nickname, email, social_id, social_type, role, image_url, contributes</p>
+ * @see CommandLineRunner Spring Boot 실행 시점에 실행
+ * @see JdbcTemplate JDBC 사용
+ */
 @Component
 @RequiredArgsConstructor
-public class DatabaseInitializer implements CommandLineRunner {
+public class WithdrawnTableInitializer implements CommandLineRunner {
 
 	private final JdbcTemplate jdbcTemplate;
 
