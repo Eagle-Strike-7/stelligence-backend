@@ -59,7 +59,7 @@ public class ContributeService {
 			document,
 			contributeRequest.getContributeTitle(),
 			contributeRequest.getContributeDescription(),
-			contributeRequest.getNewTitle(),
+			contributeRequest.getNewDocumentTitle(),
 			newParentDocument
 		);
 
