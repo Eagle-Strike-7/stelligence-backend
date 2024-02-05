@@ -65,7 +65,7 @@ public class Contribute extends BaseTimeEntity {
 	private String newDocumentTitle;
 
 	/**
-	 * 변경될 부모 문서의 ID입니다.
+	 * 변경될 부모 문서입니다.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "new_parent_document_id")
