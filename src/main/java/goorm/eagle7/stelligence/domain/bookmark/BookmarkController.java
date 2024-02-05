@@ -1,9 +1,6 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,10 +30,10 @@ public class BookmarkController {
 
 	@Operation(summary = "북마크 목록 조회",
 		description = """
-  			- 로그인한 사용자의 북마크 목록을 페이지네이션을 적용해 bookmarkId 기준 오름차순으로 조회합니다.
-  			- 기본값: page = 0, size = 10
-  			- 예시: /api/bookmarks?page=1&size=8
-		"""
+						- 로그인한 사용자의 북마크 목록을 페이지네이션을 적용해 bookmarkId 기준 오름차순으로 조회합니다.
+						- 기본값: page = 0, size = 10
+						- 예시: /api/bookmarks?page=1&size=8
+			"""
 	)
 	@ApiResponse(
 		responseCode = "200",
@@ -58,7 +55,9 @@ public class BookmarkController {
 
 	}
 
-	@Operation(summary = "북마크 생성", description = "로그인한 사용자의 북마크를 생성합니다.")
+	@Operation(summary = "북마크 생성", description =
+		"로그인한 사용자의 북마크를 생성합니다."
+			+ "이미 북마크한 문서를 다시 북마크하려고 하면 실패합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "북마크 생성 성공",
@@ -75,7 +74,10 @@ public class BookmarkController {
 
 	}
 
-	@Operation(summary = "북마크 삭제", description = "documentId로 원하는 북마크를 삭제합니다.")
+	@Operation(summary = "북마크 삭제", description =
+		"documentId로 원하는 북마크를 삭제합니다."
+			+ "존재하지 않는 북마크에 대한 삭제를 요청해도{memberId, documentId}가 없어도 성공입니다."
+	)
 	@ApiResponse(
 		responseCode = "200",
 		description = "북마크 삭제 성공",
