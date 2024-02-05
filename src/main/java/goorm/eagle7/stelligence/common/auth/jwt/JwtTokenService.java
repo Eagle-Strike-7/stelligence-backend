@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenService {
 
 	private final SecretKey key;
-	@Value("${http.header.field}")
-	private String authorization;
+	// @Value("${http.header.field}")
+	// private String authorization;
 	@Value("${jwt.claim.role}")
 	private String claimRole;
 
@@ -161,15 +161,15 @@ public class JwtTokenService {
 	 * @param request HttpServletRequest 객체
 	 * @return token Bearer 접두어 제외한 token
 	 */
-	public String extractJwtFromHeader(HttpServletRequest request) {
-		try {
-			return JwtTokenUtil.removeBearerPrefix(
-				request.getHeader(authorization));
-		} catch (Exception e) {
-			log.debug("Authorization 헤더가 없거나 잘못된 형식입니다. {}", e.getMessage());
-			throw new BaseException("유효하지 않은 사용자입니다.");
-		}
-	}
+	// public String extractJwtFromHeader(HttpServletRequest request) {
+	// 	try {
+	// 		return JwtTokenUtil.removeBearerPrefix(
+	// 			request.getHeader(authorization));
+	// 	} catch (Exception e) {
+	// 		log.debug("Authorization 헤더가 없거나 잘못된 형식입니다. {}", e.getMessage());
+	// 		throw new BaseException("유효하지 않은 사용자입니다.");
+	// 	}
+	// }
 
 	/**
 	 * TODO cookies null or empty 조사
