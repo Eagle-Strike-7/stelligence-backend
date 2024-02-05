@@ -16,8 +16,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ public class Debate extends BaseTimeEntity {
 	@Column(name = "debate_id")
 	private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "contribute_id")
 	private Contribute contribute;
 
@@ -65,17 +65,6 @@ public class Debate extends BaseTimeEntity {
 			throw new IllegalStateException("투표 중인 수정요청만 토론으로 전환할 수 있습니다.");
 		}
 		return new Debate(contribute);
-	}
-
-	// 특정 토론을 닫습니다.
-	public void close() {
-		// 이미 종료된 토론이라면 그대로 유지
-		if (DebateStatus.CLOSED.equals(this.status)) {
-			log.warn("이미 종료된 토론에 대한 토론 종료 요청이 발생했습니다. 토론 ID: {}", this.id);
-			return;
-		}
-		this.status = DebateStatus.CLOSED;
-		this.endAt = LocalDateTime.now();
 	}
 
 	/**
