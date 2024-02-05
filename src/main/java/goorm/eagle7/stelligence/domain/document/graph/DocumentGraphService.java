@@ -169,6 +169,7 @@ public class DocumentGraphService {
 
 		if (documentNode.getTitle().equals(updateTitle)) {
 			log.debug("문서의 제목이 변경되지 않았습니다. 문서ID: {}, 문서제목: {}", documentId, updateTitle);
+			return;
 		}
 
 		if (documentNode.getParentDocumentNode() == null) {
