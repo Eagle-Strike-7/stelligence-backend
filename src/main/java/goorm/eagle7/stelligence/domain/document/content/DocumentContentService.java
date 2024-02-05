@@ -8,12 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -35,6 +39,8 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
+	private final ContributeRepository contributeRepository;
+	private final DebateRepository debateRepository;
 
 	/**
 	 * Document를 생성합니다.
@@ -104,12 +110,18 @@ public class DocumentContentService {
 			.toList();
 
 		//해당 문서의 기여자들을 조회합니다.
-		List<MemberDetailResponse> contributors = documentRepository.findContributorsByDocumentId(documentId)
+		List<MemberSimpleResponse> contributors = documentRepository.findContributorsByDocumentId(documentId)
 			.stream()
-			.map(MemberDetailResponse::from)
+			.map(MemberSimpleResponse::from)
 			.toList();
 
-		return DocumentResponse.of(document, sections, contributors);
+		// 수정 가능 여부를 판별
+		// 정확히는 토론 종료 후 1일 동안은 기본적으로 불가능하며, 토론자에게만 수정요청을 받을 수 있도록 만들어야 합니다.
+		boolean isVoting = contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING);
+		boolean isDebating = debateRepository.existsByContributeDocumentIdAndStatus(documentId, DebateStatus.OPEN);
+		boolean isEditable = !isVoting && !isDebating;
+
+		return DocumentResponse.of(document, sections, contributors, isEditable);
 	}
 
 	/**

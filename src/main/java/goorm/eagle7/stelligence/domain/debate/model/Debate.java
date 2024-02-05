@@ -16,15 +16,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public class Debate extends BaseTimeEntity {
 
 	@Id
@@ -32,7 +34,7 @@ public class Debate extends BaseTimeEntity {
 	@Column(name = "debate_id")
 	private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "contribute_id")
 	private Contribute contribute;
 
@@ -65,13 +67,23 @@ public class Debate extends BaseTimeEntity {
 		return new Debate(contribute);
 	}
 
-	// 특정 토론을 닫습니다.
-	public void close() {
-		// 이미 종료된 토론이라면 그대로 유지
-		if (DebateStatus.CLOSED.equals(this.status)) {
-			return;
+	/**
+	 * 댓글이 업데이트 될때, 토론 종료시간도 업데이트됩니다.
+	 * 단, 토론을 유지할 수 있는 최대 기간은 7일입니다.
+	 */
+	public void updateEndAt() {
+		LocalDateTime extendEndAt = LocalDateTime.now().plusDays(1L);
+		LocalDateTime limitEndAt = this.createdAt.plusDays(7L);
+
+		if (extendEndAt.isBefore(limitEndAt)) {
+			this.endAt = extendEndAt;
+		} else {
+			this.endAt = limitEndAt;
 		}
-		this.status = DebateStatus.CLOSED;
-		this.endAt = LocalDateTime.now();
+	}
+
+	// commentSequence를 사용하고 나면 commentSequence가 자동으로 업데이트됩니다.
+	public int getAndIncrementCommentSequence() {
+		return commentSequence++;
 	}
 }

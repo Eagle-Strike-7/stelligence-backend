@@ -15,6 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -29,6 +33,12 @@ class DocumentContentServiceReadUnitTest {
 
 	@Mock
 	SectionRepository sectionRepository;
+
+	@Mock
+	ContributeRepository contributeRepository;
+
+	@Mock
+	DebateRepository debateRepository;
 
 	@InjectMocks
 	DocumentContentService documentContentService;
@@ -80,13 +90,19 @@ class DocumentContentServiceReadUnitTest {
 		Section s2 = section(2L, 2L, document, Heading.H2, "title3", "content3", 3);
 		Section s3 = section(3L, 3L, document, Heading.H3, "title2", "content2", 2);
 
+		//when
 		when(documentContentRepository.findById(1L))
 			.thenReturn(Optional.of(document));
 
 		when(sectionRepository.findByVersion(document, 3L))
 			.thenReturn(List.of(s1, s2, s3));
 
-		//when
+		//토론이 진행중이지 않은 상태
+		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN)).thenReturn(false);
+
+		//투표중이지 않은 상태
+		when(contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING)).thenReturn(false);
+
 		DocumentResponse documentResponse = documentContentService.getDocument(1L, 3L);
 
 		//assert
@@ -98,6 +114,8 @@ class DocumentContentServiceReadUnitTest {
 		assertThat(documentResponse.getSections().get(0).getSectionId()).isEqualTo(1L); //order 1
 		assertThat(documentResponse.getSections().get(1).getSectionId()).isEqualTo(3L); //order 2
 		assertThat(documentResponse.getSections().get(2).getSectionId()).isEqualTo(2L); //order 3
+
+		assertThat(documentResponse.isEditable()).isTrue();
 	}
 
 	@Test
@@ -140,7 +158,59 @@ class DocumentContentServiceReadUnitTest {
 		//when
 		List<Long> documentIds = documentContentService.findDocumentWhichContainsKeyword("keyword");
 		//then
-		assertThat(documentIds).hasSize(3);
-		assertThat(documentIds).containsExactly(1L, 2L, 3L);
+		assertThat(documentIds).hasSize(3).containsExactly(1L, 2L, 3L);
 	}
+
+	@Test
+	@DisplayName("문서 조회 - 수정 불가능 - 토론 진행중")
+	void editableTestDebatesOpen() {
+
+		//given
+		Document document = document(1L, member(1L, "hello"), "title11", 1L);
+
+		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(document));
+
+		when(sectionRepository.findByVersion(document, 1L)).thenReturn(List.of(s1));
+
+		//토론이 진행중인 상태
+		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN)).thenReturn(true);
+
+		//투표중이지 않은 상태
+		when(contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING)).thenReturn(false);
+
+		DocumentResponse documentResponse = documentContentService.getDocument(1L);
+
+		//then
+		assertThat(documentResponse.isEditable()).isFalse();
+	}
+
+	@Test
+	@DisplayName("문서 조회 - 수정 불가능 - 투표 진행중")
+	void editableTestVoting() {
+
+		//given
+		Document document = document(1L, member(1L, "hello"), "title11", 1L);
+
+		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(document));
+
+		when(sectionRepository.findByVersion(document, 1L)).thenReturn(List.of(s1));
+
+		//토론이 진행중이지 않음
+		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN)).thenReturn(false);
+
+		//투표중인 상태
+		when(contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING)).thenReturn(true);
+
+		DocumentResponse documentResponse = documentContentService.getDocument(1L);
+
+		//then
+		assertThat(documentResponse.isEditable()).isFalse();
+	}
+
 }

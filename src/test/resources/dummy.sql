@@ -84,5 +84,21 @@ values (1, 1, 2, 1, null, 'H2', 'document1_title2_update', 'document1_content2_u
        (6, 5, 4, 1, 2, 'H1', 'document2_title4_insert', 'document2_content4_insert', 'CREATE', NOW(), NOW()),
        (7, 5, 6, 1, null, 'H1', 'document2_title3_update', 'document2_content3_update', 'UPDATE', NOW(), NOW());
 
+insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at)
+values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, NOW()),
+       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
+       (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
+       (4, 4, 'CLOSED', NOW(), 1, NOW()),
+       (5, 5, 'CLOSED', NOW(), 1, NOW()),
+       (6, 5, 'OPEN', NOW(), 1, NOW());
 
-
+insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at)
+values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
+       (2, 1, 2, '댓글2', 2, TIMESTAMPADD(HOUR, -2, NOW())),
+       (3, 1, 3, '댓글3', 3, TIMESTAMPADD(HOUR, -1, NOW())),
+       (4, 2, 4, '댓글4', 1, TIMESTAMPADD(HOUR, -4, NOW())),
+       (5, 2, 1, '댓글5', 2, TIMESTAMPADD(HOUR, -3, NOW())),
+       (6, 2, 2, '댓글6', 3, TIMESTAMPADD(HOUR, -3, NOW())),
+       (7, 3, 3, '댓글7', 1, TIMESTAMPADD(HOUR, -5, NOW())),
+       (8, 3, 4, '댓글8', 2, TIMESTAMPADD(HOUR, -10, NOW())),
+       (9, 3, 4, '댓글9', 3, TIMESTAMPADD(HOUR, -2, NOW()));

@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -11,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
+import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenService {
 
 	private final SecretKey key;
-	@Value("${http.header.field}")
-	private String authorization;
+	// @Value("${http.header.field}")
+	// private String authorization;
 	@Value("${jwt.claim.role}")
 	private String claimRole;
 
@@ -161,31 +161,26 @@ public class JwtTokenService {
 	 * @param request HttpServletRequest 객체
 	 * @return token Bearer 접두어 제외한 token
 	 */
-	public String extractJwtFromHeader(HttpServletRequest request) {
-		try {
-			return JwtTokenUtil.removeBearerPrefix(
-				request.getHeader(authorization));
-		} catch (Exception e) {
-			log.debug("Authorization 헤더가 없거나 잘못된 형식입니다. {}", e.getMessage());
-			throw new BaseException("유효하지 않은 사용자입니다.");
-		}
-	}
+	// public String extractJwtFromHeader(HttpServletRequest request) {
+	// 	try {
+	// 		return JwtTokenUtil.removeBearerPrefix(
+	// 			request.getHeader(authorization));
+	// 	} catch (Exception e) {
+	// 		log.debug("Authorization 헤더가 없거나 잘못된 형식입니다. {}", e.getMessage());
+	// 		throw new BaseException("유효하지 않은 사용자입니다.");
+	// 	}
+	// }
 
 	/**
 	 * TODO cookies null or empty 조사
 	 * 쿠키에서 토큰 추출
-	 * @param request HttpServletRequest 객체
-	 * @param cookieName 쿠키 이름
+	 *
+	 * @param cookie     HttpServletRequest 객체
+	 * @param cookieType 쿠키 이름
 	 * @return token 쿠키에서 추출한 토큰, 없다면 null 반환
 	 */
-	public String extractJwtFromCookie(HttpServletRequest request, String cookieName) {
-
-		return Arrays.stream(request.getCookies()).
-			filter(
-				tCookie -> tCookie.getName().equals(cookieName))
-			.findAny()
-			.map(Cookie::getValue)
-			.orElse(null);
+	public String extractJwtFromCookie(Cookie cookie, CookieType cookieType) {
+		return cookie.getValue();
 	}
 
 	/**

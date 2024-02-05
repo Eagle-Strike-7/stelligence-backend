@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.domain.member;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
@@ -34,13 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 public class MemberController {
 
-	@Value("${http.cookie.accessToken.name}")
-	private String accessCookieName;
-	@Value("${http.cookie.refreshToken.name}")
-	private String refreshCookieName;
-
 	private final MemberService memberService;
-
 
 	@Operation(summary = "간단한 회원 정보 조회", description = "페이지마다 우측 상단에서 보이는 닉네임과 프로필url를 조회합니다")
 	@ApiResponse(
@@ -73,19 +65,12 @@ public class MemberController {
 		useReturnTypeSchema = true
 	)
 	@DeleteMapping("/members/me")
-	public ResponseTemplate<Void> deleteMember(@Auth MemberInfo memberInfo,
-		HttpServletRequest request, HttpServletResponse response) {
+	public ResponseTemplate<Void> deleteMember(@Auth MemberInfo memberInfo) {
 
 		memberService.delete(memberInfo.getId());
 
-		// 탈퇴 시 쿠키 제거
-		CookieUtils.deleteCookie(request, response, accessCookieName);
-		CookieUtils.deleteCookie(request, response, refreshCookieName);
-
-		// SecurityContext 초기화
-		// SecurityContextHolder.clearContext();
-
 		return ResponseTemplate.ok();
+
 	}
 
 	@Operation(summary = "회원 가입 이후 닉네임 수정", description = "회원 가입 이후 닉네임을 수정합니다.")
