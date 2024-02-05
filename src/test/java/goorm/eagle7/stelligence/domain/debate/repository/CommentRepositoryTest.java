@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.debate;
+package goorm.eagle7.stelligence.domain.debate.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
+import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 
 @DataJpaTest
 @WithMockData

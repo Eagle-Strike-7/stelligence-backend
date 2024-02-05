@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.debate.DebateRepository;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 
 @ExtendWith(MockitoExtension.class)

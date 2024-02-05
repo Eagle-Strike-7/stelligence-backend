@@ -18,10 +18,12 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
@@ -73,35 +75,103 @@ class DebateServiceTest {
 	}
 
 	@Test
-	@DisplayName("열려있는 토론 페이징 적용하여 조회")
-	void getOpenDebatePage() {
+	@DisplayName("열려있는 토론 페이징 적용하여 최신순으로 조회")
+	void getOpenDebatePageByLatest() {
 		// given
 		Page mockPage = mock(Page.class);
 		Pageable pageable = mock(Pageable.class);
-		when(debateRepository.findPageByStatus(DebateStatus.OPEN, pageable)).thenReturn(mockPage);
-		
+		when(debateRepository.findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable))
+			.thenReturn(mockPage);
+
 		// when
-		DebatePageResponse debatePage = debateService.getDebatePage(DebateStatus.OPEN, pageable);
+		DebatePageResponse debatePage = debateService.getDebatePage(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
 
 		// then
-		verify(debateRepository, times(1)).findPageByStatus(DebateStatus.OPEN, pageable);
-		verify(debateRepository, never()).findPageByStatus(DebateStatus.CLOSED, pageable);
+		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 	@Test
-	@DisplayName("닫혀있는 토론 페이징 적용하여 조회")
-	void getClosedDebatePage() {
+	@DisplayName("열려있는 토론 페이징 적용하여 최근댓글순으로 조회")
+	void getOpenDebatePageByRecent() {
 		// given
 		Page mockPage = mock(Page.class);
 		Pageable pageable = mock(Pageable.class);
-		when(debateRepository.findPageByStatus(DebateStatus.CLOSED, pageable)).thenReturn(mockPage);
+		when(debateRepository.findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable))
+			.thenReturn(mockPage);
 
 		// when
-		DebatePageResponse debatePage = debateService.getDebatePage(DebateStatus.CLOSED, pageable);
+		DebatePageResponse debatePage = debateService.getDebatePage(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
 
 		// then
-		verify(debateRepository, times(1)).findPageByStatus(DebateStatus.CLOSED, pageable);
-		verify(debateRepository, never()).findPageByStatus(DebateStatus.OPEN, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
+	}
+
+	@Test
+	@DisplayName("닫혀있는 토론 페이징 적용하여 최신순으로 조회")
+	void getClosedDebatePageByLatest() {
+		// given
+		Page mockPage = mock(Page.class);
+		Pageable pageable = mock(Pageable.class);
+		when(debateRepository.findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable))
+			.thenReturn(mockPage);
+
+		// when
+		DebatePageResponse debatePage = debateService.getDebatePage(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
+
+		// then
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
+		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
+	}
+
+	@Test
+	@DisplayName("닫혀있는 토론 페이징 적용하여 최근댓글순으로 조회")
+	void getClosedDebatePageByRecent() {
+		// given
+		Page mockPage = mock(Page.class);
+		Pageable pageable = mock(Pageable.class);
+		when(debateRepository.findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable))
+			.thenReturn(mockPage);
+
+		// when
+		DebatePageResponse debatePage = debateService.getDebatePage(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
+
+		// then
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.OPEN, DebateOrderCondition.RECENT_COMMENTED, pageable);
+		verify(debateRepository, never()).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.LATEST, pageable);
+		verify(debateRepository, times(1)).findPageByStatusAndOrderCondition(
+			DebateStatus.CLOSED, DebateOrderCondition.RECENT_COMMENTED, pageable);
 	}
 
 }

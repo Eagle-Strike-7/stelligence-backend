@@ -10,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
+import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -45,15 +48,18 @@ public class DebateService {
 
 	/**
 	 * 토론의 상태(OPEN / CLOSED)에 따라 토론 리스트를 페이징을 적용하여 조회합니다.
+	 * 이때 정렬 기준(LATEST;최신토론순 / RECENT;최신댓글순)에 따라 정렬하여 페이징합니다.
 	 * @param status: 조회하려는 토론의 상태(OPEN / CLOSED)
+	 * @param orderCondition: 토론 정렬 기준
 	 * @param pageable: 조회하려는 토론의 페이지 정보
 	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
 	 */
 	@Transactional(readOnly = true)
-	public DebatePageResponse getDebatePage(DebateStatus status, Pageable pageable) {
+	public DebatePageResponse getDebatePage(DebateStatus status, DebateOrderCondition orderCondition, Pageable pageable) {
 
-		Page<Debate> debatePage = debateRepository.findPageByStatus(status, pageable);
-		return DebatePageResponse.from(debatePage);
+		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(status, orderCondition, pageable);
+
+		return DebatePageResponse.from(debatePage, status, orderCondition);
 	}
 
 	/**
