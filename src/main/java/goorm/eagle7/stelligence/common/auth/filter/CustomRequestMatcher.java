@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomRequestMatcher implements RequestMatcher {
 
-	private final ResourceMemoryRepository resourceMemoryRepository;
+	private final PermittedPathStore permittedPathStore;
 
 	/**
 	 * <h2>match 확인</h2>
@@ -28,7 +28,7 @@ public class CustomRequestMatcher implements RequestMatcher {
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
-		return resourceMemoryRepository.exist(RequestResource.of(httpMethod, uri));
+		return permittedPathStore.exist(httpMethod, uri);
 	}
 
 
