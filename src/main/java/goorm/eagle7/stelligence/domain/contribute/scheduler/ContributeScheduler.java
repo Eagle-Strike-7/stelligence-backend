@@ -56,8 +56,12 @@ public class ContributeScheduler {
 
 		// 가져온 Contribute들에 대하여 병합, 토론, 반려를 수행한다.
 		for (Contribute contribute : contributes) {
-			ContributeSchedulingAction action = contributeConditionChecker.check(contribute);
-			handlers.get(action).handle(contribute.getId());
+			try {
+				ContributeSchedulingAction action = contributeConditionChecker.check(contribute);
+				handlers.get(action).handle(contribute.getId());
+			} catch (Exception e) {
+				log.error("정상적으로 처리되지 못한 수정요청이 존재합니다. 수정요청 ID: {}", contribute.getId(), e);
+			}
 		}
 	}
 

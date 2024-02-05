@@ -5,6 +5,7 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class DebateResponse {
 	private Long debateId;
 	private LocalDateTime createdAt;
 	private LocalDateTime endAt;
+	private DebateStatus status;
 
 	// 문서 정보
 	private Long documentId;
@@ -46,6 +48,7 @@ public class DebateResponse {
 		this.debateId = debate.getId();
 		this.createdAt = debate.getCreatedAt();
 		this.endAt = debate.getEndAt();
+		this.status = debate.getStatus();
 
 		this.documentId = debate.getContribute().getDocument().getId();
 		this.documentTitle = debate.getContribute().getDocument().getTitle();
