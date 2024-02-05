@@ -3,7 +3,7 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
+import goorm.eagle7.stelligence.domain.vote.custom.CustomVoteRepository;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContributeSchedulingActionDeterminer {
 
-	private final VoteCustomRepository voteRepository;
+	private final CustomVoteRepository voteRepository;
 
 	private static final double MERGE_RATE = 0.8;
 	private static final double DEBATE_RATE = 0.3;
