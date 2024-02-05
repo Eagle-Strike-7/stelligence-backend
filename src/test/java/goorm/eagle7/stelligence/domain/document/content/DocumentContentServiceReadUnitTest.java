@@ -114,6 +114,8 @@ class DocumentContentServiceReadUnitTest {
 		assertThat(documentResponse.getSections().get(0).getSectionId()).isEqualTo(1L); //order 1
 		assertThat(documentResponse.getSections().get(1).getSectionId()).isEqualTo(3L); //order 2
 		assertThat(documentResponse.getSections().get(2).getSectionId()).isEqualTo(2L); //order 3
+
+		assertThat(documentResponse.isEditable()).isTrue();
 	}
 
 	@Test
