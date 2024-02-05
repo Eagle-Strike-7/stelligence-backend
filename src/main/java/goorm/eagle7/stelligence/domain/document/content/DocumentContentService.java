@@ -13,7 +13,7 @@ import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.DocumentParser;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Section;
@@ -104,9 +104,9 @@ public class DocumentContentService {
 			.toList();
 
 		//해당 문서의 기여자들을 조회합니다.
-		List<MemberDetailResponse> contributors = documentRepository.findContributorsByDocumentId(documentId)
+		List<MemberSimpleResponse> contributors = documentRepository.findContributorsByDocumentId(documentId)
 			.stream()
-			.map(MemberDetailResponse::from)
+			.map(MemberSimpleResponse::from)
 			.toList();
 
 		return DocumentResponse.of(document, sections, contributors);
