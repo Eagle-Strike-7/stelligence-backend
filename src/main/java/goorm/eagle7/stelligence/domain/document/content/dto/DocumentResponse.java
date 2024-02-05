@@ -1,10 +1,11 @@
 package goorm.eagle7.stelligence.domain.document.content.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.SectionResponseConcatenator;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class DocumentResponse {
 
 	private Long documentId;
 	private String title;
+
+	// 최종 수정 일시
+	private LocalDateTime lastModifiedAt;
+
 	private List<SectionResponse> sections;
 
 	/**
@@ -33,9 +38,15 @@ public class DocumentResponse {
 	private String content;
 
 	// 최초 기여자
-	private MemberDetailResponse originalAuthor;
+	private MemberSimpleResponse originalAuthor;
 
-	private List<MemberDetailResponse> contributors;
+	private List<MemberSimpleResponse> contributors;
+
+	/**
+	 * 사용자가 글을 수정할 수 있는지 여부입니다.
+	 * 투표 중 혹은 토론 종료 1일 전까지는 수정이 제한됩니다.
+	 */
+	private boolean isEditable;
 
 	/**
 	 * DocumentResponse를 생성합니다.
@@ -49,15 +60,18 @@ public class DocumentResponse {
 	public static DocumentResponse of(
 		Document document,
 		List<SectionResponse> sections,
-		List<MemberDetailResponse> contributors
+		List<MemberSimpleResponse> contributors,
+		boolean isEditable
 	) {
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
+			document.getUpdatedAt(),
 			sections,
 			SectionResponseConcatenator.concat(sections),
-			MemberDetailResponse.from(document.getAuthor()),
-			contributors
+			MemberSimpleResponse.from(document.getAuthor()),
+			contributors,
+			isEditable
 		);
 	}
 
