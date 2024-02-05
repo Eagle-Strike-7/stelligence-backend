@@ -16,9 +16,8 @@ import lombok.NoArgsConstructor;
 public class NotificationResponse {
 
 	private Long notificationId;
-	private String title;
 	private String content;
 	private boolean isRead; // 읽음 여부
-	private String url; // 알림 클릭 시 이동할 URL
+	private String uri; // 알림 클릭 시 이동할 URI
 	private LocalDateTime createdAt;
 }
