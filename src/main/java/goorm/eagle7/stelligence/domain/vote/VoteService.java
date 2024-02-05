@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.vote.dto.VoteRequest;
@@ -43,7 +42,7 @@ public class VoteService {
 			() -> new BaseException("존재하지 않는 Contribute의 요청입니다. Contribute ID: " + voteRequest.getContributeId()));
 
 		// Contribute의 상태가 VOTING인지 확인
-		if (!contribute.getStatus().equals(ContributeStatus.VOTING)) {
+		if (!contribute.isVoting()) {
 			throw new BaseException("투표가 종료되었거나 진행 중이지 않습니다.");
 		}
 
