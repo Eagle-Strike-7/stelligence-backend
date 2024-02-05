@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.domain.vote.custom;
 
-import goorm.eagle7.stelligence.domain.vote.model.VoteResultSummary;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 
 /**
@@ -8,13 +7,6 @@ import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
  *
  */
 public interface VoteCustomRepository {
-
-	/**
-	 * 현 시각 Contribute에 대한 투표 결과를 반환합니다.
-	 * @param contributeId Contribute의 ID
-	 * @return 투표 결과 (총 투표 수, 찬성 투표 수)
-	 */
-	VoteResultSummary getVoteResultSummary(Long contributeId);
 
 	/**
 	 * Contribute에 대한 투표 현황을 반환합니다.

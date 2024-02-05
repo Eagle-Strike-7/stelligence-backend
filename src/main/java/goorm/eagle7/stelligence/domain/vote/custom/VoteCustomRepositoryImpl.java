@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import goorm.eagle7.stelligence.domain.vote.model.QVote;
-import goorm.eagle7.stelligence.domain.vote.model.VoteResultSummary;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 import jakarta.persistence.EntityManager;
 
@@ -37,16 +36,6 @@ public class VoteCustomRepositoryImpl implements VoteCustomRepository {
 			.from(vote)
 			.where(vote.contribute.id.eq(contributeId), vote.agree.isNotNull())
 			.fetchOne();
-	}
-
-	@Override
-	public VoteResultSummary getVoteResultSummary(Long contributeId) {
-
-		Long totalVotes = getTotalVotes(contributeId);
-		Long agreements = getAgreeCount(contributeId);
-
-		return new VoteResultSummary(contributeId, Objects.requireNonNull(totalVotes).intValue(),
-			Objects.requireNonNull(agreements).intValue());
 	}
 
 	@Override
