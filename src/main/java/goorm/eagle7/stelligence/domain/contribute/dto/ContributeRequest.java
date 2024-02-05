@@ -27,13 +27,19 @@ public class ContributeRequest {
 	@Schema(description = "수정요청을 생성할 문서의 ID", example = "1")
 	private Long documentId;
 
+	@Schema(description = "문서의 변경될 제목", example = "마리모")
+	private String newTitle;
+
+	@Schema(description = "문서의 변경될 부모 문서 ID", example = "2")
+	private Long newParentDocumentId;
+
 	@Override
 	public String toString() {
-		return "ContributeRequest{" +
-			"title='" + contributeTitle + '\'' +
-			", description='" + contributeDescription + '\'' +
-			", amendments=" + amendments +
-			", documentId=" + documentId +
-			'}';
+		return "ContributeRequest{"
+			+ "title='" + contributeTitle + '\''
+			+ ", description='" + contributeDescription + '\''
+			+ ", amendments=" + amendments
+			+ ", documentId=" + documentId
+			+ '}';
 	}
 }
