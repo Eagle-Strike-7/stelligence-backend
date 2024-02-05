@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.document.content.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -21,6 +22,10 @@ public class DocumentResponse {
 
 	private Long documentId;
 	private String title;
+
+	// 최종 수정 일시
+	private LocalDateTime lastModifiedAt;
+
 	private List<SectionResponse> sections;
 
 	/**
@@ -54,6 +59,7 @@ public class DocumentResponse {
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
+			document.getUpdatedAt(),
 			sections,
 			SectionResponseConcatenator.concat(sections),
 			MemberDetailResponse.from(document.getAuthor()),
