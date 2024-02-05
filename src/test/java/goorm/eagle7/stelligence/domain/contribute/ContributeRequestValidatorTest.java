@@ -52,7 +52,7 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2, a3, a4, a5, a6), 1L);
+			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -69,7 +69,7 @@ class ContributeRequestValidatorTest {
 	@DisplayName("documentId에 해당하는 문서가 존재하지 않는 경우")
 	void noDocument() {
 		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L, "title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.empty());
@@ -83,7 +83,7 @@ class ContributeRequestValidatorTest {
 	@DisplayName("documentId에 해당하는 문서에 대한 수정요청이 이미 존재하는 경우")
 	void votingContributeExists() {
 		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L, "title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -101,7 +101,8 @@ class ContributeRequestValidatorTest {
 
 		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
+			2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -122,7 +123,8 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -143,7 +145,8 @@ class ContributeRequestValidatorTest {
 			"content", 3);
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));

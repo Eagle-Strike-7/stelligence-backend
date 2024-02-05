@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import jakarta.persistence.LockModeType;
 
 public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDebateRepository {
@@ -21,7 +22,6 @@ public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDeb
 		+ " join fetch c.amendments a"
 		+ " where d.id = :debateId")
 	Optional<Debate> findByIdWithContribute(@Param("debateId") Long debateId);
-
 
 	/**
 	 * 토론의 sequence를 이용해 다음 댓글의 sequence를 얻기 위해 조회합니다.
@@ -54,5 +54,13 @@ public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDeb
 		+ " where d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.OPEN"
 		+ " and d.endAt <= :now")
 	List<Long> findOpenDebateIdByEndAt(@Param("now") LocalDateTime now);
+
+	/**
+	 * Document에 대하여 특정한 상태의 토론이 존재하는지 확인합니다.
+	 * @param documentId : 조회하려는 Document의 ID
+	 * @param status : 조회하려는 토론의 상태
+	 * @return boolean : 토론이 존재하면 true, 존재하지 않으면 false를 반환합니다.
+	 */
+	boolean existsByContributeDocumentIdAndStatus(Long documentId, DebateStatus status);
 
 }

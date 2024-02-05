@@ -38,7 +38,7 @@ public class ContributeService {
 	 */
 	@Transactional
 	public ContributeResponse createContribute(ContributeRequest contributeRequest, Long loginMemberId) {
-		
+
 		contributeRequestValidator.validate(contributeRequest);
 
 		Member member = memberRepository.findById(loginMemberId).orElseThrow(
@@ -49,11 +49,18 @@ public class ContributeService {
 			() -> new BaseException("존재하지 않는 문서의 요청입니다. 문서 ID: " + contributeRequest.getDocumentId())
 		);
 
+		Document newParentDocument = documentContentRepository.findById(contributeRequest.getNewParentDocumentId())
+			.orElseThrow(
+				() -> new BaseException("존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getNewParentDocumentId())
+			);
+
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
 			contributeRequest.getContributeTitle(),
-			contributeRequest.getContributeDescription()
+			contributeRequest.getContributeDescription(),
+			contributeRequest.getNewDocumentTitle(),
+			newParentDocument
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
