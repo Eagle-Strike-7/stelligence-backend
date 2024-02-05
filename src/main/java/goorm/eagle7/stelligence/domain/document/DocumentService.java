@@ -118,4 +118,25 @@ public class DocumentService {
 	public List<DocumentNodeResponse> getDocumentNodeByTitle(String title, int limit) {
 		return documentGraphService.findNodeByTitle(title, limit);
 	}
+
+	/**
+	 * 문서의 제목을 수정합니다.
+	 * @param documentId: 수정할 문서의 ID
+	 * @param newTitle: 변경될 제목
+	 */
+	public void changeDocumentTitle(Long documentId, String newTitle) {
+		documentContentService.changeTitle(documentId, newTitle);
+
+		//DocumentNode의 제목도 변경합니다.
+		//documentGraphService.changeDocumentTitle(documentId, newTitle);
+	}
+
+	/**
+	 * 문서의 부모 문서를 변경합니다.
+	 * @param documentId: 변경할 문서의 ID
+	 * @param newParentDocumentId: 변경될 부모 문서의 ID
+	 */
+	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
+	}
 }
