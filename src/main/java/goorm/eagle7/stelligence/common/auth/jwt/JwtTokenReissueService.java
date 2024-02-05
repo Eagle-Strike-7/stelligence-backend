@@ -1,11 +1,11 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -29,16 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtTokenReissueService {
 
-	@Value("${http.cookie.accessToken.maxAge}")
-	private String accessCookieMaxAge;
-	@Value("${http.cookie.refreshToken.maxAge}")
-	private String refreshCookieMaxAge;
-
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenService jwtTokenService;
 	private final MemberRepository memberRepository;
+	private final CookieUtils cookieUtils;
 	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
-
 
 	/**
 	 * - accessToken 재발급, 불가 시 throw BadJwtException
@@ -66,7 +61,8 @@ public class JwtTokenReissueService {
 		Long memberId = jwtTokenService.getMemberId(refreshToken);
 
 		// DB에서 refreshToken 가져와 문자열 비교(동등성 확인), 다르면 throw BadJwtException
-		Member member = memberRepository.findById(memberId).orElseThrow(() -> new UsernameNotFoundException(ERROR_MESSAGE));
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new UsernameNotFoundException(ERROR_MESSAGE));
 		String refreshTokenFromDB = member.getRefreshToken();
 		validateTokenEquality(refreshToken, refreshTokenFromDB);
 
@@ -106,8 +102,8 @@ public class JwtTokenReissueService {
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
 		// 쿠키에 저장
-		CookieUtils.addCookie(response, accessTokenName, newAccessToken, accessCookieMaxAge);
-		CookieUtils.addCookie(response, refreshTokenName, newRefreshToken, refreshCookieMaxAge);
+		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, newAccessToken);
+		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, newRefreshToken);
 
 		// DB에 저장
 		member.updateRefreshToken(newRefreshToken);
