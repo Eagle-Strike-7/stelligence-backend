@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
+import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,6 +34,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
 	private final CustomRequestMatcher customRequestMatcher;
+	private final CookieUtils cookieUtils;
 
 	/**
 	 * 토큰 검증이 필요한 리소스에 대해서만 검증 진행.
@@ -50,7 +52,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		if (isTokenValidationRequired(request)) {
 
 			// accessToken 추출(null 포함)
-			String accessToken = getTokenFromCookies(request, accessTokenName);
+			String accessToken = getTokenFromCookies(request, CookieType.ACCESS_TOKEN);
 
 			// 추출한 accessToken 유효성 검증 후 Authentication 반환 - 아니면 throw AccessDeniedException
 			Authentication authentication = getAuthentication(request, response, accessToken);
@@ -84,7 +86,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			if (!jwtTokenService.isTokenValidated(accessToken)) {
 
 				// refresh 토큰 추출 (null 포함)
-				String refreshToken = getTokenFromCookies(request, refreshTokenName);
+				String refreshToken = getTokenFromCookies(request, CookieType.REFRESH_TOKEN);
 
 				// accessToken 재발급, refresh 토큰 만료 혹은 DB와 다르다면 throw
 				accessToken = jwtTokenReissueService.reissueAccessToken(response, refreshToken, accessTokenName, refreshTokenName);
@@ -102,14 +104,14 @@ public class AuthFilter extends OncePerRequestFilter {
 	 *  cookies, cookie가 null이 아니고, token이 있다면 Token 반환, 없다면 null
 	 * 	  -> accessToken이 null이면 refresh 토큰만 있는 경우
 	 * 	  -> token 유효성 검증 시 null도 검증하기 때문에 null로 설정.
-	 * @param tokenName accessToken, refreshToken 이름
+	 * @param cookieType accessToken, refreshToken 쿠키 이름
 	 * @return 해당 token value or null
 	 */
-	private String getTokenFromCookies(HttpServletRequest request, String tokenName) {
+	private String getTokenFromCookies(HttpServletRequest request, CookieType cookieType) {
 
 		// map 사용: Optional 객체가 비어있다면, 그대로 Optional 반환(null 반환으로 처리), 객체가 존재하면 함수 동작해 token 반환
 		return
-			CookieUtils.getCookieFromCookies(request, tokenName)
+			cookieUtils.getCookieFromRequest(cookieType)
 				.map(jwtTokenService::getTokenFromCookie)
 				.orElseThrow(
 					() -> new AccessDeniedException("Token is not found")

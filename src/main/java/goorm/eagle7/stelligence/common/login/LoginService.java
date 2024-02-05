@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.common.login;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,20 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LoginService {
 
-	@Value("${http.cookie.accessToken.maxAge}")
-	private String accessCookieMaxAge;
-	@Value("${http.cookie.refreshToken.maxAge}")
-	private String refreshCookieMaxAge;
-
-	@Value("${jwt.accessToken.name}")
-	private String accessTokenCookieName;
-
-	@Value("${jwt.refreshToken.name}")
-	private String refreshTokenCookieName;
-
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final SignUpService signUpService;
+	private final CookieUtils cookieutils;
 
 	@Transactional
 	public Member login(HttpServletResponse response, OAuth2Request oAuth2Request) {
@@ -60,8 +49,8 @@ public class LoginService {
 		String refreshToken = loginTokensWithIdAndRoleResponse.getRefreshToken();
 
 		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
-		CookieUtils.addCookie(response, accessTokenCookieName, accessToken, accessCookieMaxAge);
-		CookieUtils.addCookie(response, refreshTokenCookieName, refreshToken, refreshCookieMaxAge);
+		cookieutils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
+		cookieutils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
 	}
 
 	/**
