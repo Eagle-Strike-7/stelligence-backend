@@ -78,14 +78,14 @@ public class DevAuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
 			if (isTokenValidationRequired(httpMethod, uri)) {
 
-				Cookie[] cookies = request.getCookies();
+				Optional<Cookie> cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
 				String nickname = null;
 				boolean signUpMode = true;
 
-				if (cookies != null) {
-					Cookie cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN).get();
+				if (cookie.isPresent()) {
+
 					// request에서 accessToken 추출
-					String accessToken = jwtTokenService.extractJwtFromCookie(cookie, CookieType.ACCESS_TOKEN);
+					String accessToken = jwtTokenService.extractJwtFromCookie(cookie.get(), CookieType.ACCESS_TOKEN);
 					// accessToken이 존재하는지 검증 - null
 					boolean tokenExists = jwtTokenService.validateIsTokenExists(accessToken);
 
