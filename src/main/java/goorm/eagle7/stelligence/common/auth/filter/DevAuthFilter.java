@@ -19,9 +19,9 @@ import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.common.login.LoginService;
 import goorm.eagle7.stelligence.common.login.RandomUtils;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -85,15 +85,15 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				if (cookie.isPresent()) {
 
 					// request에서 accessToken 추출
-					String accessToken = jwtTokenService.extractJwtFromCookie(cookie.get(), CookieType.ACCESS_TOKEN);
+					String accessToken = jwtTokenService.getTokenFromCookie(cookie.get());
 					// accessToken이 존재하는지 검증 - null
-					boolean tokenExists = jwtTokenService.validateIsTokenExists(accessToken);
+					boolean tokenExists = jwtTokenService.isTokenValidated(accessToken);
 
 					// accessToken이 존재한다면 id가 DB에 저장되어 있는지 확인
 					if (tokenExists) {
 
 						// 만료 상관 없이 member id 추출
-						Long memberId = Long.parseLong(jwtTokenService.extractSubFromExpiredToken(accessToken));
+						Long memberId = Long.parseLong(jwtTokenService.getMemberIdFromExpiredToken(accessToken));
 						Optional<Member> memberOptional = memberRepository.findById(memberId);
 
 						// accessToken이 만료 전, 유효하다면 DB에 저장된 사용자인지 확인
@@ -105,19 +105,12 @@ public class DevAuthFilter extends OncePerRequestFilter {
 							Member member = memberOptional.get();
 							nickname = member.getNickname();
 
-							// 서명 검증 후 서명 얻어 오기
-							Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
-							// accessToken 만료 검증
-							boolean validatedIsVerified = jwtTokenService.validateActiveToken(claims);
-							if (!validatedIsVerified) {
+							// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
+							String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
-								// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
-								String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+							member.updateRefreshToken(refreshToken);
+							memberRepository.save(member);
 
-								member.updateRefreshToken(refreshToken);
-								memberRepository.save(member);
-
-							}
 						}
 					}
 				}
@@ -128,14 +121,14 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				}
 
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				String accessToken = loginService.login(DevLoginRequest.from(nickname));
+				LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = loginService.devLogin(response,
+					DevLoginRequest.from(nickname));
 
-				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
-
+				String accessToken = loginTokensWithIdAndRoleResponse.getAccessToken();
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
 				MemberInfoContextHolder.clear();
-				MemberInfo memberInfo = jwtTokenService.extractMemberInfo(claims);
+				MemberInfo memberInfo = jwtTokenService.extractMemberInfo(accessToken);
 
 				// ThreadLocal에 token에서 추출한 memberInfo 저장
 				MemberInfoContextHolder.setMemberInfo(memberInfo);
