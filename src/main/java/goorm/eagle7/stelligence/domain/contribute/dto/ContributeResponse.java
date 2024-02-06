@@ -20,6 +20,13 @@ public class ContributeResponse {
 	private MemberDetailResponse contributor; //수정 요청한 멤버에 대한 정보
 	private List<AmendmentResponse> amendments;
 
+	// 추가된 필드
+	private String newDocumentTitle;	//변경된 제목
+	private Long existParentDocumentId;	//기존 상위 문서
+	private String existPatentDocumentTitle;
+	private Long newParentDocumentId;	//변경된 상위 문서
+	private String newPatentDocumentTitle;
+
 	private ContributeResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
 		this.contributeTitle = contribute.getTitle();
@@ -30,6 +37,18 @@ public class ContributeResponse {
 		this.amendments = contribute.getAmendments().stream()
 			.map(AmendmentResponse::of)
 			.toList();
+
+		// 추가된 생성자
+		this.newDocumentTitle = contribute.getNewDocumentTitle();
+		this.existParentDocumentId = contribute.getDocument().getParentDocument() == null ?
+			null : contribute.getDocument().getParentDocument().getId();
+		this.existPatentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
+			null : contribute.getDocument().getParentDocument().getTitle();
+		this.newParentDocumentId = contribute.getNewParentDocument() == null ?
+			null : contribute.getNewParentDocument().getId();
+		this.newPatentDocumentTitle = contribute.getNewParentDocument() == null ?
+			null : contribute.getNewParentDocument().getTitle();
+
 	}
 
 	public static ContributeResponse of(Contribute contribute) {
