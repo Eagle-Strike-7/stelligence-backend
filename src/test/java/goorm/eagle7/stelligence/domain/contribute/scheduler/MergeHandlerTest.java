@@ -4,6 +4,8 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.cache.CacheManager;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
@@ -203,5 +206,52 @@ class MergeHandlerTest {
 		inOrder.verify(updateAmendmentMergeTemplate).handle(document, a1);
 		inOrder.verify(deleteAmendmentMergeTemplate).handle(document, a2);
 		inOrder.verify(updateAmendmentMergeTemplate).handle(document, a3);
+	}
+
+	@Test
+	@DisplayName("제목 변경 테스트")
+	void changeTitle() {
+		//given
+		Member member = member(1L, "pete");
+		Document document = document(1L, member, "title", 1L);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle", null);
+
+		//when
+		when(contributeRepository.findByIdWithAmendmentsAndMember(1L)).thenReturn(Optional.of(contribute));
+		doAnswer((Answer<Void>)invocation -> {
+			document.changeTitle("changedTitle");
+			return null;
+		}).when(documentService).changeDocumentTitle(1L, "changedTitle");
+
+		mergeHandler.handle(contribute.getId());
+
+		//then
+		assertThat(contribute.getBeforeDocumentTitle()).isEqualTo("title");
+		assertThat(contribute.getAfterDocumentTitle()).isEqualTo("changedTitle");
+		assertThat(document.getTitle()).isEqualTo("changedTitle");
+	}
+
+	@Test
+	@DisplayName("부모 문서 변경 테스트")
+	void changeParentDocument() {
+		//given
+		Member member = member(1L, "pete");
+		Document document = document(1L, member, "title", 1L);
+		Document afterParentDocument = document(2L, member, "parent", 1L);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle", afterParentDocument);
+
+		//when
+		when(contributeRepository.findByIdWithAmendmentsAndMember(1L)).thenReturn(Optional.of(contribute));
+		doAnswer((Answer<Void>)invocation -> {
+			document.updateParentDocument(afterParentDocument);
+			return null;
+		}).when(documentService).changeParentDocument(1L, 2L);
+
+		mergeHandler.handle(contribute.getId());
+
+		//then
+		assertThat(contribute.getBeforeParentDocument()).isNull();
+		assertThat(contribute.getAfterParentDocument()).isEqualTo(afterParentDocument);
+		assertThat(document.getParentDocument()).isEqualTo(afterParentDocument);
 	}
 }
