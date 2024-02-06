@@ -116,22 +116,22 @@ public class Member extends BaseTimeEntity {
 
 	/**
 	 * <h2>Member 탈퇴</h2>
-	 * <p>Member의 정보를 초기화, socialType을 WITHDRAWN으로 변경.</p>
-	 * <p>role은 그대로 유지(권한 문제), delete는 이미 true라 따로 건들지 않음.</p>
-	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
+	 * <p>- Member 정보 초기화, socialType WITHDRAWN으로 변경.</p>
+	 * <p>- role은 그대로 유지(권한 문제), soft delete는 이미 처리되었어야 해서 건들지 않음.</p>
+	 * <p>- badge는 new HashSet으로 초기화</p>
+	 * @param newNickname "탈퇴한 회원NeutronStar"+ memberId
 	 */
 	public void withdraw(String newNickname) {
 
 		this.name = null;
-		this.nickname = null;
+		this.nickname = newNickname;
 		this.email = null;
 		this.imageUrl = null;
 		this.socialId = null;
 		this.socialType = SocialType.WHITDRAWN;
 		this.refreshToken = null;
-		// this.role = this.role;
 		this.contributes = 0;
-		this.badges.clear();
+		this.badges = new HashSet<>();
 
 	}
 
