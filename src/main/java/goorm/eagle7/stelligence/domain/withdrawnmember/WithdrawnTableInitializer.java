@@ -31,8 +31,8 @@ public class WithdrawnTableInitializer implements CommandLineRunner {
 			    nickname VARCHAR(255) NULL,
 			    email VARCHAR(255) NULL,
 			    social_id VARCHAR(255) NULL,
-			    social_type ENUM('GOOGLE', 'NAVER', 'KAKAO') NULL,
-			    role ENUM('ADMIN', 'USER') NULL,
+			    social_type VARCHAR(255) NULL,
+			    role VARCHAR(255) NULL,
 			    image_url VARCHAR(255) NULL,
 			    contributes BIGINT NULL
 			)
