@@ -40,10 +40,10 @@ public class ContributeResponse {
 		// 추가된 생성자
 		this.beforeDocumentTitle = contribute.getBeforeDocumentTitle();
 		this.afterDocumentTitle = contribute.getAfterDocumentTitle();
-		this.beforeParentDocumentId = contribute.getDocument().getParentDocument() == null ?
-			null : contribute.getDocument().getParentDocument().getId();
-		this.beforeParentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
-			null : contribute.getDocument().getParentDocument().getTitle();
+		this.beforeParentDocumentId = contribute.getBeforeParentDocument() == null ?
+			null : contribute.getBeforeParentDocument().getId();
+		this.beforeParentDocumentTitle = contribute.getBeforeParentDocument() == null ?
+			null : contribute.getBeforeParentDocument().getTitle();
 		this.afterParentDocumentId = contribute.getAfterParentDocument() == null ?
 			null : contribute.getAfterParentDocument().getId();
 		this.afterParentDocumentTitle = contribute.getAfterParentDocument() == null ?
