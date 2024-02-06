@@ -47,7 +47,7 @@ public class Member extends BaseTimeEntity {
 	// refresh token은 회원 가입/로그인 후 update로 진행
 	private String refreshToken;
 
-	private boolean deleted; // default: false, for soft delete
+	private boolean active; // default: false, for soft delete
 
 	// 1:M 연관 관계 설정
 
@@ -90,10 +90,9 @@ public class Member extends BaseTimeEntity {
 		member.socialType = socialType;
 
 		// 기본값 설정
-		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
-		member.deleted = false;
+		member.active = true;
 
 		return member;
 
@@ -111,8 +110,8 @@ public class Member extends BaseTimeEntity {
 		this.nickname = nickname;
 	}
 
-	public void delete() {
-		this.deleted = true;
+	public void convertToInactive() {
+		this.active = false;
 	}
 
 	/**
@@ -121,15 +120,15 @@ public class Member extends BaseTimeEntity {
 	 * <p>role은 그대로 유지(권한 문제), delete는 이미 true라 따로 건들지 않음.</p>
 	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
 	 */
-	public void withdraw() {
+	public void withdraw(String newNickname) {
 
-		this.name = "";
-		this.nickname = "";
-		this.email = "";
-		this.imageUrl = "";
-		this.socialId = "";
+		this.name = null;
+		this.nickname = null;
+		this.email = null;
+		this.imageUrl = null;
+		this.socialId = null;
 		this.socialType = SocialType.WHITDRAWN;
-		this.refreshToken = "";
+		this.refreshToken = null;
 		// this.role = this.role;
 		this.contributes = 0;
 		this.badges.clear();
