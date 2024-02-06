@@ -140,7 +140,9 @@ public class DocumentContentService {
 	}
 
 	/**
-	 * 제목을 변경합니다.
+	 * 문서의 제목을 변경합니다.
+	 * @param documentId 제목을 변경할 문서 ID
+	 * @param newTitle 변경할 문서 제목
 	 */
 	@Transactional
 	public void changeTitle(Long documentId, String newTitle) {
