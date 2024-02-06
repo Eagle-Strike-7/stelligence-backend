@@ -31,7 +31,8 @@ public class TestFixtureGenerator {
 	private TestFixtureGenerator() {
 	}
 
-	public static Document document(Long id, Member author, String title, Long currentRevision) {
+	public static Document document(Long id, Member author, String title, Long currentRevision,
+		Document parentDocument) {
 		try {
 			Class<?> documentClass = Class.forName("goorm.eagle7.stelligence.domain.document.content.model.Document");
 
@@ -47,22 +48,29 @@ public class TestFixtureGenerator {
 			Field authorField = documentClass.getDeclaredField("author");
 			Field currentRevisionField = documentClass.getDeclaredField("currentRevision");
 			Field sectionsField = documentClass.getDeclaredField("sections");
+			Field parentDocumentField = documentClass.getDeclaredField("parentDocument");
 
 			idField.setAccessible(true);
 			titleField.setAccessible(true);
 			authorField.setAccessible(true);
 			currentRevisionField.setAccessible(true);
 			sectionsField.setAccessible(true);
+			parentDocumentField.setAccessible(true);
 
 			idField.set(document, id);
 			titleField.set(document, title);
 			authorField.set(document, author); // Member 객체 필요
 			currentRevisionField.set(document, currentRevision);
+			parentDocumentField.set(document, parentDocument);
 
 			return (Document)document;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static Document document(Long id, Member author, String title, Long currentRevision) {
+		return document(id, author, title, currentRevision, null);
 	}
 
 	public static Member member(Long id, Role role, long contributes, String name, String nickname, String email,
