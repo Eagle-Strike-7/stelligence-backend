@@ -23,9 +23,9 @@ public class ContributeResponse {
 	// 추가된 필드
 	private String newDocumentTitle;	//변경된 제목
 	private Long existParentDocumentId;	//기존 상위 문서
-	private String existPatentDocumentTitle;
+	private String existParentDocumentTitle;
 	private Long newParentDocumentId;	//변경된 상위 문서
-	private String newPatentDocumentTitle;
+	private String newParentDocumentTitle;
 
 	private ContributeResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
@@ -42,11 +42,11 @@ public class ContributeResponse {
 		this.newDocumentTitle = contribute.getNewDocumentTitle();
 		this.existParentDocumentId = contribute.getDocument().getParentDocument() == null ?
 			null : contribute.getDocument().getParentDocument().getId();
-		this.existPatentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
+		this.existParentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
 			null : contribute.getDocument().getParentDocument().getTitle();
 		this.newParentDocumentId = contribute.getNewParentDocument() == null ?
 			null : contribute.getNewParentDocument().getId();
-		this.newPatentDocumentTitle = contribute.getNewParentDocument() == null ?
+		this.newParentDocumentTitle = contribute.getNewParentDocument() == null ?
 			null : contribute.getNewParentDocument().getTitle();
 
 	}
