@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
@@ -89,6 +90,11 @@ public class ContributeRequestValidator {
 			if (!isSequential(orders)) {
 				throw new BaseException("생성 순서가 순차적이지 않습니다.");
 			}
+		}
+
+		//수정하려는 제목이 null이나 빈값이 아닌가?
+		if (!StringUtils.hasText(request.getNewDocumentTitle())) {
+			throw new BaseException("수정하려는 제목이 비어있습니다.");
 		}
 	}
 
