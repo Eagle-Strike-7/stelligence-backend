@@ -28,12 +28,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>개발용 토큰 검증 필터</h2>
  * <p>토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.</p>
  * <p>repository에 저장되지 않은 httpmethod, uri에 대해 토큰 검증 진행</p>
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
@@ -78,14 +80,17 @@ public class DevAuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
 			if (isTokenValidationRequired(httpMethod, uri)) {
 
+				log.debug("토큰 검증이 필요한 uri");
 				Optional<Cookie> cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
 				String nickname = null;
 				boolean signUpMode = true;
 
 				if (cookie.isPresent()) {
 
+					log.debug("accessTokenCookie 존재");
 					// request에서 accessToken 추출
 					String accessToken = jwtTokenService.extractJwtFromCookie(cookie.get(), CookieType.ACCESS_TOKEN);
+					log.debug("accessToken: {}", accessToken);
 					// accessToken이 존재하는지 검증 - null
 					boolean tokenExists = jwtTokenService.validateIsTokenExists(accessToken);
 
@@ -99,7 +104,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 						// accessToken이 만료 전, 유효하다면 DB에 저장된 사용자인지 확인
 						// test 시에는 DB에 없더라도 쿠키가 남아 있어서 실제 사용자가 없는데, 조회해 꼬이는 것 방지.
 						if (memberOptional.isPresent()) {
-
+							log.debug("memberOptional 존재");
+							log.debug("memberId: {}", memberId);
 							// 회원 가입 모드 off
 							signUpMode = false;
 							Member member = memberOptional.get();
@@ -126,7 +132,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 					// test+랜덤숫자 5개로 nickname 생성
 					nickname = RandomUtils.createNicknameWithRandomNumber("test");
 				}
-
+				log.debug("nickname: {}", nickname);
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
 				String accessToken = loginService.login(DevLoginRequest.from(nickname));
 
