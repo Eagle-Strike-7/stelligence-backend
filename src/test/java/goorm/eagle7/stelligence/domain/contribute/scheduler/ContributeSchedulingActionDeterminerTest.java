@@ -4,6 +4,7 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,6 +61,21 @@ class ContributeSchedulingActionDeterminerTest {
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
 			new VoteSummary(19, 80));
+		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
+
+		//then
+		assertThat(action).isEqualTo(ContributeSchedulingAction.REJECT);
+	}
+
+	@Test
+	@DisplayName("투표가 없으면 반려")
+	void rejectWhenNoVote() {
+		//given
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+
+		//when
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
+			new VoteSummary(0, 0));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
