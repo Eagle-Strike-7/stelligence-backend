@@ -66,6 +66,21 @@ class ContributeRequestValidatorTest {
 	}
 
 	@Test
+	@DisplayName("변경요청된 제목이 비어있는 경우")
+	void emptyTitle() {
+		//given
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			null, 1L, " ", 2L);
+
+		//when
+
+		//then
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest)
+		).isInstanceOf(BaseException.class).hasMessage("수정하려는 제목이 비어있습니다.");
+	}
+
+	@Test
 	@DisplayName("documentId에 해당하는 문서가 존재하지 않는 경우")
 	void noDocument() {
 		//given
@@ -157,27 +172,5 @@ class ContributeRequestValidatorTest {
 		assertThatThrownBy(
 			() -> contributeRequestValidator.validate(contributeRequest)
 		).isInstanceOf(BaseException.class).hasMessage("생성 순서가 순차적이지 않습니다.");
-	}
-
-	@Test
-	@DisplayName("변경요청된 제목이 비어있는 경우")
-	void emptyTitle() {
-		//given
-		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
-			"content", 1);
-		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
-			"content", 2);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2), 1L, " ", 2L);
-
-		//when
-		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
-		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L));
-
-
-		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
-		).isInstanceOf(BaseException.class).hasMessage("수정하려는 제목이 비어있습니다.");
 	}
 }
