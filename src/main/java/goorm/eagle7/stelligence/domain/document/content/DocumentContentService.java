@@ -154,7 +154,7 @@ public class DocumentContentService {
 
 	/**
 	 * 상위 문서를 변경합니다.
-	 * newParentDocumentId가 null인 경우 상위 문서를 삭제합니다.
+	 * newParentDocumentId가 null인 경우 상위 문서 참조를 삭제합니다.
 	 * @param documentId 상위 문서를 변경하려는 문서 ID
 	 * @param newParentDocumentId 상위 문서 ID
 	 */
