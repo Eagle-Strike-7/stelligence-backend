@@ -21,25 +21,26 @@ class MemberRepositoryTest {
 	private MemberRepository memberRepository;
 
 	private Optional<Member> member1;
-	private Optional<Member> member2;
 	private Optional<Member> withdrawnMember1;
-	private Optional<Member> withdrawnMember2;
 
 	@BeforeEach
 	void setUp() {
 
 		// 1~4 line: 회원
 		member1 = memberRepository.findById(1L);
-		member2 = memberRepository.findById(2L);
 
 		// 5~7 line: 탈퇴한 회원
 		withdrawnMember1 = memberRepository.findById(5L);
-		withdrawnMember2 = memberRepository.findById(6L);
 
 	}
 
+	/**
+	 * <h2>[정상] Member nickname으로 Member 찾기, 탈퇴 회원 포함 - findByNickname</h2>
+	 * <p>결과: 활성 회원은 Member 반환, 탈퇴 회원은 empty 반환</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
 	@Test
-	@DisplayName("[정상] Member nickname으로 Member 찾기, 탈퇴 회원 포함 -findByNickname")
+	@DisplayName("[정상] Member nickname으로 Member 찾기, 탈퇴 회원 포함 검증 - findByNickname")
 	void findByNickname() {
 
 		// given
@@ -52,12 +53,16 @@ class MemberRepositoryTest {
 
 		// then
 		assertThat(member).isEqualTo(member1);
-		assertThat(withdrawnMember).isEqualTo(withdrawnMember1);
+		assertThat(withdrawnMember).isEmpty();
 
 	}
 
+	/**
+	 * <h2>[정상] 존재하지 않는 Member nickname으로 Member 찾기, 탈퇴 회원 포함 -findByNickname</h2>
+	 * <p>결과: empty 반환</p>
+	 */
 	@Test
-	@DisplayName("[정상] 존재하지 않는 Member nickname으로 Member 찾기, 탈퇴 회원 포함 -findByNickname")
+	@DisplayName("[정상] 존재하지 않는 Member nickname으로 Member 찾기 -findByNickname")
 	void findByNicknameEx() {
 
 		// when
@@ -68,8 +73,13 @@ class MemberRepositoryTest {
 
 	}
 
+	/**
+	 * <h2>[정상] Member nickname으로 member 존재 확인, 탈퇴 회원 포함 - existsByNickname</h2>
+	 * <p>결과: 활성 회원은 true 반환, 탈퇴 회원은 false 반환</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
 	@Test
-	@DisplayName("[정상] Member nickname으로 member 존재 확인, 탈퇴 회원 포함 - existsByNickname")
+	@DisplayName("[정상] Member nickname으로 member 존재 확인, 탈퇴 회원 포함 검증- existsByNickname")
 	void existsByNickname() {
 
 		// given
@@ -77,15 +87,20 @@ class MemberRepositoryTest {
 		String withdrawnMemberNickname = withdrawnMember1.get().getNickname();
 
 		// when
-		boolean memberExists = memberRepository.existsByNicknameTrue(memberNickname);
-		boolean withdrawnMemberExists = memberRepository.existsByNicknameTrue(withdrawnMemberNickname);
+		boolean memberExists = memberRepository.existsByNicknameAndActiveTrue(memberNickname);
+		boolean withdrawnMemberExists = memberRepository.existsByNicknameAndActiveTrue(withdrawnMemberNickname);
 
 		// then
 		assertThat(memberExists).isTrue();
-		assertThat(withdrawnMemberExists).isTrue();
+		assertThat(withdrawnMemberExists).isFalse();
 
 	}
 
+	/**
+	 * <h2>[정상] 활성 Member id로 member 찾기 - findByIdAndActiveTrue</h2>
+	 * <p>결과: 활성 회원은 Member 반환, 탈퇴 회원은 empty 반환</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
 	@Test
 	@DisplayName("[정상] 활성 Member id로 member 찾기 - findByIdAndActiveTrue")
 	void findByIdAndActive() {
@@ -109,7 +124,7 @@ class MemberRepositoryTest {
 		// given
 
 		// when
-		Optional<Member> inActiveM = memberRepository.findByIdAndActiveTrue(4L);
+		Optional<Member> inActiveM = memberRepository.findByIdAndActiveTrue(5L);
 
 		// then
 		assertThat(inActiveM).isEmpty();

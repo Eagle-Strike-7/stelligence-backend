@@ -73,7 +73,7 @@ class MemberServiceTest {
 		// 존재하지 않는 멤버를 조회했을 때 발생하는 BaseException 및 메시지 확인
 		assertThatThrownBy(() -> memberService.getProfileById(stdMemberId))
 			.isInstanceOf(BaseException.class)
-			.hasMessage("해당 멤버를 찾을 수 없습니다. MemberId= 1"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 1L은 1로 변환됨.
+			.hasMessage("존재하지 않는 회원입니다. MemberId= 1"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 1L은 1로 변환됨.
 
 		// Repository의 findByIdAndActiveTrue()가 호출됐는지 확인 - 1번
 		verify(memberRepository, times(1)).findByIdAndActiveTrue(stdMemberId);
@@ -168,7 +168,7 @@ class MemberServiceTest {
 		// then - 존재하지 않는 memberId여도 deleteById()가 호출되고, 아무 일도 일어나지 않음.
 		assertThatThrownBy(() -> memberService.delete(nonExistentMemberId))
 			.isInstanceOf(BaseException.class)
-			.hasMessage("해당 멤버를 찾을 수 없습니다. MemberId= 999"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 999L은 999로 변환됨.
+			.hasMessage("존재하지 않는 회원입니다. MemberId= 999"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 999L은 999로 변환됨.
 
 	}
 
@@ -213,7 +213,7 @@ class MemberServiceTest {
 		String newNickname = "newNickname";
 		MemberUpdateNicknameRequest nicknameRequest = MemberUpdateNicknameRequest.from(newNickname);
 		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
-		when(memberRepository.existsByNicknameTrue(newNickname)).thenReturn(true);
+		when(memberRepository.existsByNicknameAndActiveTrue(newNickname)).thenReturn(true);
 
 		// when - 이미 존재하는 닉네임으로 update 시도
 
@@ -223,7 +223,7 @@ class MemberServiceTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage(String.format("이미 사용 중인 닉네임입니다. nickname=%s", newNickname));
 		// memberRepository의 existsByNickname()가 호출되는지 확인
-		verify(memberRepository, times(1)).existsByNicknameTrue(newNickname);
+		verify(memberRepository, times(1)).existsByNicknameAndActiveTrue(newNickname);
 		// nickname이 변경되었는지 확인 - 예외이므로 바뀌지 않고, 기존 그대로
 		assertThat(stdMember.getNickname()).isEqualTo(stdNickname);
 
