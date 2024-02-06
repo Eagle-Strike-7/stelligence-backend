@@ -95,6 +95,6 @@ public class NotificationService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원입니다."));
 
-		notificationRepository.deleteByMember(member);
+		notificationRepository.deleteAllByMember(member);
 	}
 }

@@ -31,5 +31,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	 * 특정 회원의 알림 목록 삭제
 	 * @param member 회원
 	 */
-	void deleteByMember(Member member);
+	void deleteAllByMember(Member member);
 }
