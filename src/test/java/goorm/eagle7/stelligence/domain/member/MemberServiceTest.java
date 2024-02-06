@@ -25,6 +25,7 @@ import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
+import goorm.eagle7.stelligence.domain.withdrawnmember.WithdrawnMemberRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -33,6 +34,8 @@ class MemberServiceTest {
 	private CookieUtils cookieUtils; // doNothing()을 위해 필요, TODO 따로 test
 	@Mock
 	private MemberRepository memberRepository;
+	@Mock
+	private WithdrawnMemberRepository withdrawnMemberRepository;
 
 	@InjectMocks
 	private MemberService memberService;
@@ -115,14 +118,33 @@ class MemberServiceTest {
 
 		// given
 		Long memberId = stdMember.getId();
-		doNothing().when(memberRepository).deleteById(memberId);
-		doNothing().when(cookieUtils).deleteCookieBy(any());
+		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
+
+		// 탈퇴한 회원 Table로 따로 저장 - 추후 배치
+		doNothing().when(withdrawnMemberRepository).insertWithdrawnMember(stdMember);
 
 		// when
 		memberService.delete(memberId);
 
-		// then - 존재하는 memberId면 deleteById()가 호출되고, 아무 일도 일어나지 않음.
-		verify(memberRepository, times(1)).deleteById(memberId);
+		// then
+		// soft delete 진행 확인
+
+		// member active false로 변경 확인
+		assertThat(stdMember.isActive()).isFalse();
+
+		// 탈퇴한 회원 nickname update 확인
+		String nickname = "탈퇴한 회원NeutronStar"+ memberId;
+		assertThat(stdMember.getNickname()).isEqualTo(nickname);
+
+		// 탈퇴한 회원 전부 null인지 확인
+		assertThat(stdMember.getName()).isNull();
+		assertThat(stdMember.getEmail()).isNull();
+		assertThat(stdMember.getImageUrl()).isNull();
+		assertThat(stdMember.getSocialId()).isNull();
+		assertThat(stdMember.getSocialType()).isEqualTo(SocialType.WHITDRAWN);
+		assertThat(stdMember.getRefreshToken()).isNull();
+		assertThat(stdMember.getContributes()).isZero();
+		assertThat(stdMember.getBadges()).isEmpty();
 
 	}
 
@@ -138,13 +160,15 @@ class MemberServiceTest {
 
 		// given - 존재하지 않는 memberId
 		Long nonExistentMemberId = 999L;
-		doNothing().when(cookieUtils).deleteCookieBy(any());
+		when(memberRepository.findByIdAndActiveTrue(nonExistentMemberId)).thenReturn(Optional.empty());
 
 		// when
-		memberService.delete(nonExistentMemberId);
+
 
 		// then - 존재하지 않는 memberId여도 deleteById()가 호출되고, 아무 일도 일어나지 않음.
-		verify(memberRepository, times(1)).deleteById(nonExistentMemberId);
+		assertThatThrownBy(() -> memberService.delete(nonExistentMemberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("해당 멤버를 찾을 수 없습니다. MemberId= 999"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 999L은 999로 변환됨.
 
 	}
 
@@ -189,7 +213,7 @@ class MemberServiceTest {
 		String newNickname = "newNickname";
 		MemberUpdateNicknameRequest nicknameRequest = MemberUpdateNicknameRequest.from(newNickname);
 		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
-		when(memberRepository.existsByNickname(newNickname)).thenReturn(true);
+		when(memberRepository.existsByNicknameTrue(newNickname)).thenReturn(true);
 
 		// when - 이미 존재하는 닉네임으로 update 시도
 
@@ -199,7 +223,7 @@ class MemberServiceTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage(String.format("이미 사용 중인 닉네임입니다. nickname=%s", newNickname));
 		// memberRepository의 existsByNickname()가 호출되는지 확인
-		verify(memberRepository, times(1)).existsByNickname(newNickname);
+		verify(memberRepository, times(1)).existsByNicknameTrue(newNickname);
 		// nickname이 변경되었는지 확인 - 예외이므로 바뀌지 않고, 기존 그대로
 		assertThat(stdMember.getNickname()).isEqualTo(stdNickname);
 
