@@ -112,10 +112,10 @@ public class CookieUtils {
 		ResponseCookie responseCookie = ResponseCookie.from(name, value)
 			.httpOnly(cookieHttpOnly) // XSS 방지
 			.maxAge(maxAge) //
-			// .domain(cookieDomain)
+			.domain(cookieDomain)
 			.path(cookiePath)
-			// .sameSite(cookieSameSite) // CSRF 방지
-			// .secure(cookieSecure) // HTTPS
+			.sameSite(cookieSameSite) // CSRF 방지
+			.secure(cookieSecure) // HTTPS
 			.build();
 
 		response.addHeader(headerName, responseCookie.toString());
@@ -150,10 +150,10 @@ public class CookieUtils {
 		ResponseCookie responseCookie = ResponseCookie.from(cookieName, "")
 			.httpOnly(cookieHttpOnly) // XSS 방지
 			.maxAge(0)
-			// .domain(cookieDomain)
+			.domain(cookieDomain)
 			.path(cookiePath)
-			// .sameSite(cookieSameSite) // CSRF 방지
-			// .secure(cookieSecure) // HTTPS
+			.sameSite(cookieSameSite) // CSRF 방지
+			.secure(cookieSecure) // HTTPS
 			.build();
 
 		response.addHeader(headerName, responseCookie.toString());
