@@ -215,6 +215,11 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
+		return contribute(id, contributor, status, document, "newTitle", document);
+	}
+
+	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
+		String newDocumentTitle, Document newParentDocument) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -228,18 +233,24 @@ public class TestFixtureGenerator {
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
+			Field newDocumentTitleField = contributeClazz.getDeclaredField("newDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("newParentDocument");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
+			newDocumentTitleField.setAccessible(true);
+			newParentDocumentField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
+			newDocumentTitleField.set(contribute, newDocumentTitle);
+			newParentDocumentField.set(contribute, newParentDocument);
 
 			return (Contribute)contribute;
 
@@ -248,7 +259,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence) {
 
 		try {
 			Class<?> debateClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Debate");
@@ -287,7 +299,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence, LocalDateTime createdAt) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence, LocalDateTime createdAt) {
 
 		try {
 			Debate debate = TestFixtureGenerator.debate(id, contribute, status, endAt, commentSequence);
