@@ -132,7 +132,6 @@ public class Member extends BaseTimeEntity {
 		// this.role = this.role;
 		this.contributes = 0;
 		this.badges.clear();
-		this.bookmarks.clear();
 
 	}
 
