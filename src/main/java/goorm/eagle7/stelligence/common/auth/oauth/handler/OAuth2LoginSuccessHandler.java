@@ -64,10 +64,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		loginService.login(response, oAuth2Request);
 
 		try {
-			response.setHeader("custom-header", "success");
-			RequestDispatcher dispatcher = request.getRequestDispatcher("http://3.39.192.156");
-			dispatcher.forward(request, response);
-		} catch (ServletException | IOException e) {
+			// response.setHeader("custom-header", "success");
+			// RequestDispatcher dispatcher = request.getRequestDispatcher("http://3.39.192.156");
+			// dispatcher.forward(request, response);
+			response.sendRedirect("http://3.39.192.156");
+		} catch (IOException e) {
 			throw new AccessDeniedException("Redirect failed");
 		}
 
