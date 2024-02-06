@@ -47,7 +47,7 @@ public class MemberService {
 	 * <p>- 탈퇴한 회원 Table로 따로 저장. - 추후 배치 고려 </p>
 	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경. - 추후 배치 고려</p>
 	 * @param memberId 탈퇴할 회원 id
-	 */ // TODO 탈퇴 테이블에서 enum이 어떻게 들어가는지 확인하기 -> string으로 insert 잘 됨! 영민님한테 마해주기!
+	 */
 	@Transactional
 	public void delete(Long memberId) {
 
