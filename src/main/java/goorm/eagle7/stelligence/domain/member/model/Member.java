@@ -2,14 +2,10 @@ package goorm.eagle7.stelligence.domain.member.model;
 
 import static jakarta.persistence.GenerationType.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -19,7 +15,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +46,8 @@ public class Member extends BaseTimeEntity {
 	// refresh token은 회원 가입/로그인 후 update로 진행
 	private String refreshToken;
 
+	private boolean deleted; // default: false, for soft delete
+
 	// 1:M 연관 관계 설정
 
 	/**
@@ -66,15 +63,6 @@ public class Member extends BaseTimeEntity {
 		joinColumns = @JoinColumn(name = "member_id"))
 	@Enumerated(EnumType.STRING)
 	private Set<Badge> badges = new HashSet<>();
-
-	/**
-	 * <h2>Bookmark (M)</h2>
-	 * <p>mappedBy: member, Bookmark 엔티티가 Member의 FK 관리.</p>
-	 * <p>cascade: Member 삭제 시, Bookmark도 삭제.</p>
-	 * <p>orphanRemoval: Member와 연관 관계가 끊어지면, Bookmark도 삭제.</p>
-	 */
-	@OneToMany(mappedBy = "member",  cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Bookmark> bookmarks = new ArrayList<>();
 
 	/**
 	 * <h2>Member는 정적 팩토리 메서드로 생성하기</h2>
@@ -104,6 +92,7 @@ public class Member extends BaseTimeEntity {
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
+		member.deleted = false;
 
 		return member;
 
@@ -120,4 +109,31 @@ public class Member extends BaseTimeEntity {
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
+
+	public void delete() {
+		this.deleted = true;
+	}
+
+	/**
+	 * <h2>Member 탈퇴</h2>
+	 * <p>Member의 정보를 초기화, socialType을 WITHDRAWN으로 변경.</p>
+	 * <p>role은 그대로 유지(권한 문제), delete는 이미 true라 따로 건들지 않음.</p>
+	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
+	 */
+	public void withdraw() {
+
+		this.name = "";
+		this.nickname = "";
+		this.email = "";
+		this.imageUrl = "";
+		this.socialId = "";
+		this.socialType = SocialType.WHITDRAWN;
+		this.refreshToken = "";
+		// this.role = this.role;
+		this.contributes = 0;
+		this.badges.clear();
+		this.bookmarks.clear();
+
+	}
+
 }
