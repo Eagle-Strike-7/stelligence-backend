@@ -2,15 +2,10 @@ package goorm.eagle7.stelligence.domain.member.model;
 
 import static jakarta.persistence.GenerationType.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import goorm.eagle7.stelligence.domain.badges.model.Badge;
-import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -20,7 +15,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,15 +61,6 @@ public class Member extends BaseTimeEntity {
 		joinColumns = @JoinColumn(name = "member_id"))
 	@Enumerated(EnumType.STRING)
 	private Set<Badge> badges = new HashSet<>();
-
-	/**
-	 * <h2>Bookmark (M)</h2>
-	 * <p>mappedBy: member, Bookmark 엔티티가 Member의 FK 관리.</p>
-	 * <p>cascade: Member 삭제 시, Bookmark도 삭제.</p>
-	 * <p>orphanRemoval: Member와 연관 관계가 끊어지면, Bookmark도 삭제.</p>
-	 */
-	@OneToMany(mappedBy = "member",  cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<Bookmark> bookmarks = new ArrayList<>();
 
 	/**
 	 * <h2>Member는 정적 팩토리 메서드로 생성하기</h2>

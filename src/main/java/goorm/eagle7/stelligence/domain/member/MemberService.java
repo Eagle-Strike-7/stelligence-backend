@@ -1,18 +1,13 @@
 package goorm.eagle7.stelligence.domain.member;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
-import goorm.eagle7.stelligence.domain.badges.model.Badge;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +40,9 @@ public class MemberService {
 
 	/**
 	 * <h2>회원 탈퇴 요청 시 회원 삭제</h2>
-	 * <p>- 글 제외한 해당 회원만 soft delete.</p>
-	 * <p>- 탈퇴한 회원 Table로 따로 저장. </p>
-	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경.</p>
+	 * <p>- 글 제외한 해당 회원만 soft delete. - but 지금 그냥 delete</p>
+	 * <p>- 탈퇴한 회원 Table로 따로 저장. - 예정 </p>
+	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경. - 예정</p>
 	 * @param memberId 회원 id
 	 */
 	@Transactional
