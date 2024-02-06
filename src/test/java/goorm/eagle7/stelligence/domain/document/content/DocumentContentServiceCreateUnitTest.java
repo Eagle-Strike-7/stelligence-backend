@@ -63,7 +63,7 @@ class DocumentContentServiceCreateUnitTest {
 		when(documentParser.parse(rawContent)).thenReturn(sectionRequests);
 
 		//when
-		Document document = documentContentService.createDocument(title, rawContent, author);
+		Document document = documentContentService.createDocument(title, rawContent, null, author);
 
 		//then
 

@@ -41,7 +41,7 @@ class DocumentGraphServiceTest {
 	@DisplayName("최상위 문서 노드 생성 서비스 테스트")
 	void createDocumentNode() {
 
-		Document createdDocument = Document.createDocument("제목1", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(createdDocument);
 
 		documentGraphService.createDocumentNode(createdDocument);
@@ -60,12 +60,12 @@ class DocumentGraphServiceTest {
 	void createDocumentNodeWithParent() {
 
 		// 기존에 존재하는 상위 문서
-		Document parentDocument = Document.createDocument("상위 문서 제목", member(null, "Paul"));
+		Document parentDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(parentDocument);
 		documentGraphService.createDocumentNode(parentDocument);
 
 		// 하위 문서 생성
-		Document createdDocument = Document.createDocument("하위 문서 제목", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목2", 1L, parentDocument);
 		documentContentRepository.save(createdDocument);
 		documentGraphService.createDocumentNodeWithParent(createdDocument, parentDocument.getId());
 
