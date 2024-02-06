@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class DocumentService {
 
 	private final DocumentContentService documentContentService;
@@ -42,6 +42,7 @@ public class DocumentService {
 	 * @param documentCreateRequest : 생성할 Document의 정보
 	 * @return 생성된 DocumentResponse
 	 */
+	@Transactional
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
 		Member author = memberRepository.findById(loginMemberId)
@@ -124,6 +125,7 @@ public class DocumentService {
 	 * @param documentId: 수정할 문서의 ID
 	 * @param newTitle: 변경될 제목
 	 */
+	@Transactional
 	public void changeDocumentTitle(Long documentId, String newTitle) {
 		documentContentService.changeTitle(documentId, newTitle);
 
@@ -136,6 +138,7 @@ public class DocumentService {
 	 * @param documentId: 변경할 문서의 ID
 	 * @param newParentDocumentId: 변경될 부모 문서의 ID
 	 */
+	@Transactional
 	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
 		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
