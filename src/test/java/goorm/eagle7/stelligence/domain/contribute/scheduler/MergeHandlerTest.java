@@ -56,7 +56,7 @@ class MergeHandlerTest {
 	MergeHandler mergeHandler;
 
 	@Test
-	@DisplayName("Update와 Delete 타입의 Amendment 병합")
+	@DisplayName("병합 성공 테스트")
 	void handle() {
 		//given
 		Member member = member(1L, "pete");
@@ -95,6 +95,12 @@ class MergeHandlerTest {
 
 		verify(updateAmendmentMergeTemplate, times(1)).handle(document, a1);
 		verify(deleteAmendmentMergeTemplate, times(1)).handle(document, a2);
+
+		//제목변경과 부모 문서 변경 메서드가 각각 1번씩 호출되었는지 확인
+		verify(documentService, times(1)).changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		verify(documentService, times(1)).changeParentDocument(document.getId(),
+			contribute.getNewParentDocument().getId());
+
 	}
 
 	@Test
