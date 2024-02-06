@@ -22,6 +22,7 @@ import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMe
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.CreateAmendmentMergeTemplate;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.DeleteAmendmentMergeTemplate;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.UpdateAmendmentMergeTemplate;
+import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -47,6 +48,9 @@ class MergeHandlerTest {
 
 	@Mock
 	AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
+
+	@Mock
+	DocumentService documentService;
 
 	@InjectMocks
 	MergeHandler mergeHandler;
