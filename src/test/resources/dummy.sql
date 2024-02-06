@@ -8,7 +8,7 @@ values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_tok
        (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
         NOW(), true),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
-        NOW(), false),
+        NOW(), true),
        (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5', NOW(),
         NOW(), false),
        (6, 'email6', 'name6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
