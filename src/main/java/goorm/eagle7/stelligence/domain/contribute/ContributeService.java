@@ -49,10 +49,10 @@ public class ContributeService {
 			() -> new BaseException("존재하지 않는 문서의 요청입니다. 문서 ID: " + contributeRequest.getDocumentId())
 		);
 
-		Document newParentDocument = documentContentRepository.findById(contributeRequest.getNewParentDocumentId())
-			.orElseThrow(
-				() -> new BaseException("존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getNewParentDocumentId())
-			);
+		// 부모 문서 ID가 null 이면 newParentDocument는 null
+		Document newParentDocument = contributeRequest.getNewParentDocumentId() == null ?
+			null : documentContentRepository.findById(contributeRequest.getNewParentDocumentId())
+			.orElseThrow(() -> new BaseException("존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getNewParentDocumentId()));
 
 		Contribute contribute = Contribute.createContribute(
 			member,
