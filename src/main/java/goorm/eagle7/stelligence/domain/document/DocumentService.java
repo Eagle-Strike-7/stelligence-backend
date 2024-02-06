@@ -50,7 +50,7 @@ public class DocumentService {
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), author);
+			documentCreateRequest.getContent(), documentCreateRequest.getParentDocumentId(), author);
 
 		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
 		if (documentCreateRequest.getParentDocumentId() == null) {

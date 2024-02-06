@@ -48,13 +48,18 @@ public class DocumentContentService {
 	 * 외부에서 호출시 DocumentGraph와 Content 간 일관성이 깨지는 문제가 발생될 수 있습니다.
 	 * @param title 문서의 제목
 	 * @param rawContent 사용자가 작성한 글 내용
+	 * @param parentDocumentId 부모 문서의 ID : 루트 문서를 생성하는 경우 null
 	 */
 	@Transactional
-	public Document createDocument(String title, String rawContent, Member author) {
+	public Document createDocument(String title, String rawContent, Long parentDocumentId, Member author) {
 		log.trace("DocumentService.createDocument called");
 
+		//부모 문서가 존재하는지 확인합니다.
+		Document parentDocument = parentDocumentId == null ? null : documentRepository.findById(parentDocumentId)
+			.orElseThrow(() -> new BaseException("부모 문서가 존재하지 않습니다. 문서 ID : " + parentDocumentId));
+
 		//document 생성
-		Document document = Document.createDocument(title, author);
+		Document document = Document.createDocument(title, author, parentDocument);
 		documentRepository.save(document);
 
 		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
