@@ -130,7 +130,7 @@ public class DocumentService {
 		documentContentService.changeTitle(documentId, newTitle);
 
 		//DocumentNode의 제목도 변경합니다.
-		//documentGraphService.changeDocumentTitle(documentId, newTitle);
+		documentGraphService.changeTitle(documentId, newTitle);
 	}
 
 	/**

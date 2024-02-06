@@ -431,7 +431,7 @@ class DocumentGraphServiceTest {
 		}
 
 		//when
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 
 		//then
 		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
@@ -454,7 +454,7 @@ class DocumentGraphServiceTest {
 		}
 
 		//when
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 
 		//then
 		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
@@ -485,7 +485,7 @@ class DocumentGraphServiceTest {
 		DocumentNode targetDocumentNode = documentNodeRepository.findById(updateTargetId).get();
 		log.info("targetDocumentNode.getTitle(): {}", targetDocumentNode.getTitle());
 
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 		log.info("업데이트 쿼리 안나간 것을 확인");
 
 		//then
