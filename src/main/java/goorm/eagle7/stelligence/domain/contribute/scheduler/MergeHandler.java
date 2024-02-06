@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -84,8 +85,13 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 			documentService.changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
 		}
 
-		//Document의 부모 문서를 변경합니다.
-		documentService.changeParentDocument(document.getId(), contribute.getNewParentDocument().getId());
+		// Document의 부모 문서를 변경합니다.
+		// 두 경우 모두 null일 수 있는 가능성을 고려합니다.
+		Long existParentDocumentId = document.getParentDocument() == null ? null : document.getParentDocument().getId();
+		Long newParentDocumentId = contribute.getNewParentDocument() == null ? null : contribute.getNewParentDocument().getId();
+		if (!Objects.equals(existParentDocumentId, newParentDocumentId)) {
+			documentService.changeParentDocument(document.getId(), newParentDocumentId);
+		}
 
 		//문서의 현재 revision을 증가시킵니다.
 		document.incrementCurrentRevision();

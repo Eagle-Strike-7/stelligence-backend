@@ -150,4 +150,16 @@ public class DocumentContentService {
 		document.changeTitle(newTitle);
 	}
 
+	// TODO 테스트
+	@Transactional
+	public void updateParentDocument(Long documentId, Long newParentDocumentId) {
+
+		Document document = documentRepository.findById(documentId)
+			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
+
+		Document parentDocument = newParentDocumentId == null ? null : documentRepository.findById(newParentDocumentId)
+			.orElseThrow(() -> new BaseException("상위 문서가 존재하지 않습니다. 문서 ID : " + newParentDocumentId));
+
+		document.updateParentDocument(parentDocument);
+	}
 }

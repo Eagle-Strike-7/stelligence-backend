@@ -105,4 +105,11 @@ public class Document extends BaseTimeEntity {
 		this.title = newTitle;
 	}
 
+	/**
+	 * parentDocument를 변경합니다.
+	 * @param parentDocument 변경될 상위 문서
+	 */
+	public void updateParentDocument(Document parentDocument) {
+		this.parentDocument = parentDocument;
+	}
 }

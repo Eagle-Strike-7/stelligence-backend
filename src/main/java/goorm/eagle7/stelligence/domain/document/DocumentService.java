@@ -140,6 +140,7 @@ public class DocumentService {
 	 */
 	@Transactional
 	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentContentService.updateParentDocument(documentId, newParentDocumentId);
 		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
 }
