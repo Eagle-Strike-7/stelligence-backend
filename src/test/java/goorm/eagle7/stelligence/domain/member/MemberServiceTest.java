@@ -60,9 +60,9 @@ class MemberServiceTest {
 	@DisplayName("[예외] 해당 멤버를 찾을 수 없을 때 BaseException 발생 - private findMemberById() ")
 	void findMemberByIdThrows() {
 
-		// given - Repository - findById 시 null 반환
+		// given - Repository - findByIdAndActiveTrue 시 null 반환
 		Long stdMemberId = stdMember.getId();
-		when(memberRepository.findById(stdMemberId)).thenReturn(Optional.empty());
+		when(memberRepository.findByIdAndActiveTrue(stdMemberId)).thenReturn(Optional.empty());
 
 		// when
 
@@ -72,8 +72,8 @@ class MemberServiceTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage("해당 멤버를 찾을 수 없습니다. MemberId= 1"); // 서식 문자 사용에 의존하지 않기 위해 하드 코딩, 1L은 1로 변환됨.
 
-		// Repository의 findById()가 호출됐는지 확인 - 1번
-		verify(memberRepository, times(1)).findById(stdMemberId);
+		// Repository의 findByIdAndActiveTrue()가 호출됐는지 확인 - 1번
+		verify(memberRepository, times(1)).findByIdAndActiveTrue(stdMemberId);
 
 	}
 
@@ -87,8 +87,8 @@ class MemberServiceTest {
 	@DisplayName("[정상] memberId로 MemberProfile 반환(private 메서드라 우회) - getProfileById")
 	void getProfileById() {
 
-		// given - Repository에서 findById()가 호출되면 stdMember를 반환하도록 설정
-		when(memberRepository.findById(stdMember.getId())).thenReturn(Optional.of(stdMember));
+		// given - Repository에서 findByIdAndActiveTrue()가 호출되면 stdMember를 반환하도록 설정
+		when(memberRepository.findByIdAndActiveTrue(stdMember.getId())).thenReturn(Optional.of(stdMember));
 
 		// when
 		// MemberService의 getProfileById()가 실제 호출됐을 때 actualResponse 반환
@@ -162,7 +162,7 @@ class MemberServiceTest {
 		Long memberId = stdMember.getId();
 		String newNickname = "newNickname";
 		MemberUpdateNicknameRequest nicknameRequest = MemberUpdateNicknameRequest.from(newNickname);
-		when(memberRepository.findById(memberId)).thenReturn(Optional.of(stdMember));
+		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
 
 		// when - 새로운 닉네임으로 update 시도
 		memberService.updateNickname(memberId, nicknameRequest);
@@ -176,7 +176,7 @@ class MemberServiceTest {
 	/**
 	 * <h2>[예외]  중복 닉네임으로 닉네임 수정 요청 테스트</h2>
 	 * <p>결과: updateNickname()가 호출되지 않고, 닉네임이 변경되지 않음. Exception 발생 </p>
-	 * <p>검증 방식: existsByNickname() 호출 횟수, findById() 호출 횟수, 닉네임 변경 여부, 예외 확인</p>
+	 * <p>검증 방식: existsByNickname() 호출 횟수, findByIdAndActiveTrue() 호출 횟수, 닉네임 변경 여부, 예외 확인</p>
 	 * @see MemberService#updateNickname(Long, MemberUpdateNicknameRequest)
 	 */
 	@Test
@@ -188,7 +188,7 @@ class MemberServiceTest {
 		String stdNickname = stdMember.getNickname();
 		String newNickname = "newNickname";
 		MemberUpdateNicknameRequest nicknameRequest = MemberUpdateNicknameRequest.from(newNickname);
-		when(memberRepository.findById(memberId)).thenReturn(Optional.of(stdMember));
+		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
 		when(memberRepository.existsByNickname(newNickname)).thenReturn(true);
 
 		// when - 이미 존재하는 닉네임으로 update 시도
@@ -215,8 +215,8 @@ class MemberServiceTest {
 	@DisplayName("[정상] memberId로 MiniProfile 반환 - getMiniProfileById")
 	void getMiniProfileById() {
 
-		// given - Repository에서 findById()가 호출되면 stdMember를 반환하도록 설정
-		when(memberRepository.findById(stdMember.getId())).thenReturn(Optional.of(stdMember));
+		// given - Repository에서 findByIdAndActiveTrue()가 호출되면 stdMember를 반환하도록 설정
+		when(memberRepository.findByIdAndActiveTrue(stdMember.getId())).thenReturn(Optional.of(stdMember));
 
 		// when
 		// MemberService의 getMiniProfileById()가 실제 호출됐을 때 actualResponse 반환
@@ -252,8 +252,8 @@ class MemberServiceTest {
 		Member stdMember = mock(Member.class);
 		when(stdMember.getId()).thenReturn(1L);
 		when(stdMember.getBadges()).thenReturn(stdBadges);
-		// Repository에서 findById()가 호출되면 stdMember를 반환하도록 설정
-		when(memberRepository.findById(stdMember.getId())).thenReturn(Optional.of(stdMember));
+		// Repository에서 findByIdAndActiveTrue()가 호출되면 stdMember를 반환하도록 설정
+		when(memberRepository.findByIdAndActiveTrue(stdMember.getId())).thenReturn(Optional.of(stdMember));
 
 		// when
 		MemberBadgesListResponse badgesListResponse = memberService.getBadgesById(stdMember.getId());
