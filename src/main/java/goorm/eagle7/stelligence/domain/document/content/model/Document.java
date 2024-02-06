@@ -89,4 +89,12 @@ public class Document extends BaseTimeEntity {
 		this.currentRevision++;
 	}
 
+	/**
+	 * Document의 제목을 변경합니다.
+	 * @param newTitle 변경될 제목
+	 */
+	public void changeTitle(String newTitle) {
+		this.title = newTitle;
+	}
+
 }

@@ -160,6 +160,25 @@ public class DocumentGraphService {
 		}
 	}
 
+	@Transactional
+	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
+	public void updateDocumentTitle(Long documentId, String updateTitle) {
+
+		DocumentNode documentNode = documentNodeRepository.findById(documentId)
+			.orElseThrow(() -> new BaseException("존재하지 않는 노드에 대한 제목 수정 요청입니다. 문서 ID: " + documentId));
+
+		if (documentNode.getTitle().equals(updateTitle)) {
+			log.debug("문서의 제목이 변경되지 않았습니다. 문서ID: {}, 문서제목: {}", documentId, updateTitle);
+			return;
+		}
+
+		if (documentNode.getParentDocumentNode() == null) {
+			documentNodeRepository.updateRootNodeTitle(documentId, updateTitle);
+		}
+		documentNodeRepository.updateNonrootNodeTitle(documentId, updateTitle);
+
+	}
+
 	/**
 	 * documentId에 따라 특정 문서를 찾아서 링크를 제거합니다.
 	 * 그리고, parentDocumentId에 따라 다른 문서와의 링크를 추가합니다.

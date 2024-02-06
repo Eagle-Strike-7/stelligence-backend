@@ -19,6 +19,8 @@ public class HtmlPolicyConfig {
 			.allowUrlProtocols("http", "https") // URL로 들어오는 값들에 대해 허용할 프로토콜 지정
 			.allowCommonBlockElements() //"p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote",
 			.allowCommonInlineFormattingElements() //"b", "i", "em", "strong", "a", "br", "img", "span", "hr", "code", "pre"
+			.allowElements("img")
+			.allowAttributes("src", "alt").onElements("img")
 			.toFactory();
 	}
 }
