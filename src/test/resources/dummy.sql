@@ -1,14 +1,14 @@
 -- 4명의 멤버가 존재합니다.
 insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
-                    social_id, created_at, updated_at)
+                    social_id, created_at, updated_at, deleted)
 values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
-        NOW()),
+        NOW(), 0),
        (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', NOW(),
-        NOW()),
+        NOW(), 0),
        (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
-        NOW()),
+        NOW(), 0),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
-        NOW());
+        NOW(), 0);
 
 -- 4개의 문서가 존재합니다.
 insert into document (document_id, title, current_revision, created_at, updated_at)
@@ -102,3 +102,21 @@ values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
        (7, 3, 3, '댓글7', 1, TIMESTAMPADD(HOUR, -5, NOW())),
        (8, 3, 4, '댓글8', 2, TIMESTAMPADD(HOUR, -10, NOW())),
        (9, 3, 4, '댓글9', 3, TIMESTAMPADD(HOUR, -2, NOW()));
+
+-- 5개의 Bookmark가 존재합니다.
+-- 1번 멤버는 1, 2, 3, 4번 문서를 북마크하였습니다.
+-- 2번 멤버는 1, 4번 문서를 북마크하였습니다.
+-- 3번 멤버는 2, 3, 4번 문서를 북마크하였습니다.
+-- 4번 멤버는 3, 4번 문서를 북마크하였습니다.
+insert into bookmark (bookmark_id, member_id, document_id)
+values (1, 1, 1),
+       (2, 2, 1),
+       (3, 3, 2),
+       (4, 4, 3),
+       (5, 1, 4),
+       (6, 2, 4),
+       (7, 3, 3),
+       (8, 1, 2),
+       (10, 1, 3),
+       (11, 3, 4),
+       (12, 4, 4);

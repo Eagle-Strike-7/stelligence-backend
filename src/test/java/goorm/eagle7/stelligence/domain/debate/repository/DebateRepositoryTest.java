@@ -121,4 +121,21 @@ class DebateRepositoryTest {
 			.allMatch(d -> d.getStatus().equals(DebateStatus.CLOSED));
 	}
 
+	@Test
+	@DisplayName("Document에 대한 특정 상태의 토론이 존재하는지 확인")
+	void existsByContributeDocumentIdAndStatus() {
+
+		// when
+		boolean res1 = debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN);
+		boolean res2 = debateRepository.existsByContributeDocumentIdAndStatus(2L, DebateStatus.OPEN);
+		boolean res3 = debateRepository.existsByContributeDocumentIdAndStatus(3L, DebateStatus.OPEN);
+		boolean res4 = debateRepository.existsByContributeDocumentIdAndStatus(4L, DebateStatus.OPEN);
+
+		// then
+		assertThat(res1).isTrue();
+		assertThat(res2).isTrue();
+		assertThat(res3).isFalse();
+		assertThat(res4).isFalse();
+	}
+
 }

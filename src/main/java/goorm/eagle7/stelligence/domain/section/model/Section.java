@@ -12,7 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,8 +33,6 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 	@Id
 	private Long revision;
 
-	//Member
-
 	//Document
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "document_id")
@@ -46,7 +43,7 @@ public class Section extends BaseTimeEntity implements Comparable<Section> {
 
 	private String title;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	@Column(name = "orders")

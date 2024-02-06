@@ -3,6 +3,11 @@ package goorm.eagle7.stelligence.domain.member.model;
 import lombok.Getter;
 
 @Getter
+/**
+ * <h2>사용자 권한</h2>
+ * <p>ADMIN: 관리자</p>
+ * <p>USER: 일반 사용자</p>
+ */
 public enum Role {
 	ADMIN("ROLE_ADMIN"), USER("ROLE_USER");
 

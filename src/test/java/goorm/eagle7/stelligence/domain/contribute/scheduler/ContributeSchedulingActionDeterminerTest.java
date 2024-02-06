@@ -4,6 +4,7 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,14 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
-import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
+import goorm.eagle7.stelligence.domain.vote.custom.CustomVoteRepository;
+import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 
 @ExtendWith(MockitoExtension.class)
 class ContributeSchedulingActionDeterminerTest {
 
 	@Mock
-	VoteCustomRepository voteCustomRepository;
+	CustomVoteRepository voteCustomRepository;
 
 	@InjectMocks
 	ContributeSchedulingActionDeterminer contributeSchedulingActionDeterminer;
@@ -30,7 +31,8 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 80));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
+			new VoteSummary(80, 20));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -43,7 +45,8 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 79));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
+			new VoteSummary(79, 20));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
@@ -56,7 +59,23 @@ class ContributeSchedulingActionDeterminerTest {
 		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
 
 		//when
-		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(new VoteResultSummary(1L, 100, 29));
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
+			new VoteSummary(19, 80));
+		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
+
+		//then
+		assertThat(action).isEqualTo(ContributeSchedulingAction.REJECT);
+	}
+
+	@Test
+	@DisplayName("투표가 없으면 반려")
+	void rejectWhenNoVote() {
+		//given
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+
+		//when
+		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
+			new VoteSummary(0, 0));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then
