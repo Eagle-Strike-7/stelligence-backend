@@ -22,4 +22,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 */
 	boolean existsByNickname(String nickname);
 
+	/**
+	 * <h2>Member id로 active가 true인 Member를 찾는다.</h2>
+	 * @param memberId 활성 Member id
+	 * @return Optional<Member> 활성 회원
+	 */
+	Optional<Member> findByIdAndActiveTrue(Long memberId);
+
 }
