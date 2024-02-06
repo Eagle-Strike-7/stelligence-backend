@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.badges.model.Badge;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
