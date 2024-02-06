@@ -13,6 +13,7 @@ import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
@@ -111,6 +112,38 @@ public class ContributeService {
 	}
 
 	/**
+	 * Contribute 목록 조회: 투표중인 Contribute만 조회
+	 * @return
+	 */
+	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
+
+		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
+
+		return votingContributes.map(ContributeListResponse::of);
+	}
+
+	/**
+	 * Contribute 목록 조회: 투표 완료된 Contribute만 조회
+	 */
+	public Page<ContributeListResponse> getCompletedContributes(Pageable pageable) {
+
+		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
+
+		return completedContributes.map(ContributeListResponse::of);
+	}
+
+	/**
+	 * Contribute 목록 조회: 투표 상태별로 조회
+	 * @return
+	 */
+	public Page<ContributeListResponse> getContributesByStatus(ContributeStatus status, Pageable pageable) {
+
+		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
+
+		return votingContributes.map(ContributeListResponse::of);
+	}
+
+	/**
 	 * Contribute 목록 조회: 문서별로 조회
 	 * @param documentId
 	 * @return
@@ -121,16 +154,5 @@ public class ContributeService {
 			contributeRepository.findContributesByDocument(documentId, pageable);
 
 		return contributesByDocument.map(ContributeListResponse::of);
-	}
-
-	/**
-	 * Contribute 목록 조회: 투표중인 Contribute만 조회
-	 * @return
-	 */
-	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
-
-		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
-
-		return votingContributes.map(ContributeListResponse::of);
 	}
 }

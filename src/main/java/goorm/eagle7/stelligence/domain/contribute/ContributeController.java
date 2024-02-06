@@ -78,34 +78,68 @@ public class ContributeController {
 		return ResponseTemplate.ok();
 	}
 
-	@Operation(summary = "수정요청 목록 조회",
-		description = "status=VOTING으로 조회하면 투표 중인 모든 수정 요청을 조회할 수 있습니다. "
-			+ "documentId로 조회하면 해당 문서의 수정 요청을 필터링하여 조회할 수 있습니다. "
-			+ "단, status와 documentId를 함께 사용하는 것은 지원하지 않으니 하나만 입력해 주세요.")
+	@Operation(summary = "수정요청 목록 조회(투표중)", description = "투표 중인 수정요청 목록을 조회합니다. ")
+	@ApiResponse(
+		responseCode = "200",
+		description = "수정요청 목록 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/voting")
+	public ResponseTemplate<Page<ContributeListResponse>> getVotingContributes(
+		@ParameterObject
+		@PageableDefault(page = 0, size = 10) Pageable pageable
+	) {
+		return ResponseTemplate.ok(contributeService.getVotingContributes(pageable));
+	}
+
+	@Operation(summary = "수정요청 목록 조회(투표 완료)",
+		description = "투표가 완료된 수정요청 목록을 조회합니다. "
+			+ "status에 값을 넣지 않으면 모든 완료된 수정요청을 조회합니다. "
+			+ "status에 값을 넣으면 해당 상태의 수정요청을 조회합니다. "
+			+ "status에는 MERGED, REJECTED, CANCELED 중 하나를 넣을 수 있습니다. ")
+	@ApiResponse(
+		responseCode = "200",
+		description = "수정요청 목록 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/complete")
+	public ResponseTemplate<Page<ContributeListResponse>> getCompleteContributes(
+		@Parameter(description = "수정요청의 상태", example = "MERGED")
+		@RequestParam(required = false) ContributeStatus status,
+		@ParameterObject
+		@PageableDefault(page = 0, size = 10) Pageable pageable
+	) {
+		// status가 VOTING인 경우 실패 응답 반환
+		if (ContributeStatus.VOTING.equals(status)) {
+			return ResponseTemplate.fail("이 API에서는 status에 VOTING을 넣을 수 없습니다.");
+		}
+
+		if (status != null) {
+			return ResponseTemplate.ok(contributeService.getContributesByStatus(status, pageable));
+		} else {
+			// status가 없으면 모든 완료된 수정요청을 조회
+			return ResponseTemplate.ok(contributeService.getCompletedContributes(pageable));
+		}
+	}
+
+	@Operation(summary = "수정요청 목록 조회(문서별)",
+		description = "특정 문서의 수정요청을 조회할 때 문서의 ID를 입력하면 해당 문서의 수정요청을 조회할 수 있습니다. ")
 	@ApiResponse(
 		responseCode = "200",
 		description = "수정요청 목록 조회 성공",
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<Page<ContributeListResponse>> getContributes(
+	public ResponseTemplate<Page<ContributeListResponse>> getContributesByDocument(
 		@Parameter(description = "특정 문서의 수정요청을 조회할 때 문서의 ID", example = "1")
 		@RequestParam(required = false) Long documentId,
-		@Parameter(description = "수정요청의 상태", example = "VOTING")
-		@RequestParam(required = false) ContributeStatus status,
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		if (status != null && documentId != null) {
-			return ResponseTemplate.fail("status와 documentId는 함께 사용할 수 없습니다.");
-		}
-
-		if (status != null) {
-			return ResponseTemplate.ok(contributeService.getVotingContributes(pageable));
-		} else if (documentId != null) {
+		if (documentId != null) {
 			return ResponseTemplate.ok(contributeService.getContributesByDocument(documentId, pageable));
 		} else {
-			return ResponseTemplate.fail("status와 documentId 중 하나는 필수로 입력해야 합니다.");
+			return ResponseTemplate.fail("documentId는 필수로 입력해야 합니다.");
 		}
 	}
 }
