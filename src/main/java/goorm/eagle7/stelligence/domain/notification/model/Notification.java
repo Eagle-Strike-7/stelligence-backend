@@ -42,4 +42,8 @@ public class Notification extends BaseTimeEntity {
 	public static Notification createNotification(String content, String uri, Member member) {
 		return new Notification(content, uri, member);
 	}
+
+	public void read() {
+		this.isRead = true;
+	}
 }
