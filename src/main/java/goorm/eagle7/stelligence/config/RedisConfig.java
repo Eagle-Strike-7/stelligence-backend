@@ -4,7 +4,6 @@ import static org.springframework.data.redis.serializer.RedisSerializationContex
 
 import java.time.Duration;
 
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -18,7 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * Redis와 Cache 관련 설정 클래스입니다.
  */
 @Configuration
-@EnableCaching
+// @EnableCaching
 public class RedisConfig {
 
 	private static final int DEFAULT_EXPIRE_SEC = 60 * 5; //캐시 기본 유효 시간 5분
