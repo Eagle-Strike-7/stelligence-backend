@@ -23,7 +23,7 @@ public class LoginService {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		// nickname 중복이면 로그인
-		Member member = memberRepository.findByNickname(devLoginRequest.getNickname())
+		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
 			.orElseGet(() -> signUpService.signUp(devLoginRequest.getNickname()));
 
 		// token 생성 후 저장, 쿠키 저장

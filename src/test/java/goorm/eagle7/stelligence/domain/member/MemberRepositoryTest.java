@@ -47,8 +47,8 @@ class MemberRepositoryTest {
 		String withdrawnMemberNickname = withdrawnMember1.get().getNickname();
 
 		// when
-		Optional<Member> member = memberRepository.findByNickname(memberNickname);
-		Optional<Member> withdrawnMember = memberRepository.findByNickname(withdrawnMemberNickname);
+		Optional<Member> member = memberRepository.findByNicknameAndActiveTrue(memberNickname);
+		Optional<Member> withdrawnMember = memberRepository.findByNicknameAndActiveTrue(withdrawnMemberNickname);
 
 		// then
 		assertThat(member).isEqualTo(member1);
@@ -61,7 +61,7 @@ class MemberRepositoryTest {
 	void findByNicknameEx() {
 
 		// when
-		Optional<Member> member = memberRepository.findByNickname("nonExistNickname");
+		Optional<Member> member = memberRepository.findByNicknameAndActiveTrue("nonExistNickname");
 
 		// then
 		assertThat(member).isEmpty();
@@ -77,8 +77,8 @@ class MemberRepositoryTest {
 		String withdrawnMemberNickname = withdrawnMember1.get().getNickname();
 
 		// when
-		boolean memberExists = memberRepository.existsByNickname(memberNickname);
-		boolean withdrawnMemberExists = memberRepository.existsByNickname(withdrawnMemberNickname);
+		boolean memberExists = memberRepository.existsByNicknameTrue(memberNickname);
+		boolean withdrawnMemberExists = memberRepository.existsByNicknameTrue(withdrawnMemberNickname);
 
 		// then
 		assertThat(memberExists).isTrue();
