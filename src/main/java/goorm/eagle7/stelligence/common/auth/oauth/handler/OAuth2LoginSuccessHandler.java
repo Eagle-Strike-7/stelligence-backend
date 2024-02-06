@@ -18,7 +18,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -67,6 +69,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 			// response.setHeader("custom-header", "success");
 			// RequestDispatcher dispatcher = request.getRequestDispatcher("http://3.39.192.156");
 			// dispatcher.forward(request, response);
+			log.info("Redirect to http://");
 			response.sendRedirect("http://3.39.192.156");
 		} catch (IOException e) {
 			throw new AccessDeniedException("Redirect failed");
