@@ -10,6 +10,7 @@ import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -112,47 +113,57 @@ public class ContributeService {
 	}
 
 	/**
-	 * Contribute 목록 조회: 투표중인 Contribute만 조회
-	 * @return
-	 */
-	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
-
-		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
-
-		return votingContributes.map(ContributeListResponse::of);
-	}
-
-	/**
-	 * Contribute 목록 조회: 투표 완료된 Contribute만 조회
-	 */
-	public Page<ContributeListResponse> getCompletedContributes(Pageable pageable) {
-
-		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
-
-		return completedContributes.map(ContributeListResponse::of);
-	}
-
-	/**
 	 * Contribute 목록 조회: 투표 상태별로 조회
+	 * @param status
+	 * @param pageable
 	 * @return
 	 */
-	public Page<ContributeListResponse> getContributesByStatus(ContributeStatus status, Pageable pageable) {
+	public ContributePageResponse getContributesByStatus(ContributeStatus status, Pageable pageable) {
 
 		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
 
-		return votingContributes.map(ContributeListResponse::of);
+		Page<ContributeListResponse> listResponses = votingContributes.map(ContributeListResponse::of);
+
+		return ContributePageResponse.from(listResponses);
 	}
 
 	/**
-	 * Contribute 목록 조회: 문서별로 조회
-	 * @param documentId
+	 * Contribute 목록 조회: 투표가 완료된 Contribute만 조회(MERGED, REJECTED, CANCELED)
+	 * @param pageable
 	 * @return
 	 */
-	public Page<ContributeListResponse> getContributesByDocument(Long documentId, Pageable pageable) {
+	public ContributePageResponse getCompletedContributes(Pageable pageable) {
 
-		Page<Contribute> contributesByDocument =
-			contributeRepository.findContributesByDocument(documentId, pageable);
+		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
 
-		return contributesByDocument.map(ContributeListResponse::of);
+		Page<ContributeListResponse> listResponses = completedContributes.map(ContributeListResponse::of);
+
+		return ContributePageResponse.from(listResponses);
+	}
+
+	/**
+	 * Contribute 목록 조회: 문서 ID와 merged에 따라 조회
+	 * @param documentId
+	 * @param merged
+	 * @param pageable
+	 * @return
+	 */
+	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
+		Pageable pageable) {
+
+		Page<Contribute> contributesByDocumentAndStatus;
+
+		// merged가 true이면 MERGED, false이면 REJECTED or DEBATING
+		if (merged) {
+			contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
+				ContributeStatus.MERGED, pageable);
+		} else {
+			contributesByDocumentAndStatus = contributeRepository.findByDocumentAndNonMerged(documentId,
+				pageable);
+		}
+
+		Page<ContributeListResponse> listResponses = contributesByDocumentAndStatus.map(ContributeListResponse::of);
+
+		return ContributePageResponse.from(listResponses);
 	}
 }

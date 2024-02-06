@@ -12,7 +12,7 @@ public interface CustomContributeRepository {
 
 	Page<Contribute> findCompleteContributes(Pageable pageable);
 
-	Page<Contribute> findVotingContributes(Pageable pageable);
+	Page<Contribute> findByDocumentAndStatus(Long documentId, ContributeStatus status, Pageable pageable);
 
-	Page<Contribute> findContributesByDocument(Long documentId, Pageable pageable);
+	Page<Contribute> findByDocumentAndNonMerged(Long documentId, Pageable pageable);
 }

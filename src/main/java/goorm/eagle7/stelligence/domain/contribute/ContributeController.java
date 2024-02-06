@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -85,11 +84,11 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping("/voting")
-	public ResponseTemplate<Page<ContributeListResponse>> getVotingContributes(
+	public ResponseTemplate<ContributePageResponse> getVotingContributes(
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		return ResponseTemplate.ok(contributeService.getVotingContributes(pageable));
+		return ResponseTemplate.ok(contributeService.getContributesByStatus(ContributeStatus.VOTING, pageable));
 	}
 
 	@Operation(summary = "수정요청 목록 조회(투표 완료)",
@@ -103,7 +102,7 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping("/complete")
-	public ResponseTemplate<Page<ContributeListResponse>> getCompleteContributes(
+	public ResponseTemplate<ContributePageResponse> getCompleteContributes(
 		@Parameter(description = "수정요청의 상태", example = "MERGED")
 		@RequestParam(required = false) ContributeStatus status,
 		@ParameterObject
@@ -130,16 +129,18 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<Page<ContributeListResponse>> getContributesByDocument(
+	public ResponseTemplate<ContributePageResponse> getContributesByDocument(
 		@Parameter(description = "특정 문서의 수정요청을 조회할 때 문서의 ID", example = "1")
-		@RequestParam(required = false) Long documentId,
+		@RequestParam Long documentId,
+		@Parameter(description = "수정요청이 MERGED = true, REJECTED or DEBATING = false", example = "true")
+		@RequestParam boolean merged,
 		@ParameterObject
 		@PageableDefault(page = 0, size = 10) Pageable pageable
 	) {
-		if (documentId != null) {
-			return ResponseTemplate.ok(contributeService.getContributesByDocument(documentId, pageable));
-		} else {
+		if (documentId == null) {
 			return ResponseTemplate.fail("documentId는 필수로 입력해야 합니다.");
 		}
+
+		return ResponseTemplate.ok(contributeService.getContributesByDocumentAndStatus(documentId, merged, pageable));
 	}
 }

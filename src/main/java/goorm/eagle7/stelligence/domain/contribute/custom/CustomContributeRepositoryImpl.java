@@ -66,12 +66,36 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 	}
 
 	@Override
-	public Page<Contribute> findVotingContributes(Pageable pageable) {
+	public Page<Contribute> findByDocumentAndStatus(Long documentId, ContributeStatus status,
+		Pageable pageable) {
+
 		QContribute contribute = QContribute.contribute;
 
 		List<Contribute> contributes = queryFactory
 			.selectFrom(contribute)
-			.where(contribute.status.eq(ContributeStatus.VOTING))
+			.where(contribute.document.id.eq(documentId)
+				.and(contribute.status.eq(status)))
+			.orderBy(contribute.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory.select(contribute.count())
+			.from(contribute)
+			.where(contribute.document.id.eq(documentId)
+				.and(contribute.status.eq(status)));
+
+		return PageableExecutionUtils.getPage(contributes, pageable, countQuery::fetchOne);
+	}
+
+	@Override
+	public Page<Contribute> findByDocumentAndNonMerged(Long documentId, Pageable pageable) {
+		QContribute contribute = QContribute.contribute;
+
+		List<Contribute> contributes = queryFactory
+			.selectFrom(contribute)
+			.where(contribute.document.id.eq(documentId)
+				.and(contribute.status.in(ContributeStatus.DEBATING, ContributeStatus.REJECTED)))
 			.orderBy(contribute.createdAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -80,26 +104,8 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 		JPAQuery<Long> countQuery = queryFactory
 			.select(contribute.count())
 			.from(contribute)
-			.where(contribute.status.eq(ContributeStatus.VOTING));
-
-		return PageableExecutionUtils.getPage(contributes, pageable, countQuery::fetchOne);
-	}
-
-	@Override
-	public Page<Contribute> findContributesByDocument(Long documentId, Pageable pageable) {
-
-		QContribute contribute = QContribute.contribute;
-
-		List<Contribute> contributes = queryFactory.selectFrom(contribute)
-			.where(contribute.document.id.eq(documentId))
-			.orderBy(contribute.createdAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
-
-		JPAQuery<Long> countQuery = queryFactory.select(contribute.count())
-			.from(contribute)
-			.where(contribute.document.id.eq(documentId));
+			.where(contribute.document.id.eq(documentId)
+				.and(contribute.status.in(ContributeStatus.DEBATING, ContributeStatus.REJECTED)));
 
 		return PageableExecutionUtils.getPage(contributes, pageable, countQuery::fetchOne);
 	}
