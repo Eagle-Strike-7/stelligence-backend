@@ -48,6 +48,11 @@ class BookmarkServiceTest {
 		exDocument = document(2L, stdMember, "title2", 1L);
 	}
 
+	/**
+	 * <h2>[정상] 북마크 생성 - createBookmark</h2>
+	 * <p>결과: save 호출</p>
+	 * <p>검증 방식: save 호출 횟수</p>
+	 */
 	@Test
 	@DisplayName("[정상] 북마크 생성 - createBookmark")
 	void createBookmarkTrue() {
@@ -56,7 +61,7 @@ class BookmarkServiceTest {
 		Long memberId = stdMember.getId();
 		Long documentId = stdDocument.getId();
 		BookmarkCreateRequest bookmarkCreateRequest = BookmarkCreateRequest.from(documentId);
-		Bookmark bookmark = bookmark(1L, stdMember, stdDocument); // id가 null인 객체
+		Bookmark bookmark = bookmark(1L, stdMember, stdDocument);
 
 		// member 존재, document 존재, bookmark 존재하지 않아야 save 가능.
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(stdMember));
