@@ -97,9 +97,9 @@ class MergeHandlerTest {
 		verify(deleteAmendmentMergeTemplate, times(1)).handle(document, a2);
 
 		//제목변경과 부모 문서 변경 메서드가 각각 1번씩 호출되었는지 확인
-		verify(documentService, times(1)).changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		verify(documentService, times(1)).changeDocumentTitle(document.getId(), contribute.getAfterDocumentTitle());
 		verify(documentService, times(1)).changeParentDocument(document.getId(),
-			contribute.getNewParentDocument().getId());
+			contribute.getAfterParentDocument().getId());
 
 	}
 

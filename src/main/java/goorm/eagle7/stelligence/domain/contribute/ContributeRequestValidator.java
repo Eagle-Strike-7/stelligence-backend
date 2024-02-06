@@ -93,7 +93,7 @@ public class ContributeRequestValidator {
 		}
 
 		//수정하려는 제목이 null이나 빈값이 아닌가?
-		if (!StringUtils.hasText(request.getNewDocumentTitle())) {
+		if (!StringUtils.hasText(request.getAfterDocumentTitle())) {
 			throw new BaseException("수정하려는 제목이 비어있습니다.");
 		}
 	}

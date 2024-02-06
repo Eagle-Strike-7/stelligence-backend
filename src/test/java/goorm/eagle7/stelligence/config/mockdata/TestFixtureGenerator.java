@@ -228,7 +228,7 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
-		String newDocumentTitle, Document newParentDocument) {
+		String afterDocumentTitle, Document afterParentDocument) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -242,15 +242,17 @@ public class TestFixtureGenerator {
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
-			Field newDocumentTitleField = contributeClazz.getDeclaredField("newDocumentTitle");
-			Field newParentDocumentField = contributeClazz.getDeclaredField("newParentDocument");
+			Field beforeDocumentTitleField = contributeClazz.getDeclaredField("beforeDocumentTitle");
+			Field afterDocumentTitleField = contributeClazz.getDeclaredField("afterDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("afterParentDocument");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
-			newDocumentTitleField.setAccessible(true);
+			beforeDocumentTitleField.setAccessible(true);
+			afterDocumentTitleField.setAccessible(true);
 			newParentDocumentField.setAccessible(true);
 
 			idField.set(contribute, id);
@@ -258,8 +260,9 @@ public class TestFixtureGenerator {
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
-			newDocumentTitleField.set(contribute, newDocumentTitle);
-			newParentDocumentField.set(contribute, newParentDocument);
+			beforeDocumentTitleField.set(contribute, document.getTitle());
+			afterDocumentTitleField.set(contribute, afterDocumentTitle);
+			newParentDocumentField.set(contribute, afterParentDocument);
 
 			return (Contribute)contribute;
 

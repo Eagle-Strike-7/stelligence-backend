@@ -16,38 +16,38 @@ public class ContributeResponse {
 	private String contributeTitle;
 	private String contributeDescription;
 	private Long documentId;
-	private String documentTitle;
 	private MemberDetailResponse contributor; //수정 요청한 멤버에 대한 정보
 	private List<AmendmentResponse> amendments;
 
 	// 추가된 필드
-	private String newDocumentTitle;	//변경된 제목
-	private Long existParentDocumentId;	//기존 상위 문서
-	private String existParentDocumentTitle;
-	private Long newParentDocumentId;	//변경된 상위 문서
-	private String newParentDocumentTitle;
+	private String beforeDocumentTitle;	//기존 제목
+	private String afterDocumentTitle;	//변경된 제목
+	private Long beforeParentDocumentId;	//기존 상위 문서
+	private String beforeParentDocumentTitle;
+	private Long afterParentDocumentId;	//변경된 상위 문서
+	private String afterParentDocumentTitle;
 
 	private ContributeResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
 		this.contributeTitle = contribute.getTitle();
 		this.contributeDescription = contribute.getDescription();
 		this.documentId = contribute.getDocument().getId();
-		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributor = MemberDetailResponse.from(contribute.getMember());
 		this.amendments = contribute.getAmendments().stream()
 			.map(AmendmentResponse::of)
 			.toList();
 
 		// 추가된 생성자
-		this.newDocumentTitle = contribute.getNewDocumentTitle();
-		this.existParentDocumentId = contribute.getDocument().getParentDocument() == null ?
+		this.beforeDocumentTitle = contribute.getBeforeDocumentTitle();
+		this.afterDocumentTitle = contribute.getAfterDocumentTitle();
+		this.beforeParentDocumentId = contribute.getDocument().getParentDocument() == null ?
 			null : contribute.getDocument().getParentDocument().getId();
-		this.existParentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
+		this.beforeParentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
 			null : contribute.getDocument().getParentDocument().getTitle();
-		this.newParentDocumentId = contribute.getNewParentDocument() == null ?
-			null : contribute.getNewParentDocument().getId();
-		this.newParentDocumentTitle = contribute.getNewParentDocument() == null ?
-			null : contribute.getNewParentDocument().getTitle();
+		this.afterParentDocumentId = contribute.getAfterParentDocument() == null ?
+			null : contribute.getAfterParentDocument().getId();
+		this.afterParentDocumentTitle = contribute.getAfterParentDocument() == null ?
+			null : contribute.getAfterParentDocument().getTitle();
 
 	}
 
