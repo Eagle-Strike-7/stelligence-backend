@@ -22,6 +22,7 @@ import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMe
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.CreateAmendmentMergeTemplate;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.DeleteAmendmentMergeTemplate;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.UpdateAmendmentMergeTemplate;
+import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -48,11 +49,14 @@ class MergeHandlerTest {
 	@Mock
 	AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
 
+	@Mock
+	DocumentService documentService;
+
 	@InjectMocks
 	MergeHandler mergeHandler;
 
 	@Test
-	@DisplayName("Update와 Delete 타입의 Amendment 병합")
+	@DisplayName("병합 성공 테스트")
 	void handle() {
 		//given
 		Member member = member(1L, "pete");
@@ -61,7 +65,7 @@ class MergeHandlerTest {
 		Section s1 = section(1L, 1L, document, Heading.H1, "title", "content", 1);
 		Section s2 = section(2L, 1L, document, Heading.H2, "title", "content", 2);
 
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "newTitle", document);
 
 		Amendment a1 = amendment(1L, contribute, AmendmentType.UPDATE, s1, Heading.H1, "new title",
 			"new content", 0);
@@ -91,6 +95,31 @@ class MergeHandlerTest {
 
 		verify(updateAmendmentMergeTemplate, times(1)).handle(document, a1);
 		verify(deleteAmendmentMergeTemplate, times(1)).handle(document, a2);
+
+		//제목변경과 부모 문서 변경 메서드가 각각 1번씩 호출되었는지 확인
+		verify(documentService, times(1)).changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		verify(documentService, times(1)).changeParentDocument(document.getId(),
+			contribute.getNewParentDocument().getId());
+
+	}
+
+	@Test
+	@DisplayName("제목 변경은 기존 이름과 다른 경우에만 수행한다.")
+	void noChangeTitle() {
+		//given
+		Member member = member(1L, "pete");
+
+		Document document = document(1L, member, "title", 1L);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "title", document);
+
+		//when
+		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
+			java.util.Optional.of(contribute));
+
+		mergeHandler.handle(contribute.getId());
+
+		//제목 변경이 호출되지 않아야 한다.
+		verify(documentService, never()).changeDocumentTitle(any(), any());
 	}
 
 	@Test

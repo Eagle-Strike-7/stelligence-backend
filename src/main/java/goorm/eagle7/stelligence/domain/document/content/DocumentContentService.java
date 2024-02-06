@@ -134,4 +134,15 @@ public class DocumentContentService {
 		return documentRepository.findDocumentIdWhichContainsKeywordInLatestVersion(keyword);
 	}
 
+	/**
+	 * 제목을 변경합니다.
+	 */
+	@Transactional
+	public void changeTitle(Long documentId, String newTitle) {
+		log.trace("DocumentService.changeTitle called");
+		Document document = documentRepository.findById(documentId)
+			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
+		document.changeTitle(newTitle);
+	}
+
 }

@@ -12,6 +12,7 @@ import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
+import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	private final AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
 	private final ContributeRepository contributeRepository;
 	private final CacheManager cacheManager;
+	private final DocumentService documentService;
 
 	/**
 	 * Amendment의 정렬은 Merge 과정에서 중요합니다. 정렬이 제대로 되지 않으면
@@ -76,6 +78,14 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 			.forEach(amendment -> amendmentMergeTemplateMapper.getTemplateForType(amendment.getType())
 				.handle(document, amendment)
 			);
+
+		//Document의 제목을 변경합니다.
+		if (!contribute.getNewDocumentTitle().equals(document.getTitle())) {
+			documentService.changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		}
+
+		//Document의 부모 문서를 변경합니다.
+		documentService.changeParentDocument(document.getId(), contribute.getNewParentDocument().getId());
 
 		//문서의 현재 revision을 증가시킵니다.
 		document.incrementCurrentRevision();
