@@ -80,7 +80,9 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 			);
 
 		//Document의 제목을 변경합니다.
-		documentService.changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		if (!contribute.getNewDocumentTitle().equals(document.getTitle())) {
+			documentService.changeDocumentTitle(document.getId(), contribute.getNewDocumentTitle());
+		}
 
 		//Document의 부모 문서를 변경합니다.
 		documentService.changeParentDocument(document.getId(), contribute.getNewParentDocument().getId());

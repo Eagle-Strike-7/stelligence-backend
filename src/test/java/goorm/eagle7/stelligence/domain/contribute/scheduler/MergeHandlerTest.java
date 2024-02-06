@@ -65,7 +65,7 @@ class MergeHandlerTest {
 		Section s1 = section(1L, 1L, document, Heading.H1, "title", "content", 1);
 		Section s2 = section(2L, 1L, document, Heading.H2, "title", "content", 2);
 
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "newTitle", document);
 
 		Amendment a1 = amendment(1L, contribute, AmendmentType.UPDATE, s1, Heading.H1, "new title",
 			"new content", 0);
@@ -101,6 +101,25 @@ class MergeHandlerTest {
 		verify(documentService, times(1)).changeParentDocument(document.getId(),
 			contribute.getNewParentDocument().getId());
 
+	}
+
+	@Test
+	@DisplayName("제목 변경은 기존 이름과 다른 경우에만 수행한다.")
+	void noChangeTitle() {
+		//given
+		Member member = member(1L, "pete");
+
+		Document document = document(1L, member, "title", 1L);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "title", document);
+
+		//when
+		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
+			java.util.Optional.of(contribute));
+
+		mergeHandler.handle(contribute.getId());
+
+		//제목 변경이 호출되지 않아야 한다.
+		verify(documentService, never()).changeDocumentTitle(any(), any());
 	}
 
 	@Test
