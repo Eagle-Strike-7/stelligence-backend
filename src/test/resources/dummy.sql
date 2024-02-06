@@ -1,14 +1,14 @@
 -- 4명의 멤버가 존재합니다.
 insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
-                    social_id, created_at, updated_at)
+                    social_id, created_at, updated_at, deleted)
 values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
-        NOW()),
+        NOW(), 0),
        (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', NOW(),
-        NOW()),
+        NOW(), 0),
        (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
-        NOW()),
+        NOW(), 0),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
-        NOW());
+        NOW(), 0);
 
 -- 4개의 문서가 존재합니다.
 insert into document (document_id, title, current_revision, created_at, updated_at)
