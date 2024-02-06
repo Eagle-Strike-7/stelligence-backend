@@ -51,14 +51,14 @@ class BookmarkRepositoryTest {
 	}
 
 	/**
-	 * <h2>[정상] 북마크 존재 여부 조회</h2>
+	 * <h2>[정상] 존재하는 북마크 존재 여부 조회</h2>
 	 * <p> - memberId, documentId를 이용해 북마크 존재 여부 조회</p>
 	 * <p> - memberId: 1L, documentId: 1L인 북마크는 존재함</p>
 	 * <p>결과: memberId, documentId가 일치하면 true 반환</p>
 	 * <p>검증 방식: 반환값 확인</p>
 	 */
 	@Test
-	@DisplayName("[정상] 북마크 존재 여부 조회 - existsByMemberIdAndDocumentId")
+	@DisplayName("[정상] 존재하는 북마크 존재 여부 조회 - existsByMemberIdAndDocumentId")
 	void existsByMemberIdAndDocumentId() {
 
 		// given
@@ -74,14 +74,14 @@ class BookmarkRepositoryTest {
 	}
 
 	/**
-	 * <h2>[예외] 북마크 존재 여부 조회</h2>
+	 * <h2>[정상] 존재하지 않는 북마크 존재 여부 조회</h2>
 	 * <p> - memberId, documentId를 이용해 북마크 존재 여부 조회</p>
 	 * <p> - memberId: 4L, documentId: 1L인 북마크는 존재하지 않음</p>
 	 * <p>결과: memberId, documentId가 일치하지 않으면 false 반환</p>
 	 * <p>검증 방식: 반환값 확인</p>
 	 */
 	@Test
-	@DisplayName("[예외] 북마크 존재 여부 조회 - existsByMemberIdAndDocumentId")
+	@DisplayName("[정상] 존재하지 않는 북마크 존재 여부 조회 - existsByMemberIdAndDocumentId")
 	void existsByMemberIdAndDocumentIdEx() {
 
 		// given
