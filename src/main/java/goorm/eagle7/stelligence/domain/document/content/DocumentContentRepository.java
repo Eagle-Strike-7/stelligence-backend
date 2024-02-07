@@ -63,9 +63,9 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 
 	/**
 	 * Member가 작성한 Document의 수를 조회합니다.
-	 * @param member 조회할 Member
+	 * @param memberId 조회할 MemberId
 	 * @return 작성한 Document의 수
 	 */
-	long countDistinctByAuthor_Id(Member member);
+	long countDistinctByAuthor_Id(Long memberId);
 
 }
