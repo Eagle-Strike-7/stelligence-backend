@@ -16,6 +16,8 @@ import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -31,6 +33,7 @@ public class ContributeRequestValidator {
 	private final ContributeRepository contributeRepository;
 	private final DocumentContentRepository documentContentRepository;
 	private final SectionRepository sectionRepository;
+	private final DebateRepository debateRepository;
 
 	/**
 	 * 수정요청의 유효성을 검증합니다.
@@ -62,6 +65,11 @@ public class ContributeRequestValidator {
 		//해당 document에 대한 수정요청이 이미 존재하는가 (투표중인가)
 		if (contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING)) {
 			throw new BaseException("이미 해당 문서에 대한 수정요청이 존재합니다. documentId=" + request.getDocumentId());
+		}
+
+		//해당 document에 대한 열린 토론이 존재하는가?
+		if (debateRepository.existsByContributeDocumentIdAndStatus(request.getDocumentId(), DebateStatus.OPEN)) {
+			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. documentId=" + request.getDocumentId());
 		}
 
 		//수정하고자 하는 section들이 document에 존재하는가
