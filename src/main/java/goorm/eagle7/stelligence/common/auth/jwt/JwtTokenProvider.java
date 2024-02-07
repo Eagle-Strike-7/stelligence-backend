@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -58,7 +57,7 @@ public class JwtTokenProvider {
 			.issuedAt(now)
 			.expiration(new Date(System.currentTimeMillis()
 				+ jwtProperties.getAccessTokenExpirationMs()))
-			.claim(jwtProperties.getClaim().getRole(), jwtProperties.getClaim().getValue())
+			.claim(jwtProperties.getClaims().getRole(), jwtProperties.getClaims().getValue())
 			// payload 끝, signature 시작
 			.signWith(key)
 			.compact();

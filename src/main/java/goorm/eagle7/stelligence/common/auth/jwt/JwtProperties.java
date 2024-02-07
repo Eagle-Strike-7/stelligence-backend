@@ -4,8 +4,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
@@ -15,9 +17,10 @@ public class JwtProperties {
 	private Header header = new Header();
 	private Token accessToken = new Token();
 	private Token refreshToken = new Token();
-	private Claim claim = new Claim();
+	private Claims claims = new Claims();
 
 	@Getter
+	@Setter
 	public static class Header {
 		private String type;
 		private String tokenType;
@@ -26,13 +29,15 @@ public class JwtProperties {
 	}
 
 	@Getter
+	@Setter
 	public static class Token {
 		private String name;
 		private long expiration;
 	}
 
 	@Getter
-	public static class Claim {
+	@Setter
+	public static class Claims {
 		private String role;
 		private String value;
 	}
