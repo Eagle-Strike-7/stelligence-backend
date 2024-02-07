@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,10 @@ public class ContributeRequestValidator {
 		);
 
 		//변경하고자 하는 제목이 다른 문서와 중복되는가
-		if (documentContentRepository.existsByTitle(request.getAfterDocumentTitle())) {
+
+		//이미 제목을 가진 문서가 존재하는가 - contribute의 대상이 되는 document라면 허용
+		Optional<Document> optionalDocument = documentContentRepository.findByTitle(request.getAfterDocumentTitle());
+		if (optionalDocument.isPresent() && !optionalDocument.get().getId().equals(request.getDocumentId())) {
 			throw new BaseException("이미 해당 제목을 가진 문서가 존재합니다. title=" + request.getAfterDocumentTitle());
 		}
 
