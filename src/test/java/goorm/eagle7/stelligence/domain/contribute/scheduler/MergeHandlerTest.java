@@ -87,7 +87,7 @@ class MergeHandlerTest {
 		//then
 
 		//버전이 2로 증가했는지 확인
-		assertThat(document.getCurrentRevision()).isEqualTo(2);
+		assertThat(document.getLatestRevision()).isEqualTo(2);
 
 		//contribute 상태가 MERGED로 변경되었는지 확인
 		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.MERGED);
@@ -238,7 +238,8 @@ class MergeHandlerTest {
 		Member member = member(1L, "pete");
 		Document document = document(1L, member, "title", 1L);
 		Document afterParentDocument = document(2L, member, "parent", 1L);
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle", afterParentDocument);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle",
+			afterParentDocument);
 
 		//when
 		when(contributeRepository.findByIdWithAmendmentsAndMember(1L)).thenReturn(Optional.of(contribute));

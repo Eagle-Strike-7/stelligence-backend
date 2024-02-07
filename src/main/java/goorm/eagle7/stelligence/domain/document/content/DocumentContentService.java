@@ -86,7 +86,7 @@ public class DocumentContentService {
 		Document document = documentRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
 
-		return getDocument(documentId, document.getCurrentRevision());
+		return getDocument(documentId, document.getLatestRevision());
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class DocumentContentService {
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. 문서 ID : " + documentId));
 
 		//버전이 존재하는지 확인합니다.
-		if (revision > document.getCurrentRevision()) {
+		if (revision > document.getLatestRevision()) {
 			throw new BaseException("존재하지 않는 버전입니다. 버전 : " + revision);
 		}
 
