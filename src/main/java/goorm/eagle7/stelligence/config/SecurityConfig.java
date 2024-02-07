@@ -134,7 +134,7 @@ public class SecurityConfig {
 				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능 TODO permitall 이용할 수 있도록 수정
 			.addFilterBefore(authExceptionHandlerFilter, AuthFilter.class)
 			.exceptionHandling(exceptionHandling -> exceptionHandling
-				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
+				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403 -> 400 통일
 				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
 			)
 			.oauth2Login(oauth2 -> oauth2
@@ -148,7 +148,9 @@ public class SecurityConfig {
 			// session 무효화 X - 다른 데서 이용할 수도 있음. 불필요한 일 X.
 			.logout(
 				logout -> logout
-					.logoutUrl("/api/logout")
+					.logoutRequestMatcher(
+						request -> request.getServletPath().equals("/api/logout")
+					) // 로그아웃 요청 url 설정 (default: /logout)
 					.addLogoutHandler(oAuth2LogoutCustomHandler) // 로그아웃 시 refreshToken 삭제 // handler 순서 중요함.
 					.deleteCookies(accessTokenCookieName, refreshTokenCookieName) // cookie 삭제, (JSESSIONID은 톰캣 사용)
 					.clearAuthentication(true) // 순서 상관 X
