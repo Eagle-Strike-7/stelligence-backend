@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberBadgesListResponse {
 
-	private List<MemberBadgesResponse> badges ;
+	private List<MemberBadgesResponse> badges;
 
 	public static MemberBadgesListResponse from(List<MemberBadgesResponse> badges) {
 		return new MemberBadgesListResponse(badges);
