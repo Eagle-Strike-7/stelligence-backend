@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 
 @ExtendWith(MockitoExtension.class)
 class RejectHandlerTest {
@@ -26,7 +27,8 @@ class RejectHandlerTest {
 	@Test
 	void handleTest() {
 		//given
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
 
 		//when
 		when(contributeRepository.findById(contribute.getId())).thenReturn(java.util.Optional.of(contribute));

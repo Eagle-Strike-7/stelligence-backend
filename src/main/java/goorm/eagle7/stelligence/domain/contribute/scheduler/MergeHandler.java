@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -12,6 +13,7 @@ import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
+import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	private final AmendmentMergeTemplateMapper amendmentMergeTemplateMapper;
 	private final ContributeRepository contributeRepository;
 	private final CacheManager cacheManager;
+	private final DocumentService documentService;
 
 	/**
 	 * Amendment의 정렬은 Merge 과정에서 중요합니다. 정렬이 제대로 되지 않으면
@@ -76,6 +79,20 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 			.forEach(amendment -> amendmentMergeTemplateMapper.getTemplateForType(amendment.getType())
 				.handle(document, amendment)
 			);
+
+		//Document의 제목을 변경합니다.
+		if (!contribute.getAfterDocumentTitle().equals(contribute.getBeforeDocumentTitle())) {
+			documentService.changeDocumentTitle(document.getId(), contribute.getAfterDocumentTitle());
+		}
+
+		// Document의 부모 문서를 변경합니다.
+		// 두 경우 모두 null일 수 있는 가능성을 고려합니다.
+		// 부모 문서가 동일한 경우에는 업데이트하지 않습니다.
+		Long beforeParentDocumentId = contribute.getBeforeParentDocument() == null ? null : contribute.getBeforeParentDocument().getId();
+		Long afterParentDocumentId = contribute.getAfterParentDocument() == null ? null : contribute.getAfterParentDocument().getId();
+		if (!Objects.equals(beforeParentDocumentId, afterParentDocumentId)) {
+			documentService.changeParentDocument(document.getId(), afterParentDocumentId);
+		}
 
 		//문서의 현재 revision을 증가시킵니다.
 		document.incrementCurrentRevision();

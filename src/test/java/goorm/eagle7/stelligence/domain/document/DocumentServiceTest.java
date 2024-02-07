@@ -49,7 +49,7 @@ class DocumentServiceTest {
 		);
 
 		when(memberRepository.findById(author.getId())).thenReturn(Optional.of(author));
-		when(documentContentService.createDocument("testTitle", "testSectionContent", author))
+		when(documentContentService.createDocument("testTitle", "testSectionContent", null, author))
 			.thenReturn(document);
 
 		//when
@@ -61,7 +61,7 @@ class DocumentServiceTest {
 		//then
 		//memberRepository, documentContentService, documentGraphService가 각각 한 번씩 호출되어야 합니다.
 		verify(memberRepository, times(1)).findById(author.getId());
-		verify(documentContentService, times(1)).createDocument("testTitle", "testSectionContent", author);
+		verify(documentContentService, times(1)).createDocument("testTitle", "testSectionContent", null, author);
 		verify(documentGraphService, times(1)).createDocumentNode(document);
 
 		//기여한 글 개수가 올라야 합니다.
@@ -106,5 +106,35 @@ class DocumentServiceTest {
 
 		//then
 		verify(documentGraphService, times(1)).findGraphWithDepth(1L, 3);
+	}
+
+	@Test
+	@DisplayName("문서 제목 변경")
+	void changeDocumentTitle() {
+		//given
+		Long documentId = 1L;
+		String updateTitle = "updateTitle";
+
+		// when
+		documentService.changeDocumentTitle(documentId, updateTitle);
+
+		//then
+		verify(documentContentService, times(1)).changeTitle(documentId, updateTitle);
+		verify(documentGraphService, times(1)).changeTitle(documentId, updateTitle);
+	}
+
+	@Test
+	@DisplayName("상위 문서 변경")
+	void changeParentDocument() {
+		//given
+		Long documentId = 1L;
+		Long parentDocumentId = 2L;
+
+		// when
+		documentService.changeParentDocument(documentId, parentDocumentId);
+
+		//then
+		verify(documentContentService, times(1)).updateParentDocument(documentId, parentDocumentId);
+		verify(documentGraphService, times(1)).updateDocumentLink(documentId, parentDocumentId);
 	}
 }

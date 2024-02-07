@@ -8,6 +8,7 @@ import java.util.Set;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
@@ -30,7 +31,8 @@ public class TestFixtureGenerator {
 	private TestFixtureGenerator() {
 	}
 
-	public static Document document(Long id, Member author, String title, Long currentRevision) {
+	public static Document document(Long id, Member author, String title, Long currentRevision,
+		Document parentDocument) {
 		try {
 			Class<?> documentClass = Class.forName("goorm.eagle7.stelligence.domain.document.content.model.Document");
 
@@ -46,22 +48,29 @@ public class TestFixtureGenerator {
 			Field authorField = documentClass.getDeclaredField("author");
 			Field currentRevisionField = documentClass.getDeclaredField("currentRevision");
 			Field sectionsField = documentClass.getDeclaredField("sections");
+			Field parentDocumentField = documentClass.getDeclaredField("parentDocument");
 
 			idField.setAccessible(true);
 			titleField.setAccessible(true);
 			authorField.setAccessible(true);
 			currentRevisionField.setAccessible(true);
 			sectionsField.setAccessible(true);
+			parentDocumentField.setAccessible(true);
 
 			idField.set(document, id);
 			titleField.set(document, title);
 			authorField.set(document, author); // Member 객체 필요
 			currentRevisionField.set(document, currentRevision);
+			parentDocumentField.set(document, parentDocument);
 
 			return (Document)document;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static Document document(Long id, Member author, String title, Long currentRevision) {
+		return document(id, author, title, currentRevision, null);
 	}
 
 	public static Member member(Long id, Role role, long contributes, String name, String nickname, String email,
@@ -215,6 +224,11 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
+		return contribute(id, contributor, status, document, "newTitle", document);
+	}
+
+	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
+		String afterDocumentTitle, Document afterParentDocument) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -228,18 +242,27 @@ public class TestFixtureGenerator {
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
+			Field beforeDocumentTitleField = contributeClazz.getDeclaredField("beforeDocumentTitle");
+			Field afterDocumentTitleField = contributeClazz.getDeclaredField("afterDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("afterParentDocument");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
+			beforeDocumentTitleField.setAccessible(true);
+			afterDocumentTitleField.setAccessible(true);
+			newParentDocumentField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
+			beforeDocumentTitleField.set(contribute, document.getTitle());
+			afterDocumentTitleField.set(contribute, afterDocumentTitle);
+			newParentDocumentField.set(contribute, afterParentDocument);
 
 			return (Contribute)contribute;
 
@@ -248,7 +271,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence) {
 
 		try {
 			Class<?> debateClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Debate");
@@ -287,7 +311,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence, LocalDateTime createdAt) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence, LocalDateTime createdAt) {
 
 		try {
 			Debate debate = TestFixtureGenerator.debate(id, contribute, status, endAt, commentSequence);
@@ -335,6 +360,36 @@ public class TestFixtureGenerator {
 			sequenceField.set(comment, sequence);
 
 			return (Comment)comment;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	// Bookmark 생성
+	public static Bookmark bookmark(Long id, Member member, Document document) {
+		try {
+			Class<?> bookmarkClazz = Class.forName("goorm.eagle7.stelligence.domain.bookmark.model.Bookmark");
+
+			Constructor<?> constructor = bookmarkClazz.getDeclaredConstructor();
+			constructor.setAccessible(true);
+
+			Object bookmark = constructor.newInstance();
+
+			Field idField = bookmarkClazz.getDeclaredField("id");
+			Field memberField = bookmarkClazz.getDeclaredField("member");
+			Field documentField = bookmarkClazz.getDeclaredField("document");
+
+			idField.setAccessible(true);
+			memberField.setAccessible(true);
+			documentField.setAccessible(true);
+
+			idField.set(bookmark, id);
+			memberField.set(bookmark, member);
+			documentField.set(bookmark, document);
+
+			return (Bookmark)bookmark;
 
 		} catch (Exception e) {
 			e.printStackTrace();

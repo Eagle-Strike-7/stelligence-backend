@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class DocumentService {
 
 	private final DocumentContentService documentContentService;
@@ -42,6 +42,7 @@ public class DocumentService {
 	 * @param documentCreateRequest : 생성할 Document의 정보
 	 * @return 생성된 DocumentResponse
 	 */
+	@Transactional
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
 		Member author = memberRepository.findById(loginMemberId)
@@ -49,7 +50,7 @@ public class DocumentService {
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), author);
+			documentCreateRequest.getContent(), documentCreateRequest.getParentDocumentId(), author);
 
 		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
 		if (documentCreateRequest.getParentDocumentId() == null) {
@@ -117,5 +118,29 @@ public class DocumentService {
 	 */
 	public List<DocumentNodeResponse> getDocumentNodeByTitle(String title, int limit) {
 		return documentGraphService.findNodeByTitle(title, limit);
+	}
+
+	/**
+	 * 문서의 제목을 수정합니다.
+	 * @param documentId: 수정할 문서의 ID
+	 * @param newTitle: 변경될 제목
+	 */
+	@Transactional
+	public void changeDocumentTitle(Long documentId, String newTitle) {
+		documentContentService.changeTitle(documentId, newTitle);
+
+		//DocumentNode의 제목도 변경합니다.
+		documentGraphService.changeTitle(documentId, newTitle);
+	}
+
+	/**
+	 * 문서의 부모 문서를 변경합니다.
+	 * @param documentId: 변경할 문서의 ID
+	 * @param newParentDocumentId: 변경될 부모 문서의 ID
+	 */
+	@Transactional
+	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentContentService.updateParentDocument(documentId, newParentDocumentId);
+		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
 }

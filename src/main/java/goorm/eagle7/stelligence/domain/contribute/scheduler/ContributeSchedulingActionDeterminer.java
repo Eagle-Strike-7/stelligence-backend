@@ -3,8 +3,8 @@ package goorm.eagle7.stelligence.domain.contribute.scheduler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.vote.VoteResultSummary;
-import goorm.eagle7.stelligence.domain.vote.custom.VoteCustomRepository;
+import goorm.eagle7.stelligence.domain.vote.custom.CustomVoteRepository;
+import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContributeSchedulingActionDeterminer {
 
-	private final VoteCustomRepository voteRepository;
+	private final CustomVoteRepository voteRepository;
 
 	private static final double MERGE_RATE = 0.8;
 	private static final double DEBATE_RATE = 0.3;
@@ -30,11 +30,20 @@ public class ContributeSchedulingActionDeterminer {
 	public ContributeSchedulingAction check(Contribute contribute) {
 
 		//contribute의 vote 수를 가져온다.
-		VoteResultSummary voteResultSummary = voteRepository.getVoteSummary(contribute.getId());
+		VoteSummary voteSummary = voteRepository.getVoteSummary(contribute.getId());
 
-		double agreeRate = (double)voteResultSummary.getAgreements() / voteResultSummary.getTotalVotes();
-		log.debug("Contribute {}의 투표 결과 : {} / {} = {}", contribute.getId(), voteResultSummary.getAgreements(),
-			voteResultSummary.getTotalVotes(), agreeRate);
+		int totalVotes = voteSummary.getAgreeCount() + voteSummary.getDisagreeCount();
+
+		//투표가 없으면 반려
+		if (totalVotes == 0) {
+			log.debug("Contribute {}의 투표가 없어 반려합니다.", contribute.getId());
+			return ContributeSchedulingAction.REJECT;
+		}
+
+		double agreeRate = (double)voteSummary.getAgreeCount() / totalVotes;
+
+		log.debug("Contribute {}의 투표 결과 : {} / {} = {}", contribute.getId(), voteSummary.getAgreeCount(),
+			totalVotes, agreeRate);
 
 		// 투표 결과에 따라 병합, 토론, 반려를 결정한다.
 		if (agreeRate >= MERGE_RATE) {
