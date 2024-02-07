@@ -53,7 +53,7 @@ class DocumentContentServiceReadUnitTest {
 			.thenReturn(Optional.of(document));
 
 		//when
-		documentContentService.getDocument(1L);
+		DocumentResponse documentResponse = documentContentService.getDocument(1L);
 
 		//then
 
@@ -62,7 +62,8 @@ class DocumentContentServiceReadUnitTest {
 		//따라서 이후 호출되는 findByVersion을 통해 검증함
 		verify(sectionRepository).findByVersion(document, 3L);
 
-		//이후 검증은 getDocument(Long documentId, Long version) 메서드에서 진행
+		//최신버전의 문서를 조회했으므로, 현재 버전은 3이어야 한다.
+		assertThat(documentResponse.getCurrentRevision()).isEqualTo(3L);
 	}
 
 	@Test
@@ -84,7 +85,7 @@ class DocumentContentServiceReadUnitTest {
 	void getDocumentByVersionSuccess() {
 
 		//given
-		Document document = document(1L, member(1L, "hello"), "title11", 3L);
+		Document document = document(1L, member(1L, "hello"), "title11", 4L);
 
 		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
 		Section s2 = section(2L, 2L, document, Heading.H2, "title3", "content3", 3);
@@ -116,6 +117,9 @@ class DocumentContentServiceReadUnitTest {
 		assertThat(documentResponse.getSections().get(2).getSectionId()).isEqualTo(2L); //order 3
 
 		assertThat(documentResponse.isEditable()).isTrue();
+
+		assertThat(documentResponse.getCurrentRevision()).isEqualTo(3L);
+		assertThat(documentResponse.getLatestRevision()).isEqualTo(4L);
 	}
 
 	@Test
