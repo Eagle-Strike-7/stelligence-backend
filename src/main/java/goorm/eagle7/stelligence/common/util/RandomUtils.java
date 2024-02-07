@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.login;
+package goorm.eagle7.stelligence.common.util;
 
 import java.util.Random;
 

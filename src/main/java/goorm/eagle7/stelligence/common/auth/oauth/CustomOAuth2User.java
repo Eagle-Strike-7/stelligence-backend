@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
-import goorm.eagle7.stelligence.common.login.RandomUtils;
+import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.Getter;
 

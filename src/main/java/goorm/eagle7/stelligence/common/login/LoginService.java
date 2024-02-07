@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;

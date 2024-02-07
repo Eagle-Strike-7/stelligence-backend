@@ -5,7 +5,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.auth.filter.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

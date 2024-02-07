@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
