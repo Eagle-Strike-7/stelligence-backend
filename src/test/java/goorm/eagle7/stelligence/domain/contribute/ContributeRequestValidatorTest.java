@@ -18,6 +18,8 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -32,6 +34,8 @@ class ContributeRequestValidatorTest {
 	ContributeRepository contributeRepository;
 	@Mock
 	DocumentContentRepository documentContentRepository;
+	@Mock
+	DebateRepository debateRepository;
 	@InjectMocks
 	ContributeRequestValidator contributeRequestValidator;
 
@@ -113,6 +117,24 @@ class ContributeRequestValidatorTest {
 		assertThatThrownBy(
 			() -> contributeRequestValidator.validate(contributeRequest)
 		).isInstanceOf(BaseException.class).hasMessage("이미 해당 문서에 대한 수정요청이 존재합니다. documentId=1");
+	}
+
+	@Test
+	@DisplayName("documentId에 해당하는 문서에 대한 토론이 진행중인 경우")
+	void debating() {
+		//given
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"title", 2L, null);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN))
+			.thenReturn(true);
+
+		//then
+		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest))
+			.isInstanceOf(BaseException.class).hasMessage("해당 문서에 대한 토론이 진행중입니다. documentId=1");
 	}
 
 	@Test
