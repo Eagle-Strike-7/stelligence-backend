@@ -40,7 +40,7 @@ public class ContributeResponse {
 	private Long parentDocumentId;	//수정요청과 관련 없이 현재 상위 문서
 	private String parentDocumentTitle;
 	private Long relatedDebateId;	//연관된 토론
-	private LocalDateTime endAt;
+	private LocalDateTime endAt;	//투표 종료 시간
 
 	private ContributeResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
