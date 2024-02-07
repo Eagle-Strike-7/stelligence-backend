@@ -3,9 +3,9 @@ package goorm.eagle7.stelligence.common.auth.filter;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,9 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthFilter extends OncePerRequestFilter {
 
 	@Value("${jwt.accessToken.name}")
+
 	private String accessTokenName;
 	@Value("${jwt.refreshToken.name}")
 	private String refreshTokenName;
+	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
+
 
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
@@ -95,7 +98,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 유효한 accessToken으로 검증
 			return jwtTokenService.makeAuthenticationFromToken(accessToken);
 		} catch (JwtException e) {
-			throw new AccessDeniedException(e.getMessage());
+			throw new UsernameNotFoundException(e.getMessage());
 		}
 
 	}
@@ -114,7 +117,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			cookieUtils.getCookieFromRequest(cookieType)
 				.map(jwtTokenService::getTokenFromCookie)
 				.orElseThrow(
-					() -> new AccessDeniedException("Token is not found")
+					() -> new UsernameNotFoundException(ERROR_MESSAGE)
 				);
 	}
 
