@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.domain.member;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import goorm.eagle7.stelligence.domain.member.model.Member;
 

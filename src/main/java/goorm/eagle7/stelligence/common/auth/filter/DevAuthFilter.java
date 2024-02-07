@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.common.auth.filter;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
