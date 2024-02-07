@@ -50,7 +50,7 @@ public class DocumentService {
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), author);
+			documentCreateRequest.getContent(), documentCreateRequest.getParentDocumentId(), author);
 
 		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
 		if (documentCreateRequest.getParentDocumentId() == null) {
@@ -130,7 +130,7 @@ public class DocumentService {
 		documentContentService.changeTitle(documentId, newTitle);
 
 		//DocumentNode의 제목도 변경합니다.
-		//documentGraphService.changeDocumentTitle(documentId, newTitle);
+		documentGraphService.changeTitle(documentId, newTitle);
 	}
 
 	/**
@@ -140,6 +140,7 @@ public class DocumentService {
 	 */
 	@Transactional
 	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentContentService.updateParentDocument(documentId, newParentDocumentId);
 		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
 }

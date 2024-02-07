@@ -66,6 +66,21 @@ class ContributeRequestValidatorTest {
 	}
 
 	@Test
+	@DisplayName("변경요청된 제목이 비어있는 경우")
+	void emptyTitle() {
+		//given
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			null, 1L, " ", 2L);
+
+		//when
+
+		//then
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest)
+		).isInstanceOf(BaseException.class).hasMessage("수정하려는 제목이 비어있습니다.");
+	}
+
+	@Test
 	@DisplayName("documentId에 해당하는 문서가 존재하지 않는 경우")
 	void noDocument() {
 		//given

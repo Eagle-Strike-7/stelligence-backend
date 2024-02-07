@@ -70,12 +70,20 @@ public class Document extends BaseTimeEntity {
 	@OneToMany(mappedBy = "document")
 	private List<Section> sections = new ArrayList<>();
 
+	/**
+	 * Document와 연결되어있는 상위 Document입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parent_document_id")
+	private Document parentDocument;
+
 	//===생성===//
-	public static Document createDocument(String title, Member author) {
+	public static Document createDocument(String title, Member author, Document parentDocument) {
 		Document document = new Document();
 		document.title = title;
 		document.author = author;
 		document.currentRevision = 1L; //최초 생성 시 버전은 1입니다.
+		document.parentDocument = parentDocument;
 		return document;
 	}
 
@@ -97,4 +105,11 @@ public class Document extends BaseTimeEntity {
 		this.title = newTitle;
 	}
 
+	/**
+	 * parentDocument를 변경합니다.
+	 * @param parentDocument 변경될 상위 문서
+	 */
+	public void updateParentDocument(Document parentDocument) {
+		this.parentDocument = parentDocument;
+	}
 }
