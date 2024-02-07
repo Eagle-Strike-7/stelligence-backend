@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.vote.custom.CustomVoteRepository;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
 
@@ -28,7 +29,8 @@ class ContributeSchedulingActionDeterminerTest {
 	@Test
 	void merge() {
 		//given
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -42,7 +44,8 @@ class ContributeSchedulingActionDeterminerTest {
 	@Test
 	void debate() {
 		//given
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -56,7 +59,8 @@ class ContributeSchedulingActionDeterminerTest {
 	@Test
 	void reject() {
 		//given
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -71,7 +75,8 @@ class ContributeSchedulingActionDeterminerTest {
 	@DisplayName("투표가 없으면 반려")
 	void rejectWhenNoVote() {
 		//given
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(

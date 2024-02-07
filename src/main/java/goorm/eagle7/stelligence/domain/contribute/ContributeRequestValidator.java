@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
@@ -46,6 +47,12 @@ public class ContributeRequestValidator {
 	 */
 	@Transactional(readOnly = true)
 	public void validate(ContributeRequest request) {
+
+		//수정하려는 제목이 null이나 빈값이 아닌가?
+		if (!StringUtils.hasText(request.getAfterDocumentTitle())) {
+			throw new BaseException("수정하려는 제목이 비어있습니다.");
+		}
+
 		//document가 존재하는가
 		Document document = documentContentRepository.findById(request.getDocumentId())
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. documentId=" + request.getDocumentId()));

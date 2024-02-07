@@ -162,7 +162,7 @@ public class DocumentGraphService {
 
 	@Transactional
 	@CacheEvict(value="RootGraph", allEntries = true, cacheManager = "cacheManager")
-	public void updateDocumentTitle(Long documentId, String updateTitle) {
+	public void changeTitle(Long documentId, String updateTitle) {
 
 		DocumentNode documentNode = documentNodeRepository.findById(documentId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 노드에 대한 제목 수정 요청입니다. 문서 ID: " + documentId));

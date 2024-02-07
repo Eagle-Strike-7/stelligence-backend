@@ -28,10 +28,10 @@ public class ContributeRequest {
 	private Long documentId;
 
 	@Schema(description = "문서의 변경될 제목", example = "마리모")
-	private String newDocumentTitle;
+	private String afterDocumentTitle;
 
 	@Schema(description = "문서의 변경될 부모 문서 ID", example = "2")
-	private Long newParentDocumentId;
+	private Long afterParentDocumentId;
 
 	@Override
 	public String toString() {
@@ -40,8 +40,8 @@ public class ContributeRequest {
 			+ ", contributeDescription='" + contributeDescription + '\''
 			+ ", amendments=" + amendments
 			+ ", documentId=" + documentId
-			+ ", newDocumentTitle='" + newDocumentTitle + '\''
-			+ ", newParentDocumentId=" + newParentDocumentId
+			+ ", afterDocumentTitle='" + afterDocumentTitle + '\''
+			+ ", afterParentDocumentId=" + afterParentDocumentId
 			+ '}';
 	}
 }

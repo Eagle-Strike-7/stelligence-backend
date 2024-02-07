@@ -38,4 +38,60 @@ class DocumentContentServiceTest {
 		assertThat(document.getTitle()).isEqualTo("changedTitle");
 
 	}
+
+	@Test
+	@DisplayName("상위 문서 링크 변경 테스트: 기존 상위 문서 없는 경우")
+	void updateParentDocumentFromNull() {
+		// given
+		Long documentId = 1L;
+		Long parentDocumentId = 2L;
+		Document document = document(documentId, member(1L, "author1"), "title1", 1L, null);
+		Document parentDocument = document(parentDocumentId, member(2L, "author2"), "title2", 1L);
+
+		when(documentContentRepository.findById(documentId)).thenReturn(java.util.Optional.of(document));
+		when(documentContentRepository.findById(parentDocumentId)).thenReturn(java.util.Optional.of(parentDocument));
+
+		// when
+		documentContentService.updateParentDocument(documentId, parentDocumentId);
+
+		//then
+		assertThat(document.getParentDocument()).isEqualTo(parentDocument);
+	}
+
+	@Test
+	@DisplayName("상위 문서 링크 변경 테스트: 기존 상위 문서 있던 경우")
+	void updateParentDocument() {
+		// given
+		Long documentId = 1L;
+		Long parentDocumentId = 2L;
+		Document existParentDocument = document(99L, member(99L, "author99"), "title99", 1L);
+		Document document = document(documentId, member(1L, "author1"), "title1", 1L, existParentDocument);
+		Document parentDocument = document(parentDocumentId, member(2L, "author2"), "title2", 1L);
+
+		when(documentContentRepository.findById(documentId)).thenReturn(java.util.Optional.of(document));
+		when(documentContentRepository.findById(parentDocumentId)).thenReturn(java.util.Optional.of(parentDocument));
+
+		// when
+		documentContentService.updateParentDocument(documentId, parentDocumentId);
+
+		//then
+		assertThat(document.getParentDocument()).isEqualTo(parentDocument);
+	}
+
+	@Test
+	@DisplayName("상위 문서 링크 삭제 테스트: 기존 상위 문서 있던 경우")
+	void updateParentDocumentToNull() {
+		// given
+		Long documentId = 1L;
+		Document existParentDocument = document(99L, member(99L, "author99"), "title99", 1L);
+		Document document = document(documentId, member(1L, "author1"), "title1", 1L, existParentDocument);
+
+		when(documentContentRepository.findById(documentId)).thenReturn(java.util.Optional.of(document));
+
+		// when
+		documentContentService.updateParentDocument(documentId, null);
+
+		//then
+		assertThat(document.getParentDocument()).isNull();
+	}
 }
