@@ -7,7 +7,6 @@ import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
-import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.Getter;
 
@@ -43,7 +42,7 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "sub");
 
 		customOAuth2User.name = name;
-		customOAuth2User.nickname = RandomUtils.createNicknameWithRandomNumber("user");
+		customOAuth2User.nickname = null;
 		customOAuth2User.email = email;
 		customOAuth2User.imageUrl = imageUrl;
 		customOAuth2User.socialId = socialId;
