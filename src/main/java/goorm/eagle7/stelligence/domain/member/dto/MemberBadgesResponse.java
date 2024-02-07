@@ -18,13 +18,15 @@ public class MemberBadgesResponse {
 	private String badgeImgUrl; // Badge 이미지 url
 
 
-	public static MemberBadgesResponse from(Badge badge) {
+	public static MemberBadgesResponse of(Badge badge, String imgUrl) {
+
 		return new MemberBadgesResponse(
 			badge.name(),
 			badge.getTitle(),
 			badge.getEventCategory().getCategory(),
-			badge.getImgUrl(),
+			imgUrl,
 			badge.getDescription()
 		);
 	}
+
 }
