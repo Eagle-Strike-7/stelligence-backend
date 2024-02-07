@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>repository에 저장되지 않은 httpmethod, uri에 대해 토큰 검증 진행</p>
  */
 @Slf4j
-@Component
+// @Component
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 
