@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.member;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,11 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final WithdrawnMemberRepository withdrawnMemberRepository;
+
+	@Value("${server.uri}")
+	private String serverUri;
+
+	private static final String BADGE_FOLDER_NAME = "badges";
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "존재하지 않는 회원입니다. MemberId= %s"; // 서식 문자 사용
 
 	/**
@@ -139,7 +145,12 @@ public class MemberService {
 		badges.add(Badge.ANDROMEDA);
 		badges.add(Badge.GALAXY);
 
-		List<MemberBadgesResponse> list = badges.stream().map(MemberBadgesResponse::from).toList();
+
+		List<MemberBadgesResponse> list = badges.stream().map(
+			badge -> MemberBadgesResponse.of(
+				badge,
+				serverUri + "/" + BADGE_FOLDER_NAME + badge.getImgUrl()
+		)).toList();
 
 		return MemberBadgesListResponse.from(list);
 
