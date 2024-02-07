@@ -2,7 +2,7 @@ package goorm.eagle7.stelligence.common.auth.jwt;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 class JwtTokenValidator {
 
@@ -26,9 +26,14 @@ class JwtTokenValidator {
 	 * @param token 검사할 token
 	 * @return Claims 서명이 포함된 클레임 반환
 	 * @throws ExpiredJwtException 만료된 토큰입니다.
+	 * @throws MalformedJwtException 토큰 값 형식이 잘못되었습니다.
+	 * @throws IllegalArgumentException 토큰 값이 없습니다.
+	 * @throws UnsupportedJwtException 예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.
+	 * @throws JwtException 상기 셋 중 어느 것도 아닐 때, 유효하지 않은 토큰입니다.
 	 *
 	 */ // TODO token null이면 어떤 error인지 확인 필요.
 	public Claims validateAndExtractClaims(String token) {
+		log.debug("토큰 유효성 검사 = {}", token);
 		return getClaimsOrNullUnlessExpired(token);
 	}
 
