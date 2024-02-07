@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.badges.model;
+package goorm.eagle7.stelligence.domain.badge.model;
 
 import lombok.Getter;
 

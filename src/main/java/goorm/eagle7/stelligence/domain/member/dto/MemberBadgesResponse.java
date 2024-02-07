@@ -1,6 +1,6 @@
 package goorm.eagle7.stelligence.domain.member.dto;
 
-import goorm.eagle7.stelligence.domain.badges.model.Badge;
+import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
