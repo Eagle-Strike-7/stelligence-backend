@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.common.auth.filter;
 import java.io.IOException;
 
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,7 +22,7 @@ public class AuthExceptionHandlerFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 		try {
 			filterChain.doFilter(request, response);
-		} catch (UsernameNotFoundException e) {
+		} catch (AuthenticationException e) {
 			log.debug("UsernameNotFoundException catched in AuthExceptionHandlerFilter : {}", e.getMessage());
 			ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, ResponseTemplate.fail(e.getMessage()));
 		}
