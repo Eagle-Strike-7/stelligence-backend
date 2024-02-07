@@ -1,22 +1,15 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 // TODO extends JwtDefaultParser
 @Slf4j
-@Service
 @RequiredArgsConstructor
-public class JwtTokenParser {
+class JwtTokenParser {
 
 	private final JwtTokenValidator jwtTokenValidator;
-
-	@Value("${jwt.claim.role}")
-	private String claimRole;
 
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
@@ -44,6 +37,7 @@ public class JwtTokenParser {
 			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
 			return e.getClaims().getSubject();
 		}
+
 	}
 
 }
