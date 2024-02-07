@@ -53,7 +53,8 @@ public class ContributeService {
 		// 부모 문서 ID가 null 이면 afterParentDocument는 null
 		Document afterParentDocument = contributeRequest.getAfterParentDocumentId() == null ?
 			null : documentContentRepository.findById(contributeRequest.getAfterParentDocumentId())
-			.orElseThrow(() -> new BaseException("존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getAfterParentDocumentId()));
+			.orElseThrow(() -> new BaseException(
+				"존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getAfterParentDocumentId()));
 
 		Contribute contribute = Contribute.createContribute(
 			member,
@@ -146,16 +147,8 @@ public class ContributeService {
 	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
-		Page<Contribute> contributesByDocumentAndStatus;
-
-		// merged가 true이면 MERGED, false이면 REJECTED or DEBATING
-		if (merged) {
-			contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
-				ContributeStatus.MERGED, pageable);
-		} else {
-			contributesByDocumentAndStatus = contributeRepository.findByDocumentAndNonMerged(documentId,
-				pageable);
-		}
+		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
+			merged, pageable);
 
 		return ContributePageResponse.from(contributesByDocumentAndStatus);
 	}
