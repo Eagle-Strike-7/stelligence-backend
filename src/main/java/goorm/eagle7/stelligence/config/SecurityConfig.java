@@ -32,10 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Value("${jwt.accessToken.name}")
+	@Value("${http.cookie.accessToken.name}")
 	private String accessTokenCookieName;
 
-	@Value("${jwt.refreshToken.name}")
+	@Value("${http.cookie.refreshToken.name}")
 	private String refreshTokenCookieName;
 
 	private final AuthFilter authFilter;
