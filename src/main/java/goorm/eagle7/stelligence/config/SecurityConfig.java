@@ -15,9 +15,9 @@ import org.springframework.web.filter.CorsFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.AuthExceptionHandlerFilter;
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
-import goorm.eagle7.stelligence.common.auth.filter.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
+import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginFailureHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginSuccessHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutCustomHandler;

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
@@ -39,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 
-	private final PermittedPathStore permittedPathStore;
+	private final CustomRequestMatcher customRequestMatcher;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LoginService loginService;
@@ -77,7 +78,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(request)) {
 
 				log.debug("토큰 검증이 필요한 uri");
 				Optional<Cookie> cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
@@ -171,13 +172,11 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * repository에 저장된 RequestResource set 기준으로 토큰 검증이 필요한 httpMethod, uri인지 확인
-	 * @param httpMethod String 타입으로 추출.
-	 * @param uri uri String 타입으로 추출.
+	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
-	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return !permittedPathStore.exist(httpMethod, uri);
+	private boolean isTokenValidationRequired(HttpServletRequest request) {
+		return !customRequestMatcher.matches(request);
 	}
 
 }
