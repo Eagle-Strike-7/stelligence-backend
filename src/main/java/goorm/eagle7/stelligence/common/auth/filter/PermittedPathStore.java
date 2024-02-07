@@ -40,7 +40,7 @@ class PermittedPathStore {
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
 
 			// logout
-			RequestResource.of(HttpMethod.POST.name(), "/api/logout"),
+			// RequestResource.of(HttpMethod.POST.name(), "/api/logout"),
 
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
