@@ -56,4 +56,12 @@ public enum Badge {
 		this.imgUrl = imgUrl;
 	}
 
+	public static Badge findByEventCategoryAndCount(BadgeCategory badgeCategory, long count) {
+		for (Badge badge : values()) {
+			if (badge.getEventCategory() == badgeCategory && badge.getCount() == count) {
+				return badge;
+			}
+		}
+		return null;
+	}
 }
