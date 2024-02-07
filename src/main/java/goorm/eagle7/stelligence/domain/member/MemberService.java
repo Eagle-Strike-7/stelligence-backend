@@ -4,8 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.login.CookieType;
+import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberUpdateNicknameRequest;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final CookieUtils cookieUtils;
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "해당 멤버를 찾을 수 없습니다. MemberId= %s"; // 서식 문자 사용
 
 	// TODO 401 error - 프론트와 어떤 uri가 로그인 필요한 건지 다시 한번 협의
@@ -36,12 +40,21 @@ public class MemberService {
 
 	/**
 	 * <h2>회원 탈퇴 요청 시 회원 삭제</h2>
-	 * <p>- 회원 삭제 시, 글 제외한 해당 회원만 삭제.</p> TODO 모든 정보인지, null 처리 등 확인 필요.
-	 * <p>- 존재하지 않는 회원 id여도 Exception은 발생하지 않음.</p>
+	 * <p>- 글 제외한 해당 회원만 soft delete. - but 지금 그냥 delete</p>
+	 * <p>- 탈퇴한 회원 Table로 따로 저장. - 예정 </p>
+	 * <p>- 해당 회원의 닉네임을 탈퇴한 회원NeutronStar{id}로 변경. - 예정</p>
 	 * @param memberId 회원 id
-	 */ // TODO 탈퇴 시 다른 DB에 저장, 기존은 기본 값 설정 혹은 findById 등으로 조회할 때 null이면 기본값 처리 등.
+	 */
 	@Transactional
 	public void delete(Long memberId) {
+
+		// 탈퇴 시 쿠키 제거
+		cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
+		cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
+
+		// SecurityContext 초기화
+		// SecurityContextHolder.clearContext();
+
 		memberRepository.deleteById(memberId);
 	}
 
@@ -58,7 +71,7 @@ public class MemberService {
 	public void updateNickname(Long memberId, MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		// TODO 409 Error 혹은 닉네임 중복 검사 논의 필요.
 
-		// 현재 있는 member인지 확인 // TODO existsByNickname() 와 findById() 순서
+		// 현재 있는 member인지 확인 // TODO existsByNickname() 와 findById() 순서 - 500 error
 		Member member = findMemberById(memberId);
 
 		// nickname 검사
@@ -96,10 +109,12 @@ public class MemberService {
 	 * @param memberId 회원 id
 	 * @return Member 회원
 	 * @throws BaseException 회원을 찾을 수 없는 경우 400
-	 */
+	 */ //TODO 400 / 500 error
 	private Member findMemberById(Long memberId) {
 		return memberRepository.findById(memberId).orElseThrow(
 			() -> new BaseException(String.format(NOT_FOUND_MEMBER_EXCEPTION_MESSAGE, memberId))
 		);
+
 	}
+
 }

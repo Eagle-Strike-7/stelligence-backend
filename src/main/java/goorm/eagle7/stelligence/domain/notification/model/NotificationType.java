@@ -13,19 +13,19 @@ public enum NotificationType {
 
 	/**
 	 * 수정요청이 토론으로 넘어감
-	 * 대상 : 투표에 참여한 사람들과 수정 요청자
+	 * 대상 : 수정 요청자, 투표자
 	 */
 	CONTRIBUTE_DEBATED,
 
 	/**
-	 * 수정요청이 거절됨
-	 * 대상 : 수정 요청자
+	 * 수정요청이 반려됨
+	 * 대상 : 수정 요청자, 투표자
 	 */
-	CONTRIBUTE_REJECT,
+	CONTRIBUTE_REJECTED,
 
 	/**
 	 * 토론이 종료됨
-	 * 대상 : 토론 참여자
+	 * 대상 : 수정 요청자, 토론에 댓글 단 사람
 	 */
 	DEBATE_END,
 
@@ -37,7 +37,7 @@ public enum NotificationType {
 
 	/**
 	 * 댓글이 추가됨
-	 * 대상 : 토론에 댓글 단 사람, 수정 요청자
+	 * 대상 : 수정 요청자, 토론에 댓글 단 사람
 	 */
 	COMMENT_ADDED,
 

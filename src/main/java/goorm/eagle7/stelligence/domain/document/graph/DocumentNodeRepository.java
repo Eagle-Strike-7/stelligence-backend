@@ -137,4 +137,29 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 		+ " match (n)-[:HAS_CHILD*0..]->(descendant:DocumentNode)"
 		+ " set descendant.group = n.title")
 	void removeLink(@Param("documentId") Long documentId);
+
+	/**
+	 * documentId를 갖는 루트노드가 아닌 노드를 찾아, 제목을 수정합니다.
+	 * @param documentId: 문서 노드의 ID
+	 * @param updateTitle: 수정될 제목
+	 */
+	@Query("match (n:DocumentNode)"
+		+ " where n.documentId = $documentId"
+		+ " set n.title = $updateTitle")
+	void updateNonrootNodeTitle(@Param("documentId") Long documentId, @Param("updateTitle") String updateTitle);
+
+	/**
+	 * documentId를 루트 노드를 찾아, 제목을 수정합니다.
+	 * 이후, 루트 하위 노드들의 그룹을 재설정합니다.
+	 * @param documentId: 문서 노드의 ID
+	 * @param updateTitle: 수정될 제목
+	 */
+	@Query("match (n:DocumentNode)"
+		+ " where n.documentId = $documentId"
+		+ " set n.title = $updateTitle"
+		+ " "
+		+ " with n"
+		+ " match (n)-[:HAS_CHILD*0..]->(descendant:DocumentNode)"
+		+ " set descendant.group = n.title")
+	void updateRootNodeTitle(Long documentId, String updateTitle);
 }

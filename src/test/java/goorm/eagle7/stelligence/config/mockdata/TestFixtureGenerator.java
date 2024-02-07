@@ -8,6 +8,7 @@ import java.util.Set;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
@@ -215,6 +216,11 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
+		return contribute(id, contributor, status, document, "newTitle", document);
+	}
+
+	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
+		String newDocumentTitle, Document newParentDocument) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -228,18 +234,24 @@ public class TestFixtureGenerator {
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
+			Field newDocumentTitleField = contributeClazz.getDeclaredField("newDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("newParentDocument");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
+			newDocumentTitleField.setAccessible(true);
+			newParentDocumentField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
+			newDocumentTitleField.set(contribute, newDocumentTitle);
+			newParentDocumentField.set(contribute, newParentDocument);
 
 			return (Contribute)contribute;
 
@@ -248,7 +260,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence) {
 
 		try {
 			Class<?> debateClazz = Class.forName("goorm.eagle7.stelligence.domain.debate.model.Debate");
@@ -287,7 +300,8 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt, int commentSequence, LocalDateTime createdAt) {
+	public static Debate debate(Long id, Contribute contribute, DebateStatus status, LocalDateTime endAt,
+		int commentSequence, LocalDateTime createdAt) {
 
 		try {
 			Debate debate = TestFixtureGenerator.debate(id, contribute, status, endAt, commentSequence);
@@ -335,6 +349,36 @@ public class TestFixtureGenerator {
 			sequenceField.set(comment, sequence);
 
 			return (Comment)comment;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	// Bookmark 생성
+	public static Bookmark bookmark(Long id, Member member, Document document) {
+		try {
+			Class<?> bookmarkClazz = Class.forName("goorm.eagle7.stelligence.domain.bookmark.model.Bookmark");
+
+			Constructor<?> constructor = bookmarkClazz.getDeclaredConstructor();
+			constructor.setAccessible(true);
+
+			Object bookmark = constructor.newInstance();
+
+			Field idField = bookmarkClazz.getDeclaredField("id");
+			Field memberField = bookmarkClazz.getDeclaredField("member");
+			Field documentField = bookmarkClazz.getDeclaredField("document");
+
+			idField.setAccessible(true);
+			memberField.setAccessible(true);
+			documentField.setAccessible(true);
+
+			idField.set(bookmark, id);
+			memberField.set(bookmark, member);
+			documentField.set(bookmark, document);
+
+			return (Bookmark)bookmark;
 
 		} catch (Exception e) {
 			e.printStackTrace();
