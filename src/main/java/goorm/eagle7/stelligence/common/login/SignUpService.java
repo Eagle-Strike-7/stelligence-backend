@@ -64,7 +64,7 @@ public class SignUpService {
 
 	// 닉네임 중복 확인 메서드
 	private boolean isNicknameDuplicate(String nickname) {
-		return memberRepository.existsByNickname(nickname);
+		return memberRepository.existsByNicknameAndActiveTrue(nickname);
 	}
 
 	// 닉네임 생성 메서드

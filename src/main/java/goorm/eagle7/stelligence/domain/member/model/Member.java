@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
+import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -46,7 +47,7 @@ public class Member extends BaseTimeEntity {
 	// refresh token은 회원 가입/로그인 후 update로 진행
 	private String refreshToken;
 
-	private boolean deleted; // default: false, for soft delete
+	private boolean active; // default: false, for soft delete
 
 	// 1:M 연관 관계 설정
 
@@ -92,7 +93,7 @@ public class Member extends BaseTimeEntity {
 		member.refreshToken = "";
 		member.role = Role.USER;
 		member.contributes = 0;
-		member.deleted = false;
+		member.active = true;
 
 		return member;
 
@@ -110,6 +111,8 @@ public class Member extends BaseTimeEntity {
 		this.nickname = nickname;
 	}
 
+	public void inactivate() {
+		this.active = false;
 	public void expireRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
@@ -120,22 +123,22 @@ public class Member extends BaseTimeEntity {
 
 	/**
 	 * <h2>Member 탈퇴</h2>
-	 * <p>Member의 정보를 초기화, socialType을 WITHDRAWN으로 변경.</p>
-	 * <p>role은 그대로 유지(권한 문제), delete는 이미 true라 따로 건들지 않음.</p>
-	 * <p>nickname은 탈퇴한 회원+id로 따로 저장.</p>
+	 * <p>- Member 정보 초기화, socialType WITHDRAWN으로 변경.</p>
+	 * <p>- role은 그대로 유지(권한 문제), soft delete는 이미 처리되었어야 해서 건들지 않음.</p>
+	 * <p>- badge는 new HashSet으로 초기화</p>
+	 * @param newNickname "탈퇴한 회원NeutronStar"+ memberId
 	 */
-	public void withdraw() {
+	public void withdraw(String newNickname) {
 
-		this.name = "";
-		this.nickname = "";
-		this.email = "";
-		this.imageUrl = "";
-		this.socialId = "";
+		this.name = null;
+		this.nickname = newNickname;
+		this.email = null;
+		this.imageUrl = null;
+		this.socialId = null;
 		this.socialType = SocialType.WHITDRAWN;
-		this.refreshToken = "";
-		// this.role = this.role;
+		this.refreshToken = null;
 		this.contributes = 0;
-		this.badges.clear();
+		this.badges = new HashSet<>();
 
 	}
 

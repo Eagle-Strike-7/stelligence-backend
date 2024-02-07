@@ -15,7 +15,7 @@ import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.member.model.Badge;
+import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
@@ -31,7 +31,8 @@ public class TestFixtureGenerator {
 	private TestFixtureGenerator() {
 	}
 
-	public static Document document(Long id, Member author, String title, Long currentRevision) {
+	public static Document document(Long id, Member author, String title, Long latestRevision,
+		Document parentDocument) {
 		try {
 			Class<?> documentClass = Class.forName("goorm.eagle7.stelligence.domain.document.content.model.Document");
 
@@ -45,24 +46,31 @@ public class TestFixtureGenerator {
 			Field idField = documentClass.getDeclaredField("id");
 			Field titleField = documentClass.getDeclaredField("title");
 			Field authorField = documentClass.getDeclaredField("author");
-			Field currentRevisionField = documentClass.getDeclaredField("currentRevision");
+			Field latestRevisionField = documentClass.getDeclaredField("latestRevision");
 			Field sectionsField = documentClass.getDeclaredField("sections");
+			Field parentDocumentField = documentClass.getDeclaredField("parentDocument");
 
 			idField.setAccessible(true);
 			titleField.setAccessible(true);
 			authorField.setAccessible(true);
-			currentRevisionField.setAccessible(true);
+			latestRevisionField.setAccessible(true);
 			sectionsField.setAccessible(true);
+			parentDocumentField.setAccessible(true);
 
 			idField.set(document, id);
 			titleField.set(document, title);
 			authorField.set(document, author); // Member 객체 필요
-			currentRevisionField.set(document, currentRevision);
+			latestRevisionField.set(document, latestRevision);
+			parentDocumentField.set(document, parentDocument);
 
 			return (Document)document;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static Document document(Long id, Member author, String title, Long latestRevision) {
+		return document(id, author, title, latestRevision, null);
 	}
 
 	public static Member member(Long id, Role role, long contributes, String name, String nickname, String email,
@@ -220,7 +228,7 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
-		String newDocumentTitle, Document newParentDocument) {
+		String afterDocumentTitle, Document afterParentDocument) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -234,15 +242,17 @@ public class TestFixtureGenerator {
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
-			Field newDocumentTitleField = contributeClazz.getDeclaredField("newDocumentTitle");
-			Field newParentDocumentField = contributeClazz.getDeclaredField("newParentDocument");
+			Field beforeDocumentTitleField = contributeClazz.getDeclaredField("beforeDocumentTitle");
+			Field afterDocumentTitleField = contributeClazz.getDeclaredField("afterDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("afterParentDocument");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
-			newDocumentTitleField.setAccessible(true);
+			beforeDocumentTitleField.setAccessible(true);
+			afterDocumentTitleField.setAccessible(true);
 			newParentDocumentField.setAccessible(true);
 
 			idField.set(contribute, id);
@@ -250,8 +260,9 @@ public class TestFixtureGenerator {
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
-			newDocumentTitleField.set(contribute, newDocumentTitle);
-			newParentDocumentField.set(contribute, newParentDocument);
+			beforeDocumentTitleField.set(contribute, document.getTitle());
+			afterDocumentTitleField.set(contribute, afterDocumentTitle);
+			newParentDocumentField.set(contribute, afterParentDocument);
 
 			return (Contribute)contribute;
 

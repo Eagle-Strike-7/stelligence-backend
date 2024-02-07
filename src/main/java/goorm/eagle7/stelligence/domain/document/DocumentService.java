@@ -33,6 +33,7 @@ public class DocumentService {
 	private final DocumentContentService documentContentService;
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
+	private final DocumentRequestValidator documentRequestValidator;
 
 	/**
 	 * Document를 생성합니다.
@@ -45,12 +46,15 @@ public class DocumentService {
 	@Transactional
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
 
+		// DocumentCreateRequest의 유효성을 검증합니다.
+		documentRequestValidator.validate(documentCreateRequest);
+
 		Member author = memberRepository.findById(loginMemberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), author);
+			documentCreateRequest.getContent(), documentCreateRequest.getParentDocumentId(), author);
 
 		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
 		if (documentCreateRequest.getParentDocumentId() == null) {
@@ -130,7 +134,7 @@ public class DocumentService {
 		documentContentService.changeTitle(documentId, newTitle);
 
 		//DocumentNode의 제목도 변경합니다.
-		//documentGraphService.changeDocumentTitle(documentId, newTitle);
+		documentGraphService.changeTitle(documentId, newTitle);
 	}
 
 	/**
@@ -140,6 +144,7 @@ public class DocumentService {
 	 */
 	@Transactional
 	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentContentService.updateParentDocument(documentId, newParentDocumentId);
 		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
 }
