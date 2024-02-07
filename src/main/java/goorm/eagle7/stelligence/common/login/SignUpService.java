@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.common.login;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -18,9 +19,9 @@ public class SignUpService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public Member signUp(OAuth2Request oAuth2Request) {
+	public Member signUp(LoginOAuth2Request loginOAuth2Request) {
 
-		String nickname = oAuth2Request.getNickname();
+		String nickname = loginOAuth2Request.getNickname();
 
 		// 닉네임이 중복인지 확인, 중복이면 랜덤 닉네임 생성
 		if (isNicknameDuplicate(nickname)) {
@@ -28,12 +29,12 @@ public class SignUpService {
 		}
 
 		Member newMember = Member.of(
-			oAuth2Request.getName(),
+			loginOAuth2Request.getName(),
 			nickname,
-			oAuth2Request.getEmail(),
-			oAuth2Request.getImageUrl(),
-			oAuth2Request.getSocialId(),
-			oAuth2Request.getSocialType()
+			loginOAuth2Request.getEmail(),
+			loginOAuth2Request.getImageUrl(),
+			loginOAuth2Request.getSocialId(),
+			loginOAuth2Request.getSocialType()
 		);
 
 		// 해당 닉네임으로 저장

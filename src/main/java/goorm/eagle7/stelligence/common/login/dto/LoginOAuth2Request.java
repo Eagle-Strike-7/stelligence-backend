@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.login;
+package goorm.eagle7.stelligence.common.login.dto;
 
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.AccessLevel;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
-public class OAuth2Request {
+public class LoginOAuth2Request {
 
 	private String name;
 	private String nickname;

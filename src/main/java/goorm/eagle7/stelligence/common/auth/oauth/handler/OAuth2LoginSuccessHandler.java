@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.common.auth.oauth.CustomOAuth2User;
 import goorm.eagle7.stelligence.common.login.LoginService;
-import goorm.eagle7.stelligence.common.login.OAuth2Request;
+import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		}
 
 		// loginServie를 이용할 Dto 생성
-		OAuth2Request oAuth2Request = OAuth2Request.of(
+		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of(
 			customOAuth2User.getName(),
 			customOAuth2User.getNickname(),
 			customOAuth2User.getEmail(),
@@ -63,7 +63,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		 * -> socialId로 중복 확인, 없다면 -> signUpService.signUp() -> MemberRepository.save() Member 생성
 		 * -> memberId로 토큰 생성 및 DB 저장, response에 토큰 쿠키 추가
 		 */
-		loginService.login(response, oAuth2Request);
+		loginService.login(response, loginOAuth2Request);
 
 		try {
 			response.sendRedirect(redirectUrl);
