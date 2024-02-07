@@ -7,6 +7,7 @@ import java.util.List;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.CascadeType;
@@ -81,6 +82,13 @@ public class Contribute extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "after_parent_document_id")
 	private Document afterParentDocument;
+
+	/**
+	 * 연관된 토론입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "related_debate_id")
+	private Debate relatedDebate;
 
 	private Contribute(ContributeStatus status, Member member, Document document,
 		String title, String description, String afterDocumentTitle, Document afterParentDocument) {
