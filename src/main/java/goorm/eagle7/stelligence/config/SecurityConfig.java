@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import goorm.eagle7.stelligence.common.auth.filter.AuthExceptionHandlerFilter;
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
 import goorm.eagle7.stelligence.common.auth.filter.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
@@ -38,6 +39,7 @@ public class SecurityConfig {
 	private String refreshTokenCookieName;
 
 	private final AuthFilter authFilter;
+	private final AuthExceptionHandlerFilter authExceptionHandlerFilter;
 	private final CorsFilter corsFilter;
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
@@ -130,6 +132,7 @@ public class SecurityConfig {
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(authFilter,
 				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능 TODO permitall 이용할 수 있도록 수정
+			.addFilterBefore(authExceptionHandlerFilter, AuthFilter.class)
 			.exceptionHandling(exceptionHandling -> exceptionHandling
 				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
 				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
