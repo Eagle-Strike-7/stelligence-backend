@@ -88,14 +88,16 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 		// Document의 부모 문서를 변경합니다.
 		// 두 경우 모두 null일 수 있는 가능성을 고려합니다.
 		// 부모 문서가 동일한 경우에는 업데이트하지 않습니다.
-		Long beforeParentDocumentId = contribute.getBeforeParentDocument() == null ? null : contribute.getBeforeParentDocument().getId();
-		Long afterParentDocumentId = contribute.getAfterParentDocument() == null ? null : contribute.getAfterParentDocument().getId();
+		Long beforeParentDocumentId =
+			contribute.getBeforeParentDocument() == null ? null : contribute.getBeforeParentDocument().getId();
+		Long afterParentDocumentId =
+			contribute.getAfterParentDocument() == null ? null : contribute.getAfterParentDocument().getId();
 		if (!Objects.equals(beforeParentDocumentId, afterParentDocumentId)) {
 			documentService.changeParentDocument(document.getId(), afterParentDocumentId);
 		}
 
 		//문서의 현재 revision을 증가시킵니다.
-		document.incrementCurrentRevision();
+		document.incrementLatestRevision();
 
 		//Contribute의 상태를 MERGED로 변경합니다.
 		contribute.setStatusMerged();

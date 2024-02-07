@@ -33,7 +33,7 @@ public class UpdateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 		return Section.createSection(
 			document,
 			amendment.getTargetSection().getId(), //기존 섹션의 ID를 그대로 사용합니다.
-			document.getCurrentRevision() + 1,
+			document.getLatestRevision() + 1,
 			amendment.getNewSectionHeading(),
 			amendment.getNewSectionTitle(),
 			amendment.getNewSectionContent(),

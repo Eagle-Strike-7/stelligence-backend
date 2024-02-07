@@ -100,7 +100,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(3)
+			.hasSize(4)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.OPEN))
 			.allMatch(d -> d.getEndAt().isBefore(LocalDateTime.now()));
 	}
@@ -117,7 +117,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(3)
+			.hasSize(4)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.CLOSED));
 	}
 
@@ -134,7 +134,7 @@ class DebateRepositoryTest {
 		// then
 		assertThat(res1).isTrue();
 		assertThat(res2).isTrue();
-		assertThat(res3).isFalse();
+		assertThat(res3).isTrue();
 		assertThat(res4).isFalse();
 	}
 

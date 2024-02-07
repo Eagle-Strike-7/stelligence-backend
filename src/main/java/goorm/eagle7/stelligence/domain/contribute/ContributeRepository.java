@@ -29,4 +29,19 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	 * @return 존재 여부
 	 */
 	boolean existsByDocumentAndStatus(Document document, ContributeStatus status);
+
+	/**
+	 * 현재 투표중인 수정요청에 대해 특정 제목으로 변경하고자 하는 요청이 존재하는지 확인한다.
+	 * @param title 검증할 문서 제목
+	 * @return 존재 여부
+	 */
+	@Query("SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END"
+		+ " FROM Contribute c"
+		+ " left join Debate d on d.contribute = c"
+		+ " WHERE c.afterDocumentTitle = :title"
+		+ " AND ("
+		+ " c.status = goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus.VOTING"
+		+ " OR d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.OPEN"
+		+ " )")
+	boolean existsDuplicateRequestedDocumentTitle(String title);
 }
