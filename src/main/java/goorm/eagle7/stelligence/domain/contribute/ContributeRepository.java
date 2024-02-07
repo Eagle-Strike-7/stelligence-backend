@@ -50,12 +50,12 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	 * @param memberId member id
 	 *  @return 수정 요청의 총 개수
 	 */
-	long countByMemberId(Long memberId);
+	long countDistinctByMemberId(Long memberId);
 
 	/**
-	 * member가 생성한 수정 요청 중 merge된 요청의 총 개수를 가져온다.
+	 * member가 생성한 수정 요청 중 상태에 따른 요청의 총 개수를 가져온다.
 	 * @param memberId member id
 	 *  @return merge된 수정 요청의 총 개수
 	 */
-	long countByMemberIdAndStatus_Merged(Long memberId, ContributeStatus status);
+	long countDistinctByMemberIdAndStatus(Long memberId, ContributeStatus status);
 }
