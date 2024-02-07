@@ -126,7 +126,7 @@ public class ContributeService {
 	}
 
 	/**
-	 * Contribute 목록 조회: 투표가 완료된 Contribute만 조회(MERGED, REJECTED, CANCELED)
+	 * Contribute 목록 조회: 투표가 완료된 Contribute만 조회(MERGED, REJECTED, DEBATING)
 	 * @param pageable
 	 * @return
 	 */

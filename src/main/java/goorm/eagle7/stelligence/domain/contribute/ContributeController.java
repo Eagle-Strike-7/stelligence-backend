@@ -95,7 +95,7 @@ public class ContributeController {
 		description = "투표가 완료된 수정요청 목록을 조회합니다. "
 			+ "status에 값을 넣지 않으면 모든 완료된 수정요청을 조회합니다. "
 			+ "status에 값을 넣으면 해당 상태의 수정요청을 조회합니다. "
-			+ "status에는 MERGED, REJECTED, CANCELED 중 하나를 넣을 수 있습니다. ")
+			+ "status에는 MERGED, REJECTED, DEBATING 중 하나를 넣을 수 있습니다. ")
 	@ApiResponse(
 		responseCode = "200",
 		description = "수정요청 목록 조회 성공",
