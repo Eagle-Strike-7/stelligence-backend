@@ -98,7 +98,7 @@ public class JwtTokenService {
 		UserDetails user = User.builder()
 			.username(claims.getSubject())
 			.password("")
-			.authorities(Role.getRoleFromString(claims.get(claimRole, String.class)).getValue())
+			.authorities(Role.fromValue(claims.get(claimRole, String.class)).getValue())
 			.build();
 
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
@@ -136,7 +136,7 @@ public class JwtTokenService {
 		Claims claims = jwtTokenValidator.validateAndExtractClaims(token);
 		return MemberInfo.of(
 			Long.parseLong(claims.getSubject()),
-			Role.getRoleFromString(claims.get(claimRole, String.class))); // TODO valueOf로 변경
+			Role.fromValue(claims.get(claimRole, String.class)));
 
 	}
 

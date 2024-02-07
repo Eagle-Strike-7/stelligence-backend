@@ -16,18 +16,19 @@ import goorm.eagle7.stelligence.domain.member.model.Role;
 import jakarta.annotation.Nullable;
 
 /**
- *  Auth 애노테이션에서 사용할 객체 mapping (MemberInfo)
- *  MemberInfo: memberId, role을 가지고 있는 객체
+ *  <h2>Auth 애노테이션에서 사용할 객체 mapping (MemberInfo)</h2>
+ *  <p>- Auth 애노테이션을 사용한 파라미터에 대해 MemberInfo 객체를 생성해 반환</p>
+ *  <p>- SecurityContextHolder(ThreadLocal)에서 User 객체를 가져와서 MemberInfo 객체 생성해 반환</p>
+ *  <p>- MemberInfo: memberId, role을 가지고 있는 객체</p>
  */
 @Component
 public class MemberInfoArgumentResolver
 	implements HandlerMethodArgumentResolver {
 
 	/**
-	 * supportsParameter
-	 * @param parameter
+	 * <h2>Auth.class 확인</h2>
+	 * @param parameter 파라미터
 	 * @return @Auth 어노테이션이 맞다면 true, 아니면 false
-	 *
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -35,9 +36,10 @@ public class MemberInfoArgumentResolver
 	}
 
 	/**
-	 * @Auth 어노테이션을 사용한 파라미터에 대해 MemberInfo 객체를 생성해 반환
-	 * SecurityContextHolder(ThreadLocal)에서 User 객체를 가져와서 MemberInfo 객체 생성해 반환
-	 * @return MemberInfo(@ Auth 사용 시MemberInfo 사용 가능)
+	 * <h2>해당 객체 생성해 반환</h2>
+	 * <p>- Auth 애노테이션을 사용한 파라미터에 대해 MemberInfo 객체 생성 및 반환</p>
+	 * <p>- SecurityContextHolder(ThreadLocal)에서 User 객체 가져옴.</p>
+	 * @return MemberInfo @Auth 사용 시MemberInfo 사용 가능
 	 */
 	@Override
 	public Object resolveArgument(
@@ -54,19 +56,20 @@ public class MemberInfoArgumentResolver
 		Role role = convertAuthoritiesToRole(authorities);
 
 		return MemberInfo.of(memberId, role);
+
 	}
 
 	/**
-	 * GrantedAuthority를 Role로 변환
+	 * <h2>GrantedAuthority를 Role로 변환</h2>
 	 * @param authorities GrantedAuthority
-	 * @return Role
+	 * @return Role 변환된 Role, 없으면 기본값으로 USER
 	 */
 	private Role convertAuthoritiesToRole(Collection<? extends GrantedAuthority> authorities) {
-		if (authorities != null && !authorities.isEmpty()) {
-			String authorityName = authorities.iterator().next().getAuthority();
-			// TODO valueOf 차이
-			return Role.getRoleFromString(authorityName);
-		}
-		return Role.USER; // 기본값으로 설정
+		return authorities.stream()
+			.findFirst() // 첫 번째 GrantedAuthority 객체를 Optional로 반환
+			.map(GrantedAuthority::getAuthority) // GrantedAuthority의 권한 이름을 가져옴
+			.map(Role::fromValue) // 권한 이름을 Role로 변환
+			.orElse(Role.USER); // Optional이 비어있는 경우 기본값으로 Role.USER 반환
 	}
+
 }
