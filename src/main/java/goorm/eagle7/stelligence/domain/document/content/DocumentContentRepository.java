@@ -53,4 +53,11 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "and c.status = goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus.MERGED "
 		+ "order by m.nickname")
 	List<Member> findContributorsByDocumentId(Long documentId);
+
+	/**
+	 * 특정 제목을 가진 Document가 존재하는지 조회합니다.
+	 * @param title 조회할 Document의 제목
+	 * @return 존재 여부
+	 */
+	boolean existsByTitle(String title);
 }

@@ -17,11 +17,11 @@ values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_tok
         NOW(), false);
 
 -- 4개의 문서가 존재합니다.
-insert into document (document_id, title, current_revision, created_at, updated_at)
-values (1, 'title1', 3, NOW(), NOW()),
-       (2, 'title2', 2, NOW(), NOW()),
-       (3, 'title3', 1, NOW(), NOW()),
-       (4, 'title4', 1, NOW(), NOW());
+insert into document (document_id, title, current_revision, parent_document_id, created_at, updated_at)
+values (1, 'title1', 3, null, NOW(), NOW()),
+       (2, 'title2', 2, null, NOW(), NOW()),
+       (3, 'title3', 1, null, NOW(), NOW()),
+       (4, 'title4', 1, null, NOW(), NOW());
 
 -- 14개의 섹션이 존재합니다.
 ------ 1번 문서에는 6개의 섹션이 존재합니다.
@@ -62,12 +62,16 @@ values ('section', 15);
 -- 5개의 contribute가 존재합니다.
 ------ 4번 Contribute는 5번 admentment를 갖고있는 수정요청으로, 거절되었습니다.
 ------ 5번은 6, 7번 admentment를 갖고 있는 수정요청으로, 투표중입니다.
-insert into contribute (contribute_id, member_id, document_id, title, description, status, created_at, updated_at)
-values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', '2024-03-21 00:00:00', NOW()),
-       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', '2024-03-21 00:01:00', NOW()),
-       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', '2024-03-21 00:02:00', NOW()),
-       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', '2024-03-21 00:03:00', NOW()),
-       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', '2024-03-21 00:04:00', NOW());
+insert into contribute (contribute_id, member_id, document_id, title, description, status,
+                        before_document_title, after_document_title,
+                        before_parent_document_id, after_parent_document_id,
+                        created_at, updated_at)
+values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null, '2024-03-21 00:00:00', NOW()),
+       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,'2024-03-21 00:01:00', NOW()),
+       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,'2024-03-21 00:02:00', NOW()),
+       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null, '2024-03-21 00:03:00', NOW()),
+       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,'2024-03-21 00:04:00', NOW()),
+       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,'2024-03-21 00:05:00', NOW());
 
 
 -- 7개의 admentment가 존재합니다.
@@ -96,7 +100,8 @@ values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, NOW()),
        (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
        (4, 4, 'CLOSED', NOW(), 1, NOW()),
        (5, 5, 'CLOSED', NOW(), 1, NOW()),
-       (6, 5, 'OPEN', NOW(), 1, NOW());
+       (6, 5, 'OPEN', NOW(), 1, NOW()),
+       (7, 6, 'OPEN', NOW(), 1, NOW());
 
 insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at)
 values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
