@@ -113,12 +113,10 @@ public class Member extends BaseTimeEntity {
 
 	public void inactivate() {
 		this.active = false;
-	public void expireRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
 	}
 
-	public void delete() {
-		this.deleted = true;
+	public void expireRefreshToken() {
+		this.refreshToken = null;
 	}
 
 	/**
