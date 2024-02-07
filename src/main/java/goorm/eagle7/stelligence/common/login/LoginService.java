@@ -80,20 +80,10 @@ public class LoginService {
 	@Transactional
 	public void logout(Long memberId) {
 
-		// TODO 만료 기간을 줄지, null 처리할지 고민 - 쓰레기값을 DB에 저장 ? -> 우선, member.expireRefreshToken(); -> null 처리
-
-		// 1. db에서 refreshToken 삭제
+		// db에서 refreshToken 삭제
 		memberRepository.findById(memberId)
-			.ifPresent(member -> member.expireRefreshToken(null));
+			.ifPresent(member -> member.expireRefreshToken());
 
-		// 2. refreshToken 만료
-		// memberRepository.findById(memberId)
-		// 	.ifPresent(
-		// 		member -> {
-		// 			String expiredRefreshToken = jwtTokenProvider.expireRefreshToken(member.getId());
-		// 			member.expireRefreshToken(expiredRefreshToken);
-		// 		}
-		// 	);
 	}
 
 
@@ -101,7 +91,7 @@ public class LoginService {
 	public LoginTokensWithIdAndRoleResponse devLogin( HttpServletResponse response, DevLoginRequest devLoginRequest) {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		Member member = memberRepository.findByNickname(devLoginRequest.getNickname())
+		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
 			.orElseGet(() -> signUpService.devSignUp(devLoginRequest));
 		// nickname 중복이면 로그인
 
