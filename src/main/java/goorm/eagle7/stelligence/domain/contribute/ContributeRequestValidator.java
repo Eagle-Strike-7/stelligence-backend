@@ -64,7 +64,7 @@ public class ContributeRequestValidator {
 
 		//수정하고자 하는 section들이 document에 존재하는가
 		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
-			document.getCurrentRevision());
+			document.getLatestRevision());
 
 		request.getAmendments().stream().map(AmendmentRequest::getSectionId).forEach(
 			sectionId -> {

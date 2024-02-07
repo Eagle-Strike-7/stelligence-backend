@@ -36,7 +36,7 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "   select max(s2.revision) "
 		+ "   from Section s2 "
 		+ "   where s2.id = s.id "
-		+ "   and s2.revision <= d.currentRevision"
+		+ "   and s2.revision <= d.latestRevision"
 		+ ") "
 		+ "and s.content like %:keyword%")
 	List<Long> findDocumentIdWhichContainsKeywordInLatestVersion(String keyword);

@@ -90,7 +90,7 @@ public interface SectionRepository extends JpaRepository<Section, SectionId> {
 	 *     document측 연관관계 매핑을 할 때 lazyloading이 발생하지만, document는 detached 상태이기 때문입니다.
 	 *     </li>
 	 *     <li>
-	 *         Amendment를 반영하는 for 루프가 끝나고, document의 currentRevision을 증가하고
+	 *         Amendment를 반영하는 for 루프가 끝나고, document의 latestRevision을 증가하고
 	 *         contribute의 상태를 merged로 변경하는 작업이 수행되지 않는데, 이는 두 객체가
 	 *         detached이므로 변경감지의 대상이 되지 않기 때문입니다.
 	 *     </li>

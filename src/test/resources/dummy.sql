@@ -11,7 +11,7 @@ values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_tok
         NOW(), 0);
 
 -- 4개의 문서가 존재합니다.
-insert into document (document_id, title, current_revision, created_at, updated_at)
+insert into document (document_id, title, latest_revision, created_at, updated_at)
 values (1, 'title1', 3, NOW(), NOW()),
        (2, 'title2', 2, NOW(), NOW()),
        (3, 'title3', 1, NOW(), NOW()),

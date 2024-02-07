@@ -31,7 +31,7 @@ class DeleteAmendmentMergeTemplateTest {
 		//then
 		assertThat(createdSection.getId()).isEqualTo(section.getId());
 		assertThat(createdSection.getDocument()).isEqualTo(document);
-		assertThat(createdSection.getRevision()).isEqualTo(document.getCurrentRevision() + 1);
+		assertThat(createdSection.getRevision()).isEqualTo(document.getLatestRevision() + 1);
 		assertThat(createdSection.getHeading()).isNull();
 		assertThat(createdSection.getTitle()).isNull();
 		assertThat(createdSection.getContent()).isNull();
