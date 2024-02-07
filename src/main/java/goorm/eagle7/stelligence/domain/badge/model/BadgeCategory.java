@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum BadgeCategory {
 	WRITING("글"),
-	EDIT_REQUEST("수정 요청"),
+	CONTRIBUTE("수정 요청"),
 	MEMBER_JOIN("회원 가입"),
 	REPORT("신고");
 
