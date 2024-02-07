@@ -27,7 +27,6 @@ public class ContributeResponse {
 	private MemberDetailResponse contributor; //수정 요청한 멤버에 대한 정보
 	private List<AmendmentResponse> amendments;
 
-	// 추가된 필드
 	private String beforeDocumentTitle;	//기존 제목
 	private String afterDocumentTitle;	//변경된 제목
 	private Long beforeParentDocumentId;	//기존 상위 문서
@@ -53,7 +52,6 @@ public class ContributeResponse {
 			.map(AmendmentResponse::of)
 			.toList();
 
-		// 추가된 생성자
 		this.beforeDocumentTitle = contribute.getBeforeDocumentTitle();
 		this.afterDocumentTitle = contribute.getAfterDocumentTitle();
 		this.beforeParentDocumentId = contribute.getBeforeParentDocument() == null ?
@@ -65,7 +63,7 @@ public class ContributeResponse {
 		this.afterParentDocumentTitle = contribute.getAfterParentDocument() == null ?
 			null : contribute.getAfterParentDocument().getTitle();
 
-		// 추가된 필드
+		// 추가된 필드에 대한 생성자
 		this.contributeStatus = contribute.getStatus();
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.parentDocumentId = contribute.getDocument().getParentDocument() == null ?
