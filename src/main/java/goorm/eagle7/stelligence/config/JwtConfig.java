@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import goorm.eagle7.stelligence.common.auth.jwt.JwtProperties;
+import lombok.RequiredArgsConstructor;
+
 /**
  * JWT 설정
  * 해시 AlGORITHM은 HmacSHA256 사용
@@ -17,12 +20,10 @@ import org.springframework.context.annotation.Configuration;
  */
 // TODO SecurityConfigurerAdapter를 상속 받는 것과 아닌 것의 차이
 @Configuration
+@RequiredArgsConstructor
 public class JwtConfig {
 
-	@Value("${jwt.secretKey}")
-	private String jwtSecret;
-
-	private static final String ALGORITHM_NAME = "HmacSHA256";
+	private final JwtProperties jwtProperties;
 
 	/**
 	 * jwtSecret을 Base64로 디코딩하여 바이트 배열로 변환한 후 SecretKey를 생성한다.
@@ -32,10 +33,10 @@ public class JwtConfig {
 	public SecretKey jwtKey() {
 
 		// jwtSecret을 Base64로 디코딩하여 바이트 배열로 변환
-		byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
+		byte[] decodedKey = Base64.getDecoder().decode(jwtProperties.getSecretKey());
 
 		// 생성된 바이트 배열로부터 SecretKey 생성
-		return new SecretKeySpec(decodedKey, 0, decodedKey.length, ALGORITHM_NAME);
+		return new SecretKeySpec(decodedKey, 0, decodedKey.length, jwtProperties.getAlgorithmName());
 
 	}
 

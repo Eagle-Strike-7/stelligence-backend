@@ -19,34 +19,12 @@ import lombok.RequiredArgsConstructor;
  * 	- 토큰의 기본 설정(예: 유효 시간, 클레임 등) 관리
  */
 // TODO Date를 동시에 관리하는 법
-// TODO role 추출
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
 	private final SecretKey key;
-
-	@Value("${jwt.header.type}")
-	private String type;
-	@Value("${jwt.header.algorithm}")
-	private String algorithm;
-	@Value("${jwt.header.tokenType}")
-	private String tokenType; // 토큰 유형
-
-	@Value("${jwt.header.algorithmType}")
-	private String algorithmType; // 알고리즘 타입
-
-	@Value("${jwt.accessToken.expiration}")
-	private int accessTokenExpiredTime;
-
-	@Value("${jwt.refreshToken.expiration}")
-	private int refreshTokenExpiredTime;
-
-	@Value("${jwt.claim.role}")
-	private String claimRole; // 사용자 정의 claim, ROLE
-
-	@Value("${jwt.claim.user}")
-	private String claimRoleUser;
+	private final JwtProperties jwtProperties;
 
 	/**
 	 * AccessToken 생성
@@ -71,14 +49,16 @@ public class JwtTokenProvider {
 
 		return Jwts.builder()
 			.header()
-			.add(type, tokenType)
-			.add(algorithm, algorithmType)
+			.add(jwtProperties.getHeader().getType(),
+				jwtProperties.getHeader().getTokenType())
+			.add(jwtProperties.getHeader().getAlgorithm(),
+				jwtProperties.getHeader().getAlgorithm())
 			.and() // header 끝, payload 시작
 			.subject(memberId.toString())
 			.issuedAt(now)
 			.expiration(new Date(System.currentTimeMillis()
-				+ accessTokenExpiredTime))
-			.claim(claimRole, claimRoleUser.toUpperCase())
+				+ jwtProperties.getAccessTokenExpirationMs()))
+			.claim(jwtProperties.getClaim().getRole(), jwtProperties.getClaim().getValue())
 			// payload 끝, signature 시작
 			.signWith(key)
 			.compact();
@@ -99,12 +79,15 @@ public class JwtTokenProvider {
 
 		return Jwts.builder()
 			.header()
-			.add(type, tokenType)
-			.add(algorithm, algorithmType)
+			.add(jwtProperties.getHeader().getType(),
+				jwtProperties.getHeader().getTokenType())
+			.add(jwtProperties.getHeader().getAlgorithm(),
+				jwtProperties.getHeader().getAlgorithm())
 			.and()
 			.subject(memberId.toString())
 			.issuedAt(now)
-			.expiration(new Date(System.currentTimeMillis() + refreshTokenExpiredTime))
+			.expiration(new Date(System.currentTimeMillis() +
+				jwtProperties.getRefreshTokenExpirationMs()))
 			.signWith(key)
 			.compact();
 	}
@@ -120,8 +103,10 @@ public class JwtTokenProvider {
 
 		return Jwts.builder()
 			.header()
-			.add(type, tokenType)
-			.add(algorithm, algorithmType)
+			.add(jwtProperties.getHeader().getType(),
+				jwtProperties.getHeader().getTokenType())
+			.add(jwtProperties.getHeader().getAlgorithm(),
+				jwtProperties.getHeader().getAlgorithm())
 			.and()
 			.subject(memberId.toString())
 			.issuedAt(now)
@@ -129,4 +114,5 @@ public class JwtTokenProvider {
 			.signWith(key)
 			.compact();
 	}
+
 }
