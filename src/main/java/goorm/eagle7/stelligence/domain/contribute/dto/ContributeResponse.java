@@ -9,6 +9,7 @@ import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContributeResponse {
 
+	@Schema(hidden = true)
 	@Value("${contribute.scheduler.vote-expiration-minutes:30}")
-	long voteExpirationMinutes;	// 투표 지속시간
+	private Long voteExpirationMinutes;	// 투표 지속시간
 
 	private Long contributeId;
 	private String contributeTitle;
