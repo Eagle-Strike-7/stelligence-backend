@@ -55,7 +55,7 @@ public class MemberService {
 		Member member = findActiveMemberById(memberId);
 
 		// soft delete 진행
-		member.convertToInactive();
+		member.inactivate();
 
 		// 탈퇴한 회원 Table로 따로 저장 - 추후 배치
 		withdrawnMemberRepository.insertWithdrawnMember(member);

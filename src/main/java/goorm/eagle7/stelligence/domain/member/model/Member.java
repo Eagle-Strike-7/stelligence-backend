@@ -110,7 +110,7 @@ public class Member extends BaseTimeEntity {
 		this.nickname = nickname;
 	}
 
-	public void convertToInactive() {
+	public void inactivate() {
 		this.active = false;
 	}
 
