@@ -45,7 +45,7 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 		return Section.createSection(
 			document,
 			sectionIdGenerator.getAndIncrementSectionId(), //새로운 섹션의 삽입이므로 ID를 새로 생성합니다.
-			document.getCurrentRevision() + 1,
+			document.getLatestRevision() + 1,
 			amendment.getNewSectionHeading(),
 			amendment.getNewSectionTitle(),
 			amendment.getNewSectionContent(),
@@ -62,7 +62,7 @@ public class CreateAmendmentMergeTemplate extends AmendmentMergeTemplate {
 	void afterMerged(Section section) {
 		log.trace("새로운 섹션의 생성에 따라 섹션의 순서를 업데이트합니다.");
 		Document document = section.getDocument();
-		sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getCurrentRevision(),
+		sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getLatestRevision(),
 				section.getOrder())
 			.forEach(Section::incrementOrder);
 	}

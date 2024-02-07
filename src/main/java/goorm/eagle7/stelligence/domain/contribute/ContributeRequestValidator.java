@@ -39,6 +39,8 @@ public class ContributeRequestValidator {
 	 *     <li>document가 존재하지 않을 경우</li>
 	 *     <li>해당 document에 대한 투표중인 수정요청이 존재하는 경우</li>
 	 *     <li>수정하고자 하는 section들이 document에 존재하지 않을 경우</li>
+	 *     <li>수정하고자 하는 제목이 다른 문서와 중복되는 경우</li>
+	 *     <li>수정하고자 하는 제목에 대해 다른 수정요청이 해당 제목으로 변경을 요청중인 경우</li>
 	 *     <li>각각의 sectionId를 가진 amendmentRequest들이 creatingOrder가 중복되거나 순차적이지 않을 경우</li>
 	 * </ul>
 	 * </p>
@@ -64,7 +66,7 @@ public class ContributeRequestValidator {
 
 		//수정하고자 하는 section들이 document에 존재하는가
 		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
-			document.getCurrentRevision());
+			document.getLatestRevision());
 
 		request.getAmendments().stream().map(AmendmentRequest::getSectionId).forEach(
 			sectionId -> {
@@ -73,6 +75,15 @@ public class ContributeRequestValidator {
 				}
 			}
 		);
+
+		//변경하고자 하는 제목이 다른 문서와 중복되는가
+		if (documentContentRepository.existsByTitle(request.getAfterDocumentTitle())) {
+			throw new BaseException("이미 해당 제목을 가진 문서가 존재합니다. title=" + request.getAfterDocumentTitle());
+		}
+
+		if (contributeRepository.existsDuplicateRequestedDocumentTitle(request.getAfterDocumentTitle())) {
+			throw new BaseException("해당 제목으로 변경을 요청중인 수정요청이 이미 존재합니다. title=" + request.getAfterDocumentTitle());
+		}
 
 		//각각의 sectionId를 가진 amendmentRequest들이 creatingOrder를 중복되지 않으면서 순차적인 값을 가지고 있는가
 		Map<Long, List<Integer>> sectionOrders = request.getAmendments().stream()

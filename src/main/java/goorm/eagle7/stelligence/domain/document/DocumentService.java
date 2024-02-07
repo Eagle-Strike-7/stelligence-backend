@@ -33,6 +33,7 @@ public class DocumentService {
 	private final DocumentContentService documentContentService;
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
+	private final DocumentRequestValidator documentRequestValidator;
 
 	/**
 	 * Document를 생성합니다.
@@ -44,6 +45,9 @@ public class DocumentService {
 	 */
 	@Transactional
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
+
+		// DocumentCreateRequest의 유효성을 검증합니다.
+		documentRequestValidator.validate(documentCreateRequest);
 
 		Member author = memberRepository.findById(loginMemberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
