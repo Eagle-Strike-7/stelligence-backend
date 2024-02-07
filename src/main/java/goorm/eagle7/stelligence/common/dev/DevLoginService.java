@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.login;
+package goorm.eagle7.stelligence.common.dev;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,41 +9,37 @@ import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class LoginService {
+public class DevLoginService {
 
-	private final MemberRepository memberRepository;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final SignUpService signUpService;
 	private final CookieUtils cookieutils;
+	private final DevSignUpService devSignUpService;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final MemberRepository memberRepository;
+
 
 	@Transactional
-	public Member login(HttpServletResponse response, OAuth2Request oAuth2Request) {
+	public LoginTokensWithIdAndRoleResponse devLogin( DevLoginRequest devLoginRequest) {
 
-		String socialId = oAuth2Request.getSocialId();
-
-		// TODO socialId, socialType으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		// socialId로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		Member member = memberRepository.findBySocialId(socialId)
-			.orElseGet(() -> signUpService.signUp(oAuth2Request));
+		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
+		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
+			.orElseGet(() -> devSignUpService.devSignUp(devLoginRequest));
+		// nickname 중복이면 로그인
 
 		// token 생성 후 refreshToken DB에 저장
 		LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = generateAndSaveTokens(member);
 
 		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
-		addTokensOnCookies(response, loginTokensWithIdAndRoleResponse);
+		addTokensOnCookies(loginTokensWithIdAndRoleResponse);
 
-		return member;
+		return loginTokensWithIdAndRoleResponse;
 	}
 
-	private void addTokensOnCookies(HttpServletResponse response, LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse) {
+	private void addTokensOnCookies(LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse) {
 
 		// 토큰 추출
 		String accessToken = loginTokensWithIdAndRoleResponse.getAccessToken();
@@ -59,8 +55,7 @@ public class LoginService {
 	 * @param member 회원
 	 * @return accessToken, refreshToken
 	 */
-	@Transactional
-	protected LoginTokensWithIdAndRoleResponse generateAndSaveTokens(Member member) {
+	private LoginTokensWithIdAndRoleResponse generateAndSaveTokens(Member member) {
 
 		// Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
@@ -78,13 +73,5 @@ public class LoginService {
 			);
 	}
 
-	@Transactional
-	public void logout(Long memberId) {
-
-		// db에서 refreshToken 삭제
-		memberRepository.findById(memberId)
-			.ifPresent(member -> member.expireRefreshToken());
-
-	}
 
 }

@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.login.dto;
+package goorm.eagle7.stelligence.common.dev;
 
 import static lombok.AccessLevel.*;
 

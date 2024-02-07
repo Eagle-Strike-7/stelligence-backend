@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.auth.filter;
+package goorm.eagle7.stelligence.common.dev;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -14,12 +14,10 @@ import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
-import goorm.eagle7.stelligence.common.login.LoginService;
-import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
-import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.servlet.FilterChain;
@@ -43,7 +41,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	private final CustomRequestMatcher customRequestMatcher;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final LoginService loginService;
+	private final DevLoginService devLoginService;
 	private final MemberRepository memberRepository;
 	private final CookieUtils cookieUtils;
 
@@ -72,9 +70,6 @@ public class DevAuthFilter extends OncePerRequestFilter {
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
 		ServletException,
 		IOException {
-
-		String httpMethod = request.getMethod();
-		String uri = request.getRequestURI();
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
@@ -128,7 +123,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				}
 				log.debug("nickname: {}", nickname);
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = loginService.devLogin(response,
+				LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = devLoginService.devLogin(
 					DevLoginRequest.from(nickname));
 
 				String accessToken = loginTokensWithIdAndRoleResponse.getAccessToken();
