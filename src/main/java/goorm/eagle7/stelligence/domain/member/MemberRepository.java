@@ -29,13 +29,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 */
 	Optional<Member> findByIdAndActiveTrue(Long memberId);
 
-
 	/**
-	 * member socialId로 member 정보를 가져온다.
-	 * @param socialId	member socialId
-	 * @return Optional<Member> member 정보
+	 * <h2>Member socialType과 socialId로 활성 member 획득.</h2>
+	 * @param socialType member socialType
+	 * @param socialId member socialId
+	 * @return Optional<Member> 활성 member 정보
 	 */
-	Optional<Member> findBySocialId(String socialId);
-
+	Optional<Member> findBySocialTypeAndSocialIdAndActiveTrue(String socialType, String socialId);
 
 }

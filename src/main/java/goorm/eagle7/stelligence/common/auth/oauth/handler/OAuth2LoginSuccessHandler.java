@@ -63,7 +63,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		 * -> socialId로 중복 확인, 없다면 -> signUpService.signUp() -> MemberRepository.save() Member 생성
 		 * -> memberId로 토큰 생성 및 DB 저장, response에 토큰 쿠키 추가
 		 */
-		loginService.login(response, loginOAuth2Request);
+		loginService.oAuth2Login(loginOAuth2Request);
 
 		try {
 			response.sendRedirect(redirectUrl);
