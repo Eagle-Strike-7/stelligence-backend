@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
-import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
@@ -23,7 +24,7 @@ public class DevLoginService {
 
 
 	@Transactional
-	public LoginTokensWithIdAndRoleResponse devLogin( DevLoginRequest devLoginRequest) {
+	public DevLoginTokensWithIdAndRoleResponse devLogin( DevLoginRequest devLoginRequest) {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
@@ -31,19 +32,19 @@ public class DevLoginService {
 		// nickname 중복이면 로그인
 
 		// token 생성 후 refreshToken DB에 저장
-		LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = generateAndSaveTokens(member);
+		DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse = generateAndSaveTokens(member);
 
 		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
-		addTokensOnCookies(loginTokensWithIdAndRoleResponse);
+		addTokensOnCookies(devLoginTokensWithIdAndRoleResponse);
 
-		return loginTokensWithIdAndRoleResponse;
+		return devLoginTokensWithIdAndRoleResponse;
 	}
 
-	private void addTokensOnCookies(LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse) {
+	private void addTokensOnCookies(DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse) {
 
 		// 토큰 추출
-		String accessToken = loginTokensWithIdAndRoleResponse.getAccessToken();
-		String refreshToken = loginTokensWithIdAndRoleResponse.getRefreshToken();
+		String accessToken = devLoginTokensWithIdAndRoleResponse.getAccessToken();
+		String refreshToken = devLoginTokensWithIdAndRoleResponse.getRefreshToken();
 
 		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
 		cookieutils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
@@ -55,7 +56,7 @@ public class DevLoginService {
 	 * @param member 회원
 	 * @return accessToken, refreshToken
 	 */
-	private LoginTokensWithIdAndRoleResponse generateAndSaveTokens(Member member) {
+	private DevLoginTokensWithIdAndRoleResponse generateAndSaveTokens(Member member) {
 
 		// Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
@@ -65,7 +66,7 @@ public class DevLoginService {
 		member.updateRefreshToken(refreshToken);
 
 		return
-			LoginTokensWithIdAndRoleResponse.of(
+			DevLoginTokensWithIdAndRoleResponse.of(
 				accessToken,
 				refreshToken,
 				member.getId(),

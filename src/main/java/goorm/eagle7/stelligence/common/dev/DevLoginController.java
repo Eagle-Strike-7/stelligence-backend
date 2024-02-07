@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController

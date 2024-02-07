@@ -14,7 +14,8 @@ import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
-import goorm.eagle7.stelligence.common.login.dto.LoginTokensWithIdAndRoleResponse;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
@@ -123,10 +124,10 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				}
 				log.debug("nickname: {}", nickname);
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				LoginTokensWithIdAndRoleResponse loginTokensWithIdAndRoleResponse = devLoginService.devLogin(
+				DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse = devLoginService.devLogin(
 					DevLoginRequest.from(nickname));
 
-				String accessToken = loginTokensWithIdAndRoleResponse.getAccessToken();
+				String accessToken = devLoginTokensWithIdAndRoleResponse.getAccessToken();
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
 				MemberInfoContextHolder.clear();

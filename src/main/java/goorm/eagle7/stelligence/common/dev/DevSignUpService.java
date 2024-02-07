@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.common.dev;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
