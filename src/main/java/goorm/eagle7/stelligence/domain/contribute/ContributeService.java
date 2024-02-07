@@ -9,7 +9,6 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
@@ -122,9 +121,7 @@ public class ContributeService {
 
 		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
 
-		Page<ContributeListResponse> listResponses = votingContributes.map(ContributeListResponse::of);
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(votingContributes);
 	}
 
 	/**
@@ -136,9 +133,7 @@ public class ContributeService {
 
 		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
 
-		Page<ContributeListResponse> listResponses = completedContributes.map(ContributeListResponse::of);
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(completedContributes);
 	}
 
 	/**
@@ -162,8 +157,6 @@ public class ContributeService {
 				pageable);
 		}
 
-		Page<ContributeListResponse> listResponses = contributesByDocumentAndStatus.map(ContributeListResponse::of);
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributesByDocumentAndStatus);
 	}
 }

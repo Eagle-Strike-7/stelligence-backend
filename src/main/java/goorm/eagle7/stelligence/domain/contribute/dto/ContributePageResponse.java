@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,10 @@ public class ContributePageResponse {
 	private boolean isFirstPage;
 	private boolean isLastPage;
 
-	public static ContributePageResponse from(Page<ContributeListResponse> contributePage) {
+	public static ContributePageResponse from(Page<Contribute> contributePage) {
 
-		return new ContributePageResponse(contributePage);
+		Page<ContributeListResponse> listResponses = contributePage.map(ContributeListResponse::of);
+		return new ContributePageResponse(listResponses);
 	}
 
 	private ContributePageResponse(Page<ContributeListResponse> contributePage) {
