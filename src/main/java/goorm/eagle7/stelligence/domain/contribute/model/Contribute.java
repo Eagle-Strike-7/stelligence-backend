@@ -91,7 +91,7 @@ public class Contribute extends BaseTimeEntity {
 	private Debate relatedDebate;
 
 	private Contribute(ContributeStatus status, Member member, Document document,
-		String title, String description, String afterDocumentTitle, Document afterParentDocument) {
+		String title, String description, String afterDocumentTitle, Document afterParentDocument, Debate relatedDebate) {
 		this.status = status;
 		this.member = member;
 		this.document = document;
@@ -101,11 +101,12 @@ public class Contribute extends BaseTimeEntity {
 		this.afterDocumentTitle = afterDocumentTitle;
 		this.beforeParentDocument = document.getParentDocument();
 		this.afterParentDocument = afterParentDocument;
+		this.relatedDebate = relatedDebate;
 	}
 
 	//===생성===//
 	public static Contribute createContribute(Member member, Document document,
-		String title, String description, String newDocumentTitle, Document newParentDocument) {
+		String title, String description, String newDocumentTitle, Document newParentDocument, Debate relatedDebate) {
 		return new Contribute(
 			ContributeStatus.VOTING,
 			member,
@@ -113,7 +114,8 @@ public class Contribute extends BaseTimeEntity {
 			title,
 			description,
 			newDocumentTitle,
-			newParentDocument
+			newParentDocument,
+			relatedDebate
 		);
 	}
 
