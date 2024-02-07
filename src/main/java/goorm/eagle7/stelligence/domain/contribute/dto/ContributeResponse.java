@@ -36,8 +36,8 @@ public class ContributeResponse {
 
 	// 추가된 필드
 	private ContributeStatus contributeStatus;	//현재 수정요청의 상태
-	private String documentTitle;	//수정요청과 관련 없이 현재 제목
-	private Long parentDocumentId;	//수정요청과 관련 없이 현재 상위 문서
+	private String documentTitle;	//수정요청과 관련 없이 조회 시점에서의 문서 제목
+	private Long parentDocumentId;	//수정요청과 관련 없이 조회 시점에서의 상위 문서
 	private String parentDocumentTitle;
 	private Long relatedDebateId;	//연관된 토론
 	private LocalDateTime endAt;	//투표 종료 시간
