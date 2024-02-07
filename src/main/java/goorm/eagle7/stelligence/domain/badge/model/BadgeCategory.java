@@ -9,10 +9,10 @@ public enum BadgeCategory {
 	MEMBER_JOIN("회원 가입"),
 	REPORT("신고");
 
-	private final String category;
+	private final String label;
 
-	BadgeCategory(String category) {
-		this.category = category;
+	BadgeCategory(String label) {
+		this.label = label;
 	}
 
 }

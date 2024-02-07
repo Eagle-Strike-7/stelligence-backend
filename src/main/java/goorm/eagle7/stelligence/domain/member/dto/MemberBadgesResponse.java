@@ -22,7 +22,7 @@ public class MemberBadgesResponse {
 		return new MemberBadgesResponse(
 			badge.name(),
 			badge.getTitle(),
-			badge.getEventCategory().getCategory(),
+			badge.getEventCategory().getLabel(),
 			badge.getImgUrl(),
 			badge.getDescription()
 		);
