@@ -28,7 +28,7 @@ class UpdateAmendmentMergeTemplateTest {
 
 		//then
 		assertThat(createdSection.getId()).isEqualTo(section.getId());
-		assertThat(createdSection.getRevision()).isEqualTo(document.getCurrentRevision() + 1);
+		assertThat(createdSection.getRevision()).isEqualTo(document.getLatestRevision() + 1);
 		assertThat(createdSection.getDocument()).isEqualTo(document);
 		assertThat(createdSection.getHeading()).isEqualTo(Heading.H1);
 		assertThat(createdSection.getTitle()).isEqualTo("newTitle");

@@ -59,24 +59,53 @@ public class Contribute extends BaseTimeEntity {
 	private String title;
 	private String description;
 
+	/**
+	 * 기존 문서 제목입니다.
+	 */
+	private String beforeDocumentTitle;
+	/**
+	 * 변경될 제목입니다.
+	 */
+	private String afterDocumentTitle;
+
+	/**
+	 * 기존 부모 문서입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "before_parent_document_id")
+	private Document beforeParentDocument;
+
+	/**
+	 * 변경될 부모 문서입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "after_parent_document_id")
+	private Document afterParentDocument;
+
 	private Contribute(ContributeStatus status, Member member, Document document,
-		String title, String description) {
+		String title, String description, String afterDocumentTitle, Document afterParentDocument) {
 		this.status = status;
 		this.member = member;
 		this.document = document;
 		this.title = title;
 		this.description = description;
+		this.beforeDocumentTitle = document.getTitle();
+		this.afterDocumentTitle = afterDocumentTitle;
+		this.beforeParentDocument = document.getParentDocument();
+		this.afterParentDocument = afterParentDocument;
 	}
 
 	//===생성===//
 	public static Contribute createContribute(Member member, Document document,
-		String title, String description) {
+		String title, String description, String newDocumentTitle, Document newParentDocument) {
 		return new Contribute(
 			ContributeStatus.VOTING,
 			member,
 			document,
 			title,
-			description
+			description,
+			newDocumentTitle,
+			newParentDocument
 		);
 	}
 

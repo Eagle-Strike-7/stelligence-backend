@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.contribute;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,12 +53,14 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2, a3, a4, a5, a6), 1L);
+			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
 		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L, 3L));
+		when(documentContentRepository.existsByTitle("title")).thenReturn(false);
+		when(contributeRepository.existsDuplicateRequestedDocumentTitle("title")).thenReturn(false);
 
 		//then
 		assertThatNoException().isThrownBy(
@@ -66,10 +69,26 @@ class ContributeRequestValidatorTest {
 	}
 
 	@Test
+	@DisplayName("변경요청된 제목이 비어있는 경우")
+	void emptyTitle() {
+		//given
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			Collections.emptyList(), 1L, " ", 2L);
+
+		//when
+
+		//then
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest)
+		).isInstanceOf(BaseException.class).hasMessage("수정하려는 제목이 비어있습니다.");
+	}
+
+	@Test
 	@DisplayName("documentId에 해당하는 문서가 존재하지 않는 경우")
 	void noDocument() {
 		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.empty());
@@ -83,7 +102,8 @@ class ContributeRequestValidatorTest {
 	@DisplayName("documentId에 해당하는 문서에 대한 수정요청이 이미 존재하는 경우")
 	void votingContributeExists() {
 		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", null, 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -96,12 +116,49 @@ class ContributeRequestValidatorTest {
 	}
 
 	@Test
+	@DisplayName("변경할 title이 중복되는 경우 - 이미 존재하는 문서 제목")
+	void duplicateDocumentTitle() {
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"newTitle", 2L);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(documentContentRepository.existsByTitle("newTitle")).thenReturn(true);
+
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest)
+		).isInstanceOf(BaseException.class).hasMessage("이미 해당 제목을 가진 문서가 존재합니다. title=newTitle");
+
+	}
+
+	@Test
+	@DisplayName("변경할 title이 중복되는 경우 - 이미 변경요청중인 문서 제목")
+	void duplicateDocumentTitle2() {
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"newTitle", 2L);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(documentContentRepository.existsByTitle("newTitle")).thenReturn(false);
+		when(contributeRepository.existsDuplicateRequestedDocumentTitle("newTitle")).thenReturn(true);
+
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest)
+		).isInstanceOf(BaseException.class).hasMessage("해당 제목으로 변경을 요청중인 수정요청이 이미 존재합니다. title=newTitle");
+	}
+
+	@Test
 	@DisplayName("amendments의 sectionId가 document에 존재하지 않는 경우")
 	void noSectionInDocument() {
 
 		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
+			2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -122,7 +179,8 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -143,7 +201,8 @@ class ContributeRequestValidatorTest {
 			"content", 3);
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
+			"title", 2L);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));

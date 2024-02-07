@@ -1,21 +1,27 @@
 -- 4명의 멤버가 존재합니다.
 insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
-                    social_id, created_at, updated_at)
+                    social_id, created_at, updated_at, active)
 values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
-        NOW()),
+        NOW(), true),
        (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', NOW(),
-        NOW()),
+        NOW(), true),
        (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
-        NOW()),
+        NOW(), true),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
-        NOW());
+        NOW(), true),
+       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5', NOW(),
+        NOW(), false),
+       (6, 'email6', 'name6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
+        NOW(), false),
+       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7', NOW(),
+        NOW(), false);
 
 -- 4개의 문서가 존재합니다.
-insert into document (document_id, title, current_revision, created_at, updated_at)
-values (1, 'title1', 3, NOW(), NOW()),
-       (2, 'title2', 2, NOW(), NOW()),
-       (3, 'title3', 1, NOW(), NOW()),
-       (4, 'title4', 1, NOW(), NOW());
+insert into document (document_id, title, latest_revision, parent_document_id, created_at, updated_at)
+values (1, 'title1', 3, null, NOW(), NOW()),
+       (2, 'title2', 2, null, NOW(), NOW()),
+       (3, 'title3', 1, null, NOW(), NOW()),
+       (4, 'title4', 1, null, NOW(), NOW());
 
 -- 14개의 섹션이 존재합니다.
 ------ 1번 문서에는 6개의 섹션이 존재합니다.
@@ -56,12 +62,16 @@ values ('section', 15);
 -- 5개의 contribute가 존재합니다.
 ------ 4번 Contribute는 5번 admentment를 갖고있는 수정요청으로, 거절되었습니다.
 ------ 5번은 6, 7번 admentment를 갖고 있는 수정요청으로, 투표중입니다.
-insert into contribute (contribute_id, member_id, document_id, title, description, status, created_at, updated_at)
-values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', '2024-03-21 00:00:00', NOW()),
-       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', '2024-03-21 00:01:00', NOW()),
-       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', '2024-03-21 00:02:00', NOW()),
-       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', '2024-03-21 00:03:00', NOW()),
-       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', '2024-03-21 00:04:00', NOW());
+insert into contribute (contribute_id, member_id, document_id, title, description, status,
+                        before_document_title, after_document_title,
+                        before_parent_document_id, after_parent_document_id,
+                        created_at, updated_at)
+values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null, '2024-03-21 00:00:00', NOW()),
+       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,'2024-03-21 00:01:00', NOW()),
+       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,'2024-03-21 00:02:00', NOW()),
+       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null, '2024-03-21 00:03:00', NOW()),
+       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,'2024-03-21 00:04:00', NOW()),
+       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,'2024-03-21 00:05:00', NOW());
 
 
 -- 7개의 admentment가 존재합니다.
@@ -85,18 +95,39 @@ values (1, 1, 2, 1, null, 'H2', 'document1_title2_update', 'document1_content2_u
        (7, 5, 6, 1, null, 'H1', 'document2_title3_update', 'document2_content3_update', 'UPDATE', NOW(), NOW());
 
 insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at)
-values (1, 1, 'OPEN', NOW(), 1, NOW()),
-       (2, 2, 'OPEN', NOW(), 1, NOW()),
-       (3, 3, 'OPEN', NOW(), 1, NOW()),
+values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, NOW()),
+       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
+       (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
        (4, 4, 'CLOSED', NOW(), 1, NOW()),
-       (5, 5, 'CLOSED', NOW(), 1, NOW());
+       (5, 5, 'CLOSED', NOW(), 1, NOW()),
+       (6, 5, 'OPEN', NOW(), 1, NOW()),
+       (7, 6, 'OPEN', NOW(), 1, NOW());
 
-insert into comment (comment_id, debate_id, commenter_id, content, sequences)
-values (1, 1, 1, '댓글1', 1),
-       (2, 1, 2, '댓글2', 2),
-       (3, 1, 3, '댓글3', 3),
-       (4, 2, 4, '댓글4', 1),
-       (5, 2, 1, '댓글5', 2),
-       (6, 2, 2, '댓글6', 3),
-       (7, 3, 3, '댓글7', 1),
-       (8, 3, 4, '댓글8', 2);
+insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at)
+values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
+       (2, 1, 2, '댓글2', 2, TIMESTAMPADD(HOUR, -2, NOW())),
+       (3, 1, 3, '댓글3', 3, TIMESTAMPADD(HOUR, -1, NOW())),
+       (4, 2, 4, '댓글4', 1, TIMESTAMPADD(HOUR, -4, NOW())),
+       (5, 2, 1, '댓글5', 2, TIMESTAMPADD(HOUR, -3, NOW())),
+       (6, 2, 2, '댓글6', 3, TIMESTAMPADD(HOUR, -3, NOW())),
+       (7, 3, 3, '댓글7', 1, TIMESTAMPADD(HOUR, -5, NOW())),
+       (8, 3, 4, '댓글8', 2, TIMESTAMPADD(HOUR, -10, NOW())),
+       (9, 3, 4, '댓글9', 3, TIMESTAMPADD(HOUR, -2, NOW()));
+
+-- 5개의 Bookmark가 존재합니다.
+-- 1번 멤버는 1, 2, 3, 4번 문서를 북마크하였습니다.
+-- 2번 멤버는 1, 4번 문서를 북마크하였습니다.
+-- 3번 멤버는 2, 3, 4번 문서를 북마크하였습니다.
+-- 4번 멤버는 3, 4번 문서를 북마크하였습니다.
+insert into bookmark (bookmark_id, member_id, document_id)
+values (1, 1, 1),
+       (2, 2, 1),
+       (3, 3, 2),
+       (4, 4, 3),
+       (5, 1, 4),
+       (6, 2, 4),
+       (7, 3, 3),
+       (8, 1, 2),
+       (10, 1, 3),
+       (11, 3, 4),
+       (12, 4, 4);

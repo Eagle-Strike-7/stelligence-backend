@@ -47,7 +47,7 @@ public class Document extends BaseTimeEntity {
 	/**
 	 * 현재 버전을 나타냅니다.
 	 */
-	private Long currentRevision;
+	private Long latestRevision;
 
 	/**
 	 * Document가 가지고 있는 Section들입니다. 이는 과거버전과 현재버전을 모두 담고 있습니다.
@@ -70,12 +70,20 @@ public class Document extends BaseTimeEntity {
 	@OneToMany(mappedBy = "document")
 	private List<Section> sections = new ArrayList<>();
 
+	/**
+	 * Document와 연결되어있는 상위 Document입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parent_document_id")
+	private Document parentDocument;
+
 	//===생성===//
-	public static Document createDocument(String title, Member author) {
+	public static Document createDocument(String title, Member author, Document parentDocument) {
 		Document document = new Document();
 		document.title = title;
 		document.author = author;
-		document.currentRevision = 1L; //최초 생성 시 버전은 1입니다.
+		document.latestRevision = 1L; //최초 생성 시 버전은 1입니다.
+		document.parentDocument = parentDocument;
 		return document;
 	}
 
@@ -85,8 +93,23 @@ public class Document extends BaseTimeEntity {
 	 * 현재 버전을 증가시킵니다.
 	 * Merge의 수행 이후 호출되어야 합니다.
 	 */
-	public void incrementCurrentRevision() {
-		this.currentRevision++;
+	public void incrementLatestRevision() {
+		this.latestRevision++;
 	}
 
+	/**
+	 * Document의 제목을 변경합니다.
+	 * @param newTitle 변경될 제목
+	 */
+	public void changeTitle(String newTitle) {
+		this.title = newTitle;
+	}
+
+	/**
+	 * parentDocument를 변경합니다.
+	 * @param parentDocument 변경될 상위 문서
+	 */
+	public void updateParentDocument(Document parentDocument) {
+		this.parentDocument = parentDocument;
+	}
 }

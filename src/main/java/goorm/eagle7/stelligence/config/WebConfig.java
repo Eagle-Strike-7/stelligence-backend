@@ -34,9 +34,13 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedOriginPatterns("*")
-			.allowedMethods("GET", "POST", "PUT", "DELETE")
+			.allowedOrigins(
+				"http://localhost:3000",
+				"http://3.39.192.156:80",
+				"http://www.stelligence.site")
+			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 			.allowedHeaders("Content-Type", "Set-Cookie")
+			// .exposedHeaders("Set-Cookie")
 			.allowCredentials(true)
 			.maxAge(3600);
 	}

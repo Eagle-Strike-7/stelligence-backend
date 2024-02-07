@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 public class VoteController {
 
+	private final VoteService voteService;
+
 	@Operation(summary = "소중한 한 표 행사", description = "사용자가 투표를 하면 투표를 생성합니다")
 	@ApiResponse(
 		responseCode = "200",
@@ -35,6 +37,7 @@ public class VoteController {
 		@RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
 	) {
+		voteService.vote(voteRequest, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 
@@ -50,6 +53,9 @@ public class VoteController {
 		@PathVariable Long contributeId,
 		@Auth MemberInfo memberInfo
 	) {
-		return ResponseTemplate.ok();
+		// 로그인한 경우 id를 받아오고, 로그인하지 않은 경우 null 처리
+		Long memberId = memberInfo != null ? memberInfo.getId() : null;
+
+		return ResponseTemplate.ok(voteService.getVoteSummary(contributeId, memberId));
 	}
 }

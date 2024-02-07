@@ -391,6 +391,56 @@ class DocumentNodeRepositoryTest {
 			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
 	}
 
+	@Test
+	@DisplayName("루트 아닌 문서노드 제목 변경 테스트")
+	void updateNonrootNodeTitle() {
+		// given
+		final Long updateTargetId = 11L;
+		final String updateTitle = "changedTitle";
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.updateNonrootNodeTitle(updateTargetId, updateTitle);
+
+		//then
+		DocumentNode documentNode = documentNodeRepository.findSingleNodeByDocumentId(updateTargetId).get();
+		assertThat(documentNode.getTitle()).isEqualTo(updateTitle);
+	}
+
+	@Test
+	@DisplayName("루트 문서노드 제목 변경 테스트")
+	void updateRootNodeTitle() {
+		// given
+		final Long updateTargetId = 1L;
+		final List<Long> childIdListOfUpdateTarget = List.of(11L, 111L, 1111L);
+		final String updateTitle = "changedTitle";
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentNodeRepository.updateRootNodeTitle(updateTargetId, updateTitle);
+
+		//then
+		DocumentNode updatedNode = documentNodeRepository.findSingleNodeByDocumentId(updateTargetId).get();
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(
+			childIdListOfUpdateTarget);
+
+		assertThat(updatedNode.getTitle()).isEqualTo(updateTitle);
+		assertThat(updatedNode.getGroup()).isEqualTo(updateTitle);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(updatedNode.getGroup()));
+	}
+
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {
 		return new String[] {
 			"CREATE (:DocumentNode {documentId: 1, level: 2, title: 'title1', group: 'title1'}),"

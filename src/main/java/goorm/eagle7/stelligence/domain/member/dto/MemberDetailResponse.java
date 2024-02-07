@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberDetailResponse {
 
+	private Long memberId;
 	private String nickname;
 	private String email;
 	private String profileImgUrl;
@@ -19,6 +20,7 @@ public class MemberDetailResponse {
 
 	public static MemberDetailResponse from(Member member) {
 		return new MemberDetailResponse(
+			member.getId(),
 			member.getNickname(),
 			member.getEmail(),
 			member.getImageUrl(),

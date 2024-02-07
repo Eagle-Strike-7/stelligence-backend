@@ -41,7 +41,7 @@ class DocumentGraphServiceTest {
 	@DisplayName("최상위 문서 노드 생성 서비스 테스트")
 	void createDocumentNode() {
 
-		Document createdDocument = Document.createDocument("제목1", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(createdDocument);
 
 		documentGraphService.createDocumentNode(createdDocument);
@@ -60,12 +60,12 @@ class DocumentGraphServiceTest {
 	void createDocumentNodeWithParent() {
 
 		// 기존에 존재하는 상위 문서
-		Document parentDocument = Document.createDocument("상위 문서 제목", member(null, "Paul"));
+		Document parentDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(parentDocument);
 		documentGraphService.createDocumentNode(parentDocument);
 
 		// 하위 문서 생성
-		Document createdDocument = Document.createDocument("하위 문서 제목", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목2", 1L, parentDocument);
 		documentContentRepository.save(createdDocument);
 		documentGraphService.createDocumentNodeWithParent(createdDocument, parentDocument.getId());
 
@@ -415,6 +415,84 @@ class DocumentGraphServiceTest {
 		assertThat(childDocuments)
 			.isNotEmpty()
 			.allMatch(n -> n.getGroup().equals(targetNode.getGroup()));
+	}
+
+	@Test
+	@DisplayName("루트아닌 노드 제목 수정 테스트")
+	void updateNonrootNodeTitle() {
+		// given
+		final Long updateTargetId = 11L;
+		final String updateTitle = "changedTitle";
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
+
+		//then
+		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
+		assertThat(documentNode.getTitle()).isEqualTo(updateTitle);
+		assertThat(documentNode.getGroup()).isNotEqualTo(updateTitle);
+	}
+
+	@Test
+	@DisplayName("루트 노드 제목 수정 테스트")
+	void updateRootNodeTitle() {
+		// given
+		final Long updateTargetId = 1L;
+		final String updateTitle = "changedTitle";
+		final List<Long> childIdListOfUpdateTarget = List.of(11L, 122L, 1333L);
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
+
+		//then
+		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
+		List<DocumentNodeResponse> childDocuments = documentNodeRepository.findNodeByDocumentId(
+			childIdListOfUpdateTarget);
+
+		assertThat(documentNode.getTitle()).isEqualTo(updateTitle);
+		assertThat(documentNode.getGroup()).isEqualTo(updateTitle);
+		assertThat(childDocuments)
+			.isNotEmpty()
+			.allMatch(n -> n.getGroup().equals(updateTitle));
+	}
+
+	@Test
+	@DisplayName("제목 변경 안함")
+	void NoUpdateTitle() {
+		// given
+		final Long updateTargetId = 1L;
+		final String updateTitle = "title1";
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		DocumentNode targetDocumentNode = documentNodeRepository.findById(updateTargetId).get();
+		log.info("targetDocumentNode.getTitle(): {}", targetDocumentNode.getTitle());
+
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
+		log.info("업데이트 쿼리 안나간 것을 확인");
+
+		//then
+		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
+
+		assertThat(documentNode.getTitle()).isEqualTo(updateTitle);
+		assertThat(documentNode.getGroup()).isEqualTo(updateTitle);
 	}
 
 	private static String[] queriesThatMakesThreeNodesWithDepthFour() {

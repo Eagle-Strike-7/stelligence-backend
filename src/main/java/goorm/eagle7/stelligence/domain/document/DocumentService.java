@@ -27,12 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class DocumentService {
 
 	private final DocumentContentService documentContentService;
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
+	private final DocumentRequestValidator documentRequestValidator;
 
 	/**
 	 * Document를 생성합니다.
@@ -42,14 +43,18 @@ public class DocumentService {
 	 * @param documentCreateRequest : 생성할 Document의 정보
 	 * @return 생성된 DocumentResponse
 	 */
+	@Transactional
 	public DocumentResponse createDocument(DocumentCreateRequest documentCreateRequest, Long loginMemberId) {
+
+		// DocumentCreateRequest의 유효성을 검증합니다.
+		documentRequestValidator.validate(documentCreateRequest);
 
 		Member author = memberRepository.findById(loginMemberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 사용자입니다. 사용자 ID : " + loginMemberId));
 
 		//DocumentContent 저장
 		Document createdDocument = documentContentService.createDocument(documentCreateRequest.getTitle(),
-			documentCreateRequest.getContent(), author);
+			documentCreateRequest.getContent(), documentCreateRequest.getParentDocumentId(), author);
 
 		//DocumentLink 저장 - 지정한 부모 문서가 있다면 링크 연결
 		if (documentCreateRequest.getParentDocumentId() == null) {
@@ -68,7 +73,7 @@ public class DocumentService {
 		 * 추후에 코드가 변경될 여지가 있습니다. 자세한 내용은 Document.sections의 주석을 참고해주세요.
 		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
-		return DocumentResponse.of(createdDocument, sections, Collections.emptyList());
+		return DocumentResponse.of(createdDocument, sections, Collections.emptyList(), true);
 	}
 
 	/**
@@ -117,5 +122,29 @@ public class DocumentService {
 	 */
 	public List<DocumentNodeResponse> getDocumentNodeByTitle(String title, int limit) {
 		return documentGraphService.findNodeByTitle(title, limit);
+	}
+
+	/**
+	 * 문서의 제목을 수정합니다.
+	 * @param documentId: 수정할 문서의 ID
+	 * @param newTitle: 변경될 제목
+	 */
+	@Transactional
+	public void changeDocumentTitle(Long documentId, String newTitle) {
+		documentContentService.changeTitle(documentId, newTitle);
+
+		//DocumentNode의 제목도 변경합니다.
+		documentGraphService.changeTitle(documentId, newTitle);
+	}
+
+	/**
+	 * 문서의 부모 문서를 변경합니다.
+	 * @param documentId: 변경할 문서의 ID
+	 * @param newParentDocumentId: 변경될 부모 문서의 ID
+	 */
+	@Transactional
+	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
+		documentContentService.updateParentDocument(documentId, newParentDocumentId);
+		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
 	}
 }

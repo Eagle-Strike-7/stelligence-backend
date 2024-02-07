@@ -16,8 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.debate.DebateRepository;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 
 @ExtendWith(MockitoExtension.class)
 class DebateHandlerTest {
@@ -36,7 +37,8 @@ class DebateHandlerTest {
 	void debateHandling() {
 		//given
 		Long contributeId = 1L;
-		Contribute contribute = contribute(contributeId, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(contributeId, null, ContributeStatus.VOTING, document);
 
 		when(contributeRepository.findById(contributeId)).thenReturn(Optional.of(contribute));
 
@@ -57,9 +59,10 @@ class DebateHandlerTest {
 		Long mergedContributeId = 2L;
 		Long rejectedContributeId = 3L;
 
-		Contribute debatingContribute = contribute(debatingContributeId, null, ContributeStatus.DEBATING, null);
-		Contribute mergedContribute = contribute(mergedContributeId, null, ContributeStatus.MERGED, null);
-		Contribute rejectedContribute = contribute(rejectedContributeId, null, ContributeStatus.REJECTED, null);
+		Document document = document(1L, null, "title", null);
+		Contribute debatingContribute = contribute(debatingContributeId, null, ContributeStatus.DEBATING, document);
+		Contribute mergedContribute = contribute(mergedContributeId, null, ContributeStatus.MERGED, document);
+		Contribute rejectedContribute = contribute(rejectedContributeId, null, ContributeStatus.REJECTED, document);
 
 		when(contributeRepository.findById(debatingContributeId)).thenReturn(Optional.of(debatingContribute));
 		when(contributeRepository.findById(mergedContributeId)).thenReturn(Optional.of(mergedContribute));

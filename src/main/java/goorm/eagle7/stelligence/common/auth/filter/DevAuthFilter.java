@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.common.auth.filter;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,11 +14,11 @@ import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
+import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.common.login.LoginService;
 import goorm.eagle7.stelligence.common.login.RandomUtils;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
-import goorm.eagle7.stelligence.common.login.dto.LoginTokens;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import io.jsonwebtoken.Claims;
@@ -29,36 +28,30 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>개발용 토큰 검증 필터</h2>
  * <p>토큰 검증이 필요한 리소스에 대해 토큰을 검증하고, ThreadLocal에 memberInfo를 저장한다.</p>
  * <p>repository에 저장되지 않은 httpmethod, uri에 대해 토큰 검증 진행</p>
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
-
-	@Value("${jwt.accessToken.name}")
-	private String accessTokenName;
-	@Value("${jwt.refreshToken.name}")
-	private String refreshTokenName;
-	@Value("${http.cookie.accessToken.maxAge}")
-	private Integer accessTokenMaxAge;
-	@Value("${http.cookie.refreshToken.maxAge}")
-	private Integer refreshTokenMaxAge;
 
 	private final PermittedPathStore permittedPathStore;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LoginService loginService;
 	private final MemberRepository memberRepository;
+	private final CookieUtils cookieUtils;
 
 	/**
 	 * 토큰 검증 필터
 	 * 	- 유효하지 않은 토큰이나 쿠키 응답인 경우, 자동 회원 가입 및 로그인으로 토큰 재발급
 	 * 	- 회원 가입 시에는 닉네임을 랜덤으로 생성
- 	 * 	- 닉네임 중복이면 랜덤 닉네임 생성
+	 * 	- 닉네임 중복이면 랜덤 닉네임 생성
 	 * 	- response에 accessToken, refreshToken, nickname 추가
 	 * 		- 쿠키:accessToken, refreshToken
 	 * 		- header:nickname
@@ -87,14 +80,17 @@ public class DevAuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
 			if (isTokenValidationRequired(httpMethod, uri)) {
 
-				Cookie[] cookies = request.getCookies();
-
+				log.debug("토큰 검증이 필요한 uri");
+				Optional<Cookie> cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
 				String nickname = null;
 				boolean signUpMode = true;
 
-				if (cookies != null) {
+				if (cookie.isPresent()) {
+
+					log.debug("accessTokenCookie 존재");
 					// request에서 accessToken 추출
-					String accessToken = jwtTokenService.extractJwtFromCookie(request, accessTokenName);
+					String accessToken = jwtTokenService.extractJwtFromCookie(cookie.get(), CookieType.ACCESS_TOKEN);
+					log.debug("accessToken: {}", accessToken);
 					// accessToken이 존재하는지 검증 - null
 					boolean tokenExists = jwtTokenService.validateIsTokenExists(accessToken);
 
@@ -108,7 +104,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 						// accessToken이 만료 전, 유효하다면 DB에 저장된 사용자인지 확인
 						// test 시에는 DB에 없더라도 쿠키가 남아 있어서 실제 사용자가 없는데, 조회해 꼬이는 것 방지.
 						if (memberOptional.isPresent()) {
-
+							log.debug("memberOptional 존재");
+							log.debug("memberId: {}", memberId);
 							// 회원 가입 모드 off
 							signUpMode = false;
 							Member member = memberOptional.get();
@@ -122,6 +119,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 
 								// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
 								String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+
 								member.updateRefreshToken(refreshToken);
 								memberRepository.save(member);
 
@@ -129,21 +127,16 @@ public class DevAuthFilter extends OncePerRequestFilter {
 						}
 					}
 				}
-
 				// 자동 회원 가입을 위한 랜덤 nickname 생성
 				if (signUpMode) {
 					// test+랜덤숫자 5개로 nickname 생성
 					nickname = RandomUtils.createNicknameWithRandomNumber("test");
 				}
-
+				log.debug("nickname: {}", nickname);
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				LoginTokens loginTokens = loginService.login(DevLoginRequest.from(nickname));
-				String  refreshToken = loginTokens.getRefreshToken();
-				String accessToken = loginTokens.getAccessToken();
-				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
+				String accessToken = loginService.login(DevLoginRequest.from(nickname));
 
-				// header에 쿠키 저장
-				saveTokensOnResponseCookiesOnHeader(response, accessToken, refreshToken);
+				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
 
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
@@ -182,18 +175,6 @@ public class DevAuthFilter extends OncePerRequestFilter {
 		response.setCharacterEncoding("UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
 		response.getWriter().write(jsonResponse);
-	}
-
-	/**
-	 * response 쿠키에 accessToken, refreshToken 추가
-	 * @param response response
-	 * @param accessToken accessToken
-	 * @param refreshToken refreshToken
-	 */
-	private void saveTokensOnResponseCookiesOnHeader(HttpServletResponse response, String accessToken,
-		String refreshToken) {
-		CookieUtils.addCookie(response, accessTokenName, accessToken, accessTokenMaxAge);
-		CookieUtils.addCookie(response, refreshTokenName, refreshToken, refreshTokenMaxAge);
 	}
 
 	/**

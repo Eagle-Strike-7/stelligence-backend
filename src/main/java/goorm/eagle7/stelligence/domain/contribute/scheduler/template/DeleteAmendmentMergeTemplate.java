@@ -32,7 +32,7 @@ public class DeleteAmendmentMergeTemplate extends AmendmentMergeTemplate {
 		return Section.createSection(
 			document,
 			amendment.getTargetSection().getId(),
-			document.getCurrentRevision() + 1,
+			document.getLatestRevision() + 1,
 			null,
 			null,
 			null,
