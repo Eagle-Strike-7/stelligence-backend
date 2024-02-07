@@ -114,6 +114,10 @@ public class Member extends BaseTimeEntity {
 		this.active = false;
 	}
 
+	public void addBadge(Badge newBadge) {
+		this.badges.add(newBadge);
+	}
+
 	/**
 	 * <h2>Member 탈퇴</h2>
 	 * <p>- Member 정보 초기화, socialType WITHDRAWN으로 변경.</p>
