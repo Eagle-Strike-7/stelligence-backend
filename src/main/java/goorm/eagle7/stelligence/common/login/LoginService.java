@@ -38,7 +38,7 @@ public class LoginService {
 		// socialId, socialType으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		Member member = memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(
 				loginOAuth2Request.getSocialType().name(), socialId)
-			.orElseGet(() -> signUpService.signUp(loginOAuth2Request));
+			.orElseGet(() -> signUpService.oauth2SignUp(loginOAuth2Request));
 
 		// 로그인 - token 생성 후 쿠키에 저장 및 refreshToken 반환
 		String refreshToken = loginAndGetRefreshToken(member);
