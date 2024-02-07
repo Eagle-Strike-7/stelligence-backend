@@ -1,12 +1,23 @@
 package goorm.eagle7.stelligence.domain.badge;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class BadgeService {
+
+	private final DocumentContentRepository documentContentRepository;
+	private final ContributeRepository contributeRepository;
+	private final MemberRepository memberRepository;
 
 	public void getBadge(BadgeCategory badgeCategory, Member member) {
 
@@ -28,7 +39,5 @@ public class BadgeService {
 
 		// 같은 badge를 찾고, count를 찾아 해당 count 이하인 badge를 member의 badges에 추가
 
-
-		// member.getBadges().add(badgeCategory);
 	}
 }
