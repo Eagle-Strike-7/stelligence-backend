@@ -9,7 +9,6 @@ import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,15 +43,10 @@ public class JwtTokenReissueService {
 	 * 		       -> accessToken 재발급, 보안상 이유로 refreshToken 재발급 및 저장
 	 * 		   -> 만료라면
 	 * 		      throw BadJwtException
-	 * @param response response cookie에 token 저장
 	 * @param refreshToken refreshToken
-	 * @param accessTokenName 쿠키의 accessTokenName
-	 * @param refreshTokenName 쿠키의 refreshTokenName
 	 * @return accessToken
 	 */
-	public String reissueAccessToken(HttpServletResponse response, String refreshToken,
-		String accessTokenName,
-		String refreshTokenName) {
+	public String reissueAccessToken(String refreshToken) {
 
 		// refreshToken 만료 확인, 만료라면 throw BadJwtException
 		jwtTokenService.validateTokenOrThrows(refreshToken);
@@ -67,7 +61,7 @@ public class JwtTokenReissueService {
 		validateTokenEquality(refreshToken, refreshTokenFromDB);
 
 		// accessToken 재발급 및 쿠키에 추가 후 accessToken 반환
-		return reissueTokensAndSaveOnCookieAndDb(response, accessTokenName, refreshTokenName, member);
+		return reissueTokensAndSaveOnCookieAndDb(member);
 
 	}
 
@@ -75,7 +69,6 @@ public class JwtTokenReissueService {
 	 * refreshToken이 DB에 저장된 refreshToken과 일치하지 않는지 확인
 	 * @param refreshToken 쿠키의 refreshToken
 	 * @param refreshTokenFromDB DB에 저장된 refreshToken
-	 * @return 일치하지 않으면 false
 	 * @throws BadJwtException refreshToken이 DB에 저장된 refreshToken과 일치하지 않으면 throw
 	 */
 	private void validateTokenEquality(String refreshToken, String refreshTokenFromDB) {
@@ -87,14 +80,10 @@ public class JwtTokenReissueService {
 
 	/**
 	 * accessToken, refreshToken 재발급 후 쿠키와 DB에 저장
-	 * @param response response
-	 * @param accessTokenName 쿠키의 accessTokenName
-	 * @param refreshTokenName 쿠키의 refreshTokenName
 	 * @param member 회원
 	 * @return accessToken 재발급
 	 */
-	private String reissueTokensAndSaveOnCookieAndDb(HttpServletResponse response, String accessTokenName,
-		String refreshTokenName, Member member) {
+	private String reissueTokensAndSaveOnCookieAndDb(Member member) {
 		Long memberId = member.getId();
 
 		// Token 재발급
