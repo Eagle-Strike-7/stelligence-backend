@@ -32,6 +32,9 @@ class DocumentServiceTest {
 	@Mock
 	private DocumentGraphService documentGraphService;
 
+	@Mock
+	private DocumentRequestValidator documentRequestValidator;
+
 	@InjectMocks
 	private DocumentService documentService;
 
