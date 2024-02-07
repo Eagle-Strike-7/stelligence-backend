@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
+import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class ContributeResponse {
 	private String contributeTitle;
 	private String contributeDescription;
 	private Long documentId;
-	private MemberDetailResponse contributor; //수정 요청한 멤버에 대한 정보
+	private MemberSimpleResponse contributor; //수정 요청한 멤버에 대한 정보
 	private List<AmendmentResponse> amendments;
 
 	private String beforeDocumentTitle;	//기존 제목
@@ -47,7 +47,7 @@ public class ContributeResponse {
 		this.contributeTitle = contribute.getTitle();
 		this.contributeDescription = contribute.getDescription();
 		this.documentId = contribute.getDocument().getId();
-		this.contributor = MemberDetailResponse.from(contribute.getMember());
+		this.contributor = MemberSimpleResponse.from(contribute.getMember());
 		this.amendments = contribute.getAmendments().stream()
 			.map(AmendmentResponse::of)
 			.toList();
