@@ -2,19 +2,16 @@ package goorm.eagle7.stelligence.common.auth.oauth.handler;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.auth.filter.ResponseTemplateUtils;
 import goorm.eagle7.stelligence.common.auth.oauth.CustomOAuth2User;
 import goorm.eagle7.stelligence.common.login.LoginService;
 import goorm.eagle7.stelligence.common.login.OAuth2Request;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+	@Value("${spring.security.oauth2.redirect.uri}")
+	private String redirectUrl;
 
 	private final LoginService loginService;
 
@@ -66,17 +66,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 		loginService.login(response, oAuth2Request);
 
 		try {
-			// response.setHeader("custom-header", "success");
-			// RequestDispatcher dispatcher = request.getRequestDispatcher("http://3.39.192.156");
-			// dispatcher.forward(request, response);
-			log.info("Redirect to http://");
-			response.sendRedirect("http://3.39.192.156");
+			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			throw new AccessDeniedException("Redirect failed");
 		}
-
-		// ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
-		// ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
 
 	}
 }
