@@ -64,24 +64,24 @@ public class BadgeService {
 
 	private Badge checkWritingConditionAndGetBadge(Member member, BadgeCategory badgeCategory) {
 
-		long count = documentContentRepository.countDistinctByAuthor_Id(member.getId());
+		long count = documentContentRepository.countByAuthor_Id(member.getId());
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 
 	}
 
 	private Badge checkContributeAllAndGetBadge(Member member, BadgeCategory badgeCategory) {
 
-		long count = contributeRepository.countDistinctByMemberId(member.getId());
+		long count = contributeRepository.countByMemberId(member.getId());
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 
 	}
 	private Badge checkContributeMergedAndGetBadge(Member member, BadgeCategory badgeCategory) {
-		long count = contributeRepository.countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 	}
 
 	private Badge checkContributeRejectedAndGetBadge(Member member, BadgeCategory badgeCategory) {
-		long count = contributeRepository.countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
+		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 	}
 

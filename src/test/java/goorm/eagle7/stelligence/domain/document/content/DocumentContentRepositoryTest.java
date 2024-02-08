@@ -67,10 +67,10 @@ class DocumentContentRepositoryTest {
 		// 	-- 4번 멤버는 19번 문서를 작성하였습니다.
 
 		// when
-		long active1Count = documentContentRepository.countDistinctByAuthor_Id(1L);
-		long active2Count = documentContentRepository.countDistinctByAuthor_Id(2L);
-		long active3Count = documentContentRepository.countDistinctByAuthor_Id(3L);
-		long active4Count = documentContentRepository.countDistinctByAuthor_Id(4L);
+		long active1Count = documentContentRepository.countByAuthor_Id(1L);
+		long active2Count = documentContentRepository.countByAuthor_Id(2L);
+		long active3Count = documentContentRepository.countByAuthor_Id(3L);
+		long active4Count = documentContentRepository.countByAuthor_Id(4L);
 
 		// then
 		assertThat(active1Count).isEqualTo(4);
@@ -90,9 +90,9 @@ class DocumentContentRepositoryTest {
 		// 	-- 7번 멤버는 22번 문서를 작성하였습니다.
 
 		// when
-		long expired5Count = documentContentRepository.countDistinctByAuthor_Id(5L);
-		long expired6Count = documentContentRepository.countDistinctByAuthor_Id(6L);
-		long expired7Count = documentContentRepository.countDistinctByAuthor_Id(7L);
+		long expired5Count = documentContentRepository.countByAuthor_Id(5L);
+		long expired6Count = documentContentRepository.countByAuthor_Id(6L);
+		long expired7Count = documentContentRepository.countByAuthor_Id(7L);
 
 		// then
 		assertThat(expired5Count).isEqualTo(3);

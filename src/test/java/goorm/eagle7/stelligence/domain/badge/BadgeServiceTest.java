@@ -47,7 +47,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.WRITING;
-		when(documentContentRepository.countDistinctByAuthor_Id(member.getId())).thenReturn(1L);
+		when(documentContentRepository.countByAuthor_Id(member.getId())).thenReturn(1L);
 		// Badge.findByEventCategoryAndCount(badgeCategory, count)
 		// when(Badge.findByEventCategoryAndCount(any(BadgeCategory.WRITING.getDeclaringClass()), 1L)).thenReturn(Badge.ASTRONAUT); // TODO enum은 any를 해야 하는지, 아니면 enum이라 그냥 넣어도 되는지
 
@@ -59,10 +59,10 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.ASTRONAUT)
 			.hasSize(1);
-		verify(documentContentRepository, times(1)).countDistinctByAuthor_Id(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(documentContentRepository, times(1)).countByAuthor_Id(member.getId());
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
 
 	}
@@ -73,17 +73,17 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.WRITING;
-		when(documentContentRepository.countDistinctByAuthor_Id(member.getId())).thenReturn(0L);
+		when(documentContentRepository.countByAuthor_Id(member.getId())).thenReturn(0L);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
-		verify(documentContentRepository, times(1)).countDistinctByAuthor_Id(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(documentContentRepository, times(1)).countByAuthor_Id(member.getId());
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
 
 	}
@@ -94,7 +94,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.CONTRIBUTE_ALL;
-		when(contributeRepository.countDistinctByMemberId(member.getId())).thenReturn(5L);
+		when(contributeRepository.countByMemberId(member.getId())).thenReturn(5L);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
@@ -104,11 +104,11 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.VENUS)
 			.hasSize(1);
-		verify(contributeRepository, times(1)).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, times(1)).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -118,18 +118,18 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.CONTRIBUTE_ALL;
-		when(contributeRepository.countDistinctByMemberId(member.getId())).thenReturn(8L);
+		when(contributeRepository.countByMemberId(member.getId())).thenReturn(8L);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
-		verify(contributeRepository, times(1)).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, times(1)).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -139,7 +139,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.CONTRIBUTE_MERGED;
-		when(contributeRepository.countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED)).thenReturn(
+		when(contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED)).thenReturn(
 			5L);
 
 		// when
@@ -150,11 +150,11 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.SATURN)
 			.hasSize(1);
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, times(1)).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, times(1)).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -164,7 +164,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.CONTRIBUTE_REJECTED;
-		when(contributeRepository.countDistinctByMemberIdAndStatus(member.getId(),
+		when(contributeRepository.countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED)).thenReturn(100L);
 
 		// when
@@ -175,11 +175,11 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.BLACKHOLE)
 			.hasSize(1);
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, times(1)).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, times(1)).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -200,11 +200,11 @@ class BadgeServiceTest {
 			.contains(Badge.SPROUT)
 			.hasSize(1);
 		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -223,11 +223,11 @@ class BadgeServiceTest {
 		assertThat(member.getBadges())
 			.isEmpty();
 		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
@@ -243,11 +243,11 @@ class BadgeServiceTest {
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
-		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+		verify(contributeRepository, never()).countByMemberId(member.getId());
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
 			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
 
 	}
 
