@@ -72,7 +72,8 @@ public class ContributeResponse {
 			null : contribute.getDocument().getParentDocument().getId();
 		this.parentDocumentTitle = contribute.getDocument().getParentDocument() == null ?
 			null : contribute.getDocument().getParentDocument().getTitle();
-		this.relatedDebateId = contribute.getRelatedDebate().getId();
+		this.relatedDebateId = contribute.getRelatedDebate() == null ?
+			null : contribute.getRelatedDebate().getId();
 		this.endAt = contribute.getCreatedAt().plusMinutes(voteExpirationMinutes);
 	}
 
