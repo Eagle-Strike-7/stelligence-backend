@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.contribute.model;
 
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Contribute extends BaseTimeEntity {
+
+	//투표 지속 시간: 60분 * 24시간 = 1일
+	public static final Long VOTE_DURATION_MINUTE = 60L * 24L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -154,5 +158,9 @@ public class Contribute extends BaseTimeEntity {
 			throw new IllegalStateException("투표 중인 Contribute만 상태를 변경할 수 있습니다.");
 		}
 		this.status = ContributeStatus.MERGED;
+	}
+
+	public LocalDateTime getEndAt() {
+		return this.createdAt.plusMinutes(VOTE_DURATION_MINUTE);
 	}
 }
