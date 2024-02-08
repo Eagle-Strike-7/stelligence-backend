@@ -35,6 +35,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 * @param memberId 활성 member id
 	 * @return 존재하면 true, 존재하지 않으면 false
 	 */
-	boolean existsByIdAndActiveTrueAndCreatedAtAfter(Long memberId, LocalDateTime dateTime);
+	boolean existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(Long memberId, LocalDateTime dateTime);
 
 }

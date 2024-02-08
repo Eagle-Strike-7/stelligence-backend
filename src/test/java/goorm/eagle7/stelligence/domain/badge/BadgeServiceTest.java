@@ -189,7 +189,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
-		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class) )).thenReturn(true);
+		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class) )).thenReturn(true);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
@@ -199,7 +199,7 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.SPROUT)
 			.hasSize(1);
-		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class));
+		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
 		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
@@ -214,7 +214,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
-		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class))).thenReturn(false);
+		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class))).thenReturn(false);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
@@ -222,7 +222,7 @@ class BadgeServiceTest {
 		// then
 		assertThat(member.getBadges())
 			.isEmpty();
-		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class));
+		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
 		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),

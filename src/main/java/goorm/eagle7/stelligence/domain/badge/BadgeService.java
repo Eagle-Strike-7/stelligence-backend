@@ -87,7 +87,7 @@ public class BadgeService {
 
 	private Badge checkMemberConditionAndGetBadge(Member member) {
 		// 만 하루 내에 가입한 회원으로 조회되면 회원 가입으로 간주
-		if (memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(member.getId(), LocalDateTime.now().minusDays(1))) {
+		if (memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(member.getId(), LocalDateTime.now().minusDays(1))) {
 			return Badge.SPROUT;
 		}
 		return null;
