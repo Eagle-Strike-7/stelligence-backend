@@ -4,12 +4,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,8 @@ public class JwtTokenService {
 	private final JwtTokenParser jwtTokenParser;
 	private final JwtTokenValidator jwtTokenValidator;
 
+	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
+
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
 	 * @param token token
@@ -59,7 +63,8 @@ public class JwtTokenService {
 		try {
 			validateTokenOrThrows(token);
 			return true;
-		} catch (JwtException | IllegalArgumentException e) {
+		} catch (JwtException | UsernameNotFoundException |
+				 ExpiredJwtException | IllegalArgumentException e) {
 			return false;
 		}
 	}
@@ -79,7 +84,7 @@ public class JwtTokenService {
 			.password("")
 			.authorities(memberInfo.getRole().getValue())
 			.build();
-
+		log.debug("user: {}", user);
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
 	}
 
@@ -91,6 +96,7 @@ public class JwtTokenService {
 	public String getTokenFromCookie(Cookie cookie) {
 
 		if (cookie == null) {
+			log.debug("쿠키가 없습니다.");
 			return null;
 		}
 		return cookie.getValue();
@@ -120,7 +126,10 @@ public class JwtTokenService {
 	 * @throws IllegalArgumentException 토큰 값이 없습니다.
 	 */
 	private void validateTokenOrThrows(String token) {
-		jwtTokenValidator.validateAndExtractClaims(token);
+		jwtTokenValidator.getClaimsOrNullIfInvalid(token)
+			.orElseThrow(
+				() -> new UsernameNotFoundException(ERROR_MESSAGE)
+			);
 	}
 
 	// 하기 메서드는 dev에서 사용
