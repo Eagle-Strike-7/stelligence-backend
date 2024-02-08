@@ -128,7 +128,7 @@ public class DocumentContentService {
 		boolean isDebating = debateRepository.existsByContributeDocumentIdAndStatus(documentId, DebateStatus.OPEN);
 		boolean isEditable = !isVoting && !isDebating;
 
-		Contribute latestContribute = contributeRepository.findLatestContributeByDocument(document).orElse(null);
+		Contribute latestContribute = contributeRepository.findLatestContributeByDocumentId(document.getId()).orElse(null);
 		Debate latestDebate = debateRepository.findLatestDebateByDocumentId(document.getId()).orElse(null);
 
 		return DocumentResponse.of(document, revision, sections, contributors, isEditable);

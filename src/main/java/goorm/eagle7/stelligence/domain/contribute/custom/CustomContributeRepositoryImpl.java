@@ -14,7 +14,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.contribute.model.QContribute;
-import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import jakarta.persistence.EntityManager;
 
 public class CustomContributeRepositoryImpl implements CustomContributeRepository {
@@ -91,12 +90,12 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 	}
 
 	@Override
-	public Optional<Contribute> findLatestContributeByDocument(Document document) {
+	public Optional<Contribute> findLatestContributeByDocumentId(Long documentId) {
 		QContribute contribute = QContribute.contribute;
 
 		Contribute findContribute = queryFactory
 			.selectFrom(contribute)
-			.where(contribute.document.eq(document))
+			.where(contribute.document.id.eq(documentId))
 			.orderBy(contribute.createdAt.desc())
 			.limit(1)
 			.fetchOne();
