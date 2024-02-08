@@ -1,19 +1,25 @@
--- 4명의 멤버가 존재합니다.
+-- 7명의 멤버가 존재합니다.
+-- 1번, 2번, 3번, 4번 멤버는 활성화 상태입니다.
+-- 5번, 6번, 7번 멤버는 비활성화 상태입니다.
+-- 1번, 3번, 4번, 5번, 6번 멤버는 방금 생성되었습니다.
+-- 2번, 7번 멤버는 1일 전에 생성되었습니다.
+-- 3번, 5번 멤버는 2일 전에 생성되었습니다.
+
 insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
                     social_id, created_at, updated_at, active)
 values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
         NOW(), true),
-       (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', NOW(),
+       (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', DATEADD('DAY', -1, NOW()),
         NOW(), true),
-       (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
+       (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', DATEADD('DAY', -2, NOW()),
         NOW(), true),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
         NOW(), true),
-       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5', NOW(),
+       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5', DATEADD('DAY', -2, NOW()),
         NOW(), false),
        (6, 'email6', 'name6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
         NOW(), false),
-       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7', NOW(),
+       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7', DATEADD('DAY', -1, NOW()),
         NOW(), false);
 
 -- 4개의 문서가 존재합니다.

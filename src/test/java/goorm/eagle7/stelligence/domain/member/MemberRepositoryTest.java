@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.member;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -128,6 +129,75 @@ class MemberRepositoryTest {
 
 		// then
 		assertThat(inActiveM).isEmpty();
+
+	}
+
+	/**
+	 * <h2>[정상] 활성 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter</h2>
+	 * <p>- second로 하는 경우 생성 시점 차이가 생겨 테스트 실패해 minutes으로 진행</p>
+	 * <p>결과: 방금 생성만 true, 1, 2일 전은 false</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
+	@Test
+	@DisplayName("[정상] 활성 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter")
+	void existsByIdAndActiveTrueAndCreatedAtAfterActive() {
+
+		// given
+		LocalDateTime now = LocalDateTime.now();
+
+		// when
+		boolean activeNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(1L, now.minusMinutes(5));
+		boolean active1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(2L, now.minusMinutes(5));
+		boolean active2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(3L, now.minusMinutes(5));
+
+		// then
+		assertThat(activeNowMember).isTrue();
+		assertThat(active1agoMember).isFalse();
+		assertThat(active2agoMember).isFalse();
+
+	}
+
+	/**
+	 * <h2>[정상] 탈퇴 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter</h2>
+	 * <p>결과: 전부 false</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
+	@Test
+	@DisplayName("[성공] 탈퇴 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter")
+	void existsByIdAndActiveTrueAndCreatedAtAfterExpired() {
+
+		// given
+		LocalDateTime now = LocalDateTime.now();
+
+		// when
+		boolean withdrawnNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(5L, now.minusMinutes(5));
+		boolean withdrawn1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(7L, now.minusMinutes(5));
+		boolean withdrawn2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(6L, now.minusMinutes(5));
+
+
+		// then
+		assertThat(withdrawnNowMember).isFalse();
+		assertThat(withdrawn1agoMember).isFalse();
+		assertThat(withdrawn2agoMember).isFalse();
+
+	}
+
+	/**
+	 * <h2>[정상] 존재하지 않는 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter</h2>
+	 * <p>결과: false</p>
+	 * <p>검증 방식: 반환값 확인</p>
+	 */
+	@Test
+	@DisplayName("[성공] 존재하지 않는 Member id로 Member 찾기, 시점 별 구분 - existsByIdAndActiveTrueAndCreatedAtAfter")
+	void existsByIdAndActiveTrueAndCreatedAtAfterNonExist() {
+
+		// given
+		LocalDateTime now = LocalDateTime.now();
+
+		// when
+		boolean nonExistNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(100L, now.minusMinutes(5));
+		// then
+		assertThat(nonExistNowMember).isFalse();
 
 	}
 
