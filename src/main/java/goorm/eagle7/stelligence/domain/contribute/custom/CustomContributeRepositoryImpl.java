@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.custom;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.contribute.model.QContribute;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import jakarta.persistence.EntityManager;
 
 public class CustomContributeRepositoryImpl implements CustomContributeRepository {
@@ -86,5 +88,19 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 		}
 
 		return findContributesByCondition(builder, pageable);
+	}
+
+	@Override
+	public Optional<Contribute> findLatestContributeByDocument(Document document) {
+		QContribute contribute = QContribute.contribute;
+
+		Contribute findContribute = queryFactory
+			.selectFrom(contribute)
+			.where(contribute.document.eq(document))
+			.orderBy(contribute.createdAt.desc())
+			.limit(1)
+			.fetchOne();
+
+		return Optional.ofNullable(findContribute);
 	}
 }
