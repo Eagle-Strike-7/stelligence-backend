@@ -99,7 +99,7 @@ public class DocumentResponse {
 
 		public static DocumentStatusInfo of(Contribute latestContribute, Debate latestDebate) {
 			if (latestContribute != null && latestContribute.isVoting()) {
-				return new DocumentStatusInfo(DocumentStatus.VOTING, latestDebate.getId(), null);
+				return new DocumentStatusInfo(DocumentStatus.VOTING, latestContribute.getId(), null);
 			} else if (latestDebate != null && latestDebate.isOnDebate()) {
 				return new DocumentStatusInfo(DocumentStatus.DEBATING, null, latestDebate.getId());
 			} else if (latestDebate != null && latestDebate.isPendingForContribute()) {
