@@ -35,15 +35,15 @@ public class CustomDebateRepositoryImpl implements CustomDebateRepository {
 	@Override
 	public Optional<Debate> findLatestDebateByDocumentId(Long documentId) {
 
-		Debate findDebate = em.createQuery(
+		List<Debate> debates = em.createQuery(
 				"select d from Debate d"
 					+ " where d.contribute.document.id = :documentId"
 					+ " order by d.createdAt desc", Debate.class)
 			.setParameter("documentId", documentId)
 			.setMaxResults(1)
-			.getSingleResult();
+			.getResultList();
 
-		return Optional.ofNullable(findDebate);
+		return debates.stream().findFirst();
 	}
 
 	private Page<Debate> findPageByStatusOrderByLatest(DebateStatus status, Pageable pageable) {
