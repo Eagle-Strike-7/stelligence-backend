@@ -73,22 +73,25 @@ class DebateServiceCommentTest {
 			verify(memberRepository, times(1)).findById(memberId);
 
 			assertThat(debate.getComments()).isNotEmpty();
-			// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점의 하루 뒤로 반영되어야한다.
-			assertThat(debate.getEndAt()).isEqualTo(commentedAt.plusDays(1L));
+			// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점을 기준으로 토론 기간이 연장된다.
+			assertThat(debate.getEndAt()).isEqualTo(commentedAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE));
 			// 댓글을 작성하고 나면 debate의 commentSequence가 1 증가한다.
 			assertThat(debate.getCommentSequence()).isEqualTo(2);
 		}
 	}
 
 	@Test
-	@DisplayName("토론의 최대 지속시간은 7일")
+	@DisplayName("토론에는 최대 지속 시간이 있다")
 	void addCommentWithoutUpdatingEndAt() {
 		// given
 		String commentContent = "댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(commentContent);
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 14, 1, 0);
 		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
-		LocalDateTime commentedAt = createdAt.plusDays(6L).plusHours(23L);
+		LocalDateTime commentedAt = createdAt
+			.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE)
+			.minusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE)
+			.plusMinutes(1L);
 
 		Long debateId = 1L;
 		Long memberId = 2L;
@@ -106,8 +109,9 @@ class DebateServiceCommentTest {
 
 			// then
 			// 토론의 최대 지속시간은 7일이다.
-			assertThat(debate.getEndAt()).isEqualTo(createdAt.plusDays(7L));
-			assertThat(debate.getEndAt()).isNotEqualTo(commentedAt.plusDays(1L));
+			assertThat(debate.getEndAt()).isEqualTo(createdAt.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE));
+			assertThat(debate.getEndAt())
+				.isNotEqualTo(commentedAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE));
 		}
 	}
 
