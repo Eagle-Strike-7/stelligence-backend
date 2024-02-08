@@ -16,7 +16,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
 	private final JdbcTemplate jdbcTemplate;
 
-	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (message, uri, member_id, is_read, created_at, updated_at) VALUES (:message, :uri,?, false, NOW(), NOW())";
+	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (message, uri, member_id, is_read, created_at, updated_at) VALUES (':message', ':uri', ?, false, NOW(), NOW())";
 
 	/**
 	 * 알림 등록
