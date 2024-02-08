@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 
 @DataJpaTest
 @WithMockData
@@ -33,4 +34,53 @@ class ContributeRepositoryTest {
 
 		assertThat(isExist).isTrue();
 	}
+
+	@Test
+	@DisplayName("[성공] 활성 멤버가 작성한 수정 요청의 총 개수를 가져온다.")
+	void countDistinctByMemberIdActiveSuccess() {
+		// 4번까지가 활성, 4번이 작성한 요청은 3개
+		long count = contributeRepository.countDistinctByMemberId(1L);
+		assertThat(count).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("[성공] 탈퇴 멤버가 작성한 수정 요청의 총 개수를 가져온다.")
+	void countDistinctByMemberIdExpiredSuccess() {
+		// 5번부터 탈퇴, 5번이 작성한 요청은 3개
+		long count = contributeRepository.countDistinctByMemberId(5L);
+		assertThat(count).isEqualTo(3);
+	}
+
+	@Test
+	@DisplayName("[성공] 수정 요청을 작성한 적 없는 활성 멤버가 작성한 수정 요청의 총 개수를 가져온다.")
+	void countDistinctByMemberIdActiveNoContributeSuccess() {
+		// 6번이 작성한 요청은 없음
+		long count = contributeRepository.countDistinctByMemberId(6L);
+		assertThat(count).isZero();
+	}
+
+	@Test
+	@DisplayName("[성공] 활성 멤버가 작성한 수정 요청 중 Merge의 총 개수를 가져온다.")
+	void countDistinctByMemberIdAndMergedActiveSuccess() {
+		// 4번이 작성한 요청 중 상태가 MERGED인 요청은 1개
+		long count = contributeRepository.countDistinctByMemberIdAndStatus(1L, ContributeStatus.MERGED);
+		assertThat(count).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("[성공] 수정 요청을 작성한 적 없는 활성 멤버가 작성한 수정 요청 중 Merge의 총 개수를 가져온다.")
+	void countDistinctByMemberIdAndMergedActiveNoContributeSuccess() {
+		// 6번이 작성한 요청 중 상태가 MERGED인 요청은 없음
+		long count = contributeRepository.countDistinctByMemberIdAndStatus(6L, ContributeStatus.MERGED);
+		assertThat(count).isZero();
+	}
+
+	@Test
+	@DisplayName("[성공] 탈퇴 멤버가 작성한 수정 요청 중 REJECTED 총 개수를 가져온다.")
+	void countDistinctByMemberIdAndRejectedExpiredSuccess() {
+		// 5번이 작성한 요청 중 상태가 REJECTED인 요청은 1개
+		long count = contributeRepository.countDistinctByMemberIdAndStatus(5L, ContributeStatus.REJECTED);
+		assertThat(count).isEqualTo(1);
+	}
+
 }
