@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.dto;
 
+import java.time.LocalDateTime;
+
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
@@ -19,6 +21,7 @@ public class ContributeListResponse {
 	private Long contributorId;
 	private String contributorNickname;
 	private VoteSummary voteSummary;
+	private LocalDateTime createdAt;
 
 	private ContributeListResponse(Contribute contribute, VoteSummary voteSummary) {
 		this.contributeId = contribute.getId();
@@ -30,6 +33,7 @@ public class ContributeListResponse {
 		this.contributorId = contribute.getMember().getId();
 		this.contributorNickname = contribute.getMember().getNickname();
 		this.voteSummary = voteSummary;
+		this.createdAt = contribute.getCreatedAt();
 	}
 
 	public static ContributeListResponse of(Contribute contribute, VoteSummary voteSummary) {

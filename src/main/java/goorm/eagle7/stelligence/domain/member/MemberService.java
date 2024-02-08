@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.domain.badge.BadgeImageUrlBuilder;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesResponse;
@@ -26,6 +27,7 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final WithdrawnMemberRepository withdrawnMemberRepository;
+
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "존재하지 않는 회원입니다. MemberId= %s"; // 서식 문자 사용
 
 	/**
@@ -59,7 +61,7 @@ public class MemberService {
 
 		// 탈퇴한 회원 Table로 따로 저장 - 추후 배치
 		withdrawnMemberRepository.insertWithdrawnMember(member);
-		String nickname = "탈퇴한 회원NeutronStar"+ member.getId();
+		String nickname = "탈퇴한 회원NeutronStar" + member.getId();
 		member.withdraw(nickname);
 
 	}
@@ -124,7 +126,7 @@ public class MemberService {
 	/**
 	 * <h2>회원이 획득한 badge 목록 조회</h2>
 	 * @param memberId 회원 id
-	 * @return  MemberBadgesListResponse 회원이 획득한 badge 목록
+	 * @return MemberBadgesListResponse 회원이 획득한 badge 목록
 	 * @throws BaseException 회원을 찾을 수 없는 경우 400
 	 */
 	public MemberBadgesListResponse getBadgesById(Long memberId) {
@@ -139,7 +141,8 @@ public class MemberService {
 		badges.add(Badge.ANDROMEDA);
 		badges.add(Badge.GALAXY);
 
-		List<MemberBadgesResponse> list = badges.stream().map(MemberBadgesResponse::from).toList();
+		List<MemberBadgesResponse> list = badges.stream().map(
+			MemberBadgesResponse::of).toList();
 
 		return MemberBadgesListResponse.from(list);
 

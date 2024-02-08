@@ -15,6 +15,8 @@ import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
@@ -33,6 +35,7 @@ public class ContributeService {
 	private final DocumentContentRepository documentContentRepository;
 	private final ContributeRequestValidator contributeRequestValidator;
 	private final VoteRepository voteRepository;
+	private final DebateRepository debateRepository;
 
 	/**
 	 * Contribute 생성
@@ -59,13 +62,20 @@ public class ContributeService {
 			.orElseThrow(() -> new BaseException(
 				"존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getAfterParentDocumentId()));
 
+		// 연관된 토론 ID null 이면 relatedDebate는 null
+		Debate relatedDebate = contributeRequest.getRelatedDebateId() == null ?
+			null : debateRepository.findById(contributeRequest.getRelatedDebateId())
+			.orElseThrow(() -> new BaseException(
+				"연관된 토론이 존재하지 않습니다. 토론 ID: " + contributeRequest.getRelatedDebateId()));
+
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
 			contributeRequest.getContributeTitle(),
 			contributeRequest.getContributeDescription(),
 			contributeRequest.getAfterDocumentTitle(),
-			afterParentDocument
+			afterParentDocument,
+			relatedDebate
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
@@ -164,5 +174,4 @@ public class ContributeService {
 
 		return ContributePageResponse.from(listResponses);
 	}
-
 }
