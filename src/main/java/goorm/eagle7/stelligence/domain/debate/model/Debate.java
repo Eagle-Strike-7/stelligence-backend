@@ -93,4 +93,11 @@ public class Debate extends BaseTimeEntity {
 	public int getAndIncrementCommentSequence() {
 		return commentSequence++;
 	}
+
+	public boolean hasPermissionToWriteDrivenContribute(Long memberId) {
+		return comments
+			.stream()
+			.map(c -> c.getCommenter().getId())
+			.anyMatch(commenterId -> commenterId.equals(memberId));
+	}
 }
