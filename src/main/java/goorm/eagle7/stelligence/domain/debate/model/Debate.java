@@ -100,4 +100,16 @@ public class Debate extends BaseTimeEntity {
 			.map(c -> c.getCommenter().getId())
 			.anyMatch(commenterId -> commenterId.equals(memberId));
 	}
+
+	// 토론 중인지를 확인
+	public boolean isOnDebate() {
+		return this.status.equals(DebateStatus.OPEN);
+	}
+
+	// 토론이 끝난 후 수정요청 대기중인지를 확인
+	public boolean isPendingForContribute() {
+		// 토론이 끝난 후 DEBATE_PENDING_DURATION_MINUTE 분 동안 수정요청 대기상태
+		LocalDateTime pendingLimitTime = this.endAt.plusMinutes(DEBATE_PENDING_DURATION_MINUTE);
+		return this.status.equals(DebateStatus.CLOSED) && pendingLimitTime.isAfter(LocalDateTime.now());
+	}
 }

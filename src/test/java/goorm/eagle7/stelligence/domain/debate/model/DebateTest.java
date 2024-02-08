@@ -39,4 +39,48 @@ class DebateTest {
 		assertThat(commenter2HasPermission).isTrue();
 		assertThat(noCommenterHasPermission).isFalse();
 	}
+
+	@Test
+	@DisplayName("토론중인지를 확인")
+	void onDebate() {
+		//given
+		Debate openDebate = TestFixtureGenerator.debate(
+			1L, null, DebateStatus.OPEN, LocalDateTime.now().plusDays(1L), 1, LocalDateTime.now());
+		Debate closedDebate = TestFixtureGenerator.debate(
+			1L, null, DebateStatus.CLOSED, LocalDateTime.now(), 1, LocalDateTime.now());
+
+		//when
+
+		//then
+		assertThat(openDebate.isOnDebate()).isTrue();
+		assertThat(closedDebate.isOnDebate()).isFalse();
+	}
+
+	@Test
+	@DisplayName("토론이 끝난 후 수정요청 대기중인지를 확인")
+	void pendingForContribute() {
+		//given
+		Debate openDebate = TestFixtureGenerator.debate(
+			1L, null, DebateStatus.OPEN, LocalDateTime.now().plusDays(1L), 1, LocalDateTime.now());
+		Debate closedDebateLongTimeAgo = TestFixtureGenerator.debate(
+			1L,
+			null,
+			DebateStatus.CLOSED,
+			LocalDateTime.now().minusMinutes(Debate.DEBATE_PENDING_DURATION_MINUTE).minusMinutes(1L),
+			1,
+			LocalDateTime.now());
+		Debate closedDebateRightNow = TestFixtureGenerator.debate(
+			1L, null, DebateStatus.CLOSED, LocalDateTime.now(), 1, LocalDateTime.now());
+
+		//when
+
+		//then
+
+		//열린 토론은 수정 요청 대기중이 아님
+		assertThat(openDebate.isPendingForContribute()).isFalse();
+		//오래전에 닫힌 토론은 수정요청 대기중이 아님
+		assertThat(closedDebateLongTimeAgo.isPendingForContribute()).isFalse();
+		//닫힌지 얼마 되지 않은 토론은 수정요청 대기중임
+		assertThat(closedDebateRightNow.isPendingForContribute()).isTrue();
+	}
 }
