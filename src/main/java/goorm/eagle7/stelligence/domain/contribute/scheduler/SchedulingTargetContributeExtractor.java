@@ -31,15 +31,13 @@ public class SchedulingTargetContributeExtractor {
 
 	public SchedulingTargetContributeExtractor(
 		ContributeRepository contributeRepository,
-		@Value("${contribute.scheduler.vote-expiration-minutes:30}")
-		long voteExpirationMinutes,
 		@Value("${contribute.scheduler.scheduling-interval-ms:600000}")
 		long schedulingIntervalMilliSeconds,
 		@Value("${contribute.scheduler.overlap-minutes:5}")
 		long overlapMinutes
 	) {
 		this.contributeRepository = contributeRepository;
-		this.voteExpirationMinutes = voteExpirationMinutes;
+		this.voteExpirationMinutes = Contribute.VOTE_DURATION_MINUTE;
 		this.schedulingIntervalSeconds = schedulingIntervalMilliSeconds / 1000;
 		this.overlapMinutes = overlapMinutes;
 	}
