@@ -131,7 +131,7 @@ public class DocumentContentService {
 		Contribute latestContribute = contributeRepository.findLatestContributeByDocumentId(document.getId()).orElse(null);
 		Debate latestDebate = debateRepository.findLatestDebateByDocumentId(document.getId()).orElse(null);
 
-		return DocumentResponse.of(document, revision, sections, contributors, isEditable);
+		return DocumentResponse.of(document, revision, sections, contributors, latestContribute, latestDebate);
 	}
 
 	/**
