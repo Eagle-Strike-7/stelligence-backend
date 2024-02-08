@@ -47,6 +47,10 @@ public class Vote extends BaseTimeEntity {
 	}
 
 	public void updateAgree(Boolean agree) {
+		if (agree == null) {
+			throw new IllegalArgumentException("투표 요청은 찬성(true), 반대(false) 중 하나여야 합니다.");
+		}
+
 		if (this.agree != null && this.agree.equals(agree)) { //요청된 값이 이미 같은 값이면 취소
 			this.agree = null;
 		} else { //다른 값이면 그 값으로 변경
