@@ -6,18 +6,20 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BadgeService {
 
-	private final DocumentContentRepository documentContentRepository;
 	private final ContributeRepository contributeRepository;
+	private final DocumentContentRepository documentContentRepository;
 
+	@Transactional
 	public void getBadge(BadgeCategory badgeCategory, Member member) {
 
 		Badge newBadge = null;
@@ -28,9 +30,17 @@ public class BadgeService {
 				// 글 작성
 				newBadge = checkWritingConditionAndGetBadge(member, badgeCategory);
 				break;
-			case CONTRIBUTE:
-				// 수정 요청
-				newBadge = checkContributeConditionAndGetBadge(member, badgeCategory);
+			case CONTRIBUTE_ALL:
+				// 모든 수정 요청
+				newBadge = checkContributeAllAndGetBadge(member, badgeCategory);
+				break;
+			case CONTRIBUTE_MERGED:
+				// 반영된 수정 요청
+				newBadge = checkContributeMergedAndGetBadge(member, badgeCategory);
+				break;
+			case CONTRIBUTE_REJECTED:
+				// 반려된 수정 요청
+				newBadge = checkContributeRejectedAndGetBadge(member, badgeCategory);
 				break;
 			case MEMBER_JOIN:
 				// 회원 가입
@@ -47,6 +57,7 @@ public class BadgeService {
 
 	}
 
+
 	private Badge checkWritingConditionAndGetBadge(Member member, BadgeCategory badgeCategory) {
 
 		long count = documentContentRepository.countDistinctByAuthor_Id(member.getId());
@@ -54,19 +65,25 @@ public class BadgeService {
 
 	}
 
-	private Badge checkContributeConditionAndGetBadge(Member member, BadgeCategory badgeCategory) {
+	private Badge checkContributeAllAndGetBadge(Member member, BadgeCategory badgeCategory) {
 
 		long count = contributeRepository.countDistinctByMemberId(member.getId());
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 
 	}
+	private Badge checkContributeMergedAndGetBadge(Member member, BadgeCategory badgeCategory) {
+		long count = contributeRepository.countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		return Badge.findByEventCategoryAndCount(badgeCategory, count);
+	}
 
-	// merge 추가 구현 필요
-
+	private Badge checkContributeRejectedAndGetBadge(Member member, BadgeCategory badgeCategory) {
+		long count = contributeRepository.countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
+		return Badge.findByEventCategoryAndCount(badgeCategory, count);
+	}
 
 	private Badge checkMemberConditionAndGetBadge() {
 		// 최초 회원 가입 검증 로직 따로 없어 미구현
-		 return Badge.SPROUT;
+		return Badge.SPROUT;
 	}
 
 }
