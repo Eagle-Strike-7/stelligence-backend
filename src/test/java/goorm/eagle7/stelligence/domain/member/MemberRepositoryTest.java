@@ -146,13 +146,22 @@ class MemberRepositoryTest {
 		LocalDateTime now = LocalDateTime.now();
 
 		// when
-		boolean activeNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(1L, now.minusMinutes(5));
-		boolean active1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(2L, now.minusMinutes(5));
-		boolean active2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(3L, now.minusMinutes(5));
+		// 1분 전 생성
+		boolean activeNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(1L, now.minusDays(1));
+
+		// 1일 전 생성 - 근소한 시간차 발생
+		boolean active1agoMember  = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(2L, now.minusDays(1));
+
+		// 1일 전 생성 후 1분 유예 (시간차 해소)
+		boolean active1agoPlus3MinMember  = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(2L, now.minusDays(1).minusMinutes(1));
+
+		// 2일 전 생성
+		boolean active2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(3L, now.minusDays(1));
 
 		// then
 		assertThat(activeNowMember).isTrue();
 		assertThat(active1agoMember).isFalse();
+		assertThat(active1agoPlus3MinMember).isTrue();
 		assertThat(active2agoMember).isFalse();
 
 	}
