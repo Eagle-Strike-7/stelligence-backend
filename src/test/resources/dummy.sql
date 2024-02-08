@@ -66,12 +66,24 @@ insert into contribute (contribute_id, member_id, document_id, title, descriptio
                         before_document_title, after_document_title,
                         before_parent_document_id, after_parent_document_id,
                         created_at, updated_at)
-values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null, '2024-03-21 00:00:00', NOW()),
-       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,'2024-03-21 00:01:00', NOW()),
-       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,'2024-03-21 00:02:00', NOW()),
-       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null, '2024-03-21 00:03:00', NOW()),
-       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,'2024-03-21 00:04:00', NOW()),
-       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,'2024-03-21 00:05:00', NOW());
+values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null,
+        '2024-03-21 00:00:00', NOW()),
+       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,
+        '2024-03-21 00:01:00', NOW()),
+       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,
+        '2024-03-21 00:02:00', NOW()),
+       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null,
+        '2024-03-21 00:03:00', NOW()),
+       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,
+        '2024-03-21 00:04:00', NOW()),
+       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,
+        '2024-03-21 00:05:00', NOW()),
+       (7, 5, 4, 'contribute_title7', 'contribute_description7', 'MERGED', 'title4', 'new_title_4', null, null,
+        '2024-03-21 00:06:00', NOW()),
+       (8, 5, 4, 'contribute_title8', 'contribute_description8', 'REJECTED', 'title4', 'new_title_4', null, null,
+        '2024-03-21 00:07:00', NOW()),
+         (9, 5, 4, 'contribute_title9', 'contribute_description9', 'VOTING', 'title4', 'new_title_4', null, null,
+          '2024-03-21 00:06:00', NOW());
 
 
 -- 7개의 admentment가 존재합니다.
