@@ -55,6 +55,14 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 	List<Member> findContributorsByDocumentId(Long documentId);
 
 	/**
+	 * 특정 제목을 가진 Document를 조회합니다.
+	 * 애플리케이션 로직 상 제목은 유일해야 합니다.
+	 * @param title 조회할 Document의 제목
+	 * @return 존재 여부
+	 */
+	Optional<Document> findByTitle(String title);
+
+	/**
 	 * 특정 제목을 가진 Document가 존재하는지 조회합니다.
 	 * @param title 조회할 Document의 제목
 	 * @return 존재 여부

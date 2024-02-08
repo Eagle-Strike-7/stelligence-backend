@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
+import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -39,6 +40,8 @@ class ContributeRequestValidatorTest {
 	@DisplayName("검증 성공케이스")
 	void validateSuccess() {
 
+		Document targetDocument = document(1L, member(1L, "pete"), "title", 1L, null);
+
 		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.DELETE, Heading.H2, "title",
 			"content", 0);
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
@@ -59,7 +62,7 @@ class ContributeRequestValidatorTest {
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
 		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L, 3L));
-		when(documentContentRepository.existsByTitle("title")).thenReturn(false);
+		when(documentContentRepository.findByTitle("title")).thenReturn(Optional.of(targetDocument));
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("title")).thenReturn(false);
 
 		//then
@@ -118,6 +121,8 @@ class ContributeRequestValidatorTest {
 	@Test
 	@DisplayName("변경할 title이 중복되는 경우 - 이미 존재하는 문서 제목")
 	void duplicateDocumentTitle() {
+		Document targetDocument = document(3L, member(1L, "pete"), "newTitle", 1L, null);
+
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
 			"newTitle", 2L);
 
@@ -125,7 +130,7 @@ class ContributeRequestValidatorTest {
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
 		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
-		when(documentContentRepository.existsByTitle("newTitle")).thenReturn(true);
+		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.of(targetDocument));
 
 		assertThatThrownBy(
 			() -> contributeRequestValidator.validate(contributeRequest)
@@ -143,7 +148,7 @@ class ContributeRequestValidatorTest {
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
 		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
-		when(documentContentRepository.existsByTitle("newTitle")).thenReturn(false);
+		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.empty());
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("newTitle")).thenReturn(true);
 
 		assertThatThrownBy(
