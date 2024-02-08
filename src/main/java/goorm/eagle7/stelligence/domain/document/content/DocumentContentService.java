@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
@@ -125,6 +127,9 @@ public class DocumentContentService {
 		boolean isVoting = contributeRepository.existsByDocumentAndStatus(document, ContributeStatus.VOTING);
 		boolean isDebating = debateRepository.existsByContributeDocumentIdAndStatus(documentId, DebateStatus.OPEN);
 		boolean isEditable = !isVoting && !isDebating;
+
+		Contribute latestContribute = contributeRepository.findLatestContributeByDocument(document).orElse(null);
+		Debate latestDebate = debateRepository.findLatestDebateByDocumentId(document.getId()).orElse(null);
 
 		return DocumentResponse.of(document, revision, sections, contributors, isEditable);
 	}
