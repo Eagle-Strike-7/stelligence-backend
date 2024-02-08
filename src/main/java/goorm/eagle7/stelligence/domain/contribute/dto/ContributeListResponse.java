@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.contribute.dto;
 
+import java.time.LocalDateTime;
+
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import lombok.AccessLevel;
@@ -17,6 +19,7 @@ public class ContributeListResponse {
 	private String documentTitle;
 	private Long contributorId;
 	private String contributorNickname;
+	private LocalDateTime createdAt;
 
 	private ContributeListResponse(Contribute contribute) {
 		this.contributeId = contribute.getId();
@@ -27,6 +30,7 @@ public class ContributeListResponse {
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributorId = contribute.getMember().getId();
 		this.contributorNickname = contribute.getMember().getNickname();
+		this.createdAt = contribute.getCreatedAt();
 	}
 
 	public static ContributeListResponse of(Contribute contribute) {

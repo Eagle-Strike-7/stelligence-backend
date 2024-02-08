@@ -33,7 +33,7 @@ public class VoteController {
 		useReturnTypeSchema = true
 	)
 	@PostMapping("/votes")
-	public ResponseTemplate<Void> vote(
+	public ResponseTemplate<VoteSummaryResponse> vote(
 		@RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
 	) {

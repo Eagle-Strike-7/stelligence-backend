@@ -19,6 +19,8 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -33,6 +35,8 @@ class ContributeRequestValidatorTest {
 	ContributeRepository contributeRepository;
 	@Mock
 	DocumentContentRepository documentContentRepository;
+	@Mock
+	DebateRepository debateRepository;
 	@InjectMocks
 	ContributeRequestValidator contributeRequestValidator;
 
@@ -56,7 +60,7 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L);
+			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -76,7 +80,7 @@ class ContributeRequestValidatorTest {
 	void emptyTitle() {
 		//given
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			Collections.emptyList(), 1L, " ", 2L);
+			Collections.emptyList(), 1L, " ", 2L, null);
 
 		//when
 
@@ -91,7 +95,7 @@ class ContributeRequestValidatorTest {
 	void noDocument() {
 		//given
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
-			"title", 2L);
+			"title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.empty());
@@ -106,7 +110,7 @@ class ContributeRequestValidatorTest {
 	void votingContributeExists() {
 		//given
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
-			"title", 2L);
+			"title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -119,12 +123,30 @@ class ContributeRequestValidatorTest {
 	}
 
 	@Test
+	@DisplayName("documentId에 해당하는 문서에 대한 토론이 진행중인 경우")
+	void debating() {
+		//given
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+			"title", 2L, null);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN))
+			.thenReturn(true);
+
+		//then
+		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest))
+			.isInstanceOf(BaseException.class).hasMessage("해당 문서에 대한 토론이 진행중입니다. documentId=1");
+	}
+
+	@Test
 	@DisplayName("변경할 title이 중복되는 경우 - 이미 존재하는 문서 제목")
 	void duplicateDocumentTitle() {
 		Document targetDocument = document(3L, member(1L, "pete"), "newTitle", 1L, null);
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
-			"newTitle", 2L);
+			"newTitle", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -142,7 +164,7 @@ class ContributeRequestValidatorTest {
 	@DisplayName("변경할 title이 중복되는 경우 - 이미 변경요청중인 문서 제목")
 	void duplicateDocumentTitle2() {
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
-			"newTitle", 2L);
+			"newTitle", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -163,7 +185,7 @@ class ContributeRequestValidatorTest {
 		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
-			2L);
+			2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -185,7 +207,7 @@ class ContributeRequestValidatorTest {
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
-			"title", 2L);
+			"title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -207,7 +229,7 @@ class ContributeRequestValidatorTest {
 		AmendmentRequest a2 = new AmendmentRequest(1L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
-			"title", 2L);
+			"title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
