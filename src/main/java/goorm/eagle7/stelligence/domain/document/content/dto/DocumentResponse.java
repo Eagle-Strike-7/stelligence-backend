@@ -23,7 +23,10 @@ public class DocumentResponse {
 	private Long documentId;
 	private String title;
 
-	// 최종 수정 일시
+	private Long latestRevision;
+	private Long currentRevision;
+
+	// 최종 수정 일시 (latestRevision 기준)
 	private LocalDateTime lastModifiedAt;
 
 	private List<SectionResponse> sections;
@@ -59,6 +62,7 @@ public class DocumentResponse {
 	 */
 	public static DocumentResponse of(
 		Document document,
+		Long currentRevision,
 		List<SectionResponse> sections,
 		List<MemberSimpleResponse> contributors,
 		boolean isEditable
@@ -66,6 +70,8 @@ public class DocumentResponse {
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
+			document.getLatestRevision(),
+			currentRevision,
 			document.getUpdatedAt(),
 			sections,
 			SectionResponseConcatenator.concat(sections),

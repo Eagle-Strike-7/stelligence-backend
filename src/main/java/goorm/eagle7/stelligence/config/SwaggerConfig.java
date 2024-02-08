@@ -13,7 +13,8 @@ import io.swagger.v3.oas.models.OpenAPI;
  */
 @OpenAPIDefinition(
 	servers = {
-		@Server(url = "https://api.stelligence.site/", description = "Default Server URL")
+		@Server(url = "https://api.stelligence.site/", description = "Default Server URL"),
+		@Server(url = "http://localhost:8080/", description = "Local Server URL")
 	}
 )
 @Configuration
