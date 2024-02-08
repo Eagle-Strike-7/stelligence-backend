@@ -30,6 +30,7 @@ public class VoteService {
 	 * @param voteRequest
 	 * @param loginMemberId
 	 */
+	@Transactional
 	public void vote(VoteRequest voteRequest, Long loginMemberId) {
 		if (voteRequest.getAgree() == null) {
 			throw new BaseException("투표 요청은 찬성(true), 반대(false) 중 하나여야 합니다.");
