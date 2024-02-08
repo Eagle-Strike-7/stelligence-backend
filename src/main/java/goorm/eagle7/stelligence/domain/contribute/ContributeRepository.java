@@ -44,4 +44,13 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 		+ " OR d.status = goorm.eagle7.stelligence.domain.debate.model.DebateStatus.OPEN"
 		+ " )")
 	boolean existsDuplicateRequestedDocumentTitle(String title);
+
+	/**
+	 * Contribute를 Member와 함께 가져온다.
+	 * @param id Contribute id
+	 * @return Contribute
+	 */
+	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH c.member WHERE c.id = :id")
+	Optional<Contribute> findWithMember(Long id);
+
 }
