@@ -126,7 +126,7 @@ public class DocumentContentService {
 		boolean isDebating = debateRepository.existsByContributeDocumentIdAndStatus(documentId, DebateStatus.OPEN);
 		boolean isEditable = !isVoting && !isDebating;
 
-		return DocumentResponse.of(document, sections, contributors, isEditable);
+		return DocumentResponse.of(document, revision, sections, contributors, isEditable);
 	}
 
 	/**
