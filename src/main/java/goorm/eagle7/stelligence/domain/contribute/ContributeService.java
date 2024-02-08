@@ -9,6 +9,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
@@ -18,6 +19,7 @@ import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepositor
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +32,7 @@ public class ContributeService {
 	private final MemberRepository memberRepository;
 	private final DocumentContentRepository documentContentRepository;
 	private final ContributeRequestValidator contributeRequestValidator;
+	private final VoteRepository voteRepository;
 
 	/**
 	 * Contribute 생성
@@ -122,7 +125,10 @@ public class ContributeService {
 
 		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
 
-		return ContributePageResponse.from(votingContributes);
+		Page<ContributeListResponse> listResponses = votingContributes.map(
+			(contribute) -> ContributeListResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
 	}
 
 	/**
@@ -134,7 +140,10 @@ public class ContributeService {
 
 		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
 
-		return ContributePageResponse.from(completedContributes);
+		Page<ContributeListResponse> listResponses = completedContributes.map(
+			(contribute) -> ContributeListResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
 	}
 
 	/**
@@ -150,6 +159,10 @@ public class ContributeService {
 		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
 			merged, pageable);
 
-		return ContributePageResponse.from(contributesByDocumentAndStatus);
+		Page<ContributeListResponse> listResponses = contributesByDocumentAndStatus.map(
+			(contribute) -> ContributeListResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
 	}
+
 }
