@@ -54,6 +54,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요 없는지 확인 후 필요하면 토큰 검증으로 진행
 			if (isTokenValidationRequired(request)) {
 
+				log.debug("토큰 검증 필요");
 				// accessToken 추출(null 포함)
 				String accessToken = getTokenFromCookies(CookieType.ACCESS_TOKEN);
 
@@ -66,6 +67,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		} catch (JwtException | AuthenticationException e) {
 			if (!(httpMethod.equals("POST") && uri.equals("/api/logout"))) {
+				log.debug("UsernameNotFoundException catched in AuthFilter : {}", e.getMessage());
 				throw new UsernameNotFoundException(e.getMessage());
 			}
 		}
@@ -89,13 +91,16 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		// accessToken이 유효하지 않다면,in
 		if (!jwtTokenService.isTokenValidated(accessToken)) {
+			log.debug("accessToken 유효하지 않음, refreshToken 재발급 시작");
+			log.debug("accessToken: {}", accessToken);
 
 			// refresh 토큰 추출 (null 포함)
 			String refreshToken = getTokenFromCookies(CookieType.REFRESH_TOKEN);
-
+			log.debug("refreshToken: {}", refreshToken);
 			// accessToken 재발급, refresh 토큰 만료 혹은 DB와 다르다면 throw
 			accessToken = jwtTokenReissueService.reissueAccessToken(refreshToken);
 		}
+		log.debug("유효한 accessToken: {}", accessToken);
 
 		// 유효한 accessToken으로 검증
 		return jwtTokenService.makeAuthenticationFromToken(accessToken);
@@ -115,8 +120,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		return
 			cookieUtils.getCookieFromRequest(cookieType)
 				.map(jwtTokenService::getTokenFromCookie)
-				.orElseThrow(
-					() -> new UsernameNotFoundException(ERROR_MESSAGE));
+				.orElse(null);
 
 	}
 
