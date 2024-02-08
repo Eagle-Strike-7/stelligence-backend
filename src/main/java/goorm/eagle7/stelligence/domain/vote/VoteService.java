@@ -30,7 +30,7 @@ public class VoteService {
 	 * @param voteRequest
 	 * @param loginMemberId
 	 */
-	public void vote(VoteRequest voteRequest, Long loginMemberId) {
+	public VoteSummaryResponse vote(VoteRequest voteRequest, Long loginMemberId) {
 		if (voteRequest.getAgree() == null) {
 			throw new BaseException("투표 요청은 찬성(true), 반대(false) 중 하나여야 합니다.");
 		}
@@ -48,13 +48,25 @@ public class VoteService {
 
 		Optional<Vote> existingVote = voteRepository.findByMemberAndContribute(member, contribute);
 
+		Boolean userVoteStatus;
+
 		if (existingVote.isPresent()) { //이미 투표한 경우 요청에 따라 변경
 			Vote vote = existingVote.get();
 			vote.updateAgree(voteRequest.getAgree());
+			userVoteStatus = vote.getAgree();
 		} else { //처음 투표하는 경우 새로 생성
 			Vote vote = Vote.createVote(member, contribute, voteRequest.getAgree());
 			voteRepository.save(vote);
+			userVoteStatus = vote.getAgree();
 		}
+
+		VoteSummary voteSummary = voteRepository.getVoteSummary(contribute.getId());
+
+		return VoteSummaryResponse.of(
+			voteSummary.getAgreeCount(),
+			voteSummary.getDisagreeCount(),
+			userVoteStatus
+		);
 	}
 
 	/**
