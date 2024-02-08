@@ -1,8 +1,12 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
+import static jakarta.servlet.RequestDispatcher.*;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.member.model.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +28,9 @@ class JwtTokenParser {
 	public String getSubject(String token) {
 		log.debug("token에서 sub(memberId) 추출");
 		return jwtTokenValidator
-			.validateAndExtractClaims(token)
+			.getClaimsOrNullIfInvalid(token).orElseThrow(
+				() -> new UsernameNotFoundException(ERROR_MESSAGE)
+			)
 			.getSubject();
 	}
 
@@ -36,8 +42,11 @@ class JwtTokenParser {
 	public Role getRole(String token) {
 		log.debug("토큰에서 claims(role) 추출");
 		return Role.fromValue(jwtTokenValidator
-			.validateAndExtractClaims(token)
-			.get(jwtProperties.getClaims().getValue(), String.class));
+			.getClaimsOrNullIfInvalid(token)
+				.orElseThrow(
+					() -> new UsernameNotFoundException(ERROR_MESSAGE)
+				)
+			.get(jwtProperties.getClaims().getValue() , String.class));
 	}
 
 	/**
@@ -49,8 +58,10 @@ class JwtTokenParser {
 
 		try {
 			return jwtTokenValidator
-				.validateAndExtractClaims(token)
-				.getSubject();
+				.getClaimsOrNullIfInvalid(token)
+				.map(Claims::getSubject).orElseThrow(
+					() -> new UsernameNotFoundException(ERROR_MESSAGE)
+				);
 		} catch (ExpiredJwtException e) {
 			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
 			return e.getClaims().getSubject();
