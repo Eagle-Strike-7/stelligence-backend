@@ -24,7 +24,7 @@ public class BadgeService {
 	private final DocumentContentRepository documentContentRepository;
 
 	@Transactional
-	public void getBadge(BadgeCategory badgeCategory, Member member) {
+	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		Badge newBadge = null;
 

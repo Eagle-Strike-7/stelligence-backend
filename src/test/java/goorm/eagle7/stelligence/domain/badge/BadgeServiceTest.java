@@ -52,7 +52,7 @@ class BadgeServiceTest {
 		// when(Badge.findByEventCategoryAndCount(any(BadgeCategory.WRITING.getDeclaringClass()), 1L)).thenReturn(Badge.ASTRONAUT); // TODO enum은 any를 해야 하는지, 아니면 enum이라 그냥 넣어도 되는지
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -76,7 +76,7 @@ class BadgeServiceTest {
 		when(documentContentRepository.countByAuthor_Id(member.getId())).thenReturn(0L);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
@@ -97,7 +97,7 @@ class BadgeServiceTest {
 		when(contributeRepository.countByMemberId(member.getId())).thenReturn(5L);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -121,7 +121,7 @@ class BadgeServiceTest {
 		when(contributeRepository.countByMemberId(member.getId())).thenReturn(8L);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
@@ -143,7 +143,7 @@ class BadgeServiceTest {
 			5L);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -168,7 +168,7 @@ class BadgeServiceTest {
 			ContributeStatus.REJECTED)).thenReturn(100L);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -192,7 +192,7 @@ class BadgeServiceTest {
 		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class) )).thenReturn(true);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -217,7 +217,7 @@ class BadgeServiceTest {
 		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class))).thenReturn(false);
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges())
@@ -239,7 +239,7 @@ class BadgeServiceTest {
 		BadgeCategory badgeCategory = BadgeCategory.REPORT;
 
 		// when
-		badgeService.getBadge(badgeCategory, member);
+		badgeService.checkAndAwardBadge(badgeCategory, member);
 
 		// then
 		assertThat(member.getBadges()).isEmpty();
