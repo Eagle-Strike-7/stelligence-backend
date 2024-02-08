@@ -4,6 +4,8 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,15 +19,18 @@ import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @ExtendWith(MockitoExtension.class)
 class BadgeServiceTest {
 
 	@Mock
-	private DocumentContentRepository documentContentRepository;
+	private MemberRepository memberRepository;
 	@Mock
 	private ContributeRepository contributeRepository;
+	@Mock
+	private DocumentContentRepository documentContentRepository;
 	@InjectMocks
 	private BadgeService badgeService;
 
@@ -184,6 +189,7 @@ class BadgeServiceTest {
 
 		// given
 		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
+		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class) )).thenReturn(true);
 
 		// when
 		badgeService.getBadge(badgeCategory, member);
@@ -193,6 +199,30 @@ class BadgeServiceTest {
 			.isNotEmpty()
 			.contains(Badge.SPROUT)
 			.hasSize(1);
+		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class));
+		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
+		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),
+			ContributeStatus.REJECTED);
+		verify(documentContentRepository, never()).countDistinctByAuthor_Id(member.getId());
+
+	}
+
+	@Test
+	@DisplayName("[실패] - 배지 추가 X, 회원 가입 실패(DB 조회 실패) - MEMBER_JOIN, 1")
+	void getBadgeMemberJoinFail() {
+
+		// given
+		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
+		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class))).thenReturn(false);
+
+		// when
+		badgeService.getBadge(badgeCategory, member);
+
+		// then
+		assertThat(member.getBadges())
+			.isEmpty();
+		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtAfter(eq(member.getId()), any(LocalDateTime.class));
 		verify(contributeRepository, never()).countDistinctByMemberId(member.getId());
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
 		verify(contributeRepository, never()).countDistinctByMemberIdAndStatus(member.getId(),

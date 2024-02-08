@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.badge;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,6 +10,7 @@ import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
+import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeService {
 
+	private final MemberRepository memberRepository;
 	private final ContributeRepository contributeRepository;
 	private final DocumentContentRepository documentContentRepository;
 
@@ -44,7 +48,7 @@ public class BadgeService {
 				break;
 			case MEMBER_JOIN:
 				// 회원 가입
-				newBadge = checkMemberConditionAndGetBadge();
+				newBadge = checkMemberConditionAndGetBadge(member);
 				break;
 			case REPORT:
 				// 신고 - 신고 테이블 따로 없어 미구현
@@ -81,9 +85,12 @@ public class BadgeService {
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 	}
 
-	private Badge checkMemberConditionAndGetBadge() {
-		// 최초 회원 가입 검증 로직 따로 없어 미구현
-		return Badge.SPROUT;
+	private Badge checkMemberConditionAndGetBadge(Member member) {
+		// 만 하루 내에 가입한 회원으로 조회되면 회원 가입으로 간주
+		if (memberRepository.existsByIdAndActiveTrueAndCreatedAtAfter(member.getId(), LocalDateTime.now().minusDays(1))) {
+			return Badge.SPROUT;
+		}
+		return null;
 	}
 
 }
