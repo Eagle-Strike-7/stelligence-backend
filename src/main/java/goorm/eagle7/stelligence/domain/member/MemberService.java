@@ -27,7 +27,6 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final WithdrawnMemberRepository withdrawnMemberRepository;
-	private final BadgeImageUrlBuilder badgeUrlBuilder;
 
 	private static final String NOT_FOUND_MEMBER_EXCEPTION_MESSAGE = "존재하지 않는 회원입니다. MemberId= %s"; // 서식 문자 사용
 
@@ -143,10 +142,7 @@ public class MemberService {
 		badges.add(Badge.GALAXY);
 
 		List<MemberBadgesResponse> list = badges.stream().map(
-			badge -> MemberBadgesResponse.of(
-				badge,
-				badgeUrlBuilder.buildBadgeImageUrl(badge)
-			)).toList();
+			MemberBadgesResponse::of).toList();
 
 		return MemberBadgesListResponse.from(list);
 

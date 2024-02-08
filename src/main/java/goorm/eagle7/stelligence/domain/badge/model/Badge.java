@@ -41,7 +41,8 @@ public enum Badge {
 	private final BadgeCategory eventCategory; // 배지 획득 조건
 	private final String description; // 배지 설명
 	private final int count; // 배지 획득 조건 수
-	private final String imgFilename; // 배지 이미지 URL
+	private final String imgFilename; // 배지 이미지 URN
+	private static final String BADGE_FOLDER_NAME = "/badges/";
 
 	// 생성자의 파라미터 순서에 따라 상기 enum value 순서가 결정됨.
 	Badge(String title, BadgeCategory eventCategory, String description, int count, String imgFilename) {
@@ -52,4 +53,7 @@ public enum Badge {
 		this.imgFilename = imgFilename;
 	}
 
+	public String getImgFilename() {
+		return BADGE_FOLDER_NAME + imgFilename;
+	}
 }

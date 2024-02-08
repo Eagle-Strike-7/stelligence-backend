@@ -17,16 +17,16 @@ public class MemberBadgesResponse {
 	private String badgeDescription; // Badge 설명
 	private String badgeImgUrl; // Badge 이미지 url
 
-
-	public static MemberBadgesResponse of(Badge badge, String imgUrl) {
+	public static MemberBadgesResponse of(Badge badge) {
 
 		return new MemberBadgesResponse(
 			badge.name(),
 			badge.getTitle(),
 			badge.getEventCategory().getLabel(),
-			imgUrl,
+			badge.getImgFilename(),
 			badge.getDescription()
 		);
+
 	}
 
 }
