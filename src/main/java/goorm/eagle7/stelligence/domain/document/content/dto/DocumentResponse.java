@@ -25,6 +25,9 @@ public class DocumentResponse {
 	private Long documentId;
 	private String title;
 
+	private Long parentDocumentId;
+	private String parentDocumentTitle;
+
 	private Long latestRevision;
 	private Long currentRevision;
 
@@ -73,6 +76,8 @@ public class DocumentResponse {
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
+			document.getParentDocument() == null ? null : document.getParentDocument().getId(),
+			document.getParentDocument() == null ? null : document.getParentDocument().getTitle(),
 			document.getLatestRevision(),
 			currentRevision,
 			document.getUpdatedAt(),

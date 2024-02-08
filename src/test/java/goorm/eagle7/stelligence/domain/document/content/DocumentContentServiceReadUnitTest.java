@@ -286,4 +286,29 @@ class DocumentContentServiceReadUnitTest {
 		assertThat(documentResponse.getDebateId()).isNull();
 	}
 
+	@Test
+	@DisplayName("문서 조회 - 상위 문서 존재")
+	void parentDocumentTest() {
+		//given
+		Document parentDocument = document(2L, member(2L, "world"), "parentTitle", 1L);
+		Document document = document(1L, member(1L, "hello"), "title11", 1L, parentDocument);
+
+		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(document));
+		when(sectionRepository.findByVersion(document, 1L)).thenReturn(List.of(s1));
+
+		//토론이 진행중이지 않음
+		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.empty());
+
+		//투표가 진행중이지 않음
+		when(contributeRepository.findLatestContributeByDocumentId(1L)).thenReturn(Optional.empty());
+
+		DocumentResponse documentResponse = documentContentService.getDocument(1L);
+
+		//then
+		assertThat(documentResponse.getParentDocumentId()).isEqualTo(2L);
+		assertThat(documentResponse.getParentDocumentTitle()).isEqualTo("parentTitle");
+	}
 }
