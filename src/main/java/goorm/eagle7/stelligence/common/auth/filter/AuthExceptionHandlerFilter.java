@@ -24,8 +24,8 @@ public class AuthExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (AuthenticationException e) {
-			log.debug("UsernameNotFoundException catched in AuthExceptionHandlerFilter : {}", e.getMessage());
-			ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, ResponseTemplate.fail(e.getMessage()));
+			log.debug("[401 SC_UNAUTHORIZED ] AuthenticationException catched in AuthExceptionHandlerFilter : {}", e.getMessage());
+			ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, ResponseTemplate.fail("유효하지 않은 사용자입니다."));
 		}
 	}
 
