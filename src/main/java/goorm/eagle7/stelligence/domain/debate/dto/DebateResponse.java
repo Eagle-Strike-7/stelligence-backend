@@ -36,10 +36,6 @@ public class DebateResponse {
 	// 수정안 정보
 	private List<AmendmentResponse> amendments;
 
-	// 이전/다음 토론 정보 (추후 요구사항에 따라 추가될 예정입니다.)
-	private DebateSimpleResponse prevDebate;
-	private DebateSimpleResponse nextDebate;
-
 	public static DebateResponse of(Debate debate) {
 		return new DebateResponse(debate);
 	}

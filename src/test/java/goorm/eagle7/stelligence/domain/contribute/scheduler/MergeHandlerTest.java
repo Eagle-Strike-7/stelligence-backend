@@ -68,7 +68,7 @@ class MergeHandlerTest {
 		Section s1 = section(1L, 1L, document, Heading.H1, "title", "content", 1);
 		Section s2 = section(2L, 1L, document, Heading.H2, "title", "content", 2);
 
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "newTitle", document);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "newTitle", document, null);
 
 		Amendment a1 = amendment(1L, contribute, AmendmentType.UPDATE, s1, Heading.H1, "new title",
 			"new content", 0);
@@ -113,7 +113,7 @@ class MergeHandlerTest {
 		Member member = member(1L, "pete");
 
 		Document document = document(1L, member, "title", 1L);
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "title", document);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "title", document, null);
 
 		//when
 		when(contributeRepository.findByIdWithAmendmentsAndMember(contribute.getId())).thenReturn(
@@ -214,7 +214,7 @@ class MergeHandlerTest {
 		//given
 		Member member = member(1L, "pete");
 		Document document = document(1L, member, "title", 1L);
-		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle", null);
+		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle", null, null);
 
 		//when
 		when(contributeRepository.findByIdWithAmendmentsAndMember(1L)).thenReturn(Optional.of(contribute));
@@ -239,7 +239,7 @@ class MergeHandlerTest {
 		Document document = document(1L, member, "title", 1L);
 		Document afterParentDocument = document(2L, member, "parent", 1L);
 		Contribute contribute = contribute(1L, member, ContributeStatus.VOTING, document, "changedTitle",
-			afterParentDocument);
+			afterParentDocument, null);
 
 		//when
 		when(contributeRepository.findByIdWithAmendmentsAndMember(1L)).thenReturn(Optional.of(contribute));

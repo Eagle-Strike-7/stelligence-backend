@@ -225,11 +225,11 @@ public class TestFixtureGenerator {
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
-		return contribute(id, contributor, status, document, "newTitle", document);
+		return contribute(id, contributor, status, document, "newTitle", document, null);
 	}
 
 	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
-		String afterDocumentTitle, Document afterParentDocument) {
+		String afterDocumentTitle, Document afterParentDocument, Debate relatedDebate) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -246,6 +246,7 @@ public class TestFixtureGenerator {
 			Field beforeDocumentTitleField = contributeClazz.getDeclaredField("beforeDocumentTitle");
 			Field afterDocumentTitleField = contributeClazz.getDeclaredField("afterDocumentTitle");
 			Field newParentDocumentField = contributeClazz.getDeclaredField("afterParentDocument");
+			Field relatedDebateField = contributeClazz.getDeclaredField("relatedDebate");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
@@ -255,6 +256,7 @@ public class TestFixtureGenerator {
 			beforeDocumentTitleField.setAccessible(true);
 			afterDocumentTitleField.setAccessible(true);
 			newParentDocumentField.setAccessible(true);
+			relatedDebateField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
@@ -264,6 +266,7 @@ public class TestFixtureGenerator {
 			beforeDocumentTitleField.set(contribute, document.getTitle());
 			afterDocumentTitleField.set(contribute, afterDocumentTitle);
 			newParentDocumentField.set(contribute, afterParentDocument);
+			relatedDebateField.set(contribute, relatedDebate);
 
 			return (Contribute)contribute;
 

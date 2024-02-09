@@ -33,6 +33,9 @@ public class ContributeRequest {
 	@Schema(description = "문서의 변경될 부모 문서 ID", example = "2")
 	private Long afterParentDocumentId;
 
+	@Schema(description = "이 수정요청과 연관된 토론 ID", example = "1")
+	private Long relatedDebateId;
+
 	@Override
 	public String toString() {
 		return "ContributeRequest{"
@@ -42,6 +45,7 @@ public class ContributeRequest {
 			+ ", documentId=" + documentId
 			+ ", afterDocumentTitle='" + afterDocumentTitle + '\''
 			+ ", afterParentDocumentId=" + afterParentDocumentId
+			+ ", relatedDebateId=" + relatedDebateId
 			+ '}';
 	}
 }
