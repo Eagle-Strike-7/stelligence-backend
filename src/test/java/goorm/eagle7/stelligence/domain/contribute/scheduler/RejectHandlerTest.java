@@ -28,7 +28,7 @@ class RejectHandlerTest {
 	void handleTest() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(contributeRepository.findById(contribute.getId())).thenReturn(java.util.Optional.of(contribute));
