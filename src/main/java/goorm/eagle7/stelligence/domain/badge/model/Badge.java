@@ -16,20 +16,20 @@ public enum Badge {
 	URANUS("천왕성 탐사 완료", WRITING, "글 20개 작성 완료", 20, "uranus.png"),
 
 	/** 수정 요청 Badge 목록 **/
-	MERCURY("수성 탐사 완료", CONTRIBUTE, "수정 1번 요청 완료", 1, "mercury.png"),
-	VENUS("금성 탐사 완료", CONTRIBUTE, "수정 5번 요청 완료", 5, "venus.png"),
-	NEPTUNE("해왕성 탐사 완료", CONTRIBUTE, "수정 10번 요청 완료", 10, "neptune.png"),
-	SUN("태양 탐사 완료", CONTRIBUTE, "수정 30번 요청 완료", 30, "sun.png"),
-	GALAXY("태양계", CONTRIBUTE, "수정 50번 요청 완료", 50, "galaxy.png"),
+	MERCURY("수성 탐사 완료", CONTRIBUTE_ALL, "수정 1번 요청 완료", 1, "mercury.png"),
+	VENUS("금성 탐사 완료", CONTRIBUTE_ALL, "수정 5번 요청 완료", 5, "venus.png"),
+	NEPTUNE("해왕성 탐사 완료", CONTRIBUTE_ALL, "수정 10번 요청 완료", 10, "neptune.png"),
+	SUN("태양 탐사 완료", CONTRIBUTE_ALL, "수정 30번 요청 완료", 30, "sun.png"),
+	GALAXY("태양계", CONTRIBUTE_ALL, "수정 50번 요청 완료", 50, "galaxy.png"),
 
 	/** 수정 요청 반영 Badge 목록 **/
-	JUPITER("목성 탐사 완료", CONTRIBUTE, "수정 요청 1개 반영 완료", 1, "jupiter.png"),
-	SATURN("토성 탐사 완료", CONTRIBUTE, "수정 요청 5개 반영 완료", 5, "saturn.png"),
-	PLUTO("명왕성 탐사 완료", CONTRIBUTE, "수정 요청 10개 반영 완료", 10, "pluto.png"),
-	ANDROMEDA("안드로메다 정복", CONTRIBUTE, "수정 50번 반영 완료", 50, "andromeda.png"),
+	JUPITER("목성 탐사 완료", CONTRIBUTE_MERGED, "수정 요청 1개 반영 완료", 1, "jupiter.png"),
+	SATURN("토성 탐사 완료", CONTRIBUTE_MERGED, "수정 요청 5개 반영 완료", 5, "saturn.png"),
+	PLUTO("명왕성 탐사 완료", CONTRIBUTE_MERGED, "수정 요청 10개 반영 완료", 10, "pluto.png"),
+	ANDROMEDA("안드로메다 정복", CONTRIBUTE_MERGED, "수정 50번 반영 완료", 50, "andromeda.png"),
 
-	/** 반려 Badge 목록 **/
-	BLACKHOLE("블랙홀", CONTRIBUTE, "수정 n번 반려 완료", 100, "blackhole.png"),
+	/** 수정 요청 반려 Badge 목록 **/
+	BLACKHOLE("블랙홀", CONTRIBUTE_REJECTED, "수정 n번 반려 완료", 100, "blackhole.png"),
 
 	/** 회원 가입 Badge 목록 **/
 	SPROUT("우주 새싹", MEMBER_JOIN, "회원 가입 완료", 1, "sprout.png"),
@@ -51,6 +51,15 @@ public enum Badge {
 		this.description = description;
 		this.count = count;
 		this.imgFilename = imgFilename;
+	}
+
+	public static Badge findByEventCategoryAndCount(BadgeCategory badgeCategory, long count) {
+		for (Badge badge : values()) {
+			if (badge.getEventCategory() == badgeCategory && badge.getCount() == count) {
+				return badge;
+			}
+		}
+		return null;
 	}
 
 	public String getImgFilename() {
