@@ -4,14 +4,13 @@ import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +27,7 @@ class JwtTokenValidator {
 	 * <p>- 만료된 토큰만 유효하게 empty 반환</p>
 	 * @param token 토큰
 	 * @return Optional<Claims> 토큰이 유효하면 토큰의 클레임 반환, 재발급 고려가 필요한 경우 Optional.empty() 반환
+	 * @throws UsernameNotFoundException JwtEx, IllegalEx은 무조건 재로그인 필요
 	 */
 	public Optional<Claims> getClaimsOrNullIfInvalid(String token) {
 		try {
@@ -35,8 +35,13 @@ class JwtTokenValidator {
 			return Optional.of(getClaims(token));
 		} catch (ExpiredJwtException e) {
 			log.debug("만료된 토큰입니다. empty 반환");
+			return Optional.empty();
+		} catch (JwtException e) {
+			log.debug("JwtException 발생, 유효하지 않은 토큰입니다.");
+		} catch (IllegalArgumentException e) {
+			log.debug("토큰 값이 없습니다.");
 		}
-		return Optional.empty();
+		throw new UsernameNotFoundException("유효하지 않은 사용자입니다.");
 	}
 
 	/**

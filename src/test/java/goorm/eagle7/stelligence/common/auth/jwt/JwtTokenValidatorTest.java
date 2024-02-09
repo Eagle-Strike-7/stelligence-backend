@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,7 +33,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.KeyException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,6 +57,8 @@ class JwtTokenValidatorTest {
 
 	@InjectMocks
 	private JwtTokenValidator jwtTokenValidator;
+
+	private final static String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
 
 	@BeforeEach
 	void setUp() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
@@ -109,7 +111,7 @@ class JwtTokenValidatorTest {
 		// given
 		String validToken = stdJwtBuilder
 			.subject("1")
-			.expiration(new Date(System.currentTimeMillis() + 1000))
+			.expiration(new Date(System.currentTimeMillis() + 1000000))
 			.claim("hi", "nice to meet you")
 			.signWith(stdSecretKey)
 			.compact();
@@ -368,15 +370,15 @@ class JwtTokenValidatorTest {
 		// jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 		String expiredToken = "expiredToken";
 
-		// JwtEx 하위 예외인 ExpiredJwtException이 아닌 KeyException 예외 발생
-		doThrow(new KeyException("유효하지 않은 토큰입니다."))
+		// JwtEx 발생
+		doThrow(new JwtException("유효하지 않은 토큰입니다."))
 			.when(jwtTokenValidator).getClaims(expiredToken);
 
-		// when, then - JwtException 예외 발생, 메시지 확인
+		// when, then - UsernameNotFoundException 예외 발생, 메시지 확인
 		assertThatThrownBy(
 			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(expiredToken))
-			.isInstanceOf(JwtException.class)
-			.hasMessage("유효하지 않은 토큰입니다.");
+			.isInstanceOf(UsernameNotFoundException.class)
+			.hasMessage(ERROR_MESSAGE);
 
 	}
 
@@ -400,11 +402,12 @@ class JwtTokenValidatorTest {
 		doThrow(new IllegalArgumentException())
 			.when(jwtTokenValidator).getClaims(illegalToken);
 
-		// when, then - IllegalArgumentException 예외 발생, 메시지 확인
+		// when, then - IllegalArgumentException 예외 발생,
+		// UsernameNotFoundException로 치환 메시지 확인
 		assertThatThrownBy(
 			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage(null);
+			.isInstanceOf(UsernameNotFoundException.class)
+			.hasMessage(ERROR_MESSAGE);
 
 	}
 
