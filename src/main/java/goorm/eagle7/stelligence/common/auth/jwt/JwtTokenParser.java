@@ -29,7 +29,6 @@ class JwtTokenParser {
 
 	}
 
-
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
 	 * <p>- subject 얻는 건 refresh에서만 진행하기 때문에 token이 만료인 경우(empty),  재로그인 필요</p>
@@ -67,7 +66,6 @@ class JwtTokenParser {
 
 	/* dev */
 
-
 	/**
 	 * <h2>만료된 토큰에서 subject(memberId) 추출</h2>
 	 * <p>- token이 만료인 경우(empty), RetryException 발생</p>
@@ -78,12 +76,13 @@ class JwtTokenParser {
 	public String extractSubFromExpiredToken(String token) {
 
 		try {
-			return jwtTokenValidator
-				.getClaimsOrNullIfInvalid(token)
+
+			return jwtTokenValidator.getClaimsOrNullIfInvalid(token)
 				.map(Claims::getSubject)
-				.orElseThrow(
-					() -> new UsernameNotFoundException(ERROR_MESSAGE)
-				);
+				.orElseGet(() ->
+					jwtTokenValidator
+						.getClaims(token).getSubject());
+
 		} catch (ExpiredJwtException e) {
 			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
 			return e.getClaims().getSubject();

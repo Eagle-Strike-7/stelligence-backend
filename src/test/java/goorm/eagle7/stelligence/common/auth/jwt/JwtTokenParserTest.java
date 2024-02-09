@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 
@@ -202,7 +203,30 @@ class JwtTokenParserTest {
 	}
 
 	@Test
+	@DisplayName("[정상] 만료된 토큰에서 sub 추출 - extractSubFromExpiredToken")
 	void extractSubFromExpiredToken() {
 
+		// given
+		// 만료된 토큰, 유효한 claims 생성
+		String expiredToken = Jwts.builder()
+			.subject("100")
+			.issuedAt(new Date())
+			.expiration(new Date(System.currentTimeMillis() - 1000))
+			.signWith(secretKey)
+			.compact();
+		Claims claims = Jwts.claims().subject("100").build();
+
+		when(jwtTokenValidator.getClaimsOrNullIfInvalid(anyString()))
+			.thenReturn(Optional.empty());
+		doThrow(new ExpiredJwtException(null, claims, "만료된 토큰입니다.")).when(jwtTokenValidator).getClaims(expiredToken);
+
+		// when
+		String actualSub = jwtTokenParser.extractSubFromExpiredToken(expiredToken);
+
+		// then
+		assertThat(actualSub)
+			.isEqualTo("100");
+
 	}
+
 }
