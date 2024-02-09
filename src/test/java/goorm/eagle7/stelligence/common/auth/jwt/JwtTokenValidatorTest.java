@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -90,7 +91,7 @@ class JwtTokenValidatorTest {
 			.add("typ", "JWT")
 			.and()
 			.issuedAt(new Date(System.currentTimeMillis()));
-		
+
 		// 테스트할 jwtTokenValidator 생성, 기준 SecretKey 사용
 		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 
@@ -235,7 +236,8 @@ class JwtTokenValidatorTest {
 		assertThatThrownBy(
 			() -> jwtTokenValidator.getClaims(invalidSecretKeyToken))
 			.isInstanceOf(SignatureException.class)
-			.hasMessage("JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.");
+			.hasMessage(
+				"JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.");
 
 	}
 
@@ -323,14 +325,40 @@ class JwtTokenValidatorTest {
 	}
 
 	/**
-	 * <h2>catch에 구체적으로 명시하지 않은 JwtEx인 경우, empty 반환 확인</h2>
-	 * <p>- 해당 테스트를 통과하면, 명시한 JwtEx는 empty 반환한다 가정</p>
-	 * <p>검증 방식: 임의의 JwtEx 발생시킨 후 empty인지 확인</p>
+	 * <h2>토큰이 만료된 경우, empty 반환 확인</h2>
+	 * <p>검증 방식: 만료된 토큰인 경우, ExpiredJwtException 예외 발생</p>
 	 * <p>결과: empty 반환</p>
 	 */
 	@Test
-	@DisplayName("[예외] - catch에 명시해 놓지 않은 JwtException 예외가 발생한 경우, empty 반환 - getClaimsOrNullIfInvalid")
+	@DisplayName("[예외] - 토큰 만료인 경우, empty 반환 - getClaimsOrNullIfInvalid")
 	void getClaimsOrNullIfInvalidExpiredToken() {
+
+		// given
+		String expiredToken = "expiredToken";
+
+		// 메서드 부분 모킹이 필요해 spy 사용.
+		jwtTokenValidator = Mockito.spy(new JwtTokenValidator(stdSecretKey));
+
+		// 만료된 토큰인 경우, ExpiredJwtException 예외 발생
+		doThrow(new ExpiredJwtException(null, null, "만료된 토큰입니다."))
+			.when(jwtTokenValidator).getClaims(expiredToken);
+
+		// when
+		Optional<Claims> claims = jwtTokenValidator.getClaimsOrNullIfInvalid(expiredToken);
+
+		// then
+		assertThat(claims).isEmpty();
+
+	}
+
+	/**
+	 * <h2>만료가 아닌 JwtEx인 경우, ex 발생 확인</h2>
+	 * <p>검증 방식: 임의의 JwtEx 발생시킨 후 JwtEx 종류인지 확인 및 메시지 확인</p>
+	 * <p>결과: ex 발생</p>
+	 */
+	@Test
+	@DisplayName("[예외] - 만료가 아닌 JwtException 예외가 발생한 경우, 그대로 ex 발생 - getClaimsOrNullIfInvalid")
+	void getClaimsOrNullIfInvalidToken() {
 
 		// given
 
@@ -340,23 +368,26 @@ class JwtTokenValidatorTest {
 		// jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 		String expiredToken = "expiredToken";
 
-		doThrow(new KeyException("유효하지 않은 토큰입니다.")).when(jwtTokenValidator).getClaims(expiredToken);
+		// JwtEx 하위 예외인 ExpiredJwtException이 아닌 KeyException 예외 발생
+		doThrow(new KeyException("유효하지 않은 토큰입니다."))
+			.when(jwtTokenValidator).getClaims(expiredToken);
 
-		// when
-		Optional<Claims> result = jwtTokenValidator.getClaimsOrNullIfInvalid(expiredToken);
-
-		// then - empty 반환
-		assertThat(result).isEmpty();
+		// when, then - JwtException 예외 발생, 메시지 확인
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(expiredToken))
+			.isInstanceOf(JwtException.class)
+			.hasMessage("유효하지 않은 토큰입니다.");
 
 	}
 
 	/**
-	 * <h2>IllegalArgumentException 예외가 발생한 경우, empty 반환 확인</h2>
-	 * <p>검증 방식: IllegalArgumentException 예외 발생시킨 후 empty인지 확인</p>
-	 * <p>결과: empty 반환</p>
+	 * <h2>IllegalArgumentException 예외가 발생한 경우 확인</h2>
+	 * <p>- token이 없는 경우, JwtEx가 아닌 Illegal 발생</p>
+	 * <p>검증 방식: IllegalArgumentException 예외 및 메시지 확인</p>
+	 * <p>결과: IllegalArgumentException 발생</p>
 	 */
 	@Test
-	@DisplayName("[예외] - IllegalArgumentException 예외가 발생한 경우, empty 반환 - getClaimsOrNullIfInvalid")
+	@DisplayName("[예외] - IllegalArgumentException 예외가 발생한 경우, 그대로 예외 발생 - getClaimsOrNullIfInvalid")
 	void getClaimsOrNullIfInvalidIllegalToken() {
 
 		// given
@@ -366,13 +397,14 @@ class JwtTokenValidatorTest {
 		jwtTokenValidator = Mockito.spy(new JwtTokenValidator(stdSecretKey));
 
 		// IllegalArgumentException 예외 발생
-		doThrow(new IllegalArgumentException("토큰 값이 없습니다.")).when(jwtTokenValidator).getClaims(illegalToken);
+		doThrow(new IllegalArgumentException())
+			.when(jwtTokenValidator).getClaims(illegalToken);
 
-		// when
-		Optional<Claims> result = jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken);
-
-		// then - empty 반환
-		assertThat(result).isEmpty();
+		// when, then - IllegalArgumentException 예외 발생, 메시지 확인
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage(null);
 
 	}
 
@@ -392,7 +424,8 @@ class JwtTokenValidatorTest {
 		jwtTokenValidator = Mockito.spy(new JwtTokenValidator(stdSecretKey));
 
 		// when - RuntimeException 예외 발생
-		doThrow(new RuntimeException()).when(jwtTokenValidator).getClaims(illegalToken);
+		doThrow(new RuntimeException())
+			.when(jwtTokenValidator).getClaims(illegalToken);
 
 		// then - RuntimeException 예외 발생, 메시지 null
 		assertThatThrownBy(
