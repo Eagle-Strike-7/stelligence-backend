@@ -69,14 +69,17 @@ public class BadgeService {
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
 
 	}
+
 	private Badge checkContributeMergedAndGetBadge(Member member, BadgeCategory badgeCategory) {
 		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
+
 	}
 
 	private Badge checkContributeRejectedAndGetBadge(Member member, BadgeCategory badgeCategory) {
 		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
+
 	}
 
 }
