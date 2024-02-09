@@ -127,6 +127,11 @@ class JwtTokenValidatorTest {
 
 	}
 
+	// TODO willBeExpiredWithin 메서드 테스트 추가
+	//  - 만료 시각까지의 시간 이내인지 확인 - true, false (가능하면 경계도)
+
+
+
 	/**
 	 * <h2>토큰이 만료된 경우 검증</h2>
 	 * <p>검증 방식: 예외 종류 및 기본 메시지 확인</p>

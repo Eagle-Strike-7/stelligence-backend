@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
+import java.util.Date;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -45,6 +46,20 @@ class JwtTokenValidator {
 	}
 
 	/**
+	 * <h2>만료 시각이 원하는 시각 이내인지 확인</h2>
+	 * <p>- 만료 시각까지의 시간 이내인지 확인</p>
+	 * @param token 검증 및 내용 추출할 토큰
+	 * @param time 만료 시각과 비교할 시각
+	 * @return boolean 만료 시각이 검증할 시간보다 이전이면 true, 아니면 false
+	 */
+	public boolean willBeExpiredWithin(Date time, String token) {
+
+		return getClaims(token)
+			.getExpiration().before(time);
+
+	}
+
+	/**
 	 * <h2>Token token 검증 및 claims 추출</h2>
 	 * <p>- 만료 검증: parseSignedClaims 이용, 만료 시간이 현재 시간보다 이전이면 만료된 토큰</p>
 	 * <p>- 서명 검증: 데이터 해석, 클레임 추출, 서명 검증</p>
@@ -61,4 +76,5 @@ class JwtTokenValidator {
 			.parseSignedClaims(token) // 서명의 유효성 검증
 			.getPayload();
 	}
+
 }
