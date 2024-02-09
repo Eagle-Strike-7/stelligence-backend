@@ -31,6 +31,7 @@ public class JwtProperties {
 	public static class Token {
 		private String name;
 		private long expiration;
+		private long serviceTime;
 	}
 
 	@Getter
@@ -46,6 +47,10 @@ public class JwtProperties {
 
 	public long getRefreshTokenExpirationMs() {
 		return refreshToken.expiration * 60 * 1000;
+	}
+
+	public long getServiceTimeMs() {
+		return accessToken.serviceTime * 60 * 1000;
 	}
 
 }
