@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
@@ -138,4 +139,17 @@ class DebateRepositoryTest {
 		assertThat(res4).isFalse();
 	}
 
+	@Test
+	@DisplayName("특정 Document의 가장 최근 토론 조회")
+	void findLatestDebateByDocument() {
+		//given
+		
+		//when
+		Optional<Debate> latestDebateOptional = debateRepository.findLatestDebateByDocumentId(1L);
+
+		//then
+		assertThat(latestDebateOptional)
+			.isPresent();
+		assertThat(latestDebateOptional.get().getId()).isEqualTo(2L);
+	}
 }

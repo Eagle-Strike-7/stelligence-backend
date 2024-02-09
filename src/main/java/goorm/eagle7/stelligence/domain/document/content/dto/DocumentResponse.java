@@ -3,6 +3,8 @@ package goorm.eagle7.stelligence.domain.document.content.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.content.parser.SectionResponseConcatenator;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
@@ -22,6 +24,9 @@ public class DocumentResponse {
 
 	private Long documentId;
 	private String title;
+
+	private Long parentDocumentId;
+	private String parentDocumentTitle;
 
 	private Long latestRevision;
 	private Long currentRevision;
@@ -45,11 +50,9 @@ public class DocumentResponse {
 
 	private List<MemberSimpleResponse> contributors;
 
-	/**
-	 * 사용자가 글을 수정할 수 있는지 여부입니다.
-	 * 투표 중 혹은 토론 종료 1일 전까지는 수정이 제한됩니다.
-	 */
-	private boolean isEditable;
+	private DocumentStatus documentStatus;	//문서 상태(편집가능, 투표중, 토론중, 토론참여자 대상 수정대기중)
+	private Long contributeId;	//투표중인 상태일때 수정요청 정보
+	private Long debateId;	//토론중, 토론참여자 수정대기중인 상태에서의 토론 정보
 
 	/**
 	 * DocumentResponse를 생성합니다.
@@ -65,11 +68,16 @@ public class DocumentResponse {
 		Long currentRevision,
 		List<SectionResponse> sections,
 		List<MemberSimpleResponse> contributors,
-		boolean isEditable
+		Contribute latestContribute,
+		Debate latestDebate
 	) {
+		DocumentStatusInfo documentStatusInfo = DocumentStatusInfo.of(latestContribute, latestDebate);
+
 		return new DocumentResponse(
 			document.getId(),
 			document.getTitle(),
+			document.getParentDocument() == null ? null : document.getParentDocument().getId(),
+			document.getParentDocument() == null ? null : document.getParentDocument().getTitle(),
 			document.getLatestRevision(),
 			currentRevision,
 			document.getUpdatedAt(),
@@ -77,8 +85,34 @@ public class DocumentResponse {
 			SectionResponseConcatenator.concat(sections),
 			MemberSimpleResponse.from(document.getAuthor()),
 			contributors,
-			isEditable
+			documentStatusInfo.getDocumentStatus(),
+			documentStatusInfo.getContributeId(),
+			documentStatusInfo.getDebateId()
+
 		);
+	}
+
+	/**
+	 * DocumentStatus와 관련된 정보를 처리하는 내부 정적 클래스입니다.
+	 */
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	@Getter
+	private static class DocumentStatusInfo {
+		private DocumentStatus documentStatus;	//문서 상태(편집가능, 투표중, 토론중, 토론참여자 수정대기중)
+		private Long contributeId;	//투표중인 상태일때 수정요청 정보
+		private Long debateId;	//토론중, 토론참여자 수정대기중인 상태에서의 토론 정보
+
+		public static DocumentStatusInfo of(Contribute latestContribute, Debate latestDebate) {
+			if (latestContribute != null && latestContribute.isVoting()) {
+				return new DocumentStatusInfo(DocumentStatus.VOTING, latestContribute.getId(), null);
+			} else if (latestDebate != null && latestDebate.isOnDebate()) {
+				return new DocumentStatusInfo(DocumentStatus.DEBATING, null, latestDebate.getId());
+			} else if (latestDebate != null && latestDebate.isPendingForContribute()) {
+				return new DocumentStatusInfo(DocumentStatus.PENDING, null, latestDebate.getId());
+			} else {
+				return new DocumentStatusInfo(DocumentStatus.EDITABLE, null, null);
+			}
+		}
 	}
 
 }

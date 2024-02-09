@@ -16,7 +16,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
 	private final JdbcTemplate jdbcTemplate;
 
-	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (message, uri, member_id, is_read, created_at, updated_at) VALUES (':message', ':uri', ?, false, NOW(), NOW())";
+	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (message, uri, member_id, is_read, created_at, updated_at) VALUES (?, ?, ?, false, NOW(), NOW())";
 
 	/**
 	 * 알림 등록
@@ -38,17 +38,13 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 	public void insertNotifications(String message, String uri, Set<Long> memberIds) {
 		List<Object[]> parameters = new ArrayList<>();
 
-		String sql = INSERT_NOTIFICATIONS_SQL
-			.replace(":message", message)
-			.replace(":uri", uri);
-
 		for (Long memberId : memberIds) {
-			parameters.add(new Object[] {memberId});
+			parameters.add(new Object[] {message, uri, memberId});
 		}
 
 		try {
 			// batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록
-			jdbcTemplate.batchUpdate(sql, parameters);
+			jdbcTemplate.batchUpdate(INSERT_NOTIFICATIONS_SQL, parameters);
 
 		} catch (DataIntegrityViolationException e) {
 			// memberId가 존재하지 않는 경우 등록에 실패할 수 있음
@@ -57,7 +53,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 			log.info("개별 알림 등록을 시도합니다.");
 			for (Object[] parameter : parameters) {
 				try {
-					jdbcTemplate.update(sql, parameter);
+					jdbcTemplate.update(INSERT_NOTIFICATIONS_SQL, parameter);
 				} catch (DataIntegrityViolationException e2) {
 					log.warn("알림 등록 중 오류가 발생했습니다. MEMBER ID : {}", parameter[0]);
 				}
