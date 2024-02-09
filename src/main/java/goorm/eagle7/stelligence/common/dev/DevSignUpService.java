@@ -28,7 +28,7 @@ public class DevSignUpService {
 
 		// member 생성 OAuth2.0 테스트용 하드 코딩
 		Member newMember = Member.of("영민", uniqueNickname, "sbslc2000@stelligence.com", null,
-			"eunzzi", SocialType.KAKAO);
+			"eunzzi"+uniqueNickname, SocialType.KAKAO);
 
 		// 해당 닉네임으로 저장
 		return memberRepository.save(newMember);
