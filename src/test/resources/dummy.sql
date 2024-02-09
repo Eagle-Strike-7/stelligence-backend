@@ -95,8 +95,8 @@ values (1, 1, 2, 1, null, 'H2', 'document1_title2_update', 'document1_content2_u
        (7, 5, 6, 1, null, 'H1', 'document2_title3_update', 'document2_content3_update', 'UPDATE', NOW(), NOW());
 
 insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at)
-values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, NOW()),
-       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
+values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, TIMESTAMPADD(HOUR, -3, NOW())),
+       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, TIMESTAMPADD(HOUR, -1, NOW())),
        (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
        (4, 4, 'CLOSED', NOW(), 1, NOW()),
        (5, 5, 'CLOSED', NOW(), 1, NOW()),
