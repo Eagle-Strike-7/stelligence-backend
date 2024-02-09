@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,16 @@ class DocumentGraphServiceTest {
 	DocumentNodeRepository documentNodeRepository;
 	@Autowired
 	Neo4jClient neo4jClient;
+
+	/**
+	 * 현재 neo4j 상태와 관계없이 테스트 코드가 잘 동작하도록 noe4j를 초기화합니다.
+	 * 테스트가 끝난 이후 롤백되면서 기존에 있던 데이터에는 영향을 주지 않습니다.
+	 */
+	@BeforeEach
+	void setupClearNeo4j() {
+		String clearQuery = "match (n) detach delete n;";
+		neo4jClient.query(clearQuery).run();
+	}
 
 	@Test
 	@DisplayName("최상위 문서 노드 생성 서비스 테스트")
