@@ -131,3 +131,11 @@ values (1, 1, 1),
        (10, 1, 3),
        (11, 3, 4),
        (12, 4, 4);
+
+
+insert into notification (notification_id, member_id, message, uri, is_read, created_at, updated_at)
+values
+    (1, 1, 'noti1', '/noti', false, NOW(), NOW()),
+    (2, 1, 'noti2', '/noti', false, NOW(), NOW()),
+    (3, 1, 'noti2', '/noti', false, NOW(), NOW()),
+    (4, 1, 'noti2', '/noti', false, NOW(), NOW())
