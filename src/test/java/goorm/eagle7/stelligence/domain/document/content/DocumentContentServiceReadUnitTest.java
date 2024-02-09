@@ -177,7 +177,7 @@ class DocumentContentServiceReadUnitTest {
 		Document document = document(1L, member(1L, "hello"), "title11", 1L);
 
 		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
-		Contribute contribute = contribute(2L, null, ContributeStatus.DEBATING, document);
+		Contribute contribute = contribute(2L, null, "title", "description", ContributeStatus.DEBATING, document);
 		Debate debate = debate(3L, contribute, DebateStatus.CLOSED,
 			LocalDateTime.now().minusMinutes(Debate.DEBATE_PENDING_DURATION_MINUTE).minusMinutes(1L), 1);
 
@@ -207,7 +207,7 @@ class DocumentContentServiceReadUnitTest {
 		Document document = document(1L, member(1L, "hello"), "title11", 1L);
 
 		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
-		Contribute contribute = contribute(2L, null, ContributeStatus.DEBATING, document);
+		Contribute contribute = contribute(2L, null, "title", "description", ContributeStatus.DEBATING, document);
 		Debate debate = debate(3L, contribute, DebateStatus.OPEN, LocalDateTime.now().plusMinutes(30L), 1);
 
 		//when
@@ -236,7 +236,7 @@ class DocumentContentServiceReadUnitTest {
 		Document document = document(1L, member(1L, "hello"), "title11", 1L);
 
 		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
-		Contribute contribute = contribute(2L, null, ContributeStatus.DEBATING, document);
+		Contribute contribute = contribute(2L, null, "title", "description", ContributeStatus.DEBATING, document);
 		Debate debate = debate(3L, contribute, DebateStatus.CLOSED, LocalDateTime.now(), 1);
 
 		//when
@@ -265,7 +265,7 @@ class DocumentContentServiceReadUnitTest {
 		Document document = document(1L, member(1L, "hello"), "title11", 1L);
 
 		Section s1 = section(1L, 1L, document, Heading.H1, "title1", "content1", 1);
-		Contribute contribute = contribute(2L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(2L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(document));
