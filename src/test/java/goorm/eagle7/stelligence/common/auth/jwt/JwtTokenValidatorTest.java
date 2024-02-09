@@ -1,9 +1,15 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SecureRandom;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -38,7 +44,7 @@ class JwtTokenValidatorTest {
 
 	private SecretKey stdSecretKey;
 	private SecretKey differentAlgoLengthSecretKey;
-	private SecretKey invalidAlgorithmSecretKey;
+	private PrivateKey invalidAlgorithmSecretKey;
 	private SecretKey invalidValueSecretKey;
 
 	private JwtBuilder stdJwtBuilder;
@@ -47,26 +53,35 @@ class JwtTokenValidatorTest {
 	private JwtTokenValidator jwtTokenValidator;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-		byte[] decodedKey = Base64.getDecoder().decode("jwtSecretsafasfjans345344kfnaskdnfnf934534+345H4");
+		byte[] decodedKey = Base64.getDecoder().decode(
+			"jwtSecretsafasfjans345344kfnaskjfowefoiwnefoinwofn03844h8204h20hf820fdnfnf934534+345H4");
 
 		stdSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "HmacSHA256");
 		differentAlgoLengthSecretKey = new SecretKeySpec(decodedKey, 0,
 			decodedKey.length, "HmacSHA512");
-		invalidAlgorithmSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "invalidAlgorithm");
 
 		byte[] invalidValueDecodedKey = Base64.getDecoder().decode("jwtSecretsafasfjanskfnaskdnfoaenf934534+345");
-		invalidValueSecretKey = new SecretKeySpec(invalidValueDecodedKey, 0,
+		invalidValueSecretKey = new SecretKeySpec(
+			invalidValueDecodedKey, 0,
 			invalidValueDecodedKey.length, "HmacSHA256");
+
+		// ECDSA 키 쌍 생성
+		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+		ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp521r1");
+		keyPairGenerator.initialize(ecSpec, new SecureRandom());
+		KeyPair keyPair = keyPairGenerator.generateKeyPair();
+		invalidAlgorithmSecretKey = keyPair.getPrivate();
+		// invalidAlgorithmSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "RSA512");
 
 		stdJwtBuilder = Jwts.builder()
 			.header()
 			.add("alg", "HS256")
 			.add("typ", "JWT")
 			.and()
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.signWith(stdSecretKey);
+			.issuedAt(new Date(System.currentTimeMillis()));
+		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 
 	}
 
@@ -75,12 +90,11 @@ class JwtTokenValidatorTest {
 	void getClaimsTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
-
 		String validToken = stdJwtBuilder
 			.subject("1")
 			.expiration(new Date(System.currentTimeMillis() + 1000))
 			.claim("role", "USER")
+			.signWith(stdSecretKey)
 			.compact();
 		log.info("validToken: {}", validToken);
 
@@ -98,20 +112,19 @@ class JwtTokenValidatorTest {
 	void getClaimsExpiredTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
-
 		String expiredToken = stdJwtBuilder
 			.subject("1")
 			.expiration(
 				new Date(System.currentTimeMillis() - 1))
 			.claim("role", "USER")
+			.signWith(stdSecretKey)
 			.compact();
 		log.info("expiredToken: {}", expiredToken);
 
 		// then
-		assertThrowsExactly(
-			ExpiredJwtException.class,
-			() -> jwtTokenValidator.getClaims(expiredToken));
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaims(expiredToken))
+			.isInstanceOf(ExpiredJwtException.class);
 
 	}
 
@@ -120,18 +133,17 @@ class JwtTokenValidatorTest {
 	void getClaimsInvalidTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 
 		// then
-		assertThrowsExactly(
-			IllegalArgumentException.class,
-			() -> jwtTokenValidator.getClaims(null));
-		assertThrowsExactly(
-			IllegalArgumentException.class,
-			() -> jwtTokenValidator.getClaims(""));
-		assertThrowsExactly(
-			IllegalArgumentException.class,
-			() -> jwtTokenValidator.getClaims(" "));
+		assertThatThrownBy(() -> jwtTokenValidator.getClaims(null))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("토큰 값이 없습니다.");
+		assertThatThrownBy(() -> jwtTokenValidator.getClaims(" "))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("토큰 값이 없습니다.");
+		assertThatThrownBy(() -> jwtTokenValidator.getClaims(""))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("토큰 값이 없습니다.");
 
 	}
 
@@ -140,15 +152,14 @@ class JwtTokenValidatorTest {
 	void getClaimsInvalidFormatEyTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 
 		String invalidFormatToken = "yJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJicGF3YW4iLCJyb2xlIjpudWxsLCJlbmFibGUiOm51bGwsImV4cCI6MTUzNDgyMzUyNSwiaWF0IjoxNTM0Nzk0NzI1fQ.65PPknMebR53ykLm-EBIunjFJvlV-vL-pfTOtbBLtnQ";
 		log.info("invalidFormatToken: {}", invalidFormatToken);
 
 		// then
-		assertThrowsExactly(
-			MalformedJwtException.class,
-			() -> jwtTokenValidator.getClaims(invalidFormatToken));
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaims(invalidFormatToken))
+			.isInstanceOf(MalformedJwtException.class);
 
 	}
 
@@ -157,15 +168,14 @@ class JwtTokenValidatorTest {
 	void getClaimsInvalidFormatDotTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 
 		String invalidFormatToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJicGF3YW4iLCJyb2xlIjpudWxsLCJlbmFibGUiOm51bGwsImV4cCI6MTUzNDgyMzUyNSwiaWF0IjoxNTM0Nzk0NzI1fQ";
 		log.info("invalidFormatToken: {}", invalidFormatToken);
 
 		// then
-		assertThrowsExactly(
-			MalformedJwtException.class,
-			() -> jwtTokenValidator.getClaims(invalidFormatToken));
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaims(invalidFormatToken))
+			.isInstanceOf(MalformedJwtException.class);
 
 	}
 
@@ -174,21 +184,20 @@ class JwtTokenValidatorTest {
 	void getClaimsInvalidAlgorithmTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(invalidValueSecretKey);
-
 		String invalidSecretKeyToken = stdJwtBuilder
 			.subject("1")
 			.expiration(
 				new Date(System.currentTimeMillis()
 					+ 1000 * 60))
 			.claim("role", "USER")
+			.signWith(invalidValueSecretKey)
 			.compact();
 		log.info("invalidSecretKeyToken: {}", invalidSecretKeyToken);
 
 		// then
-		assertThrowsExactly(
-			SignatureException.class,
-			() -> jwtTokenValidator.getClaims(invalidSecretKeyToken));
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaims(invalidSecretKeyToken))
+			.isInstanceOf(SignatureException.class);
 
 	}
 
@@ -197,14 +206,16 @@ class JwtTokenValidatorTest {
 	void getClaimsOrNullIfDifferAlgoLengthTokenGene() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(differentAlgoLengthSecretKey);
-
 		String validToken = stdJwtBuilder
+			.header()
+			.add("alg", "HSA512")
+			.and()
 			.subject("1")
 			.expiration(
 				new Date(System.currentTimeMillis()
 					+ 1000 * 60))
 			.claim("role", "USER")
+			.signWith(differentAlgoLengthSecretKey)
 			.compact();
 		log.info("validToken: {}", validToken);
 
@@ -221,78 +232,20 @@ class JwtTokenValidatorTest {
 	@DisplayName("[예외] - 토큰에 사용된 알고리즘이 일치하지 않는 경우, 예외 확인")
 	void getClaimsInvalidValueTokenGene() {
 
-		jwtTokenValidator = new JwtTokenValidator(invalidAlgorithmSecretKey);
-
 		// given
-		String differentAlgoLengthToken = stdJwtBuilder.compact();
+		// header의 alg 값과 signWith가 일치하지 않아도 생성 가능 -> 권장 X, 변경.
+		String differentAlgoLengthToken = stdJwtBuilder
+			.header()
+			.add("alg", "HSA512")
+			.and()
+			.signWith(invalidAlgorithmSecretKey)
+			.compact();
 		log.info("differentAlgoLengthToken: {}", differentAlgoLengthToken);
 
 		//then
-		assertThrowsExactly(
-			UnsupportedJwtException.class,
-			() -> jwtTokenValidator.getClaims(differentAlgoLengthToken));
-
-	}
-
-	@Test
-	@DisplayName("[성공] - 토큰 Header의 알고리즘이 일치하지 않는 경우, 정상 동작.....")
-	void getClaimsInvalidAlgorithmToken() {
-
-		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
-
-		String differentHeaderAlgoToken = Jwts.builder()
-			.header()
-			.add("alg", "일치하지 않는 알고리즘")
-			.add("typ", "JWT")
-			.and()
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.signWith(stdSecretKey)
-			.subject("1")
-			.expiration(
-				new Date(System.currentTimeMillis()
-					+ 1000 * 60))
-			.claim("role", "USER")
-			.compact();
-		log.info("differentHeaderAlgoToken: {}", differentHeaderAlgoToken);
-
-		// when
-		Claims claims = jwtTokenValidator.getClaims(differentHeaderAlgoToken);
-
-		//then
-		assertThat(claims.getSubject()).isEqualTo("1");
-		assertThat(claims).containsEntry("role", "USER");
-
-	}
-
-	@Test
-	@DisplayName("[성공] - 토큰 header의 typ이 JWT가 아닌 경우, 정상 동작...")
-	void getClaimsInvalidTypeTokenGene() {
-
-		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
-
-		String differentHeaderTypeToken = Jwts.builder()
-			.header()
-			.add("alg", "HS256")
-			.add("typ", "일치하지 않는 타입")
-			.and()
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.signWith(stdSecretKey)
-			.subject("1")
-			.expiration(
-				new Date(System.currentTimeMillis()
-					+ 1000 * 60))
-			.claim("role", "USER")
-			.compact();
-		log.info("differentHeaderTypeToken: {}", differentHeaderTypeToken);
-
-		// when
-		Claims claims = jwtTokenValidator.getClaims(differentHeaderTypeToken);
-
-		//then
-		assertThat(claims.getSubject()).isEqualTo("1");
-		assertThat(claims).containsEntry("role", "USER");
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaims(differentAlgoLengthToken))
+			.isInstanceOf(UnsupportedJwtException.class);
 
 	}
 
@@ -301,7 +254,6 @@ class JwtTokenValidatorTest {
 	void getClaimsOrNullIfInvalid() {
 
 		// given
-		jwtTokenValidator = new JwtTokenValidator(stdSecretKey);
 		String validToken = "validToken";
 		Claims mockClaims = mock(Claims.class);
 		when(mockClaims.getSubject()).thenReturn("1");
@@ -341,7 +293,7 @@ class JwtTokenValidatorTest {
 		Optional<Claims> result = jwtTokenValidator.getClaimsOrNullIfInvalid(expiredToken);
 
 		// then
-		assertTrue(result.isEmpty());
+		assertThat(result).isEmpty();
 
 	}
 
@@ -360,7 +312,7 @@ class JwtTokenValidatorTest {
 		Optional<Claims> result = jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken);
 
 		// then
-		assertTrue(result.isEmpty());
+		assertThat(result).isEmpty();
 
 	}
 
@@ -376,9 +328,9 @@ class JwtTokenValidatorTest {
 		doThrow(new RuntimeException("토큰 값이 없습니다.")).when(jwtTokenValidator).getClaims(illegalToken);
 
 		// then
-		assertThrowsExactly(
-			RuntimeException.class,
-			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken));
+		assertThatThrownBy(
+			() -> jwtTokenValidator.getClaimsOrNullIfInvalid(illegalToken))
+			.isInstanceOf(RuntimeException.class);
 
 	}
 
