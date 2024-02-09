@@ -6,13 +6,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import jakarta.servlet.FilterChain;
@@ -55,72 +56,91 @@ public class AuthFilter extends OncePerRequestFilter {
 			if (isTokenValidationRequired(request)) {
 
 				log.debug("토큰 검증 필요");
-				// accessToken 추출(null 포함)
-				String accessToken = getTokenFromCookies(CookieType.ACCESS_TOKEN);
 
-				// 추출한 accessToken 유효성 검증 후 Authentication 반환 - 아니면 throw AccessDeniedException
-				Authentication authentication = getAuthentication(accessToken);
+				// accessToken 유효성 검사
+				// 필요하다면 refresh 토큰으로 재발급
+				// 만료된 토큰이면 재로그인 필요
+				String activeAccessToken = getActiveAccessToken();
+
+				// Authentication 반환
+				Authentication authentication = jwtTokenService.makeAuthenticationFrom(activeAccessToken);
 
 				// SecurityContextHolder에 Authentication 저장
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+
 			}
 
-		} catch (JwtException | AuthenticationException e) {
+		} catch (AuthenticationException e) {
+
+			// 로그아웃 시에는 토큰 검증이 필요 없음, 로그아웃 요청이 아니면 다시 같은 ex 발생
 			if (!(httpMethod.equals("POST") && uri.equals("/api/logout"))) {
 				log.debug("UsernameNotFoundException catched in AuthFilter : {}", e.getMessage());
 				throw new UsernameNotFoundException(e.getMessage());
 			}
+
 		}
+
 		// 다음 필터로 이동
 		filterChain.doFilter(request, response);
-	}
-
-	/**
-	 * 추출한 accessToken 유효성 검증 후 Authentication 반환
-	 *
-	 * 1. accessToken 유효한 경우 -> 성공
-	 * 2. accessToken 유효하지 않으면
-	 * 	-> refreshToken 재발급 진행
-	 * 	  -> refresh 유효하다면 accessToken 재발급 -> 성공
-	 * 	  -> refresh 토큰 만료 -> 실패
-	 *
-	 * -> 성공 시 token에서 memberId, role 추출해 Authentication 생성 후 반환
-	 * -> 실패 시 JwtException을 AccessDeniedException으로 변경해 throw
-	 */
-	private Authentication getAuthentication(String accessToken) {
-
-		// accessToken이 유효하지 않다면,in
-		if (!jwtTokenService.isTokenValidated(accessToken)) {
-			log.debug("accessToken 유효하지 않음, refreshToken 재발급 시작");
-			log.debug("accessToken: {}", accessToken);
-
-			// refresh 토큰 추출 (null 포함)
-			String refreshToken = getTokenFromCookies(CookieType.REFRESH_TOKEN);
-			log.debug("refreshToken: {}", refreshToken);
-			// accessToken 재발급, refresh 토큰 만료 혹은 DB와 다르다면 throw
-			accessToken = jwtTokenReissueService.reissueAccessToken(refreshToken);
-		}
-		log.debug("유효한 accessToken: {}", accessToken);
-
-		// 유효한 accessToken으로 검증
-		return jwtTokenService.makeAuthenticationFromToken(accessToken);
 
 	}
 
 	/**
+	 * <h2>쿠키에서 token 추출</h2>
+	 * <p>- cookieType에 따라 accessToken, refreshToken 쿠키에서 token 추출</p>
+	 * <p>- accesscookie가 null인 경우, refresh 재발급 진행</p>
+	 * <p>- refreshcookie가 null인 경우, 재로그인 필요</p>
+	 * <p>- token이 없으면 재로그인 필요</p>
 	 *  cookies, cookie가 null이 아니고, token이 있다면 Token 반환, 없다면 null
 	 * 	  -> accessToken이 null이면 refresh 토큰만 있는 경우
 	 * 	  -> token 유효성 검증 시 null도 검증하기 때문에 null로 설정.
 	 * @param cookieType accessToken, refreshToken 쿠키 이름
 	 * @return 해당 token value or null
 	 */
-	private String getTokenFromCookies(CookieType cookieType) {
+	private String getActiveAccessToken() {
 
-		// map 사용: Optional 객체가 비어있다면, 그대로 Optional 반환(null 반환으로 처리), 객체가 존재하면 함수 동작해 token 반환
-		return
-			cookieUtils.getCookieFromRequest(cookieType)
-				.map(jwtTokenService::getTokenFromCookie)
-				.orElse(null);
+		return cookieUtils
+			.getCookieFromRequest(CookieType.ACCESS_TOKEN)
+			.map(
+				cookie -> {
+					log.debug("accessCookie가 있습니다. 유효성 검사 진행");
+					// token 없으면 재로그인, 있으면 token 반환, 만료면 재발급
+					String accessToken = cookie.getValue();
+					if(StringUtils.hasText(accessToken)) {
+						return getAcccessTokenFromRefreshCookie();
+					}
+					return accessToken;
+				})
+			.orElseGet(() -> {
+					// refresh cookie 확인, 없으면 재로그인, 있으면 재발급 진행
+					log.debug("accessCookie가 없습니다. refresh 토큰으로 재발급 시도");
+					return getAcccessTokenFromRefreshCookie();
+				}
+			);
+
+	}
+
+	// refresh 쿠키는 없으면 재로그인
+	private String getAcccessTokenFromRefreshCookie() {
+		String refreshToken = cookieUtils
+			.getCookieFromRequest(CookieType.REFRESH_TOKEN)
+			.orElseThrow(() -> new UsernameNotFoundException(ERROR_MESSAGE))
+			.getValue();
+
+		// refresh 토큰 없으면 재로그인, 있으면 재발급
+		if(!StringUtils.hasText(refreshToken)) {
+			throw new UsernameNotFoundException(ERROR_MESSAGE);
+		}
+
+		LoginTokenInfo loginTokenInfo = jwtTokenReissueService
+			.reissueAccessToken(refreshToken);
+
+		String accessToken = loginTokenInfo.getAccessToken();
+		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
+		String newRefreshToken = loginTokenInfo.getRefreshToken();
+		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, newRefreshToken);
+
+		return accessToken;
 
 	}
 

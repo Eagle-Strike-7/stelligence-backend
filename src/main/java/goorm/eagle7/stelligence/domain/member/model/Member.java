@@ -117,6 +117,10 @@ public class Member extends BaseTimeEntity {
 		this.active = false;
 	}
 
+	public void addBadge(Badge newBadge) {
+		this.badges.add(newBadge);
+	}
+
 	public void expireRefreshToken() {
 		this.refreshToken = null;
 	}

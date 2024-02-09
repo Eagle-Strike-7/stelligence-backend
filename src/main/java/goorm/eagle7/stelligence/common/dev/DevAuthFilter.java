@@ -21,6 +21,7 @@ import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -131,10 +132,12 @@ public class DevAuthFilter extends OncePerRequestFilter {
 					DevLoginRequest.from(nickname));
 
 				String accessToken = devLoginTokensWithIdAndRoleResponse.getAccessToken();
+				Claims claims = jwtTokenService.validateTokenOrThrows(accessToken)
+					.orElseThrow();
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
 				MemberInfoContextHolder.clear();
-				MemberInfo memberInfo = jwtTokenService.extractMemberInfo(accessToken);
+				MemberInfo memberInfo = jwtTokenService.extractMemberInfo(claims);
 
 				// ThreadLocal에 token에서 추출한 memberInfo 저장
 				MemberInfoContextHolder.setMemberInfo(memberInfo);
