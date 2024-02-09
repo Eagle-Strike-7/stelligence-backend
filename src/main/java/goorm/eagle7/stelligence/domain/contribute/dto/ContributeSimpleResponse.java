@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContributeListResponse {
+public class ContributeSimpleResponse {
 	private Long contributeId;
 	private String contributeTitle;
 	private String contributeDescription;
@@ -23,7 +23,7 @@ public class ContributeListResponse {
 	private VoteSummary voteSummary;
 	private LocalDateTime createdAt;
 
-	private ContributeListResponse(Contribute contribute, VoteSummary voteSummary) {
+	private ContributeSimpleResponse(Contribute contribute, VoteSummary voteSummary) {
 		this.contributeId = contribute.getId();
 		this.contributeTitle = contribute.getTitle();
 		this.contributeDescription = contribute.getDescription();
@@ -36,7 +36,7 @@ public class ContributeListResponse {
 		this.createdAt = contribute.getCreatedAt();
 	}
 
-	public static ContributeListResponse of(Contribute contribute, VoteSummary voteSummary) {
-		return new ContributeListResponse(contribute, voteSummary);
+	public static ContributeSimpleResponse of(Contribute contribute, VoteSummary voteSummary) {
+		return new ContributeSimpleResponse(contribute, voteSummary);
 	}
 }

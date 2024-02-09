@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContributePageResponse {
 
-	private List<ContributeListResponse> contributes;
+	private List<ContributeSimpleResponse> contributes;
 	private int totalPages;
 	private int totalElements;
 	private int size;
@@ -20,12 +20,12 @@ public class ContributePageResponse {
 	private boolean isFirstPage;
 	private boolean isLastPage;
 
-	public static ContributePageResponse from(Page<ContributeListResponse> contributePage) {
+	public static ContributePageResponse from(Page<ContributeSimpleResponse> contributePage) {
 
 		return new ContributePageResponse(contributePage);
 	}
 
-	private ContributePageResponse(Page<ContributeListResponse> contributePage) {
+	private ContributePageResponse(Page<ContributeSimpleResponse> contributePage) {
 		this.contributes = contributePage.getContent();
 		this.totalPages = contributePage.getTotalPages();
 		this.totalElements = (int)contributePage.getTotalElements();
