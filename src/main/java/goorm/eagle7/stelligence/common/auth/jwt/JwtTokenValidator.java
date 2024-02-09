@@ -24,24 +24,17 @@ class JwtTokenValidator {
 
 	/**
 	 * <h2>토큰 유효성 검사, 예상한 예외 발생 시 null로 치환</h2>
+	 * <p>- cookie를 사용하고 있어 token은 없으면 그대로 예외 발생</p>
+	 * <p>- 만료된 토큰만 유효하게 empty 반환</p>
 	 * @param token 토큰
-	 * @return Optional<Claims> 토큰이 유효하면 토큰의 클레임 반환, 유효하지 않으면 Optional.empty()
+	 * @return Optional<Claims> 토큰이 유효하면 토큰의 클레임 반환, 재발급 고려가 필요한 경우 Optional.empty() 반환
 	 */
 	public Optional<Claims> getClaimsOrNullIfInvalid(String token) {
 		try {
 			log.debug("토큰 유효성 검사 시작, Optional 반환 = {}", token);
-			return
-				Optional.of(getClaims(token));
-		} catch (IllegalArgumentException e) {
-			log.debug("토큰이 없습니다.");
+			return Optional.of(getClaims(token));
 		} catch (ExpiredJwtException e) {
-			log.debug("만료된 토큰입니다.");
-		} catch (MalformedJwtException e) {
-			log.debug("토큰 값 형식이 잘못되었습니다.");
-		} catch (UnsupportedJwtException e) {
-			log.debug("예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.");
-		} catch (JwtException e) {
-			log.debug("유효하지 않은 토큰입니다.");
+			log.debug("만료된 토큰입니다. empty 반환");
 		}
 		return Optional.empty();
 	}
@@ -54,12 +47,10 @@ class JwtTokenValidator {
 	 * @return Claims 토큰의 클레임(페이로드) 반환
 	 * @throws IllegalArgumentException 토큰 값이 없습니다.
 	 * @throws ExpiredJwtException 만료된 토큰입니다.
-	 * @throws MalformedJwtException 토큰 값 형식이 잘못되었습니다.
-	 * @throws UnsupportedJwtException 예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.
-	 * @throws JwtException 상기 셋 중 어느 것도 아닐 때, 유효하지 않은 토큰입니다.
+	 * @throws JwtException Jwt 관련 Ex, 유효하지 않은 토큰입니다.
 	 */
 	public Claims getClaims(String token) {
- 		return Jwts.parser()
+		return Jwts.parser()
 			.verifyWith(key) // 서명 검증 시 사용할 키
 			.build()
 			.parseSignedClaims(token) // 서명의 유효성 검증
