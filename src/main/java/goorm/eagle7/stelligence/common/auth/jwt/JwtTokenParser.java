@@ -57,7 +57,7 @@ class JwtTokenParser {
 	public Role getRole(Claims claims, String claimKey) {
 
 		log.debug("토큰에서 사용자 정의 claims 추출");
-		return Role.fromValue(
+		return Role.valueOf(
 			claims.get(claimKey, String.class)
 		);
 
