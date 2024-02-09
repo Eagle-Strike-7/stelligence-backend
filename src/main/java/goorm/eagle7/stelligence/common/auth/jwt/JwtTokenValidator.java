@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.util.Date;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -43,20 +42,6 @@ class JwtTokenValidator {
 			log.debug("토큰 값이 없습니다.");
 		}
 		throw new UsernameNotFoundException("유효하지 않은 사용자입니다.");
-	}
-
-	/**
-	 * <h2>만료 시각이 원하는 시각 이내인지 확인</h2>
-	 * <p>- 만료 시각까지의 시간 이내인지 확인</p>
-	 * @param token 검증 및 내용 추출할 토큰
-	 * @param time 만료 시각과 비교할 시각
-	 * @return boolean 만료 시각이 검증할 시간보다 이전이면 true, 아니면 false
-	 */
-	public boolean willBeExpiredWithin(Date time, String token) {
-
-		return getClaims(token)
-			.getExpiration().before(time);
-
 	}
 
 	/**
