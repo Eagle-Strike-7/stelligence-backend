@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import static jakarta.servlet.RequestDispatcher.*;
-
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +17,7 @@ class JwtTokenParser {
 
 	private final JwtProperties jwtProperties;
 	private final JwtTokenValidator jwtTokenValidator;
+	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
 
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
@@ -40,7 +39,7 @@ class JwtTokenParser {
 	 * @return Role claims(role)
 	 */
 	public Role getRole(String token) {
-		log.debug("토큰에서 claims(role) 추출");
+		log.debug("토큰에서 사용자 정의 role claims 추출");
 		return Role.fromValue(jwtTokenValidator
 			.getClaimsOrNullIfInvalid(token)
 				.orElseThrow(
