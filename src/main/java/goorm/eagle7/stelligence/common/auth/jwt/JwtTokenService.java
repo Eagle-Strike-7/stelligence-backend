@@ -1,5 +1,11 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -8,9 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +44,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtTokenService {
 
+	private final JwtProperties jwtProperties;
+	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenParser jwtTokenParser;
 	private final JwtTokenValidator jwtTokenValidator;
 
@@ -43,12 +53,12 @@ public class JwtTokenService {
 
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
-	 * @param token token
+	 * @param claims token
 	 * @return memberId 현재 로그인한 사용자의 memberId
 	 * @throws BadJwtException 유효하지 않은 사용자입니다.
 	 */
-	public Long getMemberId(String token) {
-		String subject = jwtTokenParser.getSubject(token);
+	public Long getMemberId(Claims claims) {
+		String subject = jwtTokenParser.getSubject(claims);
 		return Long.parseLong(subject);
 	}
 
@@ -73,11 +83,17 @@ public class JwtTokenService {
 	 * <h2>token 정보에서 Authentication 만들어 반환</h2>
 	 * @param token 추출할 token
 	 * @return Authentication token 정보로 만든 Authentication
-	 * @throws JwtException 유효하지 않은 사용자입니다.
 	 */
-	public Authentication makeAuthenticationFromToken(String token) {
+	public Authentication makeAuthenticationFrom(String accessToken) {
 
-		MemberInfo memberInfo = extractMemberInfo(token);
+		Claims claims = jwtTokenParser.getClaims(accessToken)
+			.orElseThrow(
+				() -> {
+					log.debug("authentication 생성 실패, 확인 필요.");
+					return new UsernameNotFoundException(ERROR_MESSAGE);
+				}
+			);
+		MemberInfo memberInfo = extractMemberInfo(claims);
 
 		UserDetails user = User.builder()
 			.username(memberInfo.getId().toString())
@@ -86,6 +102,7 @@ public class JwtTokenService {
 			.build();
 		log.debug("user: {}", user);
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
+
 	}
 
 	/**
@@ -105,13 +122,16 @@ public class JwtTokenService {
 
 	/**
 	 * <h2>token에서 MemberInfo로 조립</h2>
-	 * @param token 추출할 token
+	 * @param claims 추출할 token
 	 * @return MemberInfo memberId, role
 	 */
-	public MemberInfo extractMemberInfo(String token) {
+	public MemberInfo extractMemberInfo(Claims claims) {
 
-		String memberId = jwtTokenParser.getSubject(token);
-		Role role = jwtTokenParser.getRole(token);
+		// accessToken이 5분 이내면 refresh 토큰으로 accessToken 재발급
+		// accessToken이 만료되었을 때, memberId를 추출하기 위해 사용
+		// refreshToken 재발급도 여기서 진행
+		String memberId = jwtTokenParser.getSubject(claims);
+		Role role = jwtTokenParser.getRole(claims, jwtProperties.getClaims().getRole());
 
 		return MemberInfo.of(
 			Long.parseLong(memberId),
@@ -125,11 +145,27 @@ public class JwtTokenService {
 	 * @throws JwtException 유효하지 않은 사용자입니다.
 	 * @throws IllegalArgumentException 토큰 값이 없습니다.
 	 */
-	private void validateTokenOrThrows(String token) {
-		jwtTokenValidator.getClaimsOrNullIfInvalid(token)
-			.orElseThrow(
-				() -> new UsernameNotFoundException(ERROR_MESSAGE)
-			);
+	public Optional<Claims> validateTokenOrThrows(String token) {
+		return jwtTokenValidator.getClaimsOrNullIfInvalid(token);
+	}
+
+	// accessToken이 만료되기 n분 전이면 accessToken 재발급
+	public String getValidAccessToken(String accessToken) {
+
+		if (!StringUtils.hasText(accessToken)) {
+			throw new UsernameNotFoundException(ERROR_MESSAGE);
+		}
+
+		// serviceTimeMin
+		long serviceTimeMin = jwtProperties.getAccessToken().getServiceTime();
+
+		// LocalTime.now() + serviceTimeMin
+		LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(serviceTimeMin);
+		ZoneId zoneId = ZoneId.systemDefault();
+		Instant instant = localDateTime.atZone(zoneId).toInstant();
+		Date date = Date.from(instant);
+
+		return accessToken;
 	}
 
 	// 하기 메서드는 dev에서 사용
