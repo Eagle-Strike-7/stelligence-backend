@@ -5,10 +5,11 @@ import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,12 +45,24 @@ public class JwtTokenReissueService {
 	 * @throws BadJwtException refreshToken이 만료되었습니다.
 	 */
 	@Transactional
-	public String reissueAccessToken(String refreshToken) {
+	public LoginTokenInfo reissueAccessToken(String refreshToken) {
 
 		log.debug("refreshToken 재발급 시작");
 
+		// refreshToken 만료 확인
+		// refreshToken이 null이면 throw ex (401)
+
+		Claims claims = jwtTokenService
+			.validateTokenOrThrows(refreshToken)
+			.orElseThrow(
+				() -> {
+					log.debug("refreshToken이 만료되었습니다.");
+					return new BadJwtException(ERROR_MESSAGE);
+				}
+			);
+
 		// refreshToken 검증 및 member 조회
-		Long memberId = jwtTokenService.getMemberId(refreshToken);
+		Long memberId = jwtTokenService.getMemberId(claims);
 		Member member = memberRepository
 			.findByIdAndActiveTrue(memberId)
 			.orElseThrow(() -> {
@@ -86,7 +99,7 @@ public class JwtTokenReissueService {
 	 * @param member token으로 검증한 회원
 	 * @return accessToken 재발급한 accessToken
 	 */
-	private String reissueTokens(Member member) {
+	private LoginTokenInfo reissueTokens(Member member) {
 
 		log.debug("accessToken, refreshToken 재발급 진행");
 
@@ -96,14 +109,10 @@ public class JwtTokenReissueService {
 		String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
 		String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
-		// 쿠키에 저장
-		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, newAccessToken);
-		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, newRefreshToken);
-
 		// DB에 리프레시 토큰 업데이트
 		member.updateRefreshToken(newRefreshToken);
 
-		return newAccessToken;
+		return LoginTokenInfo.of(newAccessToken, newRefreshToken);
 
 	}
 
