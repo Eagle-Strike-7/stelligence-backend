@@ -1,7 +1,5 @@
 package goorm.eagle7.stelligence.domain.badge;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +8,6 @@ import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
-import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeService {
 
-	private final MemberRepository memberRepository;
 	private final ContributeRepository contributeRepository;
 	private final DocumentContentRepository documentContentRepository;
 
@@ -46,12 +42,11 @@ public class BadgeService {
 				// 반려된 수정 요청
 				newBadge = checkContributeRejectedAndGetBadge(member, badgeCategory);
 				break;
-			case MEMBER_JOIN:
-				// 회원 가입
-				newBadge = checkMemberConditionAndGetBadge(member);
-				break;
 			case REPORT:
 				// 신고 - 신고 테이블 따로 없어 미구현
+				break;
+			case MEMBER_JOIN:
+				// 회원 가입 - 바로 배지 발행해 미구현
 				break;
 		}
 
@@ -60,7 +55,6 @@ public class BadgeService {
 		}
 
 	}
-
 
 	private Badge checkWritingConditionAndGetBadge(Member member, BadgeCategory badgeCategory) {
 
@@ -83,14 +77,6 @@ public class BadgeService {
 	private Badge checkContributeRejectedAndGetBadge(Member member, BadgeCategory badgeCategory) {
 		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
 		return Badge.findByEventCategoryAndCount(badgeCategory, count);
-	}
-
-	private Badge checkMemberConditionAndGetBadge(Member member) {
-		// 만 하루 내에 가입한 회원으로 조회되면 회원 가입으로 간주
-		if (memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(member.getId(), LocalDateTime.now().minusDays(1))) {
-			return Badge.SPROUT;
-		}
-		return null;
 	}
 
 }

@@ -67,7 +67,7 @@ public class Member extends BaseTimeEntity {
 
 	/**
 	 * <h2>Member는 정적 팩토리 메서드로 생성하기</h2>
-	 * <p>member 생성 시, role은 USER, contributes는 0으로  설정.</p>
+	 * <p>member 생성 시, role은 USER, contributes는 0, 배지 발급.</p>
 	 * <p>refreshToken은 회원 가입 후 update로 진행</p>
 	 * @param name 이름
 	 * @param nickname 닉네임
@@ -93,6 +93,7 @@ public class Member extends BaseTimeEntity {
 		member.role = Role.USER;
 		member.contributes = 0;
 		member.active = true;
+		member.addBadge(Badge.SPROUT);
 
 		return member;
 
