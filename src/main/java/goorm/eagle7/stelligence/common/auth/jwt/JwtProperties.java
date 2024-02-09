@@ -22,8 +22,6 @@ public class JwtProperties {
 	@Getter
 	@Setter
 	public static class Header {
-		private String type;
-		private String tokenType;
 		private String algorithm;
 		private String algorithmType;
 	}
