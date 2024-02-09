@@ -21,8 +21,7 @@ class Neo4jClearTest {
 	 */
 	@Test
 	@Rollback(false)
-	@Disabled
-	// 의도한 상황에서만 테스트가 실행될 수 있도록 Disabled 처리하였습니다.
+	@Disabled	// 의도한 상황에서만 테스트가 실행될 수 있도록 Disabled 처리하였습니다.
 	void clearNeo4j() {
 
 		String clearQuery = "match (n) detach delete n;";
