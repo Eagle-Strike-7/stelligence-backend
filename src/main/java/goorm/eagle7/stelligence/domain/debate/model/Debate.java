@@ -29,6 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Debate extends BaseTimeEntity {
 
+	//토론 연장 지속 시간: 60분 * 24시간 = 1일
+	public static final Long DEBATE_EXTENSION_DURATION_MINUTE = 60L * 24L;
+	//토론 최대 지속 시간: 60분 * 24시간 * 7일 = 7일
+	public static final Long DEBATE_LIMIT_DURATION_MINUTE = 60L * 24L * 7L;
+	//토론 이후 수정요청 대기 시간: 60분 * 24시간 = 1일
+	public static final Long DEBATE_PENDING_DURATION_MINUTE = 60L * 24L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "debate_id")
@@ -55,7 +62,7 @@ public class Debate extends BaseTimeEntity {
 		contribute.setStatusDebating();
 		this.contribute = contribute;
 		this.status = DebateStatus.OPEN;
-		this.endAt = LocalDateTime.now().plusDays(1L);
+		this.endAt = LocalDateTime.now().plusMinutes(DEBATE_EXTENSION_DURATION_MINUTE);
 		this.commentSequence = 1;
 	}
 
@@ -69,11 +76,11 @@ public class Debate extends BaseTimeEntity {
 
 	/**
 	 * 댓글이 업데이트 될때, 토론 종료시간도 업데이트됩니다.
-	 * 단, 토론을 유지할 수 있는 최대 기간은 7일입니다.
+	 * 단, 토론을 유지할 수 있는 최대 기간은 {@link #DEBATE_LIMIT_DURATION_MINUTE}분 입니다.
 	 */
 	public void updateEndAt() {
-		LocalDateTime extendEndAt = LocalDateTime.now().plusDays(1L);
-		LocalDateTime limitEndAt = this.createdAt.plusDays(7L);
+		LocalDateTime extendEndAt = LocalDateTime.now().plusMinutes(DEBATE_EXTENSION_DURATION_MINUTE);
+		LocalDateTime limitEndAt = this.createdAt.plusMinutes(DEBATE_LIMIT_DURATION_MINUTE);
 
 		if (extendEndAt.isBefore(limitEndAt)) {
 			this.endAt = extendEndAt;
@@ -85,5 +92,24 @@ public class Debate extends BaseTimeEntity {
 	// commentSequence를 사용하고 나면 commentSequence가 자동으로 업데이트됩니다.
 	public int getAndIncrementCommentSequence() {
 		return commentSequence++;
+	}
+
+	public boolean hasPermissionToWriteDrivenContribute(Long memberId) {
+		return comments
+			.stream()
+			.map(c -> c.getCommenter().getId())
+			.anyMatch(commenterId -> commenterId.equals(memberId));
+	}
+
+	// 토론 중인지를 확인
+	public boolean isOnDebate() {
+		return this.status.equals(DebateStatus.OPEN);
+	}
+
+	// 토론이 끝난 후 수정요청 대기중인지를 확인
+	public boolean isPendingForContribute() {
+		// 토론이 끝난 후 DEBATE_PENDING_DURATION_MINUTE 분 동안 수정요청 대기상태
+		LocalDateTime pendingLimitTime = this.endAt.plusMinutes(DEBATE_PENDING_DURATION_MINUTE);
+		return this.status.equals(DebateStatus.CLOSED) && pendingLimitTime.isAfter(LocalDateTime.now());
 	}
 }

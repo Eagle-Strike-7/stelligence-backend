@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.debate.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,20 @@ public class CustomDebateRepositoryImpl implements CustomDebateRepository {
 			case RECENT_COMMENTED -> findPageByStatusOrderByRecentComment(status, pageable);
 		};
 
+	}
+
+	@Override
+	public Optional<Debate> findLatestDebateByDocumentId(Long documentId) {
+
+		List<Debate> debates = em.createQuery(
+				"select d from Debate d"
+					+ " where d.contribute.document.id = :documentId"
+					+ " order by d.createdAt desc", Debate.class)
+			.setParameter("documentId", documentId)
+			.setMaxResults(1)
+			.getResultList();
+
+		return debates.stream().findFirst();
 	}
 
 	private Page<Debate> findPageByStatusOrderByLatest(DebateStatus status, Pageable pageable) {
