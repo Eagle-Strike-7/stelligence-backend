@@ -81,6 +81,9 @@ dependencies {
     // loki4j
     implementation 'com.github.loki4j:loki-logback-appender:1.4.2'
 
+    // mockito - inline
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+
 }
 
 tasks.named('test') {

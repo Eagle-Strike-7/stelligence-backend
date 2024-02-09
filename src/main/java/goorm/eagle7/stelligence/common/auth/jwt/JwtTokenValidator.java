@@ -36,7 +36,7 @@ class JwtTokenValidator {
 	 * @throws JwtException 상기 셋 중 어느 것도 아닐 때, 유효하지 않은 토큰입니다.
 	 */
 	public Optional<Claims> getClaimsOrNullIfInvalid(String token) {
-		try {
+		// try {
 			log.debug("토큰 유효성 검사 = {}", token);
 			return
 				Optional.of(Jwts.parser()
@@ -44,17 +44,17 @@ class JwtTokenValidator {
 					.build()
 					.parseSignedClaims(token) // 서명의 유효성 검증
 					.getPayload());
-		} catch (IllegalArgumentException e) {
-			log.debug("토큰 값이 없습니다.");
-		} catch (ExpiredJwtException e) {
-			log.debug("만료된 토큰입니다.");
-		} catch (MalformedJwtException e) {
-			log.debug("토큰 값 형식이 잘못되었습니다.");
-		} catch (UnsupportedJwtException e) {
-			log.debug("예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.");
-		} catch (JwtException e) {
-			log.debug("유효하지 않은 토큰입니다.");
-		}
-		return Optional.empty();
+		// } catch (IllegalArgumentException e) {
+		// 	log.debug("토큰 값이 없습니다.");
+		// } catch (ExpiredJwtException e) {
+		// 	log.debug("만료된 토큰입니다.");
+		// } catch (MalformedJwtException e) {
+		// 	log.debug("토큰 값 형식이 잘못되었습니다.");
+		// } catch (UnsupportedJwtException e) {
+		// 	log.debug("예상하는 형식과 일치하지 않는 특정 형식이나 구성입니다.");
+		// } catch (JwtException e) {
+		// 	log.debug("유효하지 않은 토큰입니다.");
+		// }
+		// return Optional.empty();
 	}
 }
