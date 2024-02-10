@@ -71,7 +71,7 @@ public class DebateService {
 	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
 		if (commentRequest.getContent().length() > Comment.MAX_COMMENT_LENGTH) {
-			throw new BaseException("토론 댓글의 최대 길이는 1000 자 입니다.");
+			throw new BaseException("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
 		}
 
 		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
