@@ -32,6 +32,7 @@ public class Comment extends BaseTimeEntity {
 	@JoinColumn(name = "commenter_id")
 	private Member commenter;
 
+	@Column(length = 1000)
 	private String content;
 
 	@Column(name = "sequences")
