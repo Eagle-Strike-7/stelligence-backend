@@ -16,15 +16,19 @@ public enum Role {
 		this.value = value;
 	}
 
-	public static Role fromValue(String value) {
+	public static Role fromValueDefaultUser(String value) {
 		try {
-			return Arrays.stream(values())
-				.filter(r -> r.value.equalsIgnoreCase(value))
-				.findAny()
-				.orElseThrow(IllegalArgumentException::new);
+			return fromValue(value);
 		} catch (IllegalArgumentException e) {
 			return Role.USER;
 		}
+	}
+
+	public static Role fromValue(String value) {
+		return Arrays.stream(values())
+			.filter(r -> r.value.equalsIgnoreCase(value))
+			.findAny()
+			.orElseThrow(IllegalArgumentException::new);
 	}
 
 }
