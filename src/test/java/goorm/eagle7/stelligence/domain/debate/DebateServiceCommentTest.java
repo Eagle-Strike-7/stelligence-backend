@@ -250,4 +250,67 @@ class DebateServiceCommentTest {
 		// then
 		verify(commentRepository, times(1)).findAllByDebateId(debateId);
 	}
+
+	@Test
+	@DisplayName("댓글 최대 길이 초과 테스트")
+	void commentMaxLengthExceed() {
+		//given
+		String content = """
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+""";
+		System.out.println("content.length() = " + content.length());
+		CommentRequest commentRequest = CommentRequest.of(content);
+		Debate debate = TestFixtureGenerator.debate(1L, null, DebateStatus.OPEN, LocalDateTime.now(), 1);
+		Member commenter = TestFixtureGenerator.member(2L, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debate.getId(), commenter.getId()))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
+
+	}
+
+	@Test
+	@DisplayName("댓글 최대 길이 성공 테스트")
+	void commentMaxLengthPass() {
+		//given
+		String content = """
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~
+안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입니다 반갑습니다~~안녕하세요 이영민입
+""";
+		System.out.println("content.length() = " + content.length());
+		CommentRequest commentRequest = CommentRequest.of(content);
+		Debate debate = TestFixtureGenerator.debate(1L, null, DebateStatus.OPEN, LocalDateTime.now(),
+			1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(2L, "commenter");
+
+		when(memberRepository.findById(commenter.getId())).thenReturn(Optional.of(commenter));
+		when(debateRepository.findDebateByIdForUpdate(debate.getId())).thenReturn(Optional.of(debate));
+
+		//when
+		debateService.addComment(commentRequest, debate.getId(), commenter.getId());
+
+		//then
+		verify(commentRepository, times(1)).save(any(Comment.class));
+
+	}
 }
