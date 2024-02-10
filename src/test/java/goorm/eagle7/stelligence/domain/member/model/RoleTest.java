@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 class RoleTest {
 
 	@Test
-	@DisplayName("[성공] - 존재하는 value로 Role 생성 - fromValue")
-	void fromValue() {
+	@DisplayName("[성공] 존재하는 value로 Role 생성 - fromValueDefaultUser")
+	void fromValueDefaultUserSuccess() {
 
 		// given
 		String value = "ROLE_ADMIN";
 		Role expected = Role.ADMIN;
 
 		// when
-		Role actual = Role.fromValue(value);
+		Role actual = Role.fromValueDefaultUser(value);
 
 		// then
 		assertThat(actual).isEqualTo(expected);
@@ -24,15 +24,15 @@ class RoleTest {
 	}
 
 	@Test
-	@DisplayName("[실패] - 존재하지 않는 value로 Role 생성 - fromValue")
-	void fromValueFail() {
+	@DisplayName("[예외] 존재하지 않는 value로 Role 생성 시 default - fromValueDefaultUser")
+	void fromValueDefaultUserFailNoValue() {
 
 		// given
-		String value = "ROLE_GUEST";
+		String invalidValue = "notExist";
 		Role expected = Role.USER;
 
 		// when
-		Role actual = Role.fromValue(value);
+		Role actual = Role.fromValueDefaultUser(invalidValue);
 
 		// then
 		assertThat(actual).isEqualTo(expected);
@@ -40,21 +40,26 @@ class RoleTest {
 	}
 
 	@Test
-	void fromValueNull() {
+	@DisplayName("[예외] null, empty, blank(value)로 Role 생성 시 default - fromValueDefaultUser")
+	void fromValueDefaultUserNullValue() {
 
 		// given
-		String value = "ADMIN";
 		Role expected = Role.USER;
 
 		// when
-		Role actual = Role.fromValue(value);
+		Role actual = Role.fromValueDefaultUser(null);
+		Role actual2 = Role.fromValueDefaultUser("");
+		Role actual3 = Role.fromValueDefaultUser(" ");
 
 		// then
 		assertThat(actual).isEqualTo(expected);
+		assertThat(actual2).isEqualTo(expected);
+		assertThat(actual3).isEqualTo(expected);
 
 	}
 
 	@Test
+	@DisplayName("[성공] 존재하는 name으로 Role 생성 - valueOf")
 	void valueOfSuccess() {
 
 		// given
@@ -70,20 +75,30 @@ class RoleTest {
 	}
 
 	@Test
-	void valueOfFail() {
+	@DisplayName("[예외] null, empty, blank(name)로 Role 생성 시 NP/IllegalArguEx - valueOf")
+	void valueOfFailNullname() {
 
 		// given - null, when, then
 		assertThatThrownBy(
 			() -> Role.valueOf(null))
 			.isInstanceOf(NullPointerException.class);
 
+		// given - empty, blank, when, then
+		assertThatThrownBy(
+			() -> Role.valueOf(""))
+			.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(
+			() -> Role.valueOf(" "))
+			.isInstanceOf(IllegalArgumentException.class);
+
 	}
 
 	@Test
-	void valueOfFail2() {
+	@DisplayName("[예외] 존재하지 않는 name으로 Role 생성 시 IllegalArguEx - valueOf")
+	void valueOfFailNoName() {
 
 		// given
-		String name = "GUEST";
+		String name = "notExist";
 
 		// when, then
 		assertThatThrownBy(
@@ -93,14 +108,48 @@ class RoleTest {
 	}
 
 	@Test
-	void valueOfFail3() {
+	@DisplayName("[성공] 존재하는 value로 생성 시 성공 - fromValue")
+	void fromValueSuccess() {
 
 		// given
-		String name = "ROLE_ADMIN";
+		String value = "ROLE_ADMIN";
+		Role expected = Role.ADMIN;
+
+		// when
+		Role actual = Role.fromValue(value);
+
+		// then
+		assertThat(actual).isEqualTo(expected);
+
+	}
+
+	@Test
+	@DisplayName("[예외] 존재하지 않는 value로 생성 시 IllegalArguEx - fromValue")
+	void fromValueFail() {
+
+		// given
+		String invalidValue = "notExist";
 
 		// when, then
 		assertThatThrownBy(
-			() -> Role.valueOf(name))
+			() -> Role.fromValue(invalidValue))
+			.isInstanceOf(IllegalArgumentException.class);
+
+	}
+
+	@Test
+	@DisplayName("[예외] null, empty, blank(value)로 생성 시 IllegalArguEx - fromValue")
+	void fromValueNull() {
+
+		// given - null, when, then
+		assertThatThrownBy(
+			() -> Role.fromValue(null))
+			.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(
+			() -> Role.fromValue(""))
+			.isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(
+			() -> Role.fromValue(" "))
 			.isInstanceOf(IllegalArgumentException.class);
 
 	}
