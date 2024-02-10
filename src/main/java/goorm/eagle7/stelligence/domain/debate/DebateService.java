@@ -70,6 +70,10 @@ public class DebateService {
 	@Transactional
 	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
+		if (commentRequest.getContent().length() > 1000) {
+			throw new BaseException("토론 댓글의 최대 길이는 1000 자 입니다.");
+		}
+
 		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
 
