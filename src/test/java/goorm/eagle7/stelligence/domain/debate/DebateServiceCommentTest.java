@@ -238,7 +238,7 @@ class DebateServiceCommentTest {
 	}
 
 	@Test
-	@DisplayName("토론 리스트 조회")
+	@DisplayName("토론 댓글 리스트 조회")
 	void getComments() {
 		// given
 		Long debateId = 1L;
@@ -269,13 +269,17 @@ class DebateServiceCommentTest {
 """;
 		System.out.println("content.length() = " + content.length());
 		CommentRequest commentRequest = CommentRequest.of(content);
-		Debate debate = TestFixtureGenerator.debate(1L, null, DebateStatus.OPEN, LocalDateTime.now(), 1);
-		Member commenter = TestFixtureGenerator.member(2L, "commenter");
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
 
 		//when
 
 		//then
-		assertThatThrownBy(() -> debateService.addComment(commentRequest, debate.getId(), commenter.getId()))
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
 			.isInstanceOf(BaseException.class)
 			.hasMessage("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
 
