@@ -17,7 +17,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -192,7 +191,7 @@ public class JwtTokenService {
 		try {
 			return MemberInfo.of(
 				Long.parseLong(claims.getSubject()),
-				Role.getRoleFromString(claims.get(claimRole, String.class)));
+				Role.fromValueDefaultUser(claims.get(claimRole, String.class)));
 		} catch (NumberFormatException e) {
 			log.debug("JWT에 저장된 사용자 식별자가 올바르지 않습니다. {}", e.getMessage());
 			throw new BaseException("유효하지 않은 사용자입니다.");
