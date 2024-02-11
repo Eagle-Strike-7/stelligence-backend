@@ -50,7 +50,7 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	 * @param id Contribute id
 	 * @return Contribute
 	 */
-	@Query("SELECT c FROM Contribute c LEFT JOIN FETCH c.member WHERE c.id = :id")
+	@Query("SELECT c FROM Contribute c JOIN FETCH c.member WHERE c.id = :id")
 	Optional<Contribute> findWithMember(Long id);
 
 }
