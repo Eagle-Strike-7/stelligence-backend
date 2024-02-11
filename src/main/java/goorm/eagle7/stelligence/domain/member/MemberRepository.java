@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.domain.member;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,12 +28,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 * @return Optional<Member> 활성 회원
 	 */
 	Optional<Member> findByIdAndActiveTrue(Long memberId);
-
-	/**
-	 * <h2>Member id로 active가 true, createdAt 오늘로부터 1일 이내인 Member의 존재를 확인한다.</h2>
-	 * @param memberId 활성 member id
-	 * @return 존재하면 true, 존재하지 않으면 false
-	 */
-	boolean existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(Long memberId, LocalDateTime dateTime);
 
 }
