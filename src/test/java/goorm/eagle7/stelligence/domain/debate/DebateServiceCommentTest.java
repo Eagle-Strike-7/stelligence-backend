@@ -300,6 +300,52 @@ class DebateServiceCommentTest {
 
 	}
 
+	@Test
+	@DisplayName("빈 댓글 테스트")
+	void emptyComment() {
+		//given
+		final String content = " ";
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 내용이 존재하지 않습니다.");
+
+	}
+
+	@Test
+	@DisplayName("null 댓글 테스트")
+	void nullComment() {
+		//given
+		final String content = null;
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 내용이 존재하지 않습니다.");
+
+	}
+
 	private static String getKorStringWithLength(int length) {
 		String content = "안녕하세요 이영민입니다 반갑습니다~\n";
 		assertThat(content).hasSize(20);
