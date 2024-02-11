@@ -16,6 +16,9 @@ import goorm.eagle7.stelligence.domain.notification.NotificationSender;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 수정요청 반려 이벤트가 발생했을 때, 이 정보를 사용자에게 알리는 역할을 하는 클래스입니다.
+ */
 @Component
 @RequiredArgsConstructor
 public class ContributeRejectedNotifier {
@@ -29,8 +32,7 @@ public class ContributeRejectedNotifier {
 
 	/**
 	 * 수정요청이 반려되었을 때의 이벤트를 처리합니다.
-	 *
-	 * @param event
+	 * @param event 수정요청 반려 이벤트
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@TransactionalEventListener(value = ContributeMergedEvent.class)

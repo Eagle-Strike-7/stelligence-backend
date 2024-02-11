@@ -14,6 +14,9 @@ import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 수정요청이 종료되고 토론이 열렸을때의 알림을 처리합니다.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
