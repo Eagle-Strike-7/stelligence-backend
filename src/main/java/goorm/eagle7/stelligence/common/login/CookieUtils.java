@@ -64,7 +64,7 @@ public class CookieUtils {
 	 * @return cookie List 혹은 해당하는 cookie가 없으면 Optional.empty()
 	 * @throws IllegalStateException request가 없는 경우
 	 */
-	private Optional<Cookie> getCookie(String cookieName) {
+	protected Optional<Cookie> getCookie(String cookieName) {
 
 		HttpServletRequest request = RequestScopeUtils.getHttpServletRequest();
 
