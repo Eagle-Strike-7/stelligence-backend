@@ -3,10 +3,8 @@ package goorm.eagle7.stelligence.domain.contribute;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.common.event.contribute.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -17,11 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 수정요청과 관련된 이벤트를 처리합니다.
- *
- * <p>Async: 이벤트를 전달받아 이벤트 발생 쓰레드와는 별도의 쓰레드에서 처리합니다.
  */
-@Async
-@Transactional
 @Component
 @RequiredArgsConstructor
 public class ContributeEventAware {
@@ -35,9 +29,13 @@ public class ContributeEventAware {
 
 	/**
 	 * 수정요청이 완료되면 수정요청 게시자와 투표자에게 알림을 보낸다.
+	 *
+	 * <p>TransactionPhase.AFTER_COMMIT: 트랜잭션이 성공적으로 완료된 후에 이벤트를 처리합니다. (기본값)
+	 * 이벤트의 실행은 HTTP Response에 영향을 주지 않습니다.
+	 *
 	 * @param event 수정요청 완료 이벤트
 	 */
-	@EventListener(ContributeMergedEvent.class)
+	@TransactionalEventListener(value = ContributeMergedEvent.class)
 	public void onContributeMerged(ContributeMergedEvent event) {
 		Contribute contribute = contributeRepository.findWithMember(event.contributeId())
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 수정요청입니다."));
