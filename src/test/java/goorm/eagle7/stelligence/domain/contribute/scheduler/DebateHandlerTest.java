@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +38,8 @@ class DebateHandlerTest {
 		//given
 		Long contributeId = 1L;
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(contributeId, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(contributeId, null, "title", "description", ContributeStatus.VOTING,
+			document);
 
 		when(contributeRepository.findById(contributeId)).thenReturn(Optional.of(contribute));
 
@@ -60,9 +61,12 @@ class DebateHandlerTest {
 		Long rejectedContributeId = 3L;
 
 		Document document = document(1L, null, "title", null);
-		Contribute debatingContribute = contribute(debatingContributeId, null, ContributeStatus.DEBATING, document);
-		Contribute mergedContribute = contribute(mergedContributeId, null, ContributeStatus.MERGED, document);
-		Contribute rejectedContribute = contribute(rejectedContributeId, null, ContributeStatus.REJECTED, document);
+		Contribute debatingContribute = contribute(debatingContributeId, null, "title", "description",
+			ContributeStatus.DEBATING, document);
+		Contribute mergedContribute = contribute(mergedContributeId, null, "title", "description",
+			ContributeStatus.MERGED, document);
+		Contribute rejectedContribute = contribute(rejectedContributeId, null, "title", "description",
+			ContributeStatus.REJECTED, document);
 
 		when(contributeRepository.findById(debatingContributeId)).thenReturn(Optional.of(debatingContribute));
 		when(contributeRepository.findById(mergedContributeId)).thenReturn(Optional.of(mergedContribute));
