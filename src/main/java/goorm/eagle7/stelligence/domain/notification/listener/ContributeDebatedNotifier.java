@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeDebatedEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
@@ -34,6 +37,8 @@ public class ContributeDebatedNotifier {
 	 * Contribute가 토론이 완료되었을 때 알림을 보냅니다.
 	 * @param event 토론 시작 이벤트
 	 */
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@TransactionalEventListener(value = ContributeDebatedEvent.class)
 	public void onContributeDebated(ContributeDebatedEvent event) {
 		Long debateId = event.debateId();
 
@@ -45,7 +50,7 @@ public class ContributeDebatedNotifier {
 
 		targets.addAll(voteRepository.findVoters(debate.getContribute().getId()));
 		targets.add(debate.getContribute().getMember().getId());
-		
+
 		//알림 요청 객체를 생성한다.
 		NotificationRequest request = NotificationRequest.of(
 			String.format(CONTRIBUTE_DEBATED_MESSAGE, StringSlicer.slice(debate.getContribute().getTitle())),
