@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.contribute;
+package goorm.eagle7.stelligence.domain.notification.listener;
 
 import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.mockito.Mockito.*;
@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.event.listener.ContributeMergedEventListener;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -25,7 +26,7 @@ import goorm.eagle7.stelligence.domain.notification.NotificationSender;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ContributeEventAwareTest {
+class ContributeMergedNotifierTest {
 
 	@Mock
 	NotificationSender notificationSender;
