@@ -14,7 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import goorm.eagle7.stelligence.common.event.contribute.ContributeMergedEvent;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
+import goorm.eagle7.stelligence.domain.contribute.event.listener.ContributeMergedEventListener;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -33,7 +34,7 @@ class ContributeEventAwareTest {
 	@Mock
 	ContributeRepository contributeRepository;
 	@InjectMocks
-	ContributeEventAware contributeEventAware;
+	ContributeMergedEventListener contributeEventAware;
 
 	@Test
 	@DisplayName("수정요청 완료 이벤트를 받아 알림을 보낸다.")

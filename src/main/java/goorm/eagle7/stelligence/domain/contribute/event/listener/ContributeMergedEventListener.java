@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.contribute;
+package goorm.eagle7.stelligence.domain.contribute.event.listener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,7 +6,8 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import goorm.eagle7.stelligence.common.event.contribute.ContributeMergedEvent;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
@@ -14,11 +15,11 @@ import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 수정요청과 관련된 이벤트를 처리합니다.
+ * 수정요청이 반영되었을 때의 이벤트를 처리합니다.
  */
 @Component
 @RequiredArgsConstructor
-public class ContributeEventAware {
+public class ContributeMergedEventListener {
 
 	private final ContributeRepository contributeRepository;
 	private final VoteRepository voteRepository;

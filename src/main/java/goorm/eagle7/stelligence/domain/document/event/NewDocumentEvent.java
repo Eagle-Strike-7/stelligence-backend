@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.event.document;
+package goorm.eagle7.stelligence.domain.document.event;
 
 /**
  * 새로운 Document가 생성될 때 발생하는 이벤트
