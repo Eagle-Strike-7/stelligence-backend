@@ -10,6 +10,7 @@ import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.util.StringSlicer;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +45,10 @@ public class ContributeDebatedNotifier {
 
 		targets.addAll(voteRepository.findVoters(debate.getContribute().getId()));
 		targets.add(debate.getContribute().getMember().getId());
-
+		
 		//알림 요청 객체를 생성한다.
 		NotificationRequest request = NotificationRequest.of(
-			String.format(CONTRIBUTE_DEBATED_MESSAGE, debate.getContribute().getTitle()),
+			String.format(CONTRIBUTE_DEBATED_MESSAGE, StringSlicer.slice(debate.getContribute().getTitle())),
 			String.format(DEBATE_URI, debateId),
 			targets
 		);

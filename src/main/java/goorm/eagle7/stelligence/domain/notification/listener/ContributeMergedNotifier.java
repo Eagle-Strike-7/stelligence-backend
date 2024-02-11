@@ -13,6 +13,7 @@ import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.util.StringSlicer;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -50,12 +51,8 @@ public class ContributeMergedNotifier {
 		targets.addAll(voteRepository.findVoters(event.contributeId()));
 		targets.add(contribute.getMember().getId());
 
-		//알림 요청 객체를 생성한다.
-		String slicedTitle = contribute.getTitle().length() > 20 ? contribute.getTitle().substring(0, 20) + "..." :
-			contribute.getTitle();
-
 		NotificationRequest request = NotificationRequest.of(
-			String.format(CONTRIBUTE_MERGED_MESSAGE, slicedTitle),
+			String.format(CONTRIBUTE_MERGED_MESSAGE, StringSlicer.slice(contribute.getTitle())),
 			String.format(DOCUMENT_URI, contribute.getDocument().getId()),
 			targets
 		);
