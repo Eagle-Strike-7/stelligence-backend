@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
@@ -70,6 +71,9 @@ public class DebateService {
 	@Transactional
 	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
 
+		if (!StringUtils.hasText(commentRequest.getContent())) {
+			throw new BaseException("댓글에 내용이 존재하지 않습니다.");
+		}
 		if (commentRequest.getContent().length() > Comment.MAX_COMMENT_LENGTH) {
 			throw new BaseException("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
 		}
