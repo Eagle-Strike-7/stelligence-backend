@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
@@ -36,6 +37,7 @@ public class ContributeMergedNotifier {
 	 *
 	 * @param event 수정요청 완료 이벤트
 	 */
+	@Transactional
 	@TransactionalEventListener(value = ContributeMergedEvent.class)
 	public void onContributeMerged(ContributeMergedEvent event) {
 		Contribute contribute = contributeRepository.findWithMember(event.contributeId())
