@@ -35,6 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 			.allowedOrigins(
+				"https://api.stelligence.site",
 				"http://localhost:3000",
 				"http://3.39.192.156:80",
 				"http://www.stelligence.site")
