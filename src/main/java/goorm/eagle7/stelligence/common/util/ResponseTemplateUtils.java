@@ -1,5 +1,8 @@
 package goorm.eagle7.stelligence.common.util;
 
+import static java.nio.charset.StandardCharsets.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,8 +32,8 @@ public class ResponseTemplateUtils {
 				// JSON으로 변환
 				String jsonResponse = new ObjectMapper().writeValueAsString(responseTemplate);
 				// 응답 설정
-				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
+				response.setContentType(APPLICATION_JSON_VALUE);
+				response.setCharacterEncoding(UTF_8.name());
 				response.setStatus(httpStatusCode); // 401 상태 코드
 				response.getWriter().write(jsonResponse);
 			}
@@ -51,8 +54,8 @@ public class ResponseTemplateUtils {
 				// JSON으로 변환
 				String jsonResponse = new ObjectMapper().writeValueAsString(responseTemplate);
 				// 응답 설정
-				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
+				response.setContentType(APPLICATION_JSON_VALUE);
+				response.setCharacterEncoding(UTF_8.name());
 				response.setStatus(HttpServletResponse.SC_OK);
 				response.getWriter().write(jsonResponse);
 			}
