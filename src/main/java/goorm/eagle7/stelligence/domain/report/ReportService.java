@@ -28,6 +28,9 @@ public class ReportService {
 		if (!memberRepository.existsById(reporterId)) {
 			throw new BaseException("존재하지 않는 회원의 신고 요청입니다. 회원 ID: " + reporterId);
 		}
+		if (documentReportRepository.existsByDocumentIdAndReporterId(documentId, reporterId)) {
+			throw new BaseException("이미 처리된 신고 요청입니다.");
+		}
 
 		DocumentReport documentReport = DocumentReport.createDocumentReport(
 			documentId, reportRequest.getDescription(), reporterId);
@@ -40,6 +43,9 @@ public class ReportService {
 		}
 		if (!memberRepository.existsById(reporterId)) {
 			throw new BaseException("존재하지 않는 회원의 신고 요청입니다. 회원 ID: " + reporterId);
+		}
+		if (commentReportRepository.existsByCommentIdAndReporterId(commentId, reporterId)) {
+			throw new BaseException("이미 처리된 신고 요청입니다.");
 		}
 
 		CommentReport commentReport = CommentReport.createCommentReport(
