@@ -1,18 +1,14 @@
 package goorm.eagle7.stelligence.common.auth.filter;
 
 import static java.nio.charset.StandardCharsets.*;
-import static org.springframework.util.MimeTypeUtils.*;
+import static org.springframework.http.MediaType.*;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpPrincipal;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
@@ -24,9 +20,7 @@ import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.HttpConstraintElement;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.HttpConstraint;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -123,8 +117,6 @@ public class AuthFilter extends OncePerRequestFilter {
 				response.getWriter().write(jsonResponse);
 
 			}
-
-
 
 		} finally {
 			// 무슨 일이 있어도 ThreadLocal 초기화
