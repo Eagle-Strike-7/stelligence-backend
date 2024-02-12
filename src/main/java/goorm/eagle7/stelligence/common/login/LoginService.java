@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -49,6 +50,21 @@ public class LoginService {
 		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
 
 		return accessToken;
+	}
+
+	/**
+	 * <h2>로그아웃</h2>
+	 * <p>- 리프레시 토큰, 쿠키, ThreadLocal 삭제</p>
+	 * @param memberInfo 회원 정보
+	 */
+	public void devLogout(MemberInfo memberInfo) {
+
+		// 로그인 상태인 경우, refreshToken 삭제
+		if(memberInfo!=null) {
+			memberRepository.findById(memberInfo.getId())
+				.ifPresent(member -> member.updateRefreshToken(null));
+		}
+
 	}
 
 }
