@@ -21,6 +21,8 @@ class PermittedPathStore {
 	private static final Set<RequestResource> REQUEST_RESOURCES =
 		Set.of(
 
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/**"),
+
 			// application 권한
 			RequestResource.of(HttpMethod.GET.name(), "/api/documents/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**"),

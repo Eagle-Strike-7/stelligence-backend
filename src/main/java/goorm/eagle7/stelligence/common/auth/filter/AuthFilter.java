@@ -55,16 +55,10 @@ public class AuthFilter extends OncePerRequestFilter {
 		log.debug("AuthFilter 실행");
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
-		if (httpMethod.equals("OPTIONS")) {
-			log.debug("AuthFilter, OPTIONS 메소드 요청");
-			// response.setStatus(HttpServletResponse.SC_OK);
-			filterChain.doFilter(request, response);
-			return;
-		}
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (!isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(httpMethod, uri)) {
 
 				Cookie cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN).orElseThrow(
 					() -> {
@@ -106,8 +100,8 @@ public class AuthFilter extends OncePerRequestFilter {
 		} catch (BaseException e) {
 
 			// 로그아웃 시에는 토큰 검증이 필요 없음, 로그아웃 요청이 아니면 다시 같은 ex 발생
-			if ((httpMethod.equals("POST") && uri.equals("/api/logout"))) {
-				log.debug("BaseEx 발생 후의 로그아웃 요청입니다.");
+			if ((httpMethod.equals("OPTIONS") || (httpMethod.equals("POST") && uri.equals("/api/logout")))) {
+				log.debug("BaseEx 발생 후의 로그아웃/OPTIONS 요청입니다.");
 				filterChain.doFilter(request, response);
 			} else {
 
@@ -142,6 +136,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return resourceAntPathMatcher.match(httpMethod, uri);
+		return !resourceAntPathMatcher.match(httpMethod, uri);
 	}
+
 }

@@ -40,8 +40,8 @@ public class WebConfig implements WebMvcConfigurer {
 				"http://3.39.192.156:80",
 				"http://www.stelligence.site")
 			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-			.allowedHeaders("Content-Type", "Set-Cookie")
-			// .exposedHeaders("Set-Cookie")
+			.allowedHeaders("content-type","Content-Type", "Set-Cookie")
+			.exposedHeaders("Set-Cookie", "content-type", "Content-Type")
 			.allowCredentials(true)
 			.maxAge(3600);
 	}
