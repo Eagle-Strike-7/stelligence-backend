@@ -6,8 +6,6 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
-import goorm.eagle7.stelligence.domain.report.CommentReportRepository;
-import goorm.eagle7.stelligence.domain.report.DocumentReportRepository;
 import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
 import goorm.eagle7.stelligence.domain.report.model.CommentReport;
 import goorm.eagle7.stelligence.domain.report.model.DocumentReport;
