@@ -54,6 +54,10 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
+		if(httpMethod.equals("OPTIONS")) {
+			response.setStatus(HttpServletResponse.SC_OK);
+			return;
+		}
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
