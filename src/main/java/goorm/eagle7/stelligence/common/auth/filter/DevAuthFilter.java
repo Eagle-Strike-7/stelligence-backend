@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.common.auth.filter;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>repository에 저장되지 않은 httpmethod, uri에 대해 토큰 검증 진행</p>
  */
 @Slf4j
-@Component
+// @Component
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 
