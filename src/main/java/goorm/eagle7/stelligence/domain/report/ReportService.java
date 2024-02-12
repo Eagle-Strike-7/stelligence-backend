@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.report.model;
+package goorm.eagle7.stelligence.domain.report;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +9,8 @@ import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.report.CommentReportRepository;
 import goorm.eagle7.stelligence.domain.report.DocumentReportRepository;
 import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
+import goorm.eagle7.stelligence.domain.report.model.CommentReport;
+import goorm.eagle7.stelligence.domain.report.model.DocumentReport;
 import lombok.RequiredArgsConstructor;
 
 @Service

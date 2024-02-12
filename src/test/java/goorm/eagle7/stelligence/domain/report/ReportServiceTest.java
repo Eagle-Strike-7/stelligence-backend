@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.report.model;
+package goorm.eagle7.stelligence.domain.report;
 
 import static org.mockito.Mockito.*;
 
@@ -13,7 +13,10 @@ import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepositor
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.report.CommentReportRepository;
 import goorm.eagle7.stelligence.domain.report.DocumentReportRepository;
+import goorm.eagle7.stelligence.domain.report.ReportService;
 import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
+import goorm.eagle7.stelligence.domain.report.model.CommentReport;
+import goorm.eagle7.stelligence.domain.report.model.DocumentReport;
 
 @ExtendWith(MockitoExtension.class)
 class ReportServiceTest {
