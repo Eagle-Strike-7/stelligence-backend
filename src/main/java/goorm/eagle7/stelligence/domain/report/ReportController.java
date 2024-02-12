@@ -13,11 +13,13 @@ import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reports")
+@Tag(name = "Report API", description = "문서, 토론 댓글 등에 대한 신고 요청을 담당하는 API입니다.")
 public class ReportController {
 
 	private final ReportService reportService;
@@ -39,7 +41,7 @@ public class ReportController {
 		return ResponseTemplate.ok();
 	}
 
-	@Operation(summary = "토론 댓글 신고", description = "토론 댓글을 신고합니다.")
+	@Operation(summary = "토론 댓글 신고", description = "특정 토론 댓글을 신고합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "토론 댓글 신고 성공",
