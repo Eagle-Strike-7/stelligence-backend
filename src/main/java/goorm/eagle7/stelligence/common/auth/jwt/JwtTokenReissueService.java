@@ -37,6 +37,9 @@ public class JwtTokenReissueService {
 	public String reissueAccessToken(String refreshToken) {
 
 		Claims refreshClaims = jwtTokenService.validateAndGetClaims(refreshToken);
+		if(refreshClaims == null) {
+			throw new BaseException("로그인이 필요합니다.");
+		}
 		Long memberId = jwtTokenService.getMemberId(refreshClaims);
 		Member member = memberRepository.findById(memberId).orElseThrow(
 			() -> new BaseException("로그인이 필요합니다.")
