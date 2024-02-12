@@ -2,8 +2,10 @@ package goorm.eagle7.stelligence.common.login;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -23,8 +25,12 @@ public class LoginService {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		// nickname 중복이면 로그인
-		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
-			.orElseGet(() -> signUpService.signUp(devLoginRequest.getNickname()));
+		String nickname = StringUtils.hasText(devLoginRequest.getNickname())
+			? devLoginRequest.getNickname()
+			: "은하";
+
+		Member member = memberRepository.findByNicknameAndActiveTrue(nickname)
+			.orElseGet(() -> signUpService.signUp(nickname));
 
 		// token 생성 후 저장, 쿠키 저장
 		return generateAndSaveTokens(member);
@@ -49,6 +55,21 @@ public class LoginService {
 		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
 
 		return accessToken;
+	}
+
+	/**
+	 * <h2>로그아웃</h2>
+	 * <p>- 리프레시 토큰, 쿠키, ThreadLocal 삭제</p>
+	 * @param memberInfo 회원 정보
+	 */
+	public void devLogout(MemberInfo memberInfo) {
+
+		// 로그인 상태인 경우, refreshToken 삭제
+		if (memberInfo != null) {
+			memberRepository.findById(memberInfo.getId())
+				.ifPresent(member -> member.updateRefreshToken(null));
+		}
+
 	}
 
 }
