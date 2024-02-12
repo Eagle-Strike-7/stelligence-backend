@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.notification.listener;
+package goorm.eagle7.stelligence.domain.notification.listener.contribute;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,7 +10,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
-import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
@@ -19,25 +18,29 @@ import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 수정요청 반려 이벤트가 발생했을 때, 이 정보를 사용자에게 알리는 역할을 하는 클래스입니다.
+ * 수정요청이 반영되었을 때의 이벤트를 처리합니다.
  */
 @Component
 @RequiredArgsConstructor
-public class ContributeRejectedNotifier {
+public class ContributeMergedNotifier {
 
 	private final ContributeRepository contributeRepository;
 	private final VoteRepository voteRepository;
 	private final NotificationSender notificationSender;
 
-	private static final String CONTRIBUTE_REJECTED_MESSAGE = "수정요청 '%s'이(가) 반려되었습니다. 투표 결과를 확인해보세요";
-	private static final String VOTE_URI = "/revise/%d/vote";
+	private static final String CONTRIBUTE_MERGED_MESSAGE = "수정요청 '%s'이(가) 반영되었습니다! 글을 확인해보세요.";
+	private static final String DOCUMENT_URI = "/stars/%d";
 
 	/**
-	 * 수정요청이 반려되었을 때의 이벤트를 처리합니다.
-	 * @param event 수정요청 반려 이벤트
+	 * 수정요청이 완료되면 수정요청 게시자와 투표자에게 알림을 보낸다.
+	 *
+	 * <p>TransactionPhase.AFTER_COMMIT: 트랜잭션이 성공적으로 완료된 후에 이벤트를 처리합니다. (기본값)
+	 * 이벤트의 실행은 HTTP Response에 영향을 주지 않습니다.
+	 *
+	 * @param event 수정요청 완료 이벤트
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	@TransactionalEventListener(value = ContributeRejectedEvent.class)
+	@TransactionalEventListener(value = ContributeMergedEvent.class)
 	public void onContributeMerged(ContributeMergedEvent event) {
 		Contribute contribute = contributeRepository.findWithMember(event.contributeId())
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 수정요청입니다."));
@@ -49,8 +52,8 @@ public class ContributeRejectedNotifier {
 		targets.add(contribute.getMember().getId());
 
 		NotificationRequest request = NotificationRequest.of(
-			String.format(CONTRIBUTE_REJECTED_MESSAGE, StringSlicer.slice(contribute.getTitle())),
-			String.format(VOTE_URI, contribute.getDocument().getId()),
+			String.format(CONTRIBUTE_MERGED_MESSAGE, StringSlicer.slice(contribute.getTitle())),
+			String.format(DOCUMENT_URI, contribute.getDocument().getId()),
 			targets
 		);
 

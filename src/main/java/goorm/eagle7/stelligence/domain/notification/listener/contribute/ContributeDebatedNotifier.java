@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.notification.listener;
+package goorm.eagle7.stelligence.domain.notification.listener.contribute;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class ContributeDebatedNotifier {
 	public void onContributeDebated(ContributeDebatedEvent event) {
 		Long debateId = event.debateId();
 
-		Debate debate = debateRepository.findByIdWithContribute(debateId)
+		Debate debate = debateRepository.findByIdWithContributeWithoutAmendment(debateId)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 토론입니다."));
 
 		//대상을 찾는다.

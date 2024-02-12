@@ -22,6 +22,7 @@ import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.listener.contribute.ContributeDebatedNotifier;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +52,7 @@ class ContributeDebatedNotifierTest {
 
 		//when
 
-		when(debateRepository.findByIdWithContribute(1L)).thenReturn(Optional.of(debate));
+		when(debateRepository.findByIdWithContributeWithoutAmendment(1L)).thenReturn(Optional.of(debate));
 		when(voteRepository.findVoters(1L)).thenReturn(Set.of(1L, 2L, 3L));
 		contributeDebatedNotifier.onContributeDebated(event);
 
