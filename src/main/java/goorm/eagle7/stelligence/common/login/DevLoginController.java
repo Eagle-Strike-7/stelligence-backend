@@ -25,7 +25,7 @@ public class DevLoginController {
 	@Operation(summary = "로그인 - 개발용", description = "로그인 시도합니다. 회원이 없으면 회원 가입 후 로그인합니다. 로그인이란, 쿠키를 발급하는 과정을 의미합니다.")
 	@ApiResponse(
 		responseCode = "200",
-		description = "로그 성공",
+		description = "로그인 성공",
 		useReturnTypeSchema = true
 	)
 	@PostMapping("/login")
