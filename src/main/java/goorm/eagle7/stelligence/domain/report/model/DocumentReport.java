@@ -16,8 +16,12 @@ public class DocumentReport extends Report {
 	@Column
 	private Long documentId;
 
-	public DocumentReport(Long documentId, String description, Long reporterId) {
+	private DocumentReport(Long documentId, String description, Long reporterId) {
 		super(description, reporterId);
 		this.documentId = documentId;
+	}
+
+	public static DocumentReport createDocumentReport(Long documentId, String description, Long reporterId) {
+		return new DocumentReport(documentId, description, reporterId);
 	}
 }

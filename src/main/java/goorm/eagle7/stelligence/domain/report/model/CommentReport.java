@@ -16,8 +16,12 @@ public class CommentReport extends Report {
 	@Column(name = "comment_id")
 	private Long commentId;
 
-	public CommentReport(Long commentId, String description, Long reporterId) {
+	private CommentReport(Long commentId, String description, Long reporterId) {
 		super(description, reporterId);
 		this.commentId = commentId;
+	}
+
+	public static CommentReport createCommentReport(Long commentId, String description, Long reporterId) {
+		return new CommentReport(commentId, description, reporterId);
 	}
 }
