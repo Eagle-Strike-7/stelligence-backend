@@ -21,6 +21,12 @@ public class ReportService {
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
 
+	/**
+	 * 특정 문서를 신고합니다.
+	 * @param documentId: 신고할 문서 ID
+	 * @param reportRequest: 신고에 대한 부가정보(신고 사유)
+	 * @param reporterId: 신고한 회원의 ID
+	 */
 	public void reportDocument(Long documentId, ReportRequest reportRequest, Long reporterId) {
 		if (!documentContentRepository.existsById(documentId)) {
 			throw new BaseException("존재하지 않는 문서에 대한 신고 요청입니다. 문서 ID: " + documentId);
@@ -37,6 +43,12 @@ public class ReportService {
 		documentReportRepository.save(documentReport);
 	}
 
+	/**
+	 * 토론의 특정 댓글을 신고합니다.
+	 * @param commentId: 신고할 댓글 ID
+	 * @param reportRequest: 신고에 대한 부가정보(신고 사유)
+	 * @param reporterId: 신고한 회원의 ID
+	 */
 	public void reportComment(Long commentId, ReportRequest reportRequest, Long reporterId) {
 		if (!commentRepository.existsById(commentId)) {
 			throw new BaseException("존재하지 않는 댓글에 대한 신고 요청입니다. 댓글 ID: " + commentId);
