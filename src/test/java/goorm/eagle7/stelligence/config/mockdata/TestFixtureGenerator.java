@@ -275,6 +275,12 @@ public class TestFixtureGenerator {
 			newParentDocumentField.set(contribute, afterParentDocument);
 			relatedDebateField.set(contribute, relatedDebate);
 
+			// createdAt 설정
+			Class<?> baseTimeEntityClazz = contributeClazz.getSuperclass();
+			Field createdAtField = baseTimeEntityClazz.getDeclaredField("createdAt");
+			createdAtField.setAccessible(true);
+			createdAtField.set(contribute, LocalDateTime.now());
+
 			return (Contribute)contribute;
 
 		} catch (Exception e) {
