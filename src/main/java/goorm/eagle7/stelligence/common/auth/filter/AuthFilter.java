@@ -1,12 +1,18 @@
 package goorm.eagle7.stelligence.common.auth.filter;
 
+import static java.nio.charset.StandardCharsets.*;
+import static org.springframework.util.MimeTypeUtils.*;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpPrincipal;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
@@ -18,7 +24,9 @@ import goorm.eagle7.stelligence.common.login.CookieType;
 import goorm.eagle7.stelligence.common.login.CookieUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.HttpConstraintElement;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.HttpConstraint;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -108,9 +116,9 @@ public class AuthFilter extends OncePerRequestFilter {
 				// JSON으로 변환
 				String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
 
-				// 응답 설정
-				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
+				// 응답 설정, application/json, UTF-8 enum으로 설정
+				response.setContentType(APPLICATION_JSON_VALUE);
+				response.setCharacterEncoding(UTF_8.name());
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
 				response.getWriter().write(jsonResponse);
 
