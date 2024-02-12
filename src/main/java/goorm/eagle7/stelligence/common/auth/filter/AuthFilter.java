@@ -52,10 +52,13 @@ public class AuthFilter extends OncePerRequestFilter {
 		ServletException,
 		IOException {
 
+		log.debug("AuthFilter 실행");
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
-		if(httpMethod.equals("OPTIONS")) {
-			response.setStatus(HttpServletResponse.SC_OK);
+		if (httpMethod.equals("OPTIONS")) {
+			log.debug("AuthFilter, OPTIONS 메소드 요청");
+			// response.setStatus(HttpServletResponse.SC_OK);
+			filterChain.doFilter(request, response);
 			return;
 		}
 
@@ -64,8 +67,10 @@ public class AuthFilter extends OncePerRequestFilter {
 			if (!isTokenValidationRequired(httpMethod, uri)) {
 
 				Cookie cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN).orElseThrow(
-					() -> new BaseException("로그인이 필요합니다.")
-				);
+					() -> {
+						log.debug("쿠키가 없습니다.");
+						return new BaseException("로그인이 필요합니다.");
+					});
 
 				String accessToken = null;
 
@@ -101,9 +106,8 @@ public class AuthFilter extends OncePerRequestFilter {
 		} catch (BaseException e) {
 
 			// 로그아웃 시에는 토큰 검증이 필요 없음, 로그아웃 요청이 아니면 다시 같은 ex 발생
-			if ((httpMethod.equals("POST") && uri.equals("/api/logout")
-				|| (httpMethod.equals("OPTIONS") && uri.equals(
-				"/api/logout")))) {
+			if ((httpMethod.equals("POST") && uri.equals("/api/logout"))) {
+				log.debug("BaseEx 발생 후의 로그아웃 요청입니다.");
 				filterChain.doFilter(request, response);
 			} else {
 
