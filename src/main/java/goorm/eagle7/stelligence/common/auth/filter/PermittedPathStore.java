@@ -38,9 +38,11 @@ class PermittedPathStore {
 
 			// error
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/error/**"),
 
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/login"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**")
 		);
 

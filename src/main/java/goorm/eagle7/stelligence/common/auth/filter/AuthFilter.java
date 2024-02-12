@@ -97,7 +97,9 @@ public class AuthFilter extends OncePerRequestFilter {
 		} catch (BaseException e) {
 
 			// 로그아웃 시에는 토큰 검증이 필요 없음, 로그아웃 요청이 아니면 다시 같은 ex 발생
-			if ((httpMethod.equals("POST") && uri.equals("/api/logout"))) {
+			if ((httpMethod.equals("POST") && uri.equals("/api/logout")
+				|| (httpMethod.equals("OPTIONS") && uri.equals(
+				"/api/logout")))) {
 				filterChain.doFilter(request, response);
 			} else {
 
