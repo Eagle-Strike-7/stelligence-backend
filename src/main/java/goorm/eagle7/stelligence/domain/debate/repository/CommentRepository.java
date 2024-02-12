@@ -27,5 +27,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 		+ " join fetch d.contribute co"
 		+ " join fetch co.member m"
 		+ " where c.id = :commentId")
-	Optional<Comment> findByIdWithDebateAndContributeAndMember(@Param("commentId") Long commentId);
+	Optional<Comment> findByIdWithDebateAndContributeAndContributor(@Param("commentId") Long commentId);
 }

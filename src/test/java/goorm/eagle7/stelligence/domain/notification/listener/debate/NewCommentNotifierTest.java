@@ -51,7 +51,7 @@ class NewCommentNotifierTest {
 		// when
 		when(commentRepository.findCommenterIdByDebateId(1L))
 			.thenReturn(Set.of(1L, 4L, 5L));
-		when(commentRepository.findByIdWithDebateAndContributeAndMember(1L))
+		when(commentRepository.findByIdWithDebateAndContributeAndContributor(1L))
 			.thenReturn(Optional.of(comment));
 
 		newCommentNotifier.onNewComment(new NewCommentEvent(1L));

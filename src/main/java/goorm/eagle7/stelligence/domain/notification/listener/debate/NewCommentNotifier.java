@@ -46,7 +46,7 @@ public class NewCommentNotifier {
 	@TransactionalEventListener(NewCommentEvent.class)
 	public void onNewComment(NewCommentEvent event) {
 
-		Comment comment = commentRepository.findByIdWithDebateAndContributeAndMember(event.commentId())
+		Comment comment = commentRepository.findByIdWithDebateAndContributeAndContributor(event.commentId())
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
 
 		Debate debate = comment.getDebate();
