@@ -30,7 +30,7 @@ class ContributeSchedulingActionDeterminerTest {
 	void merge() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -45,7 +45,7 @@ class ContributeSchedulingActionDeterminerTest {
 	void debate() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -60,7 +60,7 @@ class ContributeSchedulingActionDeterminerTest {
 	void reject() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
@@ -76,7 +76,7 @@ class ContributeSchedulingActionDeterminerTest {
 	void rejectWhenNoVote() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
