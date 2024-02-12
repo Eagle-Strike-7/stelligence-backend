@@ -23,15 +23,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
-
-	@Value("${jwt.accessToken.name}")
-	private String accessTokenName;
-	@Value("${jwt.refreshToken.name}")
-	private String refreshTokenName;
 
 	private final ResourceAntPathMatcher resourceAntPathMatcher;
 	private final JwtTokenService jwtTokenService;
@@ -97,22 +94,35 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		} catch (BaseException e) {
 
-			// 사용자 정의 오류 응답 생성
-			ResponseTemplate<Void> apiResponse = ResponseTemplate.fail(e.getMessage());
+			// 로그아웃 시에는 토큰 검증이 필요 없음, 로그아웃 요청이 아니면 다시 같은 ex 발생
+			if ((httpMethod.equals("POST") && uri.equals("/api/logout"))) {
+				filterChain.doFilter(request, response);
+			} else {
 
-			// JSON으로 변환
-			String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
+				// BaseException 예외 발생 시 ApiResponse로 응답
 
-			// 응답 설정
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
-			response.getWriter().write(jsonResponse);
+				log.debug("BaseException catched in AuthFilter : {}", e.getMessage());
+				// 사용자 정의 오류 응답 생성
+				ResponseTemplate<Void> apiResponse = ResponseTemplate.fail(e.getMessage());
+
+				// JSON으로 변환
+				String jsonResponse = new ObjectMapper().writeValueAsString(apiResponse);
+
+				// 응답 설정
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 상태 코드
+				response.getWriter().write(jsonResponse);
+
+			}
+
+
 
 		} finally {
 			// 무슨 일이 있어도 ThreadLocal 초기화
 			MemberInfoContextHolder.clear();
 		}
+
 	}
 
 	/**
