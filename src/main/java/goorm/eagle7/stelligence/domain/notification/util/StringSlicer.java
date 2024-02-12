@@ -13,17 +13,20 @@ public class StringSlicer {
 	}
 
 	/**
-	 * 문자열을 자릅니다.
+	 * 문자열을 자릅니다. 파라미터로 길이가 제공되지 않는 경우 SLICE_LENGTH 길이로 자릅니다.
 	 * @param str 자를 문자열
 	 * @return 자른 문자열
 	 */
 	public static String slice(String str) {
-		if (str == null) {
-			throw new IllegalArgumentException("문자열이 null입니다.");
-		}
-		return str.length() > SLICE_LENGTH ? str.substring(0, SLICE_LENGTH) + "..." : str;
+		return slice(str, SLICE_LENGTH);
 	}
 
+	/**
+	 * 문자열을 자릅니다.
+	 * @param str 자를 문자열
+	 * @param length 자를 길이
+	 * @return
+	 */
 	public static String slice(String str, int length) {
 		if (str == null) {
 			throw new IllegalArgumentException("문자열이 null입니다.");
