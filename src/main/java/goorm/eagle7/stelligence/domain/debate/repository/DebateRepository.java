@@ -23,6 +23,12 @@ public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDeb
 		+ " where d.id = :debateId")
 	Optional<Debate> findByIdWithContribute(@Param("debateId") Long debateId);
 
+	@Query("select d from Debate d"
+		+ " join fetch d.contribute c"
+		+ " join fetch c.member m"
+		+ " where d.id = :debateId")
+	Optional<Debate> findByIdWithContributeWithoutAmendment(@Param("debateId") Long debateId);
+
 	/**
 	 * 토론의 sequence를 이용해 다음 댓글의 sequence를 얻기 위해 조회합니다.
 	 * 여러 사용자가 동시에 댓글 작성 요청을 보낼 때 같은 sequence를 갖지 못하도록 lock을 건 상태에서 조회합니다.
