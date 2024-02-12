@@ -58,7 +58,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (!isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(httpMethod, uri)) {
 
 				Cookie cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN).orElseThrow(
 					() -> {
@@ -136,6 +136,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return resourceAntPathMatcher.match(httpMethod, uri);
+		return !resourceAntPathMatcher.match(httpMethod, uri);
 	}
+
 }
