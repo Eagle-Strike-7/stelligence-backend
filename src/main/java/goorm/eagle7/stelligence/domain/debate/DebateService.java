@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.debate;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
+import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -33,7 +35,7 @@ public class DebateService {
 	private final DebateRepository debateRepository;
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
-
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * 특정 토론을 ID로 찾아서 조회합니다.
@@ -54,7 +56,8 @@ public class DebateService {
 	 * @param pageable: 조회하려는 토론의 페이지 정보
 	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
 	 */
-	public DebatePageResponse getDebatePage(DebateStatus status, DebateOrderCondition orderCondition, Pageable pageable) {
+	public DebatePageResponse getDebatePage(DebateStatus status, DebateOrderCondition orderCondition,
+		Pageable pageable) {
 
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(status, orderCondition, pageable);
 
@@ -90,6 +93,9 @@ public class DebateService {
 
 		Comment comment = Comment.createComment(commentRequest.getContent(), findDebate, loginMember);
 		commentRepository.save(comment);
+
+		// 새 댓글 이벤트 발행
+		applicationEventPublisher.publishEvent(new NewCommentEvent(comment.getId()));
 
 		List<Comment> comments = commentRepository.findAllByDebateId(debateId);
 		return comments.stream().map(CommentResponse::from).toList();
