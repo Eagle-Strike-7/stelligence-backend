@@ -55,7 +55,7 @@ class CreateAmendmentMergeTemplateTest {
 		assertThat(createdSection.getContent()).isEqualTo("newContent");
 
 		//새로 생성된 섹션의 revision은 document의 revision + 1이다.
-		assertThat(createdSection.getRevision()).isEqualTo(document.getCurrentRevision() + 1);
+		assertThat(createdSection.getRevision()).isEqualTo(document.getLatestRevision() + 1);
 
 		//createdSection의 order는 targetSection의 order + 1이다.
 		assertThat(createdSection.getOrder()).isEqualTo(section.getOrder() + 1);
@@ -70,10 +70,10 @@ class CreateAmendmentMergeTemplateTest {
 		Section s1 = section(2L, 1L, document, Heading.H1, "title", "content", 1);
 		Section s2 = section(3L, 1L, document, Heading.H2, "title", "content", 2);
 		Section s3 = section(4L, 1L, document, Heading.H3, "title", "content", 3);
-		Section s4 = section(5L, 1L, document, Heading.H4, "title", "content", 4);
+		Section s4 = section(5L, 1L, document, Heading.H3, "title", "content", 4);
 
 		//when
-		when(sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getCurrentRevision(), 3))
+		when(sectionRepository.findByVersionWhereOrderGreaterEqualThan(document, document.getLatestRevision(), 3))
 			.thenReturn(List.of(s3, s4));
 
 		createAmendmentMergeTemplate.afterMerged(section);

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,21 @@ class DocumentGraphServiceTest {
 	@Autowired
 	Neo4jClient neo4jClient;
 
+	/**
+	 * 현재 neo4j 상태와 관계없이 테스트 코드가 잘 동작하도록 noe4j를 초기화합니다.
+	 * 테스트가 끝난 이후 롤백되면서 기존에 있던 데이터에는 영향을 주지 않습니다.
+	 */
+	@BeforeEach
+	void setupClearNeo4j() {
+		String clearQuery = "match (n) detach delete n;";
+		neo4jClient.query(clearQuery).run();
+	}
+
 	@Test
 	@DisplayName("최상위 문서 노드 생성 서비스 테스트")
 	void createDocumentNode() {
 
-		Document createdDocument = Document.createDocument("제목1", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(createdDocument);
 
 		documentGraphService.createDocumentNode(createdDocument);
@@ -60,12 +71,12 @@ class DocumentGraphServiceTest {
 	void createDocumentNodeWithParent() {
 
 		// 기존에 존재하는 상위 문서
-		Document parentDocument = Document.createDocument("상위 문서 제목", member(null, "Paul"));
+		Document parentDocument = document(null, member(null, "Paul"), "제목1", 1L, null);
 		documentContentRepository.save(parentDocument);
 		documentGraphService.createDocumentNode(parentDocument);
 
 		// 하위 문서 생성
-		Document createdDocument = Document.createDocument("하위 문서 제목", member(null, "Paul"));
+		Document createdDocument = document(null, member(null, "Paul"), "제목2", 1L, parentDocument);
 		documentContentRepository.save(createdDocument);
 		documentGraphService.createDocumentNodeWithParent(createdDocument, parentDocument.getId());
 
@@ -431,7 +442,7 @@ class DocumentGraphServiceTest {
 		}
 
 		//when
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 
 		//then
 		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
@@ -454,7 +465,7 @@ class DocumentGraphServiceTest {
 		}
 
 		//when
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 
 		//then
 		DocumentNode documentNode = documentNodeRepository.findById(updateTargetId).get();
@@ -485,7 +496,7 @@ class DocumentGraphServiceTest {
 		DocumentNode targetDocumentNode = documentNodeRepository.findById(updateTargetId).get();
 		log.info("targetDocumentNode.getTitle(): {}", targetDocumentNode.getTitle());
 
-		documentGraphService.updateDocumentTitle(updateTargetId, updateTitle);
+		documentGraphService.changeTitle(updateTargetId, updateTitle);
 		log.info("업데이트 쿼리 안나간 것을 확인");
 
 		//then

@@ -4,17 +4,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
@@ -30,6 +34,7 @@ public class ContributeRequestValidator {
 	private final ContributeRepository contributeRepository;
 	private final DocumentContentRepository documentContentRepository;
 	private final SectionRepository sectionRepository;
+	private final DebateRepository debateRepository;
 
 	/**
 	 * 수정요청의 유효성을 검증합니다.
@@ -38,6 +43,8 @@ public class ContributeRequestValidator {
 	 *     <li>document가 존재하지 않을 경우</li>
 	 *     <li>해당 document에 대한 투표중인 수정요청이 존재하는 경우</li>
 	 *     <li>수정하고자 하는 section들이 document에 존재하지 않을 경우</li>
+	 *     <li>수정하고자 하는 제목이 다른 문서와 중복되는 경우</li>
+	 *     <li>수정하고자 하는 제목에 대해 다른 수정요청이 해당 제목으로 변경을 요청중인 경우</li>
 	 *     <li>각각의 sectionId를 가진 amendmentRequest들이 creatingOrder가 중복되거나 순차적이지 않을 경우</li>
 	 * </ul>
 	 * </p>
@@ -46,6 +53,12 @@ public class ContributeRequestValidator {
 	 */
 	@Transactional(readOnly = true)
 	public void validate(ContributeRequest request) {
+
+		//수정하려는 제목이 null이나 빈값이 아닌가?
+		if (!StringUtils.hasText(request.getAfterDocumentTitle())) {
+			throw new BaseException("수정하려는 제목이 비어있습니다.");
+		}
+
 		//document가 존재하는가
 		Document document = documentContentRepository.findById(request.getDocumentId())
 			.orElseThrow(() -> new BaseException("문서가 존재하지 않습니다. documentId=" + request.getDocumentId()));
@@ -55,9 +68,14 @@ public class ContributeRequestValidator {
 			throw new BaseException("이미 해당 문서에 대한 수정요청이 존재합니다. documentId=" + request.getDocumentId());
 		}
 
+		//해당 document에 대한 열린 토론이 존재하는가?
+		if (debateRepository.existsByContributeDocumentIdAndStatus(request.getDocumentId(), DebateStatus.OPEN)) {
+			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. documentId=" + request.getDocumentId());
+		}
+
 		//수정하고자 하는 section들이 document에 존재하는가
 		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
-			document.getCurrentRevision());
+			document.getLatestRevision());
 
 		request.getAmendments().stream().map(AmendmentRequest::getSectionId).forEach(
 			sectionId -> {
@@ -66,6 +84,18 @@ public class ContributeRequestValidator {
 				}
 			}
 		);
+
+		//변경하고자 하는 제목이 다른 문서와 중복되는가
+
+		//이미 제목을 가진 문서가 존재하는가 - contribute의 대상이 되는 document라면 허용
+		Optional<Document> optionalDocument = documentContentRepository.findByTitle(request.getAfterDocumentTitle());
+		if (optionalDocument.isPresent() && !optionalDocument.get().getId().equals(request.getDocumentId())) {
+			throw new BaseException("이미 해당 제목을 가진 문서가 존재합니다. title=" + request.getAfterDocumentTitle());
+		}
+
+		if (contributeRepository.existsDuplicateRequestedDocumentTitle(request.getAfterDocumentTitle())) {
+			throw new BaseException("해당 제목으로 변경을 요청중인 수정요청이 이미 존재합니다. title=" + request.getAfterDocumentTitle());
+		}
 
 		//각각의 sectionId를 가진 amendmentRequest들이 creatingOrder를 중복되지 않으면서 순차적인 값을 가지고 있는가
 		Map<Long, List<Integer>> sectionOrders = request.getAmendments().stream()

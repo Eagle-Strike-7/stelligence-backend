@@ -12,12 +12,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeDebatedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
+import goorm.eagle7.stelligence.domain.document.content.model.Document;
 
 @ExtendWith(MockitoExtension.class)
 class DebateHandlerTest {
@@ -28,6 +32,9 @@ class DebateHandlerTest {
 	@Mock
 	private DebateRepository debateRepository;
 
+	@Mock
+	private ApplicationEventPublisher applicationEventPublisher;
+
 	@InjectMocks
 	private DebateHandler debateHandler;
 
@@ -36,17 +43,22 @@ class DebateHandlerTest {
 	void debateHandling() {
 		//given
 		Long contributeId = 1L;
-		Contribute contribute = contribute(contributeId, null, ContributeStatus.VOTING, null);
+		Document document = document(1L, null, "title", null);
+		Contribute contribute = contribute(contributeId, null, "title", "description", ContributeStatus.VOTING,
+			document);
 
-		when(contributeRepository.findById(contributeId)).thenReturn(Optional.of(contribute));
+		Debate debate = debate(1L, contribute, DebateStatus.OPEN, null, 1);
 
 		//when
+		when(contributeRepository.findById(contributeId)).thenReturn(Optional.of(contribute));
+		when(debateRepository.save(any(Debate.class))).thenReturn(debate);
 		debateHandler.handle(contributeId);
 
 		//then
 		// 토론으로 전환된 수정요청은 상태가 토론중으로 변경되며, 토론은 debateRepository에 의해 저장된다.
 		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.DEBATING);
 		verify(debateRepository, times(1)).save(any(Debate.class));
+		verify(applicationEventPublisher).publishEvent(new ContributeDebatedEvent(debate.getId()));
 	}
 
 	@Test
@@ -57,9 +69,13 @@ class DebateHandlerTest {
 		Long mergedContributeId = 2L;
 		Long rejectedContributeId = 3L;
 
-		Contribute debatingContribute = contribute(debatingContributeId, null, ContributeStatus.DEBATING, null);
-		Contribute mergedContribute = contribute(mergedContributeId, null, ContributeStatus.MERGED, null);
-		Contribute rejectedContribute = contribute(rejectedContributeId, null, ContributeStatus.REJECTED, null);
+		Document document = document(1L, null, "title", null);
+		Contribute debatingContribute = contribute(debatingContributeId, null, "title", "description",
+			ContributeStatus.DEBATING, document);
+		Contribute mergedContribute = contribute(mergedContributeId, null, "title", "description",
+			ContributeStatus.MERGED, document);
+		Contribute rejectedContribute = contribute(rejectedContributeId, null, "title", "description",
+			ContributeStatus.REJECTED, document);
 
 		when(contributeRepository.findById(debatingContributeId)).thenReturn(Optional.of(debatingContribute));
 		when(contributeRepository.findById(mergedContributeId)).thenReturn(Optional.of(mergedContribute));

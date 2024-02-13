@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
@@ -100,7 +101,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(3)
+			.hasSize(4)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.OPEN))
 			.allMatch(d -> d.getEndAt().isBefore(LocalDateTime.now()));
 	}
@@ -117,7 +118,7 @@ class DebateRepositoryTest {
 		List<Debate> debateList = debateRepository.findAllById(debateIdList);
 		assertThat(debateList)
 			.isNotEmpty()
-			.hasSize(3)
+			.hasSize(4)
 			.allMatch(d -> d.getStatus().equals(DebateStatus.CLOSED));
 	}
 
@@ -134,8 +135,21 @@ class DebateRepositoryTest {
 		// then
 		assertThat(res1).isTrue();
 		assertThat(res2).isTrue();
-		assertThat(res3).isFalse();
+		assertThat(res3).isTrue();
 		assertThat(res4).isFalse();
 	}
 
+	@Test
+	@DisplayName("특정 Document의 가장 최근 토론 조회")
+	void findLatestDebateByDocument() {
+		//given
+		
+		//when
+		Optional<Debate> latestDebateOptional = debateRepository.findLatestDebateByDocumentId(1L);
+
+		//then
+		assertThat(latestDebateOptional)
+			.isPresent();
+		assertThat(latestDebateOptional.get().getId()).isEqualTo(2L);
+	}
 }

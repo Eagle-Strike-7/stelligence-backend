@@ -29,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
+	private final NotificationService notificationService;
+
 	/**
 	 * 사용자의 알림 목록을 조회합니다.
 	 * 별도의 페이지네이션 없이 제공합니다.
@@ -45,7 +47,7 @@ public class NotificationController {
 	public ResponseTemplate<List<NotificationResponse>> getNotifications(
 		@Auth MemberInfo memberInfo
 	) {
-		return ResponseTemplate.ok();
+		return ResponseTemplate.ok(notificationService.getNotificationsByMemberId(memberInfo.getId()));
 	}
 
 	/**
@@ -63,6 +65,7 @@ public class NotificationController {
 	public ResponseTemplate<Void> readAllNotifications(
 		@Auth MemberInfo memberInfo
 	) {
+		notificationService.readAllNotifications(memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 
@@ -82,6 +85,7 @@ public class NotificationController {
 		@PathVariable Long notificationId,
 		@Auth MemberInfo memberInfo
 	) {
+		notificationService.readNotification(notificationId, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 
@@ -100,6 +104,7 @@ public class NotificationController {
 	public ResponseTemplate<Void> deleteAllNotifications(
 		@Auth MemberInfo memberInfo
 	) {
+		notificationService.deleteAllNotifications(memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 
@@ -119,6 +124,7 @@ public class NotificationController {
 		@PathVariable Long notificationId,
 		@Auth MemberInfo memberInfo
 	) {
+		notificationService.deleteNotification(notificationId, memberInfo.getId());
 		return ResponseTemplate.ok();
 	}
 

@@ -2,11 +2,13 @@ package goorm.eagle7.stelligence.domain.contribute.model;
 
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.CascadeType;
@@ -34,6 +36,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class Contribute extends BaseTimeEntity {
 
+	//투표 지속 시간: 60분 * 24시간 = 1일
+	// public static final Long VOTE_DURATION_MINUTE = 60L * 24L;
+	//개발 테스트 상황에서는 15분을 주기로 합니다.
+	public static final Long VOTE_DURATION_MINUTE = 15L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contribute_id")
@@ -60,31 +67,53 @@ public class Contribute extends BaseTimeEntity {
 	private String description;
 
 	/**
+	 * 기존 문서 제목입니다.
+	 */
+	private String beforeDocumentTitle;
+	/**
 	 * 변경될 제목입니다.
 	 */
-	private String newDocumentTitle;
+	private String afterDocumentTitle;
+
+	/**
+	 * 기존 부모 문서입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "before_parent_document_id")
+	private Document beforeParentDocument;
 
 	/**
 	 * 변경될 부모 문서입니다.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "new_parent_document_id")
-	private Document newParentDocument;
+	@JoinColumn(name = "after_parent_document_id")
+	private Document afterParentDocument;
+
+	/**
+	 * 연관된 토론입니다.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "related_debate_id")
+	private Debate relatedDebate;
 
 	private Contribute(ContributeStatus status, Member member, Document document,
-		String title, String description, String newDocumentTitle, Document newParentDocument) {
+		String title, String description, String afterDocumentTitle, Document afterParentDocument,
+		Debate relatedDebate) {
 		this.status = status;
 		this.member = member;
 		this.document = document;
 		this.title = title;
 		this.description = description;
-		this.newDocumentTitle = newDocumentTitle;
-		this.newParentDocument = newParentDocument;
+		this.beforeDocumentTitle = document.getTitle();
+		this.afterDocumentTitle = afterDocumentTitle;
+		this.beforeParentDocument = document.getParentDocument();
+		this.afterParentDocument = afterParentDocument;
+		this.relatedDebate = relatedDebate;
 	}
 
 	//===생성===//
 	public static Contribute createContribute(Member member, Document document,
-		String title, String description, String newDocumentTitle, Document newParentDocument) {
+		String title, String description, String newDocumentTitle, Document newParentDocument, Debate relatedDebate) {
 		return new Contribute(
 			ContributeStatus.VOTING,
 			member,
@@ -92,7 +121,8 @@ public class Contribute extends BaseTimeEntity {
 			title,
 			description,
 			newDocumentTitle,
-			newParentDocument
+			newParentDocument,
+			relatedDebate
 		);
 	}
 
@@ -131,5 +161,9 @@ public class Contribute extends BaseTimeEntity {
 			throw new IllegalStateException("투표 중인 Contribute만 상태를 변경할 수 있습니다.");
 		}
 		this.status = ContributeStatus.MERGED;
+	}
+
+	public LocalDateTime getEndAt() {
+		return this.createdAt.plusMinutes(VOTE_DURATION_MINUTE);
 	}
 }

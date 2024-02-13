@@ -4,51 +4,71 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
-import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class LoginService {
 
+	private final SignUpService signUpService;
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final SignUpService signUpService;
-	private final CookieUtils cookieUtils;
 
-	public String login(DevLoginRequest devLoginRequest) {
+	/**
+	 * <h2>OAuth2 로그인</h2>
+	 * <p>- 회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입</p>
+	 * <p>- 로그인 - token 생성 후 쿠키에 저장 및 refreshToken 반환</p>
+	 * <p>- DB에 refreshToken 저장</p>
+	 * @param loginOAuth2Request OAuth2 로그인 요청 정보
+	 */
+	@Transactional
+	public LoginTokenInfo oAuth2Login(LoginOAuth2Request loginOAuth2Request) {
 
-		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		// nickname 중복이면 로그인
-		Member member = memberRepository.findByNickname(devLoginRequest.getNickname())
-			.orElseGet(() -> signUpService.signUp(devLoginRequest.getNickname()));
+		// 회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입
+		Member member = findOrRegisterMember(loginOAuth2Request);
 
-		// token 생성 후 저장, 쿠키 저장
-		return generateAndSaveTokens(member);
+		// Token 생성 및 DB 저장
+		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
+		String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+		member.updateRefreshToken(refreshToken);
+
+		return LoginTokenInfo.of(
+			accessToken,refreshToken);
+
 	}
 
 	/**
-	 * 토큰 생성 후 저장
-	 * @param member 회원
-	 * @return access 토큰 - for dev
+	 * <h2>회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입</h2>
+	 * <p>- socialId, socialType으로 회원 조회 후 없으면 회원 가입</p>
+	 * @param request OAuth2 로그인 요청 정보
+	 * @return Member 로그인한 회원
 	 */
-	private String generateAndSaveTokens(Member member) {
+	private Member findOrRegisterMember(LoginOAuth2Request request) {
 
-		// Token 생성
-		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
-		String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(request.getSocialType(),
+				request.getSocialId())
+			.orElseGet(() -> signUpService.oauth2SignUp(request));
+	}
 
-		// refresh token 저장
-		member.updateRefreshToken(refreshToken);
+	/**
+	 * <h2>로그아웃</h2>
+	 * <p>- DB에서 refreshToken 삭제</p>
+	 * @param memberId 로그아웃할 회원 id
+	 */
+	@Transactional
+	public void logout(Long memberId) {
 
-		// cookie에 access 토큰, refreshToken 저장
-		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
-		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
+		memberRepository
+			.findByIdAndActiveTrue(memberId)
+			.ifPresent(Member::expireRefreshToken);
 
-		return accessToken;
 	}
 
 }

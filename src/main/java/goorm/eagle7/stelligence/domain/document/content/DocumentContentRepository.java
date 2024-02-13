@@ -36,7 +36,7 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "   select max(s2.revision) "
 		+ "   from Section s2 "
 		+ "   where s2.id = s.id "
-		+ "   and s2.revision <= d.currentRevision"
+		+ "   and s2.revision <= d.latestRevision"
 		+ ") "
 		+ "and s.content like %:keyword%")
 	List<Long> findDocumentIdWhichContainsKeywordInLatestVersion(String keyword);
@@ -53,4 +53,27 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 		+ "and c.status = goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus.MERGED "
 		+ "order by m.nickname")
 	List<Member> findContributorsByDocumentId(Long documentId);
+
+	/**
+	 * 특정 제목을 가진 Document를 조회합니다.
+	 * 애플리케이션 로직 상 제목은 유일해야 합니다.
+	 * @param title 조회할 Document의 제목
+	 * @return 존재 여부
+	 */
+	Optional<Document> findByTitle(String title);
+
+	/**
+	 * 특정 제목을 가진 Document가 존재하는지 조회합니다.
+	 * @param title 조회할 Document의 제목
+	 * @return 존재 여부
+	 */
+	boolean existsByTitle(String title);
+
+	/**
+	 * Member가 작성한 Document의 수를 조회합니다.
+	 * @param memberId 조회할 MemberId
+	 * @return 작성한 Document의 수
+	 */
+	long countByAuthor_Id(Long memberId);
+
 }

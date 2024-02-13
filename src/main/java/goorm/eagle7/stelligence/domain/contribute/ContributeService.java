@@ -9,14 +9,19 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +34,8 @@ public class ContributeService {
 	private final MemberRepository memberRepository;
 	private final DocumentContentRepository documentContentRepository;
 	private final ContributeRequestValidator contributeRequestValidator;
+	private final VoteRepository voteRepository;
+	private final DebateRepository debateRepository;
 
 	/**
 	 * Contribute 생성
@@ -49,18 +56,26 @@ public class ContributeService {
 			() -> new BaseException("존재하지 않는 문서의 요청입니다. 문서 ID: " + contributeRequest.getDocumentId())
 		);
 
-		Document newParentDocument = documentContentRepository.findById(contributeRequest.getNewParentDocumentId())
-			.orElseThrow(
-				() -> new BaseException("존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getNewParentDocumentId())
-			);
+		// 부모 문서 ID가 null 이면 afterParentDocument는 null
+		Document afterParentDocument = contributeRequest.getAfterParentDocumentId() == null ?
+			null : documentContentRepository.findById(contributeRequest.getAfterParentDocumentId())
+			.orElseThrow(() -> new BaseException(
+				"존재하지 않는 문서의 요청입니다. 부모 문서 ID: " + contributeRequest.getAfterParentDocumentId()));
+
+		// 연관된 토론 ID null 이면 relatedDebate는 null
+		Debate relatedDebate = contributeRequest.getRelatedDebateId() == null ?
+			null : debateRepository.findById(contributeRequest.getRelatedDebateId())
+			.orElseThrow(() -> new BaseException(
+				"연관된 토론이 존재하지 않습니다. 토론 ID: " + contributeRequest.getRelatedDebateId()));
 
 		Contribute contribute = Contribute.createContribute(
 			member,
 			document,
 			contributeRequest.getContributeTitle(),
 			contributeRequest.getContributeDescription(),
-			contributeRequest.getNewDocumentTitle(),
-			newParentDocument
+			contributeRequest.getAfterDocumentTitle(),
+			afterParentDocument,
+			relatedDebate
 		);
 
 		for (AmendmentRequest request : contributeRequest.getAmendments()) {
@@ -111,26 +126,52 @@ public class ContributeService {
 	}
 
 	/**
-	 * Contribute 목록 조회: 문서별로 조회
-	 * @param documentId
+	 * Contribute 목록 조회: 투표 상태별로 조회
+	 * @param status
+	 * @param pageable
 	 * @return
 	 */
-	public Page<ContributeListResponse> getContributesByDocument(Long documentId, Pageable pageable) {
+	public ContributePageResponse getContributesByStatus(ContributeStatus status, Pageable pageable) {
 
-		Page<Contribute> contributesByDocument =
-			contributeRepository.findContributesByDocument(documentId, pageable);
+		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
 
-		return contributesByDocument.map(ContributeListResponse::of);
+		Page<ContributeSimpleResponse> listResponses = votingContributes.map(
+			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
 	}
 
 	/**
-	 * Contribute 목록 조회: 투표중인 Contribute만 조회
+	 * Contribute 목록 조회: 투표가 완료된 Contribute만 조회(MERGED, REJECTED, DEBATING)
+	 * @param pageable
 	 * @return
 	 */
-	public Page<ContributeListResponse> getVotingContributes(Pageable pageable) {
+	public ContributePageResponse getCompletedContributes(Pageable pageable) {
 
-		Page<Contribute> votingContributes = contributeRepository.findVotingContributes(pageable);
+		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
 
-		return votingContributes.map(ContributeListResponse::of);
+		Page<ContributeSimpleResponse> listResponses = completedContributes.map(
+			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
+	}
+
+	/**
+	 * Contribute 목록 조회: 문서 ID와 merged에 따라 조회
+	 * @param documentId
+	 * @param merged
+	 * @param pageable
+	 * @return
+	 */
+	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
+		Pageable pageable) {
+
+		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
+			merged, pageable);
+
+		Page<ContributeSimpleResponse> listResponses = contributesByDocumentAndStatus.map(
+			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
+
+		return ContributePageResponse.from(listResponses);
 	}
 }

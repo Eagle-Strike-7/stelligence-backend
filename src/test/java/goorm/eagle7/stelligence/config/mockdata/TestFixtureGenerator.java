@@ -4,10 +4,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
+import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -15,7 +17,6 @@ import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.member.model.Badge;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import goorm.eagle7.stelligence.domain.member.model.SocialType;
@@ -31,7 +32,8 @@ public class TestFixtureGenerator {
 	private TestFixtureGenerator() {
 	}
 
-	public static Document document(Long id, Member author, String title, Long currentRevision) {
+	public static Document document(Long id, Member author, String title, Long latestRevision,
+		Document parentDocument) {
 		try {
 			Class<?> documentClass = Class.forName("goorm.eagle7.stelligence.domain.document.content.model.Document");
 
@@ -45,24 +47,31 @@ public class TestFixtureGenerator {
 			Field idField = documentClass.getDeclaredField("id");
 			Field titleField = documentClass.getDeclaredField("title");
 			Field authorField = documentClass.getDeclaredField("author");
-			Field currentRevisionField = documentClass.getDeclaredField("currentRevision");
+			Field latestRevisionField = documentClass.getDeclaredField("latestRevision");
 			Field sectionsField = documentClass.getDeclaredField("sections");
+			Field parentDocumentField = documentClass.getDeclaredField("parentDocument");
 
 			idField.setAccessible(true);
 			titleField.setAccessible(true);
 			authorField.setAccessible(true);
-			currentRevisionField.setAccessible(true);
+			latestRevisionField.setAccessible(true);
 			sectionsField.setAccessible(true);
+			parentDocumentField.setAccessible(true);
 
 			idField.set(document, id);
 			titleField.set(document, title);
 			authorField.set(document, author); // Member 객체 필요
-			currentRevisionField.set(document, currentRevision);
+			latestRevisionField.set(document, latestRevision);
+			parentDocumentField.set(document, parentDocument);
 
 			return (Document)document;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static Document document(Long id, Member author, String title, Long latestRevision) {
+		return document(id, author, title, latestRevision, null);
 	}
 
 	public static Member member(Long id, Role role, long contributes, String name, String nickname, String email,
@@ -121,7 +130,7 @@ public class TestFixtureGenerator {
 
 	public static Member member(Long id, String nickname) {
 		return TestFixtureGenerator.member(id, Role.USER, 0L, "name", nickname, "email", "imageUrl", "socialId",
-			SocialType.KAKAO, "refreshToken", Set.of());
+			SocialType.KAKAO, "refreshToken", new HashSet<>());
 	}
 
 	public static Section section(Long id, Long revision, Document document, Heading heading, String title,
@@ -215,12 +224,14 @@ public class TestFixtureGenerator {
 		}
 	}
 
-	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document) {
-		return contribute(id, contributor, status, document, "newTitle", document);
+	public static Contribute contribute(Long id, Member contributor, String title, String description,
+		ContributeStatus status, Document document) {
+		return contribute(id, contributor, title, description, status, document, "newTitle", document, null);
 	}
 
-	public static Contribute contribute(Long id, Member contributor, ContributeStatus status, Document document,
-		String newDocumentTitle, Document newParentDocument) {
+	public static Contribute contribute(Long id, Member contributor, String title, String description,
+		ContributeStatus status, Document document,
+		String afterDocumentTitle, Document afterParentDocument, Debate relatedDebate) {
 		try {
 			Class<?> contributeClazz = Class.forName("goorm.eagle7.stelligence.domain.contribute.model.Contribute");
 
@@ -231,27 +242,45 @@ public class TestFixtureGenerator {
 
 			Field idField = contributeClazz.getDeclaredField("id");
 			Field contributorField = contributeClazz.getDeclaredField("member");
+			Field titleField = contributeClazz.getDeclaredField("title");
+			Field descriptionField = contributeClazz.getDeclaredField("description");
 			Field statusField = contributeClazz.getDeclaredField("status");
 			Field documentField = contributeClazz.getDeclaredField("document");
 			Field amendmentsField = contributeClazz.getDeclaredField("amendments");
-			Field newDocumentTitleField = contributeClazz.getDeclaredField("newDocumentTitle");
-			Field newParentDocumentField = contributeClazz.getDeclaredField("newParentDocument");
+			Field beforeDocumentTitleField = contributeClazz.getDeclaredField("beforeDocumentTitle");
+			Field afterDocumentTitleField = contributeClazz.getDeclaredField("afterDocumentTitle");
+			Field newParentDocumentField = contributeClazz.getDeclaredField("afterParentDocument");
+			Field relatedDebateField = contributeClazz.getDeclaredField("relatedDebate");
 
 			idField.setAccessible(true);
 			contributorField.setAccessible(true);
+			titleField.setAccessible(true);
+			descriptionField.setAccessible(true);
 			statusField.setAccessible(true);
 			documentField.setAccessible(true);
 			amendmentsField.setAccessible(true);
-			newDocumentTitleField.setAccessible(true);
+			beforeDocumentTitleField.setAccessible(true);
+			afterDocumentTitleField.setAccessible(true);
 			newParentDocumentField.setAccessible(true);
+			relatedDebateField.setAccessible(true);
 
 			idField.set(contribute, id);
 			contributorField.set(contribute, contributor);
+			titleField.set(contribute, title);
+			descriptionField.set(contribute, description);
 			statusField.set(contribute, status);
 			documentField.set(contribute, document);
 			amendmentsField.set(contribute, new ArrayList<>());
-			newDocumentTitleField.set(contribute, newDocumentTitle);
-			newParentDocumentField.set(contribute, newParentDocument);
+			beforeDocumentTitleField.set(contribute, document.getTitle());
+			afterDocumentTitleField.set(contribute, afterDocumentTitle);
+			newParentDocumentField.set(contribute, afterParentDocument);
+			relatedDebateField.set(contribute, relatedDebate);
+
+			// createdAt 설정
+			Class<?> baseTimeEntityClazz = contributeClazz.getSuperclass();
+			Field createdAtField = baseTimeEntityClazz.getDeclaredField("createdAt");
+			createdAtField.setAccessible(true);
+			createdAtField.set(contribute, LocalDateTime.now());
 
 			return (Contribute)contribute;
 

@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
 
+	public static final int MAX_COMMENT_LENGTH = 1000;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "comment_id")
@@ -32,6 +34,7 @@ public class Comment extends BaseTimeEntity {
 	@JoinColumn(name = "commenter_id")
 	private Member commenter;
 
+	@Column(length = MAX_COMMENT_LENGTH)
 	private String content;
 
 	@Column(name = "sequences")
