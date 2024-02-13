@@ -29,7 +29,7 @@ public class VoteService {
 	private final ContributeRepository contributeRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	private final static int VOTE_EXPIRATION_MINUTES = 1;
+	private final static int VOTE_EXPIRATION_MINUTES = 5;
 
 	/**
 	 * 투표 하기
