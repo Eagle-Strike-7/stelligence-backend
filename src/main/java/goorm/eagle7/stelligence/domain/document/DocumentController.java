@@ -69,22 +69,17 @@ public class DocumentController {
 		return ResponseTemplate.ok(documentService.getDocumentContent(documentId, revision));
 	}
 
-	@Operation(summary = "문서 그래프 조회", description = "문서 그래프를 조회합니다.")
+	@Operation(summary = "문서 그래프 조회", description = "전체 문서 그래프를 조회합니다.")
 	@ApiResponse(
 		responseCode = "200",
 		description = "문서 그래프 조회 성공",
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<DocumentGraphResponse> getDocumentGraph(
-		@Parameter(description = "조회를 시작할 문서의 ID. 입력하지 않으면 최상위 문서를 조회합니다.", example = "1")
-		@RequestParam(value = "documentId", required = false) Long documentId,
-		@Parameter(description = "조회할 문서의 깊이. 입력하지 않으면 깊이가 0으로 설정됩니다.", example = "1")
-		@RequestParam(value = "depth", defaultValue = "0") int depth
-	) {
+	public ResponseTemplate<DocumentGraphResponse> getDocumentGraph() {
 
 		// documentId가 null이라면 최상위 문서로부터 조회합니다.
-		return ResponseTemplate.ok(documentService.getDocumentGraph(documentId, depth));
+		return ResponseTemplate.ok(documentService.getAllDocumentGraph());
 	}
 
 	@Operation(summary = "문서 노드 제목으로 조회", description = "문서 노드를 제목으로 조회합니다.")
