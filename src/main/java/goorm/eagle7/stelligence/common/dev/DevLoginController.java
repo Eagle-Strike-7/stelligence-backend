@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.login;
+package goorm.eagle7.stelligence.common.dev;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,9 +9,12 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
-import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class DevLoginController {
 
 	private final CookieUtils cookieUtils;
-	private final LoginService loginService;
+	private final DevLoginService devLoginService;
 
 	@Operation(summary = "로그인 - 개발용", description = "로그인 시도합니다. 회원이 없으면 회원 가입 후 로그인합니다. 로그인이란, 쿠키를 발급하는 과정을 의미합니다.")
 	@ApiResponse(
@@ -30,8 +33,15 @@ public class DevLoginController {
 	)
 	@PostMapping("/login")
 	public ResponseTemplate<Void> login(@RequestBody DevLoginRequest devLoginRequest) {
+
 		// 로그인 혹은 회원 가입
-		loginService.login(devLoginRequest);
+		DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse = devLoginService.devLogin(
+			devLoginRequest);
+
+		// 쿠키 저장
+		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, devLoginTokensWithIdAndRoleResponse.getAccessToken());
+		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, devLoginTokensWithIdAndRoleResponse.getRefreshToken());
+
 		return ResponseTemplate.ok();
 
 	}
@@ -45,7 +55,7 @@ public class DevLoginController {
 	@PostMapping("/logout")
 	public ResponseTemplate<Void> devLogout(@Auth MemberInfo memberInfo) {
 
-		loginService.devLogout(memberInfo);
+		devLoginService.devLogout(memberInfo);
 
 		// 쿠키 삭제
 		cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);

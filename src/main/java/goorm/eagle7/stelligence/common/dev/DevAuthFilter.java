@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.auth.filter;
+package goorm.eagle7.stelligence.common.dev;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -9,15 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
-import goorm.eagle7.stelligence.common.login.CookieType;
-import goorm.eagle7.stelligence.common.login.CookieUtils;
-import goorm.eagle7.stelligence.common.login.LoginService;
-import goorm.eagle7.stelligence.common.login.RandomUtils;
-import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
+import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import io.jsonwebtoken.Claims;
@@ -39,10 +40,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 
-	private final PermittedPathStore permittedPathStore;
+	private final CustomRequestMatcher customRequestMatcher;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final LoginService loginService;
+	private final DevLoginService devLoginService;
 	private final MemberRepository memberRepository;
 	private final CookieUtils cookieUtils;
 
@@ -72,12 +73,9 @@ public class DevAuthFilter extends OncePerRequestFilter {
 		ServletException,
 		IOException {
 
-		String httpMethod = request.getMethod();
-		String uri = request.getRequestURI();
-
 		try {
 			// 토큰 검증이 필요한 uri라면 토큰 검증
-			if (isTokenValidationRequired(httpMethod, uri)) {
+			if (isTokenValidationRequired(request)) {
 
 				log.debug("토큰 검증이 필요한 uri");
 				Optional<Cookie> cookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
@@ -88,16 +86,16 @@ public class DevAuthFilter extends OncePerRequestFilter {
 
 					log.debug("accessTokenCookie 존재");
 					// request에서 accessToken 추출
-					String accessToken = jwtTokenService.extractJwtFromCookie(cookie.get(), CookieType.ACCESS_TOKEN);
+					String accessToken = jwtTokenService.getTokenFromCookie(cookie.get());
 					log.debug("accessToken: {}", accessToken);
 					// accessToken이 존재하는지 검증 - null
-					boolean tokenExists = jwtTokenService.validateIsTokenExists(accessToken);
+					boolean tokenExists = jwtTokenService.isTokenValidated(accessToken);
 
 					// accessToken이 존재한다면 id가 DB에 저장되어 있는지 확인
 					if (tokenExists) {
 
 						// 만료 상관 없이 member id 추출
-						Long memberId = Long.parseLong(jwtTokenService.extractSubFromExpiredToken(accessToken));
+						Long memberId = Long.parseLong(jwtTokenService.getMemberIdFromExpiredToken(accessToken));
 						Optional<Member> memberOptional = memberRepository.findById(memberId);
 
 						// accessToken이 만료 전, 유효하다면 DB에 저장된 사용자인지 확인
@@ -110,33 +108,32 @@ public class DevAuthFilter extends OncePerRequestFilter {
 							Member member = memberOptional.get();
 							nickname = member.getNickname();
 
-							// 서명 검증 후 서명 얻어 오기
-							Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
-							// accessToken 만료 검증
-							boolean validatedIsVerified = jwtTokenService.validateActiveToken(claims);
-							if (!validatedIsVerified) {
+							// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
+							String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
-								// refreshToken 기간에 관계 없이 accessToken 재발급, refresh 토큰 만료라면 throw BaseException
-								String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
+							member.updateRefreshToken(refreshToken);
+							memberRepository.save(member);
 
-								member.updateRefreshToken(refreshToken);
-								memberRepository.save(member);
-
-							}
 						}
 					}
 				}
+
 				// 자동 회원 가입을 위한 랜덤 nickname 생성
 				if (signUpMode) {
 					// test+랜덤숫자 5개로 nickname 생성
-					nickname = RandomUtils.createNicknameWithRandomNumber("test");
+					String finalNickname = nickname;
+					nickname = RandomUtils.generateUniqueNickname("은하",
+						() -> memberRepository.existsByNicknameAndActiveTrue(finalNickname)
+					);
 				}
 				log.debug("nickname: {}", nickname);
 				// login - nickname 따라 회원 가입, 로그인 결정됨.
-				String accessToken = loginService.login(DevLoginRequest.from(nickname));
+				DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse = devLoginService.devLogin(
+					DevLoginRequest.from(nickname));
 
-				Claims claims = jwtTokenService.validateAndGetClaims(accessToken);
-
+				String accessToken = devLoginTokensWithIdAndRoleResponse.getAccessToken();
+				Claims claims = jwtTokenService.validateTokenOrThrows(accessToken)
+					.orElseThrow();
 				// 검증 완료 이후 memberInfo를 ThreadLocal에 저장
 				// ThreadLocal 초기화
 				MemberInfoContextHolder.clear();
@@ -145,10 +142,10 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				// ThreadLocal에 token에서 추출한 memberInfo 저장
 				MemberInfoContextHolder.setMemberInfo(memberInfo);
 			}
-
 			filterChain.doFilter(request, response);
 
-		} catch (BaseException e) {
+		} catch (
+			BaseException e) {
 			handleBaseException(response, e);
 		} finally {
 			// 무슨 일이 있어도 ThreadLocal 초기화
@@ -177,13 +174,11 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * repository에 저장된 RequestResource set 기준으로 토큰 검증이 필요한 httpMethod, uri인지 확인
-	 * @param httpMethod String 타입으로 추출.
-	 * @param uri uri String 타입으로 추출.
+	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
-	private boolean isTokenValidationRequired(String httpMethod, String uri) {
-		return !permittedPathStore.exist(httpMethod, uri);
+	private boolean isTokenValidationRequired(HttpServletRequest request) {
+		return !customRequestMatcher.matches(request);
 	}
 
 }

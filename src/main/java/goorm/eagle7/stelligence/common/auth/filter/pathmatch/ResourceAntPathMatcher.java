@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.auth.filter;
+package goorm.eagle7.stelligence.common.auth.filter.pathmatch;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;

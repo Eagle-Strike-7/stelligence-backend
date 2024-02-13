@@ -46,6 +46,20 @@ public interface ContributeRepository extends JpaRepository<Contribute, Long>, C
 	boolean existsDuplicateRequestedDocumentTitle(String title);
 
 	/**
+	 * member가 생성한 수정 요청의 총 개수를 가져온다.
+	 * @param memberId member id
+	 *  @return 수정 요청의 총 개수
+	 */
+	long countByMemberId(Long memberId);
+
+	/**
+	 * member가 생성한 수정 요청 중 상태에 따른 요청의 총 개수를 가져온다.
+	 * @param memberId member id
+	 *  @return merge된 수정 요청의 총 개수
+	 */
+	long countByMemberIdAndStatus(Long memberId, ContributeStatus status);
+
+	/**
 	 * Contribute를 Member와 함께 가져온다.
 	 * @param id Contribute id
 	 * @return Contribute

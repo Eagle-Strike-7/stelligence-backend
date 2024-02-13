@@ -2,73 +2,72 @@ package goorm.eagle7.stelligence.common.login;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
-import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.common.login.dto.DevLoginRequest;
+import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
+import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class LoginService {
 
+	private final SignUpService signUpService;
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final SignUpService signUpService;
-	private final CookieUtils cookieUtils;
 
-	public String login(DevLoginRequest devLoginRequest) {
+	/**
+	 * <h2>OAuth2 로그인</h2>
+	 * <p>- 회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입</p>
+	 * <p>- 로그인 - token 생성 후 쿠키에 저장 및 refreshToken 반환</p>
+	 * <p>- DB에 refreshToken 저장</p>
+	 * @param loginOAuth2Request OAuth2 로그인 요청 정보
+	 */
+	@Transactional
+	public LoginTokenInfo oAuth2Login(LoginOAuth2Request loginOAuth2Request) {
 
-		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		// nickname 중복이면 로그인
-		String nickname = StringUtils.hasText(devLoginRequest.getNickname())
-			? devLoginRequest.getNickname()
-			: "은하";
+		// 회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입
+		Member member = findOrRegisterMember(loginOAuth2Request);
 
-		Member member = memberRepository.findByNicknameAndActiveTrue(nickname)
-			.orElseGet(() -> signUpService.signUp(nickname));
+		// Token 생성 및 DB 저장
+		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
+		String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+		member.updateRefreshToken(refreshToken);
 
-		// token 생성 후 저장, 쿠키 저장
-		return generateAndSaveTokens(member);
+		return LoginTokenInfo.of(
+			accessToken,refreshToken);
+
 	}
 
 	/**
-	 * 토큰 생성 후 저장
-	 * @param member 회원
-	 * @return access 토큰 - for dev
+	 * <h2>회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입</h2>
+	 * <p>- socialId, socialType으로 회원 조회 후 없으면 회원 가입</p>
+	 * @param request OAuth2 로그인 요청 정보
+	 * @return Member 로그인한 회원
 	 */
-	private String generateAndSaveTokens(Member member) {
+	private Member findOrRegisterMember(LoginOAuth2Request request) {
 
-		// Token 생성
-		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
-		String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
-
-		// refresh token 저장
-		member.updateRefreshToken(refreshToken);
-
-		// cookie에 access 토큰, refreshToken 저장
-		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
-		cookieUtils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
-
-		return accessToken;
+		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(request.getSocialType(),
+				request.getSocialId())
+			.orElseGet(() -> signUpService.oauth2SignUp(request));
 	}
 
 	/**
 	 * <h2>로그아웃</h2>
-	 * <p>- 리프레시 토큰, 쿠키, ThreadLocal 삭제</p>
-	 * @param memberInfo 회원 정보
+	 * <p>- DB에서 refreshToken 삭제</p>
+	 * @param memberId 로그아웃할 회원 id
 	 */
-	public void devLogout(MemberInfo memberInfo) {
+	@Transactional
+	public void logout(Long memberId) {
 
-		// 로그인 상태인 경우, refreshToken 삭제
-		if (memberInfo != null) {
-			memberRepository.findById(memberInfo.getId())
-				.ifPresent(member -> member.updateRefreshToken(null));
-		}
+		memberRepository
+			.findByIdAndActiveTrue(memberId)
+			.ifPresent(Member::expireRefreshToken);
 
 	}
 

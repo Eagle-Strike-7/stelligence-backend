@@ -1,40 +1,34 @@
-package goorm.eagle7.stelligence.common.login;
+package goorm.eagle7.stelligence.common.dev;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.util.RandomUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class SignUpService {
+public class DevSignUpService {
 
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public Member oauth2SignUp(LoginOAuth2Request loginOAuth2Request) {
+	public Member devSignUp(DevLoginRequest loginRequest) {
 
-		String baseNickname = loginOAuth2Request.getNickname();
+		String baseNickname = loginRequest.getNickname();
 
 		// 닉네임이 중복인지 확인, 중복이면 랜덤 닉네임 생성
 		String uniqueNickname = RandomUtils.generateUniqueNickname(baseNickname, () -> isNicknameDuplicate(baseNickname));
 
-		Member newMember = Member.of(
-			loginOAuth2Request.getName(),
-			uniqueNickname,
-			loginOAuth2Request.getEmail(),
-			loginOAuth2Request.getImageUrl(),
-			loginOAuth2Request.getSocialId(),
-			loginOAuth2Request.getSocialType()
-		);
+		// member 생성 OAuth2.0 테스트용 하드 코딩
+		Member newMember = Member.of("영민", uniqueNickname, "sbslc2000@stelligence.com", null,
+			"eunzzi"+uniqueNickname, SocialType.KAKAO);
 
 		// 해당 닉네임으로 저장
 		return memberRepository.save(newMember);

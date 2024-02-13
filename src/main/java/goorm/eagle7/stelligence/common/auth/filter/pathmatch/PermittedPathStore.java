@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.common.auth.filter;
+package goorm.eagle7.stelligence.common.auth.filter.pathmatch;
 
 import java.util.Set;
 
@@ -41,6 +41,9 @@ class PermittedPathStore {
 			// error
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
 			RequestResource.of(HttpMethod.OPTIONS.name(), "/error/**"),
+
+			// logout
+			// RequestResource.of(HttpMethod.POST.name(), "/api/logout"),
 
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
@@ -129,7 +130,7 @@ public class TestFixtureGenerator {
 
 	public static Member member(Long id, String nickname) {
 		return TestFixtureGenerator.member(id, Role.USER, 0L, "name", nickname, "email", "imageUrl", "socialId",
-			SocialType.KAKAO, "refreshToken", Set.of());
+			SocialType.KAKAO, "refreshToken", new HashSet<>());
 	}
 
 	public static Section section(Long id, Long revision, Document document, Heading heading, String title,
