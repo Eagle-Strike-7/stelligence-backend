@@ -60,7 +60,7 @@ public class BookmarkController {
 	@Operation(summary = "북마크 단건 조회",
 		description = """
 						- 로그인한 사용자가 문서를 확인할 때, 북마크했는지 여부를 조회합니다.
-						- 로그인하지 않으면 400 에러를 반환합니다.
+						- 로그인하지 않으면 401 에러를 반환합니다. (400 변환 예정)
 			"""
 	)
 	@ApiResponse(
