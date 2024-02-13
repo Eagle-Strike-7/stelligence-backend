@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
@@ -71,6 +72,10 @@ public class BookmarkController {
 		@Auth MemberInfo memberInfo,
 		@Parameter(description = "북마크를 조회할 문서의 documentId를 입력합니다.", example = "1")
 		@RequestParam Long documentId) {
+
+		if (memberInfo == null) {
+			throw new BaseException("로그인이 필요합니다.");
+		}
 
 		BookmarkOneResponse bookmarkOneResponse = bookmarkService.getBookmark(memberInfo.getId(), documentId);
 		return ResponseTemplate.ok(bookmarkOneResponse);
