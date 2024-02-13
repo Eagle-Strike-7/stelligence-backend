@@ -34,6 +34,7 @@ class PermittedPathStore {
 			RequestResource.of(HttpMethod.GET.name(), "/login/oauth2/code/**"),
 
 			// swagger
+			RequestResource.of(HttpMethod.GET.name(), "/api-docs/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/swagger-ui/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/swagger-resources/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/v3/api-docs/**"),
