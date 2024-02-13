@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,7 +67,7 @@ public class BookmarkController {
 	@PostMapping
 	public ResponseTemplate<Void> createBookmark(
 		@Auth MemberInfo memberInfo,
-		@RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
+		@Validated @RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
 
 		bookmarkService.createBookmark(
 			memberInfo.getId(), bookmarkCreateRequest);
