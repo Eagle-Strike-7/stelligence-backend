@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.vote;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class VoteController {
 	)
 	@PostMapping("/votes")
 	public ResponseTemplate<VoteSummaryResponse> vote(
-		@RequestBody VoteRequest voteRequest,
+		@Validated @RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
 	) {
 		voteService.vote(voteRequest, memberInfo.getId());
