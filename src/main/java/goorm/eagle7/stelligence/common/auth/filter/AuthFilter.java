@@ -44,10 +44,12 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * -> 모든 결과에 대해 exception 발생하지 않는다면, doFilter 진행
 	 * 		-> exception 발생 시, doFilter 진행하지 않고, security exceptionHandler에서 처리
 	 */
+	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
 
+		log.debug("AuthFilter 실행");
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
@@ -68,7 +70,7 @@ public class AuthFilter extends OncePerRequestFilter {
 				// SecurityContextHolder에 Authentication 저장
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			}
+				}
 
 		} catch (AuthenticationException e) {
 

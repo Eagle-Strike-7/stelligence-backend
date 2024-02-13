@@ -16,11 +16,13 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
+import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -38,6 +40,8 @@ class DebateServiceCommentTest {
 	private MemberRepository memberRepository;
 	@Mock
 	private CommentRepository commentRepository;
+	@Mock
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	@InjectMocks
 	private DebateService debateService;
@@ -71,6 +75,7 @@ class DebateServiceCommentTest {
 			verify(commentRepository, times(1)).save(any(Comment.class));
 			verify(debateRepository, times(1)).findDebateByIdForUpdate(debateId);
 			verify(memberRepository, times(1)).findById(memberId);
+			verify(applicationEventPublisher, times(1)).publishEvent(any(NewCommentEvent.class));
 
 			assertThat(debate.getComments()).isNotEmpty();
 			// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점을 기준으로 토론 기간이 연장된다.

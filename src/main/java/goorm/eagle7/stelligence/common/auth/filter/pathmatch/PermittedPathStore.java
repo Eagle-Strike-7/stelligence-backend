@@ -21,6 +21,8 @@ class PermittedPathStore {
 	private static final Set<RequestResource> REQUEST_RESOURCES =
 		Set.of(
 
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/**"),
+
 			// application 권한
 			RequestResource.of(HttpMethod.GET.name(), "/api/documents/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**"),
@@ -38,12 +40,14 @@ class PermittedPathStore {
 
 			// error
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/error/**"),
 
 			// logout
 			// RequestResource.of(HttpMethod.POST.name(), "/api/logout"),
 
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
+			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/login"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**")
 		);
 

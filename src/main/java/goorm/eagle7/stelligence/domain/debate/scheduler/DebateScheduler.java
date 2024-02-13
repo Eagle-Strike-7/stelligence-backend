@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.debate.scheduler;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DebateScheduler {
 
 	private final DebateRepository debateRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * 열려있는 토론 중, 종료 예상시간이 지난 토론을 식별하고,
@@ -33,6 +35,7 @@ public class DebateScheduler {
 		if (!targetDebateIdList.isEmpty()) {
 			log.info("[DebateScheduler] 종료 대상 토론을 모두 종료합니다. 대상 토론 ID: {}", targetDebateIdList);
 			debateRepository.closeAllById(targetDebateIdList);
+			targetDebateIdList.forEach(applicationEventPublisher::publishEvent); //이 때 이벤트는 동기적으로 수행됩니다.
 		} else {
 			log.info("[DebateScheduler] 종료 대상 토론이 없습니다.");
 		}
