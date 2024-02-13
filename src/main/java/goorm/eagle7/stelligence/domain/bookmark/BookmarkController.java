@@ -13,6 +13,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
+import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkOneResponse;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,6 +53,27 @@ public class BookmarkController {
 			memberInfo.getId(),
 			PageRequest.of(page, size));
 		return ResponseTemplate.ok(bookmarksResponse);
+
+	}
+
+	@Operation(summary = "북마크 단건 조회",
+		description = """
+						- 로그인한 사용자가 문서를 확인할 때, 북마크했는지 여부를 조회합니다.
+			"""
+	)
+	@ApiResponse(
+		responseCode = "200",
+		description = "북마크 단건 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping
+	public ResponseTemplate<BookmarkOneResponse> getBookmark(
+		@Auth MemberInfo memberInfo,
+		@Parameter(description = "북마크를 조회할 문서의 documentId를 입력합니다.", example = "1")
+		@RequestParam Long documentId) {
+
+		BookmarkOneResponse bookmarkOneResponse = bookmarkService.getBookmark(memberInfo.getId(), documentId);
+		return ResponseTemplate.ok(bookmarkOneResponse);
 
 	}
 
