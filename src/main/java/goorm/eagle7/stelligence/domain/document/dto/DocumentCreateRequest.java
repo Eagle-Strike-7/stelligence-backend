@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class DocumentCreateRequest {
 
 	@Schema(description = "문서의 제목", example = "마리모")
 	@NotBlank(message = "문서의 제목을 입력해주세요.")
+	@Size(max = 20, message = "문서의 제목은 20자 이하여야 합니다.")
 	private String title;
 
 	@Schema(description = "문서의 부모 문서 ID", example = "1")
