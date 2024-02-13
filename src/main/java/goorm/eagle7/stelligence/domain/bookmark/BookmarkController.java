@@ -60,6 +60,7 @@ public class BookmarkController {
 	@Operation(summary = "북마크 단건 조회",
 		description = """
 						- 로그인한 사용자가 문서를 확인할 때, 북마크했는지 여부를 조회합니다.
+						- 로그인하지 않으면 400 에러를 반환합니다.
 			"""
 	)
 	@ApiResponse(
@@ -67,7 +68,7 @@ public class BookmarkController {
 		description = "북마크 단건 조회 성공",
 		useReturnTypeSchema = true
 	)
-	@GetMapping
+	@GetMapping("/marked")
 	public ResponseTemplate<BookmarkOneResponse> getBookmark(
 		@Auth MemberInfo memberInfo,
 		@Parameter(description = "북마크를 조회할 문서의 documentId를 입력합니다.", example = "1")
