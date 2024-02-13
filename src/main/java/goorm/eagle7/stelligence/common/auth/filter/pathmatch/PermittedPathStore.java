@@ -49,7 +49,14 @@ class PermittedPathStore {
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
 			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/login"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**")
+			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**"),
+
+			// 정적 리소스
+			
+
+			// 모니터링 툴
+			RequestResource.of(HttpMethod.GET.name(), "/actuator/**")
+
 		);
 
 	/**
