@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
+import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkOneResponse;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkPageResponse;
 import goorm.eagle7.stelligence.domain.bookmark.model.Bookmark;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
@@ -84,4 +85,22 @@ public class BookmarkService {
 
 	}
 
+	public BookmarkOneResponse getBookmark(Long memberId, Long documentId) {
+
+		if(!memberRepository.existsByIdAndActiveTrue(memberId)) {
+			throw new BaseException(String.format(
+				"해당 사용자를 찾을 수 없습니다. MemberId= %s", memberId));
+		}
+		if(!documentContentRepository.existsById(documentId)) {
+			throw new BaseException(String.format(
+				"해당 문서를 찾을 수 없습니다. DocumentId= %s", documentId));
+		}
+
+		boolean bookmarked = bookmarkRepository
+			.existsByMemberIdAndDocumentId(
+				memberId, documentId);
+
+		return BookmarkOneResponse.from(bookmarked);
+
+	}
 }
