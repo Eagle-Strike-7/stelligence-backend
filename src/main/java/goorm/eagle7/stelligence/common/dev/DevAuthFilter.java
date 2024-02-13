@@ -121,9 +121,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				// 자동 회원 가입을 위한 랜덤 nickname 생성
 				if (signUpMode) {
 					// test+랜덤숫자 5개로 nickname 생성
-					String finalNickname = nickname;
-					nickname = RandomUtils.generateUniqueNickname("은하",
-						() -> memberRepository.existsByNicknameAndActiveTrue(finalNickname)
+					 nickname = RandomUtils.generateUniqueNickname("은하",
+						 memberRepository::existsByNickname
 					);
 				}
 				log.debug("nickname: {}", nickname);
