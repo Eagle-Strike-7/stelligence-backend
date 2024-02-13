@@ -37,8 +37,7 @@ public class VoteController {
 		@RequestBody VoteRequest voteRequest,
 		@Auth MemberInfo memberInfo
 	) {
-		voteService.vote(voteRequest, memberInfo.getId());
-		return ResponseTemplate.ok();
+		return ResponseTemplate.ok(voteService.vote(voteRequest, memberInfo.getId()));
 	}
 
 	@Operation(summary = "투표 현황 조회", description = "현재 투표 현황을 조회합니다")
