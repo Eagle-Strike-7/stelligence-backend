@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class RandomUtilsTest {
+class UniqueNicknameGeneratorTest {
 
 	@Mock
 	private MemberRepository memberRepository;
@@ -34,7 +34,7 @@ class RandomUtilsTest {
 		when(memberRepository.existsByNickname(baseNickname)).thenReturn(false);
 		String uniqueNickname = baseNickname;
 		// When
-		 uniqueNickname = RandomUtils.generateUniqueNickname(uniqueNickname,
+		 uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
 			nickname -> memberRepository.existsByNickname(nickname)
 		);
 
@@ -60,7 +60,7 @@ class RandomUtilsTest {
 
 		// when
 		String uniqueNickname = baseNickname;
-		uniqueNickname = RandomUtils.generateUniqueNickname(uniqueNickname,
+		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
 			nickname -> memberRepository.existsByNickname(nickname));
 
 		// then
@@ -93,7 +93,7 @@ class RandomUtilsTest {
 		// when, then
 		String uniqueNickname = baseNickname;
 		assertThatThrownBy(() -> {
-			RandomUtils.generateUniqueNickname(uniqueNickname,
+			UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
 				nickname -> memberRepository.existsByNickname(nickname)
 			);
 		}).isInstanceOf(BaseException.class)

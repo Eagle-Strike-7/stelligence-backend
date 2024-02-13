@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
-import goorm.eagle7.stelligence.common.util.RandomUtils;
+import goorm.eagle7.stelligence.common.util.UniqueNicknameGenerator;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class SignUpService {
 		String uniqueNickname = loginOAuth2Request.getNickname();
 
 		// RandomUtils 내에서 null 확인 후 기본값으로 랜덤 닉네임 생성
-		uniqueNickname = RandomUtils.generateUniqueNickname(uniqueNickname, this::isNicknameDuplicate);
+		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname, this::isNicknameDuplicate);
 
 		Member newMember = Member.of(
 			loginOAuth2Request.getName(),
