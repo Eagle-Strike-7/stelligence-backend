@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.owasp.html.PolicyFactory;
 import org.springframework.stereotype.Component;
 
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,9 @@ public class TagDocumentParser implements DocumentParser {
 		Matcher matcher = HEADING_TAG_PATTERN.matcher(sanitizedContent);
 
 		while (matcher.find()) {
-			Heading heading = Heading.valueOf("H" + matcher.group(2)); // h 태그의 숫자를 Heading enum의 이름으로 사용합니다.
+			String level = getValidLevel(matcher.group(2));
+
+			Heading heading = Heading.valueOf("H" + level); // h 태그의 숫자를 Heading enum의 이름으로 사용합니다.
 			String title = matcher.group(3); // 타이틀은 h 태그 사이의 내용입니다.
 			String content = matcher.group(4).trim(); // 콘텐츠는 다음 h 태그 전까지입니다.
 
@@ -50,4 +53,19 @@ public class TagDocumentParser implements DocumentParser {
 
 		return sectionRequests;
 	}
+
+	/**
+	 * 들어온 Heading의 수준을 정제하여 반환합니다.
+	 * 4 5 6 은 사용되면 안되므로, 3으로 변경하여 반환합니다.
+	 * @param level Heading의 수준
+	 * @return 유효한 Heading의 수준
+	 */
+	private String getValidLevel(String level) {
+		return switch (level) {
+			case "1", "2", "3" -> level;
+			case "4", "5", "6" -> "3";
+			default -> throw new BaseException("잘못된 Heading 수준입니다. " + level);
+		};
+	}
+
 }
