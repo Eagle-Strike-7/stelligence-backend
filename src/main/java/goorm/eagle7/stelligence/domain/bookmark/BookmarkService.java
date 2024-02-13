@@ -85,6 +85,14 @@ public class BookmarkService {
 
 	}
 
+	/**
+	 * <h2>북마크 단건 조회</h2>
+	 * <p>- 로그인한 사용자가 문서를 확인할 때, 북마크했는지 여부를 조회합니다.</p>
+	 * @param memberId - 로그인한 사용자의 ID
+	 * @param documentId - 북마크 조회할 문서의 ID
+	 * @return BookmarkOneResponse - 북마크 여부
+	 * @throws BaseException - memberId, documentId 찾을 수 없는 경우
+	 */
 	public BookmarkOneResponse getBookmark(Long memberId, Long documentId) {
 
 		if(!memberRepository.existsByIdAndActiveTrue(memberId)) {
