@@ -48,14 +48,17 @@ public class MemberInfoArgumentResolver
 		@Nullable NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) {
 
-		User user = (User)SecurityContextHolder.getContext()
-			.getAuthentication().getPrincipal();
-		long memberId = Long.parseLong(user.getUsername());
+		if(SecurityContextHolder.getContext()
+			.getAuthentication().getPrincipal() instanceof User user){
+			long memberId = Long.parseLong(user.getUsername());
 
-		Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-		Role role = convertAuthoritiesToRole(authorities);
+			Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+			Role role = convertAuthoritiesToRole(authorities);
 
-		return MemberInfo.of(memberId, role);
+			return MemberInfo.of(memberId, role);
+
+		}
+		return null;
 
 	}
 
