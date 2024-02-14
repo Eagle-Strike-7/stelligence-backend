@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import lombok.RequiredArgsConstructor;
@@ -42,22 +41,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 			parameters.add(new Object[] {message, uri, memberId});
 		}
 
-		try {
-			// batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록
-			jdbcTemplate.batchUpdate(INSERT_NOTIFICATIONS_SQL, parameters);
-
-		} catch (DataIntegrityViolationException e) {
-			// memberId가 존재하지 않는 경우 등록에 실패할 수 있음
-			log.warn("알림 등록 중 오류가 발생했습니다. {}", e.getMessage());
-
-			log.info("개별 알림 등록을 시도합니다.");
-			for (Object[] parameter : parameters) {
-				try {
-					jdbcTemplate.update(INSERT_NOTIFICATIONS_SQL, parameter);
-				} catch (DataIntegrityViolationException e2) {
-					log.warn("알림 등록 중 오류가 발생했습니다. MEMBER ID : {}", parameter[0]);
-				}
-			}
-		}
+		// batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록
+		jdbcTemplate.batchUpdate(INSERT_NOTIFICATIONS_SQL, parameters);
 	}
 }

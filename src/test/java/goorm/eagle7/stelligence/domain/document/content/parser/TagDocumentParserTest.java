@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.document.content.parser;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.owasp.html.PolicyFactory;
 
@@ -39,7 +39,7 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		Mockito.when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -72,7 +72,7 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		Mockito.when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -100,7 +100,7 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		Mockito.when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -117,5 +117,28 @@ class TagDocumentParserTest {
 		assertThat(result.get(2).getHeading()).isEqualTo(Heading.H3);
 		assertThat(result.get(2).getTitle()).isEqualTo("title3");
 		assertThat(result.get(2).getContent()).isEqualTo("<p>content3</p>");
+	}
+
+	@Test
+	@DisplayName("h4 이상의 heading tag가 있는 경우")
+	void validHeadingTag() {
+		String rawContent =
+			"<h1>h1</h1>"
+				+ "<h2>h2</h2>"
+				+ "<h3>h3</h3>"
+				+ "<h4>h4</h4>"
+				+ "<h5>h5</h5>"
+				+ "<h6>h6</h6>";
+
+		//when
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
+		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
+
+		//then
+		assertThat(result).hasSize(6);
+		assertThat(result.get(3).getHeading()).isEqualTo(Heading.H3);
+		assertThat(result.get(4).getHeading()).isEqualTo(Heading.H3);
+		assertThat(result.get(5).getHeading()).isEqualTo(Heading.H3);
+
 	}
 }
