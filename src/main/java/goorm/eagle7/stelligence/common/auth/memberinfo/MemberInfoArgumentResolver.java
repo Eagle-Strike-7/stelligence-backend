@@ -14,6 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import goorm.eagle7.stelligence.domain.member.model.Role;
 import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *  <h2>Auth 애노테이션에서 사용할 객체 mapping (MemberInfo)</h2>
@@ -21,6 +22,7 @@ import jakarta.annotation.Nullable;
  *  <p>- SecurityContextHolder(ThreadLocal)에서 User 객체를 가져와서 MemberInfo 객체 생성해 반환</p>
  *  <p>- MemberInfo: memberId, role을 가지고 있는 객체</p>
  */
+@Slf4j
 @Component
 public class MemberInfoArgumentResolver
 	implements HandlerMethodArgumentResolver {
@@ -50,6 +52,12 @@ public class MemberInfoArgumentResolver
 
 		if(SecurityContextHolder.getContext()
 			.getAuthentication().getPrincipal() instanceof User user){
+
+			if(user.getUsername().equals("anonymousUser")){
+				log.debug("anonymousUser, @Auth에 null 반환");
+				return null;
+			}
+
 			long memberId = Long.parseLong(user.getUsername());
 
 			Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
