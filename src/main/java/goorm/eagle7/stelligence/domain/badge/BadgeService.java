@@ -1,14 +1,10 @@
 package goorm.eagle7.stelligence.domain.badge;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.badge.strategy.BadgeAwardStrategy;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -19,26 +15,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeService {
 
-	private final Map<BadgeCategory, BadgeAwardStrategy> strategyMap = new HashMap<>(); // TODO enunMap으로 변경 확인
+	private final Map<BadgeCategory, BadgeAwardStrategy> strategyMap;
 
-	public BadgeService(List<BadgeAwardStrategy> strategies) {
-		strategies.forEach(strategy ->
-			Arrays.stream(BadgeCategory.values())
-				.filter(strategy::supports)
-				.forEach(category -> strategyMap.put(category, strategy)));
-	}
-
+	/**
+	 * <h2>BadgeCategory에 해당하는 전략을 찾아서 수행</h2>
+	 * @param badgeCategory BadgeCategory
+	 * @param member Member
+	 * @throws IllegalArgumentException BadgeCategory에 해당하는 전략이 없을 경우
+	 */
 	@Transactional
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		BadgeAwardStrategy strategy = strategyMap.get(badgeCategory);
 		if (strategy == null) {
+			// BadgeCategory에 해당하는 전략이 없을 경우는 server error로 판단
 			throw new IllegalArgumentException("Unsupported badge category: " + badgeCategory);
 		}
-		Badge newBadge = strategy.checkAndAward(badgeCategory, member);
-		if (newBadge != null) {
-			member.addBadge(newBadge);
-		}
+
+		// badgeCategory에 해당하는 전략을 찾아 수행
+		strategy.checkAndAward(badgeCategory, member);
+
 	}
 
 }
