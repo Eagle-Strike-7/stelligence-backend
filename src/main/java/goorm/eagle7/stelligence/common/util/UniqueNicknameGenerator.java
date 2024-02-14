@@ -9,7 +9,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class UniqueNicknameGenerator {
+public final class UniqueNicknameGenerator {
 
 	private UniqueNicknameGenerator() {
 		throw new IllegalStateException("Utility class");
@@ -27,7 +27,8 @@ public class UniqueNicknameGenerator {
 	public static String generateUniqueNickname(String baseNickname, Predicate<String> isDuplicate) {
 
 		// 기본 닉네임이 없으면 "은하"로 설정
-		String nickname = StringUtils.hasText(baseNickname) ? baseNickname : "은하";
+		baseNickname = StringUtils.hasText(baseNickname) ? baseNickname : "은하";
+		String nickname = baseNickname;
 		// UUID를 사용하면 
 		String uuid = UUID.randomUUID().toString();
 
