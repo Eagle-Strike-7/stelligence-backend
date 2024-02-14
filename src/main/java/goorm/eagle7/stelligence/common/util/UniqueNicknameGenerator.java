@@ -26,24 +26,23 @@ public final class UniqueNicknameGenerator {
 	 */ // TODO 파라미터는 변하는 게 좋지 않음!
 	public static String generateUniqueNickname(String baseNickname, Predicate<String> isDuplicate) {
 
-		baseNickname = StringUtils.hasText(baseNickname) ? baseNickname : "은하";
-		String nickname = baseNickname;
+		String nickname = StringUtils.hasText(baseNickname) ? baseNickname : "은하";
 
 		for (int attempt = 0; attempt < 10; attempt++) {
 			if (!isDuplicate.test(nickname)) {
 				return nickname;
 			}
-			nickname = generateNewNickname(baseNickname, attempt);
+			nickname = generateNewNickname(nickname);
 		}
 
 		throw new BaseException("닉네임 생성에 실패했습니다. 최대 시도 횟수를 초과했습니다.");
 	}
 
-	private static String generateNewNickname(String baseNickname, int attempt) {
+	private static String generateNewNickname(String baseNickname) {
 
 		// 랜덤 숫자 5자리 생성
-		String uuid = UUID.randomUUID().toString().substring(0, 5 - String.valueOf(attempt).length());
-		String newNickname = baseNickname + uuid + attempt;
+		String uuid = UUID.randomUUID().toString().substring(0, 4);
+		String newNickname = baseNickname + uuid;
 		log.trace(" 닉네임 중복으로 새로 생성한 닉네임: {}", newNickname);
 		return newNickname;
 	}
