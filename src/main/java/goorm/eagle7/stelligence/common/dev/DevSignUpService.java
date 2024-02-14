@@ -25,12 +25,8 @@ public class DevSignUpService {
 		// 닉네임이 중복인지 확인, 중복이면 랜덤 닉네임 생성
 		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
 			this::isNicknameDuplicate);
-		String uniqueNickname = RandomUtils.generateUniqueNickname(baseNickname,
-			() -> isNicknameDuplicate(baseNickname));
 
 		// member 생성 OAuth2.0 테스트용 하드 코딩
-		Member newMember = Member.of("영민", uniqueNickname, "sbslc2000@stelligence.com", null,
-			"eunzzi" + uniqueNickname, SocialType.KAKAO);
 		Member newMember = Member.of(uniqueNickname, "sbslc2000@stelligence.com", "youngandmini.com",
 			"eunzzi" + uniqueNickname, SocialType.KAKAO);
 
