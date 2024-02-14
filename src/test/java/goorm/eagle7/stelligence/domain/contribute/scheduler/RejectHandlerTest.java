@@ -16,6 +16,7 @@ import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
+import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @ExtendWith(MockitoExtension.class)
 class RejectHandlerTest {
@@ -33,10 +34,13 @@ class RejectHandlerTest {
 	void handleTest() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
+		Member member = member(1L, "testNickname");
+		Contribute contribute = contribute(1L, member, "title", "description", ContributeStatus.VOTING, document);
 
-		//when
+		// when(contributeRepository.findById(member.getId())).thenReturn(java.util.Optional.of(contribute));
 		when(contributeRepository.findById(contribute.getId())).thenReturn(java.util.Optional.of(contribute));
+
+		// when
 		rejectHandler.handle(contribute.getId());
 
 		//then
