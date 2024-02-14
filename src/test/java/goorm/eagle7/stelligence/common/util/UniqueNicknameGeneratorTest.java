@@ -34,7 +34,7 @@ class UniqueNicknameGeneratorTest {
 		when(memberRepository.existsByNickname(baseNickname)).thenReturn(false);
 		String uniqueNickname = baseNickname;
 		// When
-		 uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
+		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname,
 			nickname -> memberRepository.existsByNickname(nickname)
 		);
 
@@ -68,6 +68,7 @@ class UniqueNicknameGeneratorTest {
 			.isNotEqualTo(baseNickname)
 			.startsWith(baseNickname);
 		assertThat(uniqueNickname.length()).isGreaterThan(baseNickname.length());
+		assertThat(uniqueNickname.length()).isEqualTo(baseNickname.length() + 5);
 		verify(memberRepository, times(10)).existsByNickname(anyString());
 
 		log.info("baseNickname = {}", baseNickname);

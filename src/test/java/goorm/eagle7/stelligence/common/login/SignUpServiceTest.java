@@ -82,7 +82,6 @@ class SignUpServiceTest {
 		log.info("member: {}", member);
 		log.info("member.getNickname(): {}", member.getNickname());
 
-
 	}
 
 }
