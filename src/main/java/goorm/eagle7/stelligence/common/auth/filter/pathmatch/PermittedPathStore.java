@@ -74,6 +74,9 @@ class PermittedPathStore {
 	 */
 	public boolean exist(String httpMethod, String uri) {
 
+		// if(httpMethod.equals(HttpMethod.GET.name()) && uri.equals("/api/bookmarks/marked")) {
+		// 	return true;
+		// }
 		for (RequestResource resource : REQUEST_RESOURCES) {
 
 			String permittedHttpMethod = resource.getHttpMethod();
