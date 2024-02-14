@@ -38,7 +38,7 @@ public class DevSignUpService {
 
 	// 닉네임 중복 확인 메서드
 	private boolean isNicknameDuplicate(String nickname) {
-		if (!StringUtils.hasText(nickname)) {
+		if(!StringUtils.hasText(nickname)) {
 			return false;
 		}
 		return memberRepository.existsByNicknameAndActiveTrue(nickname);
