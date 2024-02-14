@@ -1,5 +1,10 @@
 package goorm.eagle7.stelligence.domain.badge.strategy;
 
+import static goorm.eagle7.stelligence.domain.badge.model.Badge.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
@@ -20,8 +25,26 @@ public class ContributeAllBadgeAwardStrategy implements BadgeAwardStrategy {
     }
 
     @Override
-    public Badge checkAndAward(BadgeCategory badgeCategory, Member member) {
+    public void checkAndAward(BadgeCategory badgeCategory, Member member) {
         long count = contributeRepository.countByMemberId(member.getId());
-        return Badge.findByEventCategoryAndCount(badgeCategory, count);
+
+        getRequiredCounts().entrySet().stream()
+            .filter(entry -> count == entry.getKey())
+            .map(Map.Entry::getValue)
+            .findAny()
+            .ifPresent(member::addBadge);
+
     }
+
+    @Override
+    public Map<Integer, Badge> getRequiredCounts() {
+        Map<Integer, Badge> requiredCounts = new HashMap<>();
+        requiredCounts.put(1, MERCURY);
+        requiredCounts.put(5, VENUS);
+        requiredCounts.put(10, NEPTUNE);
+        requiredCounts.put(30, SUN);
+        requiredCounts.put(50, GALAXY);
+        return requiredCounts;
+    }
+
 }

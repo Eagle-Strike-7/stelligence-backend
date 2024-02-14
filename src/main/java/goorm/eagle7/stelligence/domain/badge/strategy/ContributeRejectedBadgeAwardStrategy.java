@@ -1,5 +1,10 @@
 package goorm.eagle7.stelligence.domain.badge.strategy;
 
+import static goorm.eagle7.stelligence.domain.badge.model.Badge.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
@@ -21,8 +26,21 @@ public class ContributeRejectedBadgeAwardStrategy implements BadgeAwardStrategy 
     }
 
     @Override
-    public Badge checkAndAward(BadgeCategory badgeCategory, Member member) {
+    public void checkAndAward(BadgeCategory badgeCategory, Member member) {
         long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
-        return Badge.findByEventCategoryAndCount(badgeCategory, count);
+
+        getRequiredCounts().entrySet().stream()
+            .filter(entry -> count == entry.getKey())
+            .map(Map.Entry::getValue)
+            .findAny()
+            .ifPresent(member::addBadge);
+
+    }
+
+    @Override
+    public Map<Integer, Badge> getRequiredCounts() {
+        Map<Integer, Badge> requiredCounts = new HashMap<>();
+        requiredCounts.put(100, BLACKHOLE);
+        return requiredCounts;
     }
 }
