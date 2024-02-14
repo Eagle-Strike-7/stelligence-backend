@@ -47,7 +47,7 @@ public class DocumentController {
 	)
 	@PostMapping
 	public ResponseTemplate<DocumentResponse> createDocument(
-		@RequestBody @Validated DocumentCreateRequest documentCreateRequest,
+		@Validated @RequestBody DocumentCreateRequest documentCreateRequest,
 		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok(documentService.createDocument(documentCreateRequest, memberInfo.getId()));
