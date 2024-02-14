@@ -31,7 +31,7 @@ class SignUpServiceTest {
 	@BeforeEach
 	void setUp() {
 		Member member = signUpService.oauth2SignUp(
-			LoginOAuth2Request.of("name", "baseNickname", "email", "imageUrl", "socialId123",
+			LoginOAuth2Request.of("baseNickname", "email", "imageUrl", "socialId123",
 				SocialType.KAKAO));
 		memberRepository.save(member);
 	}
@@ -46,7 +46,7 @@ class SignUpServiceTest {
 	void testOauth2SignUp() {
 
 		// given
-		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("name", "nickname", "email", "imageUrl",
+		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("nickname", "email", "imageUrl",
 			"socialId", SocialType.KAKAO
 		);
 
@@ -66,7 +66,7 @@ class SignUpServiceTest {
 	void testIsNicknameDuplicate() {
 
 		// given
-		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("name", "baseNickname", "email", "imageUrl",
+		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("baseNickname", "email", "imageUrl",
 			"socialId", SocialType.KAKAO
 		);
 
