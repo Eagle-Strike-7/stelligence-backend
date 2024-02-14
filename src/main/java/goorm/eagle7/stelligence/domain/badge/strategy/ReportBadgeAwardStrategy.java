@@ -25,9 +25,9 @@ public class ReportBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Member member) {
-		long countDocument = documentReportRepository.countByReporterId(member.getId());
-		long countComment = commentReportRepository.countByReporterId(member.getId());
+	public long getCount(Long memberId) {
+		long countDocument = documentReportRepository.countByReporterId(memberId);
+		long countComment = commentReportRepository.countByReporterId(memberId);
 		return countDocument + countComment;
 	}
 

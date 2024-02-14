@@ -23,8 +23,8 @@ public class WritingBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Member member) {
-		return documentContentRepository.countByAuthor_Id(member.getId());
+	public long getCount(Long memberId) {
+		return documentContentRepository.countByAuthor_Id(memberId);
 	}
 
 	@Override

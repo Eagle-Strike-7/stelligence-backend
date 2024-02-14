@@ -12,11 +12,16 @@ public interface BadgeAwardStrategy {
 
 	Map<Integer, Badge> getRequiredCounts();
 
-	long getCount(Member member);
+	long getCount(Long memberId);
 
-	default void checkAndAward(BadgeCategory badgeCategory, Member member) {
+	/**
+	 * <h2>전략 상세 조건 확인 후 발급</h2>
+	 * <p>- 조건 숫자와 동일한 경우, 해당 배지를 찾아 배지 발급</p>
+	 * @param member
+	 */
+	default void checkAndAward(Member member) {
 
-		long count = getCount(member);
+		long count = getCount(member.getId());
 
 		getRequiredCounts().entrySet().stream()
 			.filter(entry -> count == entry.getKey())

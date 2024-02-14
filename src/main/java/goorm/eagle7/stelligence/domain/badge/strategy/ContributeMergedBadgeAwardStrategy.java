@@ -26,8 +26,8 @@ public class ContributeMergedBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Member member) {
-		return contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+	public long getCount(Long memberId) {
+		return contributeRepository.countByMemberIdAndStatus(memberId, ContributeStatus.MERGED);
 	}
 
 	@Override

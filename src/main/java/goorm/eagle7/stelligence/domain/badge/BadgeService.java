@@ -26,14 +26,15 @@ public class BadgeService {
 	@Transactional
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
+		// badgeCategory에 해당하는 전략 category 찾기
 		BadgeAwardStrategy strategy = strategyMap.get(badgeCategory);
 		if (strategy == null) {
 			// BadgeCategory에 해당하는 전략이 없을 경우는 server error로 판단
 			throw new IllegalArgumentException("Unsupported badge category: " + badgeCategory);
 		}
 
-		// badgeCategory에 해당하는 전략을 찾아 수행
-		strategy.checkAndAward(badgeCategory, member);
+		// 전략 상세 조건 확인 후 발급
+		strategy.checkAndAward(member);
 
 	}
 

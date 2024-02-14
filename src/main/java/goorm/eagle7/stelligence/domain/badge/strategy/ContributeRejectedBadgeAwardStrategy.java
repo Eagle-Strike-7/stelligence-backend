@@ -26,8 +26,8 @@ public class ContributeRejectedBadgeAwardStrategy implements BadgeAwardStrategy 
     }
 
     @Override
-    public long getCount(Member member) {
-        return contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
+    public long getCount(Long memberId) {
+        return contributeRepository.countByMemberIdAndStatus(memberId, ContributeStatus.REJECTED);
     }
 
     @Override
