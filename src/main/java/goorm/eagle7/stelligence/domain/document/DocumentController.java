@@ -14,6 +14,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentStatusResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
@@ -67,6 +68,20 @@ public class DocumentController {
 	) {
 		//revision이 null인 경우는 service에서 최신값을 찾아 반환하도록 되어있습니다.
 		return ResponseTemplate.ok(documentService.getDocumentContent(documentId, revision));
+	}
+
+	@Operation(summary = "문서 상태 조회", description = "문서가 현재 수정 가능한지, 아니면 투표중인지, 토론중인지에 대한 상태와 관련된 ID 값을 제공합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "문서 상태 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/{documentId}/status")
+	public ResponseTemplate<DocumentStatusResponse> getDocumentStatus(
+		@Parameter(description = "조회할 문서의 ID", example = "1")
+		@PathVariable Long documentId
+	) {
+		return ResponseTemplate.ok(documentService.getDocumentStatus(documentId));
 	}
 
 	@Operation(summary = "문서 그래프 조회", description = "문서 그래프를 조회합니다.")
