@@ -30,7 +30,7 @@ public class VoteService {
 	private final ContributeRepository contributeRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	private static final int VOTE_EXPIRATION_MINUTES = 5;
+	private static final int VOTE_CACHE_EXPIRATION_MINUTES = 5;
 
 	private static final String VOTE_KEY = "vote:";
 
@@ -80,7 +80,7 @@ public class VoteService {
 			updateVoteCountInRedis(hashOps, key, null, updatedVoteStatus);
 		}
 
-		redisTemplate.expire(key, Duration.ofMinutes(VOTE_EXPIRATION_MINUTES));
+		redisTemplate.expire(key, Duration.ofMinutes(VOTE_CACHE_EXPIRATION_MINUTES));
 
 		// Redis에서 값을 조회하고, 값이 없으면 "0"으로 처리
 		String agreeCountStr = hashOps.get(key, "agree");
@@ -170,7 +170,7 @@ public class VoteService {
 			hashOps.put(key, "disagree", String.valueOf(disagreeCount));
 
 			// 키에 대한 만료 시간 설정
-			redisTemplate.expire(key, Duration.ofMinutes(VOTE_EXPIRATION_MINUTES));
+			redisTemplate.expire(key, Duration.ofMinutes(VOTE_CACHE_EXPIRATION_MINUTES));
 
 			return Map.of("agree", agreeCount, "disagree", disagreeCount);
 		} else {
