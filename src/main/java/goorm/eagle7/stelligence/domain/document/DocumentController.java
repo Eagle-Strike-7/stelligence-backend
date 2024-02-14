@@ -38,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DocumentController {
 
 	private final DocumentService documentService;
+	private final DocumentStatusService documentStatusService;
 
 	@Operation(summary = "문서 생성", description = "문서를 생성합니다")
 	@ApiResponse(
@@ -81,7 +82,7 @@ public class DocumentController {
 		@Parameter(description = "조회할 문서의 ID", example = "1")
 		@PathVariable Long documentId
 	) {
-		return ResponseTemplate.ok(documentService.getDocumentStatus(documentId));
+		return ResponseTemplate.ok(documentStatusService.getDocumentStatus(documentId));
 	}
 
 	@Operation(summary = "문서 그래프 조회", description = "문서 그래프를 조회합니다.")

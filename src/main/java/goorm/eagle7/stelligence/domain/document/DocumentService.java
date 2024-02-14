@@ -7,13 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.debate.model.Debate;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
-import goorm.eagle7.stelligence.domain.document.content.dto.DocumentStatusResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
@@ -39,8 +34,6 @@ public class DocumentService {
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
 	private final DocumentRequestValidator documentRequestValidator;
-	private final ContributeRepository contributeRepository;
-	private final DebateRepository debateRepository;
 
 	/**
 	 * Document를 생성합니다.
@@ -95,18 +88,6 @@ public class DocumentService {
 		} else {
 			return documentContentService.getDocument(documentId, revision);
 		}
-	}
-
-	/**
-	 * Document의 상태를 조회합니다.
-	 * @param documentId : 조회할 Document의 ID
-	 * @return DocumentStatusResponse
-	 */
-	public DocumentStatusResponse getDocumentStatus(Long documentId) {
-		Contribute latestContribute = contributeRepository.findLatestContributeByDocumentId(documentId).orElse(null);
-		Debate latestDebate = debateRepository.findLatestDebateByDocumentId(documentId).orElse(null);
-
-		return DocumentStatusResponse.of(documentId, latestContribute, latestDebate);
 	}
 
 	/**
