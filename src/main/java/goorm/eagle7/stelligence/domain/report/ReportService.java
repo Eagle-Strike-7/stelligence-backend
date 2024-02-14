@@ -1,8 +1,11 @@
 package goorm.eagle7.stelligence.domain.report;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
+import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
@@ -20,6 +23,7 @@ public class ReportService {
 	private final DocumentContentRepository documentContentRepository;
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * 특정 문서를 신고합니다.
@@ -41,6 +45,9 @@ public class ReportService {
 		DocumentReport documentReport = DocumentReport.createDocumentReport(
 			documentId, reportRequest.getDescription(), reporterId);
 		documentReportRepository.save(documentReport);
+
+		// 이벤트 발행
+		eventPublisher.publishEvent(new BadgeEvent(reporterId, BadgeCategory.REPORT));
 	}
 
 	/**
@@ -63,5 +70,8 @@ public class ReportService {
 		CommentReport commentReport = CommentReport.createCommentReport(
 			commentId, reportRequest.getDescription(), reporterId);
 		commentReportRepository.save(commentReport);
+
+		// 이벤트 발행
+		eventPublisher.publishEvent(new BadgeEvent(reporterId, BadgeCategory.REPORT));
 	}
 }
