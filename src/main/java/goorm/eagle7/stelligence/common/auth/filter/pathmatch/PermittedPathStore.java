@@ -31,7 +31,7 @@ class PermittedPathStore {
 			// application 권한
 			RequestResource.of(HttpMethod.GET.name(), "/api/documents/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/comments/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**/comments/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**"),
 
 			// oauth2
