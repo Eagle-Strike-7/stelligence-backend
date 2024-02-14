@@ -19,6 +19,14 @@ public class BadgeEventListener {
 	private final MemberRepository memberRepository;
 	private final BadgeService badgeService;
 
+	/**
+	 * <h2>BadgeEvent를 받아서 BadgeService를 통해 Badge를 수여</h2>
+	 * <p>- 새로운 스레드에서 비동기로 진행</p>
+	 * <p>- REQUIRES_NEW로 트랜잭션 분리</p>
+	 * <p>- BadgeEvent에만 반응</p>
+	 * <p>- event에서 member가 아닌 memberId를 꺼내 와야 변경 정상 작동</p>
+	 * @param event BadgeEvent
+	 */
 	@Async
 	@Transactional(propagation = REQUIRES_NEW)
 	@TransactionalEventListener(BadgeEvent.class)

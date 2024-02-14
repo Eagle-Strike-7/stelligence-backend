@@ -8,6 +8,7 @@ public interface DocumentReportRepository extends JpaRepository<DocumentReport, 
 
 	boolean existsByDocumentIdAndReporterId(Long documentId, Long reporterId);
 
+	// 신고자 ID로 신고한 문서 신고 수 조회
 	long countByReporterId(Long id);
 
 }
