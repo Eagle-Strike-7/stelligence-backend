@@ -27,6 +27,9 @@ public class CustomRequestMatcher implements RequestMatcher {
 
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
+		if(matchesMemberInfoRequiredInPermitAll(httpMethod, uri)) {
+			return false;
+		}
 
 		return permittedPathStore.isPermittedAll(httpMethod, uri);
 
