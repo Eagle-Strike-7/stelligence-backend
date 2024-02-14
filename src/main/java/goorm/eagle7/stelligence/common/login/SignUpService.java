@@ -28,7 +28,7 @@ public class SignUpService {
 		String uniqueNickname = RandomUtils.generateUniqueNickname(baseNickname, () -> isNicknameDuplicate(baseNickname));
 
 		Member newMember = Member.of(
-			loginOAuth2Request.getName(),
+			null,
 			uniqueNickname,
 			loginOAuth2Request.getEmail(),
 			loginOAuth2Request.getImageUrl(),
