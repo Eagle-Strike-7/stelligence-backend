@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.api;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 
 import javax.sql.DataSource;
 
@@ -80,6 +81,8 @@ public class DatabaseConnectionApplicationRunner implements ApplicationRunner {
 		} catch (Exception e) {
 			log.error("Error checking Neo4j fulltext index: " + e.getMessage());
 		}
+
+		log.info("Database Connection Checked, current time: {}", LocalDateTime.now());
 	}
 
 }
