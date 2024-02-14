@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.vote;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.redis.core.HashOperations;
@@ -29,7 +30,9 @@ public class VoteService {
 	private final ContributeRepository contributeRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	private final static int VOTE_EXPIRATION_MINUTES = 5;
+	private static final int VOTE_CACHE_EXPIRATION_MINUTES = 5;
+
+	private static final String VOTE_KEY = "vote:";
 
 	/**
 	 * 투표 하기
@@ -54,7 +57,7 @@ public class VoteService {
 		}
 
 		// Redis 키 생성
-		String key = "vote:" + contribute.getId();
+		String key = VOTE_KEY + contribute.getId();
 		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
 
 		Optional<Vote> existingVote = voteRepository.findByMemberAndContribute(member, contribute);
@@ -77,7 +80,7 @@ public class VoteService {
 			updateVoteCountInRedis(hashOps, key, null, updatedVoteStatus);
 		}
 
-		redisTemplate.expire(key, Duration.ofMinutes(VOTE_EXPIRATION_MINUTES));
+		redisTemplate.expire(key, Duration.ofMinutes(VOTE_CACHE_EXPIRATION_MINUTES));
 
 		// Redis에서 값을 조회하고, 값이 없으면 "0"으로 처리
 		String agreeCountStr = hashOps.get(key, "agree");
@@ -123,39 +126,17 @@ public class VoteService {
 		Contribute contribute = contributeRepository.findById(contributeId).orElseThrow(
 			() -> new BaseException("존재하지 않는 Contribute의 요청입니다. Contribute ID: " + contributeId));
 
-		String key = "vote:" + contribute.getId();
-		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+		String key = VOTE_KEY + contribute.getId();
 
-		Boolean keyExists = redisTemplate.hasKey(key);
-		int agreeCount;
-		int disagreeCount;
+		// Redis에서 투표 현황 조회
+		Map<String, Integer> voteCount = getVoteCountFromRedis(key, contributeId);
 
-		if (!keyExists) {
-			// Redis에 정보가 없는 경우, 데이터베이스에서 정보 조회 및 Redis에 저장
-			VoteSummary voteSummary = voteRepository.getVoteSummary(contributeId);
-			agreeCount = voteSummary.getAgreeCount();
-			disagreeCount = voteSummary.getDisagreeCount();
-
-			hashOps.put(key, "agree", String.valueOf(agreeCount));
-			hashOps.put(key, "disagree", String.valueOf(disagreeCount));
-
-			// 키에 대한 만료 시간 설정
-			redisTemplate.expire(key, Duration.ofMinutes(VOTE_EXPIRATION_MINUTES));
-		} else {
-			// Redis에서 값을 조회하고, 값이 없으면 "0"으로 처리
-			String agreeCountStr = hashOps.get(key, "agree");
-			String disagreeCountStr = hashOps.get(key, "disagree");
-
-			// 문자열을 int로 변환, 값이 없는 경우 0으로 초기화
-			agreeCount = agreeCountStr != null ? Integer.parseInt(agreeCountStr) : 0;
-			disagreeCount = disagreeCountStr != null ? Integer.parseInt(disagreeCountStr) : 0;
-		}
-
+		// 사용자의 투표 상태 조회
 		Boolean userVoteStatus = getUserVoteStatus(loginMemberId, contribute);
 
 		return VoteSummaryResponse.of(
-			agreeCount,
-			disagreeCount,
+			voteCount.get("agree"),
+			voteCount.get("disagree"),
 			userVoteStatus
 		);
 	}
@@ -173,5 +154,35 @@ public class VoteService {
 			}
 		}
 		return userVoteStatus;
+	}
+
+	private Map<String, Integer> getVoteCountFromRedis(String key, Long contributeId) {
+		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+		Boolean keyExists = redisTemplate.hasKey(key);
+
+		if (!keyExists) {
+			// Redis에 정보가 없는 경우, 데이터베이스에서 정보 조회 및 Redis에 저장
+			VoteSummary voteSummary = voteRepository.getVoteSummary(contributeId);
+			int agreeCount = voteSummary.getAgreeCount();
+			int disagreeCount = voteSummary.getDisagreeCount();
+
+			hashOps.put(key, "agree", String.valueOf(agreeCount));
+			hashOps.put(key, "disagree", String.valueOf(disagreeCount));
+
+			// 키에 대한 만료 시간 설정
+			redisTemplate.expire(key, Duration.ofMinutes(VOTE_CACHE_EXPIRATION_MINUTES));
+
+			return Map.of("agree", agreeCount, "disagree", disagreeCount);
+		} else {
+			// Redis에서 값을 조회하고, 값이 없으면 "0"으로 처리
+			String agreeCountStr = hashOps.get(key, "agree");
+			String disagreeCountStr = hashOps.get(key, "disagree");
+
+			// 문자열을 int로 변환, 값이 없는 경우 0으로 초기화
+			int agreeCount = agreeCountStr != null ? Integer.parseInt(agreeCountStr) : 0;
+			int disagreeCount = disagreeCountStr != null ? Integer.parseInt(disagreeCountStr) : 0;
+
+			return Map.of("agree", agreeCount, "disagree", disagreeCount);
+		}
 	}
 }

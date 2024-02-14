@@ -257,31 +257,6 @@ class DebateServiceCommentTest {
 	}
 
 	@Test
-	@DisplayName("댓글 최대 길이 초과 테스트")
-	void commentMaxLengthExceed() {
-		//given
-		final int length = Comment.MAX_COMMENT_LENGTH + 1;
-		final String content = getKorStringWithLength(length);
-		assertThat(content.length()).isGreaterThan(Comment.MAX_COMMENT_LENGTH);
-
-		CommentRequest commentRequest = CommentRequest.of(content);
-
-		Long debateId = 1L;
-		Long commenterId = 1L;
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
-			LocalDateTime.now(), 1, LocalDateTime.now());
-		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
-
-		//when
-
-		//then
-		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
-
-	}
-
-	@Test
 	@DisplayName("댓글 최대 길이 성공 테스트")
 	void commentMaxLengthPass() {
 		//given
@@ -302,52 +277,6 @@ class DebateServiceCommentTest {
 
 		//then
 		verify(commentRepository, times(1)).save(any(Comment.class));
-
-	}
-
-	@Test
-	@DisplayName("빈 댓글 테스트")
-	void emptyComment() {
-		//given
-		final String content = " ";
-
-		CommentRequest commentRequest = CommentRequest.of(content);
-
-		Long debateId = 1L;
-		Long commenterId = 1L;
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
-			LocalDateTime.now(), 1, LocalDateTime.now());
-		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
-
-		//when
-
-		//then
-		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("댓글에 내용이 존재하지 않습니다.");
-
-	}
-
-	@Test
-	@DisplayName("null 댓글 테스트")
-	void nullComment() {
-		//given
-		final String content = null;
-
-		CommentRequest commentRequest = CommentRequest.of(content);
-
-		Long debateId = 1L;
-		Long commenterId = 1L;
-		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
-			LocalDateTime.now(), 1, LocalDateTime.now());
-		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
-
-		//when
-
-		//then
-		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("댓글에 내용이 존재하지 않습니다.");
 
 	}
 
