@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -88,7 +89,7 @@ public class MemberController {
 	public ResponseTemplate<Void> updateNickname(
 		@Auth MemberInfo memberInfo,
 		@Parameter(description = "변경할 닉네임", example = "은하수")
-		@RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
+		@Validated @RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		memberService.updateNickname(memberInfo.getId(), memberUpdateNicknameRequest);
 		return ResponseTemplate.ok();
 	}

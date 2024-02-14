@@ -19,7 +19,7 @@ public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDeb
 	@Query("select d from Debate d"
 		+ " join fetch d.contribute c"
 		+ " join fetch c.member m"
-		+ " join fetch c.amendments a"
+		+ " left join fetch c.amendments a"
 		+ " where d.id = :debateId")
 	Optional<Debate> findByIdWithContribute(@Param("debateId") Long debateId);
 

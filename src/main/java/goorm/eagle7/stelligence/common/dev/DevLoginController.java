@@ -16,7 +16,9 @@ import goorm.eagle7.stelligence.common.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -63,6 +65,8 @@ public class DevLoginController {
 
 		// ThreadLocal 초기화
 		MemberInfoContextHolder.clear();
+
+		log.debug("Controller에서 로그아웃 완료");
 
 		return ResponseTemplate.ok();
 	}

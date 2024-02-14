@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
+import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkCreateRequest;
+import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkOneResponse;
 import goorm.eagle7.stelligence.domain.bookmark.dto.BookmarkPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -55,6 +58,32 @@ public class BookmarkController {
 
 	}
 
+	@Operation(summary = "북마크 단건 조회",
+		description = """
+						- 로그인한 사용자가 문서를 확인할 때, 북마크했는지 여부를 조회합니다.
+						- 로그인하지 않으면 401 에러를 반환합니다. (400 변환 예정)
+			"""
+	)
+	@ApiResponse(
+		responseCode = "200",
+		description = "북마크 단건 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/marked")
+	public ResponseTemplate<BookmarkOneResponse> getBookmark(
+		@Auth MemberInfo memberInfo,
+		@Parameter(description = "북마크를 조회할 문서의 documentId를 입력합니다.", example = "1")
+		@RequestParam Long documentId) {
+
+		if (memberInfo == null) {
+			throw new BaseException("로그인이 필요합니다.");
+		}
+
+		BookmarkOneResponse bookmarkOneResponse = bookmarkService.getBookmark(memberInfo.getId(), documentId);
+		return ResponseTemplate.ok(bookmarkOneResponse);
+
+	}
+
 	@Operation(summary = "북마크 생성", description =
 		"로그인한 사용자의 북마크를 생성합니다."
 			+ "이미 북마크한 문서를 다시 북마크하려고 하면 실패합니다.")
@@ -66,7 +95,7 @@ public class BookmarkController {
 	@PostMapping
 	public ResponseTemplate<Void> createBookmark(
 		@Auth MemberInfo memberInfo,
-		@RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
+		@Validated @RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
 
 		bookmarkService.createBookmark(
 			memberInfo.getId(), bookmarkCreateRequest);

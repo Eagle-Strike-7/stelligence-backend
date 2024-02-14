@@ -18,7 +18,12 @@ import lombok.NoArgsConstructor;
 class PermittedPathStore {
 
 	private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
-	private static final Set<RequestResource> REQUEST_RESOURCES =
+
+	/**
+	 * <h2>모든 허용 리소스 정보</h2>
+	 * <p>로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
+	 */
+	private static final Set<RequestResource> PERMITTED_RESOURCES =
 		Set.of(
 
 			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/**"),
@@ -26,7 +31,7 @@ class PermittedPathStore {
 			// application 권한
 			RequestResource.of(HttpMethod.GET.name(), "/api/documents/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/comments/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**/comments/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**"),
 
 			// oauth2
@@ -42,9 +47,6 @@ class PermittedPathStore {
 			// error
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
 			RequestResource.of(HttpMethod.OPTIONS.name(), "/error/**"),
-
-			// logout
-			// RequestResource.of(HttpMethod.POST.name(), "/api/logout"),
 
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
@@ -65,16 +67,29 @@ class PermittedPathStore {
 		);
 
 	/**
+	 * <h2>허용 리소스 중 로그인 정보를 받는 uri</h2>
+	 * <p>허용 리소스 중 로그인 필요한 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
+	 */
+	private static final Set<RequestResource> MEMBERINFO_REQUIRED_RESOURCES =
+		Set.of(
+
+			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**/votes"),
+			RequestResource.of(HttpMethod.GET.name(), "/api/bookmarks/marked/**"),
+			RequestResource.of(HttpMethod.POST.name(), "/api/logout")
+
+		);
+
+	/**
 	 * <h2>허용하는 uri 확인</h2>
 	 * <p>- 요청의 httpMethod, uri가 리소스 리스트 중 어느 하나라도 일치하는 게 있는지 확인</p>
 	 * <p>- 허용하는 uri가 /**로 끝나면, basePath 비교</p>
-	 * @param httpMethod
-	 * @param uri
+	 * @param httpMethod httpMethod 타입
+	 * @param uri uri
 	 * @return boolean 리소스 리스트에 있으면 true, 없으면 false
 	 */
-	public boolean exist(String httpMethod, String uri) {
+	public boolean isPermittedAll(String httpMethod, String uri) {
 
-		for (RequestResource resource : REQUEST_RESOURCES) {
+		for (RequestResource resource : PERMITTED_RESOURCES) {
 
 			String permittedHttpMethod = resource.getHttpMethod();
 			String permittedUri = resource.getUri();
@@ -86,4 +101,20 @@ class PermittedPathStore {
 		}
 		return false;
 	}
+
+	public boolean isRequiredMemberInfo(String httpMethod, String uri) {
+
+		for (RequestResource resource : MEMBERINFO_REQUIRED_RESOURCES) {
+
+			String permittedHttpMethod = resource.getHttpMethod();
+			String permittedUri = resource.getUri();
+
+			if (permittedHttpMethod.equals(httpMethod) &&
+				antPathMatcher.match(permittedUri, uri)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
