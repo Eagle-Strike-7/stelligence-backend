@@ -3,10 +3,13 @@ package goorm.eagle7.stelligence.domain.document;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
+import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
@@ -34,6 +37,8 @@ public class DocumentService {
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
 	private final DocumentRequestValidator documentRequestValidator;
+
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Document를 생성합니다.
@@ -73,6 +78,9 @@ public class DocumentService {
 		 * 추후에 코드가 변경될 여지가 있습니다. 자세한 내용은 Document.sections의 주석을 참고해주세요.
 		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
+
+		applicationEventPublisher.publishEvent(new BadgeEvent(author.getId(), BadgeCategory.DOCUMENT));
+
 		return DocumentResponse.of(
 			createdDocument, 1L, sections, Collections.emptyList(), null, null);
 	}

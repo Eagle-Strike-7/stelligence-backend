@@ -4,6 +4,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
+import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -29,5 +31,7 @@ public class RejectHandler implements ContributeSchedulingActionHandler {
 		contribute.setStatusRejected();
 
 		applicationEventPublisher.publishEvent(new ContributeRejectedEvent(contributeId));
+		applicationEventPublisher.publishEvent(new BadgeEvent(contribute.getMember().getId(),
+			BadgeCategory.CONTRIBUTE_REJECTED));
 	}
 }
