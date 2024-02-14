@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
@@ -36,12 +34,6 @@ class DocumentServiceTest {
 
 	@Mock
 	private DocumentRequestValidator documentRequestValidator;
-
-	@Mock
-	private ContributeRepository contributeRepository;
-
-	@Mock
-	private DebateRepository debateRepository;
 
 	@InjectMocks
 	private DocumentService documentService;
