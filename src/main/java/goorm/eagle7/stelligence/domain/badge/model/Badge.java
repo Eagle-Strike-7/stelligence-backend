@@ -12,10 +12,10 @@ public enum Badge {
 	// enum type, value 필드, 생성자 순서가 일치해야 함.
 
 	/** 글 작성 Badge 목록 **/
-	ASTRONAUT("우주 여행자", WRITING, "첫 글 작성 완료", "astronaut.png"),
-	MOON("달 탐사 완료", WRITING, "글 5개 작성 완료", "moon.png"),
-	MARS("화성 탐사 완료", WRITING, "글 10개 작성 완료", "mars.png"),
-	URANUS("천왕성 탐사 완료", WRITING, "글 20개 작성 완료", "uranus.png"),
+	ASTRONAUT("우주 여행자", DOCUMENT, "첫 글 작성 완료", "astronaut.png"),
+	MOON("달 탐사 완료", DOCUMENT, "글 5개 작성 완료", "moon.png"),
+	MARS("화성 탐사 완료", DOCUMENT, "글 10개 작성 완료", "mars.png"),
+	URANUS("천왕성 탐사 완료", DOCUMENT, "글 20개 작성 완료", "uranus.png"),
 
 	/** 수정 요청 Badge 목록 **/
 	MERCURY("수성 탐사 완료", CONTRIBUTE_ALL, "수정 1번 요청 완료", "mercury.png"),
