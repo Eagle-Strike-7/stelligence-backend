@@ -88,12 +88,12 @@ class MemberRepositoryTest {
 		String withdrawnMemberNickname = withdrawnMember1.get().getNickname();
 
 		// when
-		boolean memberExists = memberRepository.existsByNicknameAndActiveTrue(memberNickname);
-		boolean withdrawnMemberExists = memberRepository.existsByNicknameAndActiveTrue(withdrawnMemberNickname);
+		boolean memberExists = memberRepository.existsByNickname(memberNickname);
+		boolean withdrawnMemberExists = memberRepository.existsByNickname(withdrawnMemberNickname);
 
 		// then
 		assertThat(memberExists).isTrue();
-		assertThat(withdrawnMemberExists).isFalse();
+		assertThat(withdrawnMemberExists).isTrue();
 
 	}
 
@@ -207,6 +207,18 @@ class MemberRepositoryTest {
 		boolean nonExistNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(100L, now.minusMinutes(5));
 		// then
 		assertThat(nonExistNowMember).isFalse();
+
+	}
+
+	@Test
+	@DisplayName("[확인] null을 입력받는 경우 - findByNicknameAndActiveTrue")
+	void findByNicknameAndActiveTrueNull() {
+
+		// when
+		Optional<Member> member = memberRepository.findByNicknameAndActiveTrue(null);
+
+		// then
+		assertThat(member).isEmpty();
 
 	}
 
