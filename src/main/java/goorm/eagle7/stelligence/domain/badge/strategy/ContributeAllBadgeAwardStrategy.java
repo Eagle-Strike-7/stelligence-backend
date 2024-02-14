@@ -24,16 +24,9 @@ public class ContributeAllBadgeAwardStrategy implements BadgeAwardStrategy {
         return BadgeCategory.CONTRIBUTE_ALL.equals(category);
     }
 
-    @Override
-    public void checkAndAward(BadgeCategory badgeCategory, Member member) {
-        long count = contributeRepository.countByMemberId(member.getId());
 
-        getRequiredCounts().entrySet().stream()
-            .filter(entry -> count == entry.getKey())
-            .map(Map.Entry::getValue)
-            .findAny()
-            .ifPresent(member::addBadge);
-
+    public long getCount(Member member) {
+        return contributeRepository.countByMemberId(member.getId());
     }
 
     @Override

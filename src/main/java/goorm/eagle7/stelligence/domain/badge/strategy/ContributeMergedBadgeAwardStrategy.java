@@ -18,33 +18,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContributeMergedBadgeAwardStrategy implements BadgeAwardStrategy {
 
-    private final ContributeRepository contributeRepository;
+	private final ContributeRepository contributeRepository;
 
-    @Override
-    public boolean supports(BadgeCategory category) {
-        return BadgeCategory.CONTRIBUTE_MERGED.equals(category);
-    }
+	@Override
+	public boolean supports(BadgeCategory category) {
+		return BadgeCategory.CONTRIBUTE_MERGED.equals(category);
+	}
 
-    @Override
-    public void checkAndAward(BadgeCategory badgeCategory, Member member) {
-        long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+	@Override
+	public long getCount(Member member) {
+		return contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
+	}
 
-        getRequiredCounts().entrySet().stream()
-            .filter(entry -> count == entry.getKey())
-            .map(Map.Entry::getValue)
-            .findAny()
-            .ifPresent(member::addBadge);
-
-    }
-
-    @Override
-    public Map<Integer, Badge> getRequiredCounts() {
-        Map<Integer, Badge> requiredCounts = new HashMap<>();
-        requiredCounts.put(1, JUPITER);
-        requiredCounts.put(5, SATURN);
-        requiredCounts.put(10, PLUTO);
-        requiredCounts.put(50, ANDROMEDA);
-        return requiredCounts;
-    }
+	@Override
+	public Map<Integer, Badge> getRequiredCounts() {
+		Map<Integer, Badge> requiredCounts = new HashMap<>();
+		requiredCounts.put(1, JUPITER);
+		requiredCounts.put(5, SATURN);
+		requiredCounts.put(10, PLUTO);
+		requiredCounts.put(50, ANDROMEDA);
+		return requiredCounts;
+	}
 
 }
