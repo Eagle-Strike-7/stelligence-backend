@@ -41,7 +41,6 @@ public class Member extends BaseTimeEntity {
 	private boolean active; // default: true, for soft delete
 
 	// social login 시 받아오는 정보
-	private String name;
 	private String nickname;
 	private String email;
 	private String imageUrl;
@@ -71,7 +70,6 @@ public class Member extends BaseTimeEntity {
 	 * <p>member 생성 시, role은 USER, contributes는 0, active = true로  설정.</p>
 	 * <p>member 생성 시, role은 USER, contributes는 0, 배지 발급.</p>
 	 * <p>refreshToken은 회원 가입 후 update로 진행</p>
-	 * @param name 이름
 	 * @param nickname 닉네임
 	 * @param email 이메일
 	 * @param imageUrl 프로필 사진 url
@@ -79,13 +77,12 @@ public class Member extends BaseTimeEntity {
 	 * @param socialType 소셜 타입
 	 */
 	public static Member of(
-		String name, String nickname, String email,
+		String nickname, String email,
 		String imageUrl, String socialId,
 		SocialType socialType) {
 
 		Member member = new Member();
 
-		member.name = name;
 		member.nickname = nickname;
 		member.email = email;
 		member.imageUrl = imageUrl;
@@ -135,7 +132,6 @@ public class Member extends BaseTimeEntity {
 	 */
 	public void withdraw(String newNickname) {
 
-		this.name = null;
 		this.nickname = newNickname;
 		this.email = null;
 		this.imageUrl = null;
