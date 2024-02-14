@@ -127,7 +127,7 @@ public class AuthFilter extends OncePerRequestFilter {
 					log.debug("accessCookie가 있습니다. 유효성 검사 진행");
 					// token 없으면 재로그인, 있으면 token 반환, 만료면 재발급
 					String accessToken = cookie.getValue();
-					if (StringUtils.hasText(accessToken)) {
+					if(!StringUtils.hasText(accessToken)) {
 						return getAcccessTokenFromRefreshCookie();
 					}
 					return accessToken;
