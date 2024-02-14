@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,7 @@ public class DocumentController {
 	)
 	@PostMapping
 	public ResponseTemplate<DocumentResponse> createDocument(
-		@RequestBody DocumentCreateRequest documentCreateRequest,
+		@Validated @RequestBody DocumentCreateRequest documentCreateRequest,
 		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok(documentService.createDocument(documentCreateRequest, memberInfo.getId()));
