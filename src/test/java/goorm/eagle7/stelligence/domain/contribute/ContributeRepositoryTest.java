@@ -6,8 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import goorm.eagle7.stelligence.config.mockdata.WithMockData;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 
 @DataJpaTest
@@ -81,6 +85,61 @@ class ContributeRepositoryTest {
 		// 5번이 작성한 요청 중 상태가 REJECTED인 요청은 1개
 		long count = contributeRepository.countByMemberIdAndStatus(5L, ContributeStatus.REJECTED);
 		assertThat(count).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("querydsl로 투표 개수 잘 받아오는지 확인")
+	void testFindSimpleContributePage() {
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findByContributeStatus(
+			ContributeStatus.VOTING, pageable);
+
+		assertThat(contributePage.getContent()).hasSize(2);
+		assertThat(contributePage.getContent().get(1).getVoteSummary().getAgreeCount()).isEqualTo(3);
+		assertThat(contributePage.getContent().get(1).getVoteSummary().getDisagreeCount()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("querydsl로 투표 완료된 수정요청 목록 잘 받아오는지 확인")
+	void testFindCompleteContributes() {
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findCompleteContributes(pageable);
+
+		assertThat(contributePage.getContent()).hasSize(7);
+		assertThat(contributePage.getContent().get(0).getContributeId()).isEqualTo(8L);
+		assertThat(contributePage.getContent().get(1).getContributeTitle()).isEqualTo("contribute_title7");
+	}
+
+	@Test
+	@DisplayName("querydsl로 문서 ID와 merged에 따라 수정요청 목록 잘 받아오는지 확인 - merged")
+	void testFindByDocumentAndStatusMerged() {
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findByDocumentAndStatus(1L, true,
+			pageable);
+
+		assertThat(contributePage.getContent()).hasSize(2);
+		assertThat(contributePage.getContent().get(0).getDocumentId()).isEqualTo(1L);
+		assertThat(contributePage.getContent().get(0).getContributeTitle()).isEqualTo("contribute_title2");
+	}
+
+	@Test
+	@DisplayName("querydsl로 문서 ID와 merged에 따라 수정요청 목록 잘 받아오는지 확인 - not merged")
+	void testFindByDocumentAndStatusNotMerged() {
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findByDocumentAndStatus(4L, false,
+			pageable);
+
+		assertThat(contributePage.getContent()).hasSize(1);
+		assertThat(contributePage.getContent().get(0).getDocumentId()).isEqualTo(4L);
+		assertThat(contributePage.getContent().get(0).getContributeTitle()).isEqualTo("contribute_title8");
 	}
 
 }
