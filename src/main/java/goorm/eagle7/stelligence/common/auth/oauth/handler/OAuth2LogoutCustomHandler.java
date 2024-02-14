@@ -7,6 +7,8 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.common.login.LoginService;
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OAuth2LogoutCustomHandler implements LogoutHandler {
 
 	private final LoginService loginService;
+	private final CookieUtils cookieUtils;
 
 	/**
 	 * 로그아웃 요청 시 호출되는 메서드 (/api/logout)
@@ -43,6 +46,9 @@ public class OAuth2LogoutCustomHandler implements LogoutHandler {
 				log.debug("로그인한 사용자의 로그아웃 요청, logoutService 진행, userId: {}", username);
 				Long memberId = Long.parseLong(username);
 				loginService.logout(memberId);
+				cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
+				cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
+
 
 			}
 		}
