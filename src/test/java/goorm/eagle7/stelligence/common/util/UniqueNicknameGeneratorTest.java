@@ -68,7 +68,7 @@ class UniqueNicknameGeneratorTest {
 			.isNotEqualTo(baseNickname)
 			.startsWith(baseNickname);
 		assertThat(uniqueNickname.length()).isGreaterThan(baseNickname.length());
-		assertThat(uniqueNickname.length()).isEqualTo(baseNickname.length() + 4*9);
+		assertThat(uniqueNickname.length()).isEqualTo(baseNickname.length() + 5);
 		verify(memberRepository, times(10)).existsByNickname(anyString());
 
 		log.info("baseNickname = {}", baseNickname);
