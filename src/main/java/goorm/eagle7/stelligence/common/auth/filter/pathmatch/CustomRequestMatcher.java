@@ -17,7 +17,7 @@ public class CustomRequestMatcher implements RequestMatcher {
 	private final PermittedPathStore permittedPathStore;
 
 	/**
-	 * <h2>match 확인</h2>
+	 * <h2>permitAll match 확인</h2>
 	 * <p>요청의 httpMethod, uri 리소스 리스트 중 어느 하나라도 일치하는 게 있는지 확인</p>
 	 * @param request 요청
 	 * @return boolean 리소스 리스트에 있으면 true, 없으면 false
@@ -28,14 +28,18 @@ public class CustomRequestMatcher implements RequestMatcher {
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
-		return permittedPathStore.exist(httpMethod, uri);
+		return permittedPathStore.isPermittedAll(httpMethod, uri);
+
 	}
 
-
-	// TODO : 추후에 필요하면 추가 구현
-	@Override
-	public MatchResult matcher(HttpServletRequest request) {
-		return org.springframework.security.web.util.matcher.RequestMatcher.super.matcher(request);
+	/**
+	 * <h2>permitAll 중 토큰 검증이 필요한지 확인</h2>
+	 * @param httpMethod
+	 * @param uri
+	 * @return
+	 */
+	public boolean matchesMemberInfoRequiredInPermitAll(String httpMethod, String uri) {
+		return permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
 	}
 
 }
