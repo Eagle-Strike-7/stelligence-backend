@@ -2,11 +2,12 @@ package goorm.eagle7.stelligence.common.dev;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
+import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
-import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DevLoginService {
 
-	private final CookieUtils cookieutils;
+
 	private final DevSignUpService devSignUpService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
@@ -26,30 +27,21 @@ public class DevLoginService {
 	@Transactional
 	public DevLoginTokensWithIdAndRoleResponse devLogin( DevLoginRequest devLoginRequest) {
 
+
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
-		Member member = memberRepository.findByNicknameAndActiveTrue(devLoginRequest.getNickname())
-			.orElseGet(() -> devSignUpService.devSignUp(devLoginRequest));
 		// nickname 중복이면 로그인
+		String nickname = StringUtils.hasText(devLoginRequest.getNickname())
+			? devLoginRequest.getNickname()
+			: "은하";
 
-		// token 생성 후 refreshToken DB에 저장
-		DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse = generateAndSaveTokens(member);
+		Member member = memberRepository.findByNicknameAndActiveTrue(nickname)
+			.orElseGet(() -> devSignUpService.devSignUp(devLoginRequest));
 
-		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
-		addTokensOnCookies(devLoginTokensWithIdAndRoleResponse);
+		// token 생성 후 저장, 쿠키 저장
+		return generateAndSaveTokens(member);
 
-		return devLoginTokensWithIdAndRoleResponse;
 	}
 
-	private void addTokensOnCookies(DevLoginTokensWithIdAndRoleResponse devLoginTokensWithIdAndRoleResponse) {
-
-		// 토큰 추출
-		String accessToken = devLoginTokensWithIdAndRoleResponse.getAccessToken();
-		String refreshToken = devLoginTokensWithIdAndRoleResponse.getRefreshToken();
-
-		// 발행된 토큰을 사용자의 브라우저 쿠키에 저장
-		cookieutils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
-		cookieutils.addCookieBy(CookieType.REFRESH_TOKEN, refreshToken);
-	}
 
 	/**
 	 * 토큰 생성 후 저장
@@ -74,5 +66,19 @@ public class DevLoginService {
 			);
 	}
 
+	/**
+	 * <h2>로그아웃</h2>
+	 * <p>- 리프레시 토큰, 쿠키, ThreadLocal 삭제</p>
+	 * @param memberInfo 회원 정보
+	 */
+	public void devLogout(MemberInfo memberInfo) {
+
+		// 로그인 상태인 경우, refreshToken 삭제
+		if (memberInfo != null) {
+			memberRepository.findById(memberInfo.getId())
+				.ifPresent(member -> member.updateRefreshToken(null));
+		}
+
+	}
 
 }

@@ -114,4 +114,36 @@ class PermittedPathStoreTest {
 
 	}
 
+	@Test
+	@DisplayName("[예외] OPTINOS, /api/login인 경우")
+	void existOptionsApiLoginTrue() {
+
+		// given
+		String httpMethod = "OPTIONS";
+		String uri = "/api/login";
+
+		// when
+		boolean result = permittedPathStore.exist(httpMethod, uri);
+
+		// then
+		assertThat(result).isTrue();
+
+	}
+
+	@Test
+	@DisplayName("[예외] OPTIONS, /api/members/me/nickname인 경우")
+	void existOptionsApiMembersMeNicknameTrue() {
+
+		// given
+		String httpMethod = "OPTIONS";
+		String uri = "/api/members/me/nickname";
+
+		// when
+		boolean result = permittedPathStore.exist(httpMethod, uri);
+
+		// then
+		assertThat(result).isTrue();
+
+	}
+
 }

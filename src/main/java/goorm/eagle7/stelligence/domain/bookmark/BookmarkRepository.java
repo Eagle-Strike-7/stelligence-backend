@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.bookmark;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -53,5 +54,14 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 	@Modifying
 	@Query(value = "delete from Bookmark b where b.member.id = :memberId and b.document.id = :documentId")
 	void deleteByMemberIdAndDocumentId(Long memberId, Long documentId);
+
+	/**
+	 * <h2>특정 문서를 북마크한 사용자 조회</h2>
+	 * @param documentId - 북마크 조회할 문서의 ID
+	 * @return Set<Long> - 북마크한 사용자의 ID 목록
+	 */
+	@Query("select b.member.id from Bookmark b"
+		+ " where b.document.id = :documentId")
+	Set<Long> findBookmarkedMemberIdByDocumentId(Long documentId);
 
 }

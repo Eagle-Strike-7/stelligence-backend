@@ -57,7 +57,7 @@ public class JwtTokenReissueService {
 			.orElseThrow(
 				() -> {
 					log.debug("refreshToken이 만료되었습니다.");
-					return new BadJwtException(ERROR_MESSAGE);
+					return new UsernameNotFoundException(ERROR_MESSAGE);
 				}
 			);
 
@@ -88,7 +88,7 @@ public class JwtTokenReissueService {
 
 		if (!refreshToken.equals(refreshTokenFromDB)) {
 			log.debug("refreshToken이 DB에 저장된 refreshToken과 일치하지 않습니다.");
-			throw new BadJwtException(ERROR_MESSAGE);
+			throw new UsernameNotFoundException(ERROR_MESSAGE);
 		}
 
 	}

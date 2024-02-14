@@ -44,7 +44,8 @@ class DebateServiceTest {
 		Member author = TestFixtureGenerator.member(1L, "author1");
 		Member contributor = TestFixtureGenerator.member(1L, "contributor1");
 		Document document = TestFixtureGenerator.document(1L, author, "title1", 1L);
-		Contribute contribute = TestFixtureGenerator.contribute(1L, contributor, ContributeStatus.VOTING, document);
+		Contribute contribute = TestFixtureGenerator.contribute(1L, contributor, "title", "description",
+			ContributeStatus.VOTING, document);
 		Debate debate = TestFixtureGenerator.debate(debateId, contribute, DebateStatus.OPEN, null, 0);
 
 		when(debateRepository.findByIdWithContribute(debateId)).thenReturn(Optional.of(debate));

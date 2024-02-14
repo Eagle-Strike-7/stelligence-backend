@@ -16,11 +16,13 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
+import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -38,6 +40,8 @@ class DebateServiceCommentTest {
 	private MemberRepository memberRepository;
 	@Mock
 	private CommentRepository commentRepository;
+	@Mock
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	@InjectMocks
 	private DebateService debateService;
@@ -49,8 +53,8 @@ class DebateServiceCommentTest {
 		String commentContent = "댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(commentContent);
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 14, 1, 0);
-		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
-		LocalDateTime commentedAt = LocalDateTime.of(2024, 1, 14, 3, 0);
+		LocalDateTime endAt = createdAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE);
+		LocalDateTime commentedAt = createdAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE).minusMinutes(1L);
 
 		Long debateId = 1L;
 		Long memberId = 2L;
@@ -71,6 +75,7 @@ class DebateServiceCommentTest {
 			verify(commentRepository, times(1)).save(any(Comment.class));
 			verify(debateRepository, times(1)).findDebateByIdForUpdate(debateId);
 			verify(memberRepository, times(1)).findById(memberId);
+			verify(applicationEventPublisher, times(1)).publishEvent(any(NewCommentEvent.class));
 
 			assertThat(debate.getComments()).isNotEmpty();
 			// 댓글을 작성하고 나면 debate의 종료 예상 시간이 댓글 작성 시점을 기준으로 토론 기간이 연장된다.
@@ -87,7 +92,7 @@ class DebateServiceCommentTest {
 		String commentContent = "댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(commentContent);
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 14, 1, 0);
-		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
+		LocalDateTime endAt = createdAt.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE).minusMinutes(1L);
 		LocalDateTime commentedAt = createdAt
 			.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE)
 			.minusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE)
@@ -238,7 +243,7 @@ class DebateServiceCommentTest {
 	}
 
 	@Test
-	@DisplayName("토론 리스트 조회")
+	@DisplayName("토론 댓글 리스트 조회")
 	void getComments() {
 		// given
 		Long debateId = 1L;
@@ -249,5 +254,111 @@ class DebateServiceCommentTest {
 
 		// then
 		verify(commentRepository, times(1)).findAllByDebateId(debateId);
+	}
+
+	@Test
+	@DisplayName("댓글 최대 길이 초과 테스트")
+	void commentMaxLengthExceed() {
+		//given
+		final int length = Comment.MAX_COMMENT_LENGTH + 1;
+		final String content = getKorStringWithLength(length);
+		assertThat(content.length()).isGreaterThan(Comment.MAX_COMMENT_LENGTH);
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
+
+	}
+
+	@Test
+	@DisplayName("댓글 최대 길이 성공 테스트")
+	void commentMaxLengthPass() {
+		//given
+		final int length = Comment.MAX_COMMENT_LENGTH;
+		final String content = getKorStringWithLength(length);
+		assertThat(content.length()).isLessThanOrEqualTo(Comment.MAX_COMMENT_LENGTH);
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+		Debate debate = TestFixtureGenerator.debate(1L, null, DebateStatus.OPEN, LocalDateTime.now(),
+			1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(2L, "commenter");
+
+		when(memberRepository.findById(commenter.getId())).thenReturn(Optional.of(commenter));
+		when(debateRepository.findDebateByIdForUpdate(debate.getId())).thenReturn(Optional.of(debate));
+
+		//when
+		debateService.addComment(commentRequest, debate.getId(), commenter.getId());
+
+		//then
+		verify(commentRepository, times(1)).save(any(Comment.class));
+
+	}
+
+	@Test
+	@DisplayName("빈 댓글 테스트")
+	void emptyComment() {
+		//given
+		final String content = " ";
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 내용이 존재하지 않습니다.");
+
+	}
+
+	@Test
+	@DisplayName("null 댓글 테스트")
+	void nullComment() {
+		//given
+		final String content = null;
+
+		CommentRequest commentRequest = CommentRequest.of(content);
+
+		Long debateId = 1L;
+		Long commenterId = 1L;
+		Debate debate = TestFixtureGenerator.debate(debateId, null, DebateStatus.OPEN,
+			LocalDateTime.now(), 1, LocalDateTime.now());
+		Member commenter = TestFixtureGenerator.member(commenterId, "commenter");
+
+		//when
+
+		//then
+		assertThatThrownBy(() -> debateService.addComment(commentRequest, debateId, commenterId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("댓글에 내용이 존재하지 않습니다.");
+
+	}
+
+	private static String getKorStringWithLength(int length) {
+		String content = "안녕하세요 이영민입니다 반갑습니다~\n";
+		assertThat(content).hasSize(20);
+
+		StringBuilder stringBuilder = new StringBuilder();
+		while (stringBuilder.length() < length) {
+			stringBuilder.append(content);
+		}
+		return stringBuilder.substring(0, length);
 	}
 }

@@ -37,7 +37,9 @@ import lombok.NoArgsConstructor;
 public class Contribute extends BaseTimeEntity {
 
 	//투표 지속 시간: 60분 * 24시간 = 1일
-	public static final Long VOTE_DURATION_MINUTE = 60L * 24L;
+	// public static final Long VOTE_DURATION_MINUTE = 60L * 24L;
+	//개발 테스트 상황에서는 15분을 주기로 합니다.
+	public static final Long VOTE_DURATION_MINUTE = 15L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,7 +97,8 @@ public class Contribute extends BaseTimeEntity {
 	private Debate relatedDebate;
 
 	private Contribute(ContributeStatus status, Member member, Document document,
-		String title, String description, String afterDocumentTitle, Document afterParentDocument, Debate relatedDebate) {
+		String title, String description, String afterDocumentTitle, Document afterParentDocument,
+		Debate relatedDebate) {
 		this.status = status;
 		this.member = member;
 		this.document = document;

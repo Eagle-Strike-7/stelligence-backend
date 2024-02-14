@@ -1,12 +1,14 @@
 package goorm.eagle7.stelligence.domain.contribute.scheduler;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeDebatedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
+import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +22,7 @@ public class DebateHandler implements ContributeSchedulingActionHandler {
 
 	private final ContributeRepository contributeRepository;
 	private final DebateRepository debateRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * 수정요청을 토론으로 전환합니다.
@@ -32,6 +35,8 @@ public class DebateHandler implements ContributeSchedulingActionHandler {
 		log.info("Contribute {} debate open", contributeId);
 		Contribute contribute = contributeRepository.findById(contributeId).orElseThrow();
 		Debate debate = Debate.openFrom(contribute);
-		debateRepository.save(debate);
+		Debate createdDebate = debateRepository.save(debate);
+
+		applicationEventPublisher.publishEvent(new ContributeDebatedEvent(createdDebate.getId()));
 	}
 }

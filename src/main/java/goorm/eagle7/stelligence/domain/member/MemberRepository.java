@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import goorm.eagle7.stelligence.domain.member.model.Member;
+import goorm.eagle7.stelligence.domain.member.model.SocialType;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -43,6 +44,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 * @param socialId member socialId
 	 * @return Optional<Member> 활성 member 정보
 	 */
-	Optional<Member> findBySocialTypeAndSocialIdAndActiveTrue(String socialType, String socialId);
+	Optional<Member> findBySocialTypeAndSocialIdAndActiveTrue(SocialType socialType, String socialId);
 
+	/**
+	 * <h2>Member id로 활성 member의 존재를 확인한다.</h2>
+	 * @param memberId member id
+	 * @return 존재하면 true, 존재하지 않으면 false
+	 */
+	boolean existsByIdAndActiveTrue(Long memberId);
 }

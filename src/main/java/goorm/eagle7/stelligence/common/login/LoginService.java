@@ -34,9 +34,10 @@ public class LoginService {
 		// 회원 가입 - socialId, socialType으로 회원 조회 후 없으면 회원 가입
 		Member member = findOrRegisterMember(loginOAuth2Request);
 
-		// Token 생성
+		// Token 생성 및 DB 저장
 		String accessToken = jwtTokenProvider.createAccessToken(member.getId());
 		String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
+		member.updateRefreshToken(refreshToken);
 
 		return LoginTokenInfo.of(
 			accessToken,refreshToken);
@@ -50,7 +51,9 @@ public class LoginService {
 	 * @return Member 로그인한 회원
 	 */
 	private Member findOrRegisterMember(LoginOAuth2Request request) {
-		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(request.getSocialType().name(), request.getSocialId())
+
+		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(request.getSocialType(),
+				request.getSocialId())
 			.orElseGet(() -> signUpService.oauth2SignUp(request));
 	}
 
