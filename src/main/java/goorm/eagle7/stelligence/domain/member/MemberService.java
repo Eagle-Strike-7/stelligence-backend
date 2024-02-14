@@ -82,7 +82,7 @@ public class MemberService {
 
 		// nickname 검사
 		String nickname = memberUpdateNicknameRequest.getNickname();
-		if (memberRepository.existsByNicknameAndActiveTrue(nickname)) {
+		if (memberRepository.existsByNickname(nickname)) {
 			// 이미 사용 중인 닉네임이면 예외 발생
 			throw new BaseException("이미 사용 중인 닉네임입니다. nickname=" + nickname);
 		}
