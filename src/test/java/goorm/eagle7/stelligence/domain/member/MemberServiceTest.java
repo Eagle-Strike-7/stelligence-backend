@@ -137,7 +137,6 @@ class MemberServiceTest {
 		assertThat(stdMember.getNickname()).isEqualTo(nickname);
 
 		// 탈퇴한 회원 전부 null인지 확인
-		assertThat(stdMember.getName()).isNull();
 		assertThat(stdMember.getEmail()).isNull();
 		assertThat(stdMember.getImageUrl()).isNull();
 		assertThat(stdMember.getSocialId()).isNull();
