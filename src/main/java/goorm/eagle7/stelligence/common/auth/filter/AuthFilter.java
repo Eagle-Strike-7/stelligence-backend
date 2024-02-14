@@ -79,7 +79,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
 			// Login 필수인 경우, 재로그인 필요
 			if (!isMemberInfoRequired(httpMethod, uri)) {
-				throw new UsernameNotFoundException(ERROR_MESSAGE);
+				throw new UsernameNotFoundException(e.getMessage());
 			}
 
 			log.debug("[ex] 로그인 필수가 아닌 uri에서 로그인 사용자와 아닌 사용자를 구분. : {}", e.getMessage());
@@ -145,12 +145,12 @@ public class AuthFilter extends OncePerRequestFilter {
 	private String getAcccessTokenFromRefreshCookie() {
 		String refreshToken = cookieUtils
 			.getCookieFromRequest(CookieType.REFRESH_TOKEN)
-			.orElseThrow(() -> new UsernameNotFoundException(ERROR_MESSAGE))
+			.orElseThrow(() -> new UsernameNotFoundException("Access 쿠키가 없습니다. Refresh 쿠키도 없습니다. 재로그인이 필요합니다."))
 			.getValue();
 
 		// refresh 토큰 없으면 재로그인, 있으면 재발급
 		if (!StringUtils.hasText(refreshToken)) {
-			throw new UsernameNotFoundException(ERROR_MESSAGE);
+			throw new UsernameNotFoundException("Refresh 토큰이 없습니다. 재로그인이 필요합니다.");
 		}
 
 		LoginTokenInfo loginTokenInfo = jwtTokenReissueService
