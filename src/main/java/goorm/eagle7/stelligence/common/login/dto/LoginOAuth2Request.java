@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(staticName = "of")
 public class LoginOAuth2Request {
 
-	private String name;
 	private String nickname;
 	private String email;
 	private String imageUrl;
