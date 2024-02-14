@@ -53,8 +53,8 @@ class DebateServiceCommentTest {
 		String commentContent = "댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(commentContent);
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 14, 1, 0);
-		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
-		LocalDateTime commentedAt = LocalDateTime.of(2024, 1, 14, 3, 0);
+		LocalDateTime endAt = createdAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE);
+		LocalDateTime commentedAt = createdAt.plusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE).minusMinutes(1L);
 
 		Long debateId = 1L;
 		Long memberId = 2L;
@@ -92,7 +92,7 @@ class DebateServiceCommentTest {
 		String commentContent = "댓글 내용1";
 		CommentRequest commentRequest = CommentRequest.of(commentContent);
 		LocalDateTime createdAt = LocalDateTime.of(2024, 1, 14, 1, 0);
-		LocalDateTime endAt = LocalDateTime.of(2024, 1, 14, 2, 0);
+		LocalDateTime endAt = createdAt.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE).minusMinutes(1L);
 		LocalDateTime commentedAt = createdAt
 			.plusMinutes(Debate.DEBATE_LIMIT_DURATION_MINUTE)
 			.minusMinutes(Debate.DEBATE_EXTENSION_DURATION_MINUTE)

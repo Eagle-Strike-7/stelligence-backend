@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.domain.document;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
@@ -35,16 +34,6 @@ public class DocumentRequestValidator {
 	 */
 	@Transactional(readOnly = true)
 	public void validate(DocumentCreateRequest request) {
-
-		//문서의 제목이 null이나 빈값이 아닌가?
-		if (!StringUtils.hasText(request.getTitle())) {
-			throw new BaseException("문서의 제목이 비어있습니다.");
-		}
-
-		//문서의 내용이 null이나 빈값이 아닌가?
-		if (!StringUtils.hasText(request.getContent())) {
-			throw new BaseException("문서의 내용이 비어있습니다.");
-		}
 
 		// 생성하려는 제목이 기존 내용과 중복될 여지가 있는가
 		if (documentContentRepository.existsByTitle(request.getTitle())) {

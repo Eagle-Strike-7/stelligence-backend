@@ -34,6 +34,7 @@ class PermittedPathStore {
 			RequestResource.of(HttpMethod.GET.name(), "/login/oauth2/code/**"),
 
 			// swagger
+			RequestResource.of(HttpMethod.GET.name(), "/api-docs/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/swagger-ui/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/swagger-resources/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/v3/api-docs/**"),
@@ -48,7 +49,19 @@ class PermittedPathStore {
 			// login - dev
 			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
 			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/login"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**")
+			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**"),
+
+			// 정적 리소스
+			RequestResource.of(HttpMethod.GET.name(), "/css/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/images/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/favicon.ico"),
+			RequestResource.of(HttpMethod.GET.name(), "/fonts/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/assets/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/badges/**"),
+
+			// 모니터링 툴
+			RequestResource.of(HttpMethod.GET.name(), "/actuator/**")
+
 		);
 
 	/**
@@ -61,6 +74,9 @@ class PermittedPathStore {
 	 */
 	public boolean exist(String httpMethod, String uri) {
 
+		// if(httpMethod.equals(HttpMethod.GET.name()) && uri.equals("/api/bookmarks/marked")) {
+		// 	return true;
+		// }
 		for (RequestResource resource : REQUEST_RESOURCES) {
 
 			String permittedHttpMethod = resource.getHttpMethod();
