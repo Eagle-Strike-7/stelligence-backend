@@ -2,10 +2,12 @@ package goorm.eagle7.stelligence.domain.debate;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.debate.dto.CommentRequest;
@@ -13,6 +15,7 @@ import goorm.eagle7.stelligence.domain.debate.dto.CommentResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.dto.DebatePageResponse;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateResponse;
+import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
@@ -26,20 +29,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class DebateService {
 
 	private final DebateRepository debateRepository;
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
-
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * 특정 토론을 ID로 찾아서 조회합니다.
 	 * @param debateId: 조회할 토론의 ID
 	 * @return DebateResponse: 조회된 토론 응답 DTO
 	 */
-	@Transactional(readOnly = true)
 	public DebateResponse getDebateDetailById(Long debateId) {
 		Debate findDebate = debateRepository.findByIdWithContribute(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 조회 요청입니다. Debate ID: " + debateId));
@@ -54,8 +56,8 @@ public class DebateService {
 	 * @param pageable: 조회하려는 토론의 페이지 정보
 	 * @return DebatePageResponse: 조회된 토론 페이지 응답 DTO
 	 */
-	@Transactional(readOnly = true)
-	public DebatePageResponse getDebatePage(DebateStatus status, DebateOrderCondition orderCondition, Pageable pageable) {
+	public DebatePageResponse getDebatePage(DebateStatus status, DebateOrderCondition orderCondition,
+		Pageable pageable) {
 
 		Page<Debate> debatePage = debateRepository.findPageByStatusAndOrderCondition(status, orderCondition, pageable);
 
@@ -69,7 +71,15 @@ public class DebateService {
 	 * @param loginMemberId: 현재 로그인한 회원의 ID
 	 * @return List&lt;CommentResponse&gt;: 댓글이 달린 토론의 전체 댓글 리스트
 	 */
+	@Transactional
 	public List<CommentResponse> addComment(CommentRequest commentRequest, Long debateId, Long loginMemberId) {
+
+		if (!StringUtils.hasText(commentRequest.getContent())) {
+			throw new BaseException("댓글에 내용이 존재하지 않습니다.");
+		}
+		if (commentRequest.getContent().length() > Comment.MAX_COMMENT_LENGTH) {
+			throw new BaseException("토론 댓글의 최대 길이는 " + Comment.MAX_COMMENT_LENGTH + " 자 입니다.");
+		}
 
 		Debate findDebate = debateRepository.findDebateByIdForUpdate(debateId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 토론에 대한 댓글 작성요청입니다. Debate ID: " + debateId));
@@ -84,6 +94,9 @@ public class DebateService {
 		Comment comment = Comment.createComment(commentRequest.getContent(), findDebate, loginMember);
 		commentRepository.save(comment);
 
+		// 새 댓글 이벤트 발행
+		applicationEventPublisher.publishEvent(new NewCommentEvent(comment.getId()));
+
 		List<Comment> comments = commentRepository.findAllByDebateId(debateId);
 		return comments.stream().map(CommentResponse::from).toList();
 	}
@@ -93,6 +106,7 @@ public class DebateService {
 	 * @param commentId: 삭제할 댓글의 ID
 	 * @param loginMemberId: 로그인한 회원의 ID
 	 */
+	@Transactional
 	public void deleteComment(Long commentId, Long loginMemberId) {
 
 		Comment targetComment = commentRepository.findById(commentId)
@@ -112,6 +126,7 @@ public class DebateService {
 	 * @param loginMemberId: 로그인한 회원의 ID
 	 * @return CommentResponse: 수정된 댓글
 	 */
+	@Transactional
 	public CommentResponse updateComment(Long commentId, CommentRequest commentRequest, Long loginMemberId) {
 
 		Comment updateComment = commentRepository.findById(commentId)
@@ -130,7 +145,6 @@ public class DebateService {
 	 * @param debateId: 댓글을 조회할 토론의 ID
 	 * @return List&lt;CommentResponse&gt;: 조회된 댓글의 리스트
 	 */
-	@Transactional(readOnly = true)
 	public List<CommentResponse> getComments(Long debateId) {
 
 		List<Comment> comments = commentRepository.findAllByDebateId(debateId);
