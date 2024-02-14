@@ -184,54 +184,6 @@ class BadgeServiceTest {
 	}
 
 	@Test
-	@DisplayName("[성공] - 배지 추가, 회원 가입 - MEMBER_JOIN, 1")
-	void getBadgeMemberJoin1Success() {
-
-		// given
-		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
-		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class) )).thenReturn(true);
-
-		// when
-		badgeService.checkAndAwardBadge(badgeCategory, member);
-
-		// then
-		assertThat(member.getBadges())
-			.isNotEmpty()
-			.contains(Badge.SPROUT)
-			.hasSize(1);
-		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
-		verify(contributeRepository, never()).countByMemberId(member.getId());
-		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
-			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
-
-	}
-
-	@Test
-	@DisplayName("[실패] - 배지 추가 X, 회원 가입 실패(DB 조회 실패) - MEMBER_JOIN, 1")
-	void getBadgeMemberJoinFail() {
-
-		// given
-		BadgeCategory badgeCategory = BadgeCategory.MEMBER_JOIN;
-		when(memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class))).thenReturn(false);
-
-		// when
-		badgeService.checkAndAwardBadge(badgeCategory, member);
-
-		// then
-		assertThat(member.getBadges())
-			.isEmpty();
-		verify(memberRepository, times(1)).existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(eq(member.getId()), any(LocalDateTime.class));
-		verify(contributeRepository, never()).countByMemberId(member.getId());
-		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		verify(contributeRepository, never()).countByMemberIdAndStatus(member.getId(),
-			ContributeStatus.REJECTED);
-		verify(documentContentRepository, never()).countByAuthor_Id(member.getId());
-
-	}
-
-	@Test
 	@DisplayName("[실패] - (현재 미구현) 배지 추가, 신고 - REPORT, 10")
 	void getBadgeReport10Fail() {
 

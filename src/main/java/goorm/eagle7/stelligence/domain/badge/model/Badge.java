@@ -2,6 +2,8 @@ package goorm.eagle7.stelligence.domain.badge.model;
 
 import static goorm.eagle7.stelligence.domain.badge.model.BadgeCategory.*;
 
+import java.util.Arrays;
+
 import lombok.Getter;
 
 @Getter
@@ -54,12 +56,11 @@ public enum Badge {
 	}
 
 	public static Badge findByEventCategoryAndCount(BadgeCategory badgeCategory, long count) {
-		for (Badge badge : values()) {
-			if (badge.getEventCategory() == badgeCategory && badge.getCount() == count) {
-				return badge;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+			.filter(b -> b.getEventCategory() == badgeCategory)
+			.filter(b -> b.getCount() <= count)
+			.findAny()
+			.orElse(null);
 	}
 
 	public String getImgFilename() {
