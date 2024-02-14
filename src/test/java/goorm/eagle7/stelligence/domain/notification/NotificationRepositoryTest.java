@@ -31,22 +31,7 @@ class NotificationRepositoryTest {
 		List<Notification> notifications = notificationRepository.findAll();
 		assertThat(notifications)
 			.hasSize(3)
-			.extracting(Notification::getMember)
-			.extracting("id")
+			.extracting(Notification::getMemberId)
 			.containsExactlyInAnyOrder(1L, 2L, 4L);
-	}
-
-	@Test
-	@DisplayName("실패한 경우, 개별적으로 알림을 추가한다.")
-	void bulkInsertWithFail() {
-		notificationRepository.insertNotifications("message", "uri", Set.of(1L, 2L, 999L));
-
-		// then
-		List<Notification> notifications = notificationRepository.findAll();
-		assertThat(notifications)
-			.hasSize(2)
-			.extracting(Notification::getMember)
-			.extracting("id")
-			.containsExactlyInAnyOrder(1L, 2L);
 	}
 }

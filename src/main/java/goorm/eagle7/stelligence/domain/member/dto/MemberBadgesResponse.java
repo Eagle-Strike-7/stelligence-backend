@@ -23,8 +23,9 @@ public class MemberBadgesResponse {
 			badge.name(),
 			badge.getTitle(),
 			badge.getEventCategory().getLabel(),
-			badge.getImgFilename(),
-			badge.getDescription()
+			badge.getDescription(),
+			badge.getImgFilename()
+
 		);
 
 	}

@@ -19,9 +19,15 @@ public interface DebateRepository extends JpaRepository<Debate, Long>, CustomDeb
 	@Query("select d from Debate d"
 		+ " join fetch d.contribute c"
 		+ " join fetch c.member m"
-		+ " join fetch c.amendments a"
+		+ " left join fetch c.amendments a"
 		+ " where d.id = :debateId")
 	Optional<Debate> findByIdWithContribute(@Param("debateId") Long debateId);
+
+	@Query("select d from Debate d"
+		+ " join fetch d.contribute c"
+		+ " join fetch c.member m"
+		+ " where d.id = :debateId")
+	Optional<Debate> findByIdWithContributeWithoutAmendment(@Param("debateId") Long debateId);
 
 	/**
 	 * 토론의 sequence를 이용해 다음 댓글의 sequence를 얻기 위해 조회합니다.

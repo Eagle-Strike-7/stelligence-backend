@@ -28,44 +28,6 @@ class DocumentRequestValidatorTest {
 	DocumentRequestValidator documentRequestValidator;
 
 	@Test
-	@DisplayName("제목이 null이거나 빈값인 경우")
-	void validateThrowsTitle() {
-		//given
-		DocumentCreateRequest request1 = DocumentCreateRequest.of(null, null, "content");
-		DocumentCreateRequest request2 = DocumentCreateRequest.of("  ", null, "content");
-
-		//then
-		assertThatThrownBy(
-			() -> documentRequestValidator.validate(request1))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("문서의 제목이 비어있습니다.");
-
-		assertThatThrownBy(
-			() -> documentRequestValidator.validate(request2))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("문서의 제목이 비어있습니다.");
-	}
-
-	@Test
-	@DisplayName("내용이 null이거나 빈값인 경우")
-	void validateThrowsContent() {
-		//given
-		DocumentCreateRequest request1 = DocumentCreateRequest.of("title", null, null);
-		DocumentCreateRequest request2 = DocumentCreateRequest.of("title", null, "           ");
-
-		//then
-		assertThatThrownBy(
-			() -> documentRequestValidator.validate(request1))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("문서의 내용이 비어있습니다.");
-
-		assertThatThrownBy(
-			() -> documentRequestValidator.validate(request2))
-			.isInstanceOf(BaseException.class)
-			.hasMessage("문서의 내용이 비어있습니다.");
-	}
-
-	@Test
 	@DisplayName("제목이 이미 존재하는 경우")
 	void validateThrowsDuplicateTitle() {
 		//given

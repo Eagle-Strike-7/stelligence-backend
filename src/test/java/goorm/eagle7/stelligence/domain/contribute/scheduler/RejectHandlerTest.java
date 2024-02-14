@@ -9,8 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -21,6 +23,9 @@ class RejectHandlerTest {
 	@Mock
 	ContributeRepository contributeRepository;
 
+	@Mock
+	ApplicationEventPublisher applicationEventPublisher;
+
 	@InjectMocks
 	RejectHandler rejectHandler;
 
@@ -28,7 +33,7 @@ class RejectHandlerTest {
 	void handleTest() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Contribute contribute = contribute(1L, null, ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
 		//when
 		when(contributeRepository.findById(contribute.getId())).thenReturn(java.util.Optional.of(contribute));
@@ -36,5 +41,6 @@ class RejectHandlerTest {
 
 		//then
 		assertThat(contribute.getStatus()).isEqualTo(ContributeStatus.REJECTED);
+		verify(applicationEventPublisher).publishEvent(new ContributeRejectedEvent(contribute.getId()));
 	}
 }

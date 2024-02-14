@@ -1,19 +1,29 @@
--- 4명의 멤버가 존재합니다.
+-- 7명의 멤버가 존재합니다.
+-- 1번, 2번, 3번, 4번 멤버는 활성화 상태입니다.
+-- 5번, 6번, 7번 멤버는 비활성화 상태입니다.
+-- 1번, 3번, 4번, 5번, 6번 멤버는 방금 생성되었습니다.
+-- 2번, 7번 멤버는 1일 전에 생성되었습니다.
+-- 3번, 5번 멤버는 2일 전에 생성되었습니다.
+
 insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
                     social_id, created_at, updated_at, active)
 values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
         NOW(), true),
-       (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2', NOW(),
+       (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2',
+        TIMESTAMPADD(DAY, -1, NOW()),
         NOW(), true),
-       (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3', NOW(),
+       (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3',
+        TIMESTAMPADD(DAY, -2, NOW()),
         NOW(), true),
        (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
         NOW(), true),
-       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5', NOW(),
+       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5',
+        TIMESTAMPADD(DAY, -2, NOW()),
         NOW(), false),
        (6, 'email6', 'name6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
         NOW(), false),
-       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7', NOW(),
+       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7',
+        TIMESTAMPADD(DAY, -1, NOW()),
         NOW(), false);
 
 -- 4개의 문서가 존재합니다.
@@ -22,6 +32,30 @@ values (1, 'title1', 3, null, NOW(), NOW()),
        (2, 'title2', 2, null, NOW(), NOW()),
        (3, 'title3', 1, null, NOW(), NOW()),
        (4, 'title4', 1, null, NOW(), NOW());
+
+-- member가 작성한 문서가 존재합니다.
+-- 1번 멤버는 11, 12, 13, 14번 문서를 작성하였습니다.
+-- 2번 멤버는 15, 16, 18번 문서를 작성하였습니다.
+-- 3번 멤버는 17번 문서를 작성하였습니다.
+-- 4번 멤버는 19번 문서를 작성하였습니다.
+-- 5번 멤버는 20, 23, 24번 문서를 작성하였습니다.
+-- 6번 멤버는 21번 문서를 작성하였습니다.
+-- 7번 멤버는 22번 문서를 작성하였습니다.
+insert into document (document_id, title, latest_revision, author_id, parent_document_id, created_at, updated_at)
+values (11, 'title1', 3, 1, null, NOW(), NOW()),
+       (12, 'title2', 2, 1, null, NOW(), NOW()),
+       (13, 'title3', 1, 1, null, NOW(), NOW()),
+       (14, 'title4', 1, 1, null, NOW(), NOW()),
+       (15, 'title5', 1, 2, null, NOW(), NOW()),
+       (16, 'title6', 1, 2, null, NOW(), NOW()),
+       (17, 'title7', 1, 3, null, NOW(), NOW()),
+       (18, 'title8', 1, 2, null, NOW(), NOW()),
+       (19, 'title9', 1, 4, null, NOW(), NOW()),
+       (20, 'title10', 1, 5, null, NOW(), NOW()),
+       (21, 'title11', 1, 6, null, NOW(), NOW()),
+       (22, 'title12', 1, 7, null, NOW(), NOW()),
+       (23, 'title13', 1, 5, null, NOW(), NOW()),
+       (24, 'title14', 1, 5, null, NOW(), NOW());
 
 -- 14개의 섹션이 존재합니다.
 ------ 1번 문서에는 6개의 섹션이 존재합니다.
@@ -36,7 +70,8 @@ values (1, 'title1', 3, null, NOW(), NOW()),
 ------ 4번 문서에는 3개의 섹션이 존재합니다.
 ----------- (10,1) (11,1) (12,1) 은 최초의 4번 문서로 생성된 섹션입니다.
 -- 관련 링크 : https://excited-cycle-902.notion.site/762ff798869f4320aec03bb4fbff27c9?pvs=4
-insert into section (section_id, revision, document_id, heading, title, content, orders, created_at, updated_at)
+insert
+into section (section_id, revision, document_id, heading, title, content, orders, created_at, updated_at)
 values (1, 1, 1, 'H1', 'document1_title1', 'document1_content1\n', 1, NOW(), NOW()),
        (1, 3, 1, null, null, null, 1, NOW(), NOW()),
        (2, 1, 1, 'H2', 'document1_title2', 'document1_content2\n', 2, NOW(), NOW()),
@@ -66,12 +101,24 @@ insert into contribute (contribute_id, member_id, document_id, title, descriptio
                         before_document_title, after_document_title,
                         before_parent_document_id, after_parent_document_id,
                         created_at, updated_at)
-values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null, '2024-03-21 00:00:00', NOW()),
-       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,'2024-03-21 00:01:00', NOW()),
-       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,'2024-03-21 00:02:00', NOW()),
-       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null, '2024-03-21 00:03:00', NOW()),
-       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,'2024-03-21 00:04:00', NOW()),
-       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,'2024-03-21 00:05:00', NOW());
+values (1, 1, 1, 'contribute_title1', 'contribute_description1', 'MERGED', 'title1', 'title1', null, null,
+        '2024-03-21 00:00:00', NOW()),
+       (2, 2, 1, 'contribute_title2', 'contribute_description2', 'MERGED', 'title1', 'title1', null, null,
+        '2024-03-21 00:01:00', NOW()),
+       (3, 3, 2, 'contribute_title3', 'contribute_description3', 'MERGED', 'title2', 'title2', null, null,
+        '2024-03-21 00:02:00', NOW()),
+       (4, 1, 2, 'contribute_title4', 'contribute_description4', 'REJECTED', 'title2', 'title2', null, null,
+        '2024-03-21 00:03:00', NOW()),
+       (5, 2, 2, 'contribute_title5', 'contribute_description5', 'VOTING', 'title2', 'new_title_2', null, null,
+        '2024-03-21 00:04:00', NOW()),
+       (6, 1, 3, 'contribute_title6', 'contribute_description6', 'DEBATING', 'title3', 'new_title_3', null, null,
+        '2024-03-21 00:05:00', NOW()),
+       (7, 5, 4, 'contribute_title7', 'contribute_description7', 'MERGED', 'title4', 'new_title_4', null, null,
+        '2024-03-21 00:06:00', NOW()),
+       (8, 5, 4, 'contribute_title8', 'contribute_description8', 'REJECTED', 'title4', 'new_title_4', null, null,
+        '2024-03-21 00:07:00', NOW()),
+       (9, 5, 4, 'contribute_title9', 'contribute_description9', 'VOTING', 'title4', 'new_title_4', null, null,
+        '2024-03-21 00:06:00', NOW());
 
 
 -- 7개의 admentment가 존재합니다.
