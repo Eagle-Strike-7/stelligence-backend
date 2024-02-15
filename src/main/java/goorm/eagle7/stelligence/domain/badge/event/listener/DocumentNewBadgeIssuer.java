@@ -8,30 +8,32 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.badge.BadgeService;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
+import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
+import goorm.eagle7.stelligence.domain.document.event.NewDocumentEvent;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ContributeRejectedEventListener {
+public class DocumentNewBadgeIssuer {
 
 	private final BadgeService badgeService;
-	private final ContributeRepository contributeRepository;
+	private final DocumentContentRepository documentContentRepository;
 
 	@Async
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	@TransactionalEventListener(value = ContributeRejectedEvent.class)
-	public void onContributeRejected(ContributeRejectedEvent event) {
+	@TransactionalEventListener(value = NewDocumentEvent.class)
+	public void onDocumentNew(NewDocumentEvent event) {
 
-		contributeRepository
-			.findWithMember(event.contributeId())
-			.ifPresent(contribute ->
+		documentContentRepository
+			.findByIdWithAuthor(event.documentId())
+			.ifPresent(document ->
 				badgeService.checkAndAwardBadge(
-					BadgeCategory.CONTRIBUTE_REJECTED
-					, contribute.getMember())
+					BadgeCategory.DOCUMENT
+					, document.getAuthor())
 			);
 
 	}
 
 }
+
+

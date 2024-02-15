@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ReportEventListener {
+public class ReportBadgeIssuer {
 
 	private final BadgeService badgeService;
 	private final MemberRepository memberRepository;

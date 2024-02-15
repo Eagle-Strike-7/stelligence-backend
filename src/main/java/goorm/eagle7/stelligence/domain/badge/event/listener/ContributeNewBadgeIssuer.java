@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class NewContributeEventListener {
+public class ContributeNewBadgeIssuer {
 
 	private final BadgeService badgeService;
 	private final ContributeRepository contributeRepository;

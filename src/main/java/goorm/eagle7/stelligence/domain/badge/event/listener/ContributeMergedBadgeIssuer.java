@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
-public class ContributeMergedEventListener {
+public class ContributeMergedBadgeIssuer {
 
 	private final ContributeRepository contributeRepository;
 	private final BadgeService badgeService;
