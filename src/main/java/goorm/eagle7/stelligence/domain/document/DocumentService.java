@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
-import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
+import goorm.eagle7.stelligence.domain.document.event.NewDocumentEvent;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
@@ -79,7 +78,8 @@ public class DocumentService {
 		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
 
-		applicationEventPublisher.publishEvent(new BadgeEvent(author.getId(), BadgeCategory.DOCUMENT));
+		// 사용자에게 문서 작성 배지를 수여합니다.
+		applicationEventPublisher.publishEvent(new NewDocumentEvent(createdDocument.getId()));
 
 		return DocumentResponse.of(createdDocument, 1L, sections, Collections.emptyList());
 	}
