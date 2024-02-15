@@ -87,6 +87,10 @@ public class MemberService {
 			throw new BaseException("이미 사용 중인 닉네임입니다. nickname=" + nickname);
 		}
 
+		if(nickname.length() > 15) {
+			throw new BaseException("닉네임은 15자 이하로 입력해주세요.");
+		}
+
 		// 사용 중이지 않은 닉네임이면 닉네임 변경
 		member.updateNickname(nickname);
 
