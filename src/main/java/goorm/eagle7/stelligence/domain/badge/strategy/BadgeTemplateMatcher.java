@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
+import lombok.RequiredArgsConstructor;
 
-@Configuration
-public class BadgeConfiguration {
+@Component
+@RequiredArgsConstructor
+public class BadgeTemplateMatcher {
+
+	private final Map<BadgeCategory, BadgeAwardStrategyTemplate> strategyMap = new EnumMap<>(BadgeCategory.class);
 
 	/**
 	 * <h2>BadgeCategory, BadgeAwardStrategy 매핑</h2>
@@ -22,9 +26,8 @@ public class BadgeConfiguration {
 	 * @return Map BadgeCategory에 따라 매핑된 BadgeAwardStrategy Map
 	 */
 	@Bean
-	public Map<BadgeCategory, BadgeAwardStrategy> badgeAwardStrategyMap(List<BadgeAwardStrategy> strategies) {
-
-		Map<BadgeCategory, BadgeAwardStrategy> strategyMap = new EnumMap<>(BadgeCategory.class);
+	private Map<BadgeCategory, BadgeAwardStrategyTemplate> findStrategy(
+		List<BadgeAwardStrategyTemplate> strategies) {
 
 		// 각 BadgeAwardStrategy 구현체들을 BadgeCategory에 따라 매핑
 		strategies
@@ -37,6 +40,10 @@ public class BadgeConfiguration {
 			);
 
 		return strategyMap;
+	}
+
+	public BadgeAwardStrategyTemplate findStrategy(BadgeCategory badgeCategory) {
+		return strategyMap.get(badgeCategory);
 	}
 
 }
