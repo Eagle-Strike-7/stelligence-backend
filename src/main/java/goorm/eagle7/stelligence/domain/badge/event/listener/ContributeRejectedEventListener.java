@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.document.event.listener;
+package goorm.eagle7.stelligence.domain.badge.event.listener;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -8,32 +8,30 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.badge.BadgeService;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
-import goorm.eagle7.stelligence.domain.document.event.NewDocumentEvent;
+import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class DocumentEventListener {
+public class ContributeRejectedEventListener {
 
 	private final BadgeService badgeService;
-	private final DocumentContentRepository documentContentRepository;
+	private final ContributeRepository contributeRepository;
 
 	@Async
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	@TransactionalEventListener(value = NewDocumentEvent.class)
-	public void onDocumentNew(NewDocumentEvent event) {
+	@TransactionalEventListener(value = ContributeRejectedEvent.class)
+	public void onContributeRejected(ContributeRejectedEvent event) {
 
-		documentContentRepository
-			.findByIdWithAuthor(event.documentId())
-			.ifPresent(document ->
+		contributeRepository
+			.findWithMember(event.contributeId())
+			.ifPresent(contribute ->
 				badgeService.checkAndAwardBadge(
-					BadgeCategory.DOCUMENT
-					, document.getAuthor())
+					BadgeCategory.CONTRIBUTE_REJECTED
+					, contribute.getMember())
 			);
 
 	}
 
 }
-
-

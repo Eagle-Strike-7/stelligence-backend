@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.report.event.listener;
+package goorm.eagle7.stelligence.domain.badge.event.listener;
 
 import java.util.Optional;
 

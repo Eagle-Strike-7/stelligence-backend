@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.badge.BadgeService;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
-import goorm.eagle7.stelligence.domain.contribute.event.listener.ContributeMergedEventListener;
+import goorm.eagle7.stelligence.domain.badge.event.listener.ContributeMergedEventListener;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
