@@ -5,6 +5,7 @@ import java.util.List;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -84,7 +85,7 @@ public class DebateController {
 	public ResponseTemplate<List<CommentResponse>> addComment(
 		@Parameter(description = "댓글을 추가할 토론의 ID", example = "1")
 		@PathVariable("debateId") Long debateId,
-		@RequestBody CommentRequest commentRequest,
+		@Validated @RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok(debateService.addComment(commentRequest, debateId, memberInfo.getId()));
@@ -135,7 +136,7 @@ public class DebateController {
 		@PathVariable("debateId") Long debateId,
 		@Parameter(description = "수정할 댓글의 ID", example = "1")
 		@PathVariable("commentId") Long commentId,
-		@RequestBody CommentRequest commentRequest,
+		@Validated @RequestBody CommentRequest commentRequest,
 		@Auth MemberInfo memberInfo
 	) {
 		return ResponseTemplate.ok(debateService.updateComment(commentId, commentRequest, memberInfo.getId()));

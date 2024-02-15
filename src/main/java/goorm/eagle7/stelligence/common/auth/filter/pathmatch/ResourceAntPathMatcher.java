@@ -23,7 +23,7 @@ public class ResourceAntPathMatcher extends AntPathMatcher {
 	@Override
 	public boolean match(String httpMethod, String uri) {
 
-		return permittedPathStore.exist(httpMethod, uri);
+		return permittedPathStore.isPermittedAll(httpMethod, uri);
 
 	}
 

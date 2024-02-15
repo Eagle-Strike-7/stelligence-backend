@@ -44,7 +44,7 @@ public class ContributeService {
 	@Transactional
 	public ContributeResponse createContribute(ContributeRequest contributeRequest, Long loginMemberId) {
 
-		contributeRequestValidator.validate(contributeRequest);
+		contributeRequestValidator.validate(contributeRequest, loginMemberId);
 
 		Member member = memberRepository.findById(loginMemberId).orElseThrow(
 			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + loginMemberId)

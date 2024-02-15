@@ -2,13 +2,11 @@ package goorm.eagle7.stelligence.common.dev;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
-import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -18,30 +16,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DevLoginService {
 
-
 	private final DevSignUpService devSignUpService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
 
-
 	@Transactional
-	public DevLoginTokensWithIdAndRoleResponse devLogin( DevLoginRequest devLoginRequest) {
-
+	public DevLoginTokensWithIdAndRoleResponse devLogin(DevLoginRequest devLoginRequest) {
 
 		// nickname으로 회원 조회 후 없으면 회원 가입 -> member 받아 오기
 		// nickname 중복이면 로그인
-		String nickname = StringUtils.hasText(devLoginRequest.getNickname())
-			? devLoginRequest.getNickname()
-			: "은하";
+		String nickname = devLoginRequest.getNickname();
 
-		Member member = memberRepository.findByNicknameAndActiveTrue(nickname)
-			.orElseGet(() -> devSignUpService.devSignUp(devLoginRequest));
+		// nickname이 Null이어도 회원 가입 처리
+		Member member =
+			// 회원 확인
+			memberRepository.existsByNickname(nickname)
+				// 활성 회원이면(닉네임 기준) 로그인
+				? memberRepository.findByNicknameAndActiveTrue(nickname).orElseGet(
+					// 활성 회원의 닉네임이 아니면 회원 가입
+					() -> devSignUpService
+						.devSignUp(devLoginRequest)
+				)
+				:
+				// 현재 회원이 아니면 회원 가입
+				devSignUpService.devSignUp(devLoginRequest);
 
 		// token 생성 후 저장, 쿠키 저장
 		return generateAndSaveTokens(member);
 
 	}
-
 
 	/**
 	 * 토큰 생성 후 저장

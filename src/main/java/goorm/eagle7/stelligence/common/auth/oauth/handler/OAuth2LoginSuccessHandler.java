@@ -49,7 +49,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
 		// loginServie를 이용할 Dto 생성
 		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of(
-			customOAuth2User.getName(),
 			customOAuth2User.getNickname(),
 			customOAuth2User.getEmail(),
 			customOAuth2User.getImageUrl(),

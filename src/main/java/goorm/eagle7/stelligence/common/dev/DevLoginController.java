@@ -9,14 +9,16 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfoContextHolder;
+import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -63,6 +65,8 @@ public class DevLoginController {
 
 		// ThreadLocal 초기화
 		MemberInfoContextHolder.clear();
+
+		log.debug("Controller에서 로그아웃 완료");
 
 		return ResponseTemplate.ok();
 	}

@@ -10,14 +10,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -42,22 +41,21 @@ public class ContributeRequestValidator {
 	 * <ul>
 	 *     <li>document가 존재하지 않을 경우</li>
 	 *     <li>해당 document에 대한 투표중인 수정요청이 존재하는 경우</li>
+	 *     <li>해당 document에 대한 토론이 진행중인 경우</li>
+	 *     <li>해당 document에 대한 토론이 종료되고 참여자를 대상으로 수정요청 대기중에 허용되지 않은 토론이나 참여자가 요청하는 경우</li>
 	 *     <li>수정하고자 하는 section들이 document에 존재하지 않을 경우</li>
 	 *     <li>수정하고자 하는 제목이 다른 문서와 중복되는 경우</li>
 	 *     <li>수정하고자 하는 제목에 대해 다른 수정요청이 해당 제목으로 변경을 요청중인 경우</li>
 	 *     <li>각각의 sectionId를 가진 amendmentRequest들이 creatingOrder가 중복되거나 순차적이지 않을 경우</li>
 	 * </ul>
 	 * </p>
+	 *
+	 * @param request       수정요청 DTO
+	 * @param loginMemberId
 	 * @throws BaseException 유효하지 않은 요청일 경우
-	 * @param request 수정요청 DTO
 	 */
 	@Transactional(readOnly = true)
-	public void validate(ContributeRequest request) {
-
-		//수정하려는 제목이 null이나 빈값이 아닌가?
-		if (!StringUtils.hasText(request.getAfterDocumentTitle())) {
-			throw new BaseException("수정하려는 제목이 비어있습니다.");
-		}
+	public void validate(ContributeRequest request, Long loginMemberId) {
 
 		//document가 존재하는가
 		Document document = documentContentRepository.findById(request.getDocumentId())
@@ -68,10 +66,8 @@ public class ContributeRequestValidator {
 			throw new BaseException("이미 해당 문서에 대한 수정요청이 존재합니다. documentId=" + request.getDocumentId());
 		}
 
-		//해당 document에 대한 열린 토론이 존재하는가?
-		if (debateRepository.existsByContributeDocumentIdAndStatus(request.getDocumentId(), DebateStatus.OPEN)) {
-			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. documentId=" + request.getDocumentId());
-		}
+		// 해당 document에 대한 토론이 진행중이거나, 수정요청 대기중인가?
+		checkDebate(request, loginMemberId);
 
 		//수정하고자 하는 section들이 document에 존재하는가
 		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
@@ -135,4 +131,32 @@ public class ContributeRequestValidator {
 		}
 		return true;
 	}
+
+	private void checkDebate(ContributeRequest request, Long loginMemberId) {
+		debateRepository.findLatestDebateByDocumentId(request.getDocumentId()).ifPresent(
+			debate -> {
+				// 토론이 진행중인가?
+				checkIsOnDebate(debate);
+				// 토론이 종료된 후 토론 참여자를 위한 수정요청 대기중인가?
+				checkDebateIsPendingForDebater(debate, request.getRelatedDebateId(), loginMemberId);
+			}
+		);
+	}
+
+	void checkIsOnDebate(Debate debate) {
+		if (debate.isOnDebate()) {
+			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. debateId=" + debate.getId());
+		}
+	}
+	
+	void checkDebateIsPendingForDebater(Debate debate, Long relatedDebateId, Long loginMemberId) {
+		if (debate.isPendingForContribute()
+			// 다른 토론에서 파생된 수정요청을 보내는 경우
+			&& (!debate.getId().equals(relatedDebateId)
+			// 토론 참여자가 아닌 사람이 수정요청을 보내는 경우
+			|| !debate.hasPermissionToWriteDrivenContribute(loginMemberId))) {
+			throw new BaseException("최근 종료된 토론 참여자를 위한 수정요청 대기중입니다. debateId=" + debate.getId());
+		}
+	}
+
 }
