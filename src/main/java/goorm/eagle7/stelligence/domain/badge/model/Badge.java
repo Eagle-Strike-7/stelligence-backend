@@ -2,8 +2,6 @@ package goorm.eagle7.stelligence.domain.badge.model;
 
 import static goorm.eagle7.stelligence.domain.badge.model.BadgeCategory.*;
 
-import java.util.Arrays;
-
 import lombok.Getter;
 
 @Getter
@@ -43,6 +41,7 @@ public enum Badge {
 	private final BadgeCategory eventCategory; // 배지 획득 조건
 	private final String description; // 배지 설명
 	private final String imgFilename; // 배지 이미지 URN
+
 	private static final String BADGE_FOLDER_NAME = "/badges/";
 
 	// 생성자의 파라미터 순서에 따라 상기 enum value 순서가 결정됨.
@@ -51,13 +50,6 @@ public enum Badge {
 		this.eventCategory = eventCategory;
 		this.description = description;
 		this.imgFilename = imgFilename;
-	}
-
-	public static Badge findByEventCategory(BadgeCategory badgeCategory) {
-		return Arrays.stream(values())
-			.filter(b -> b.getEventCategory() == badgeCategory)
-			.findAny()
-			.orElse(null);
 	}
 
 	public String getImgFilename() {
