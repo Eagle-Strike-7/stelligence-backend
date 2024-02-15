@@ -22,14 +22,13 @@ public class NewContributeEventListener {
 	@TransactionalEventListener(value = NewContributeEvent.class)
 	public void onContributeNew(NewContributeEvent event) {
 
-		if (contributeRepository.existsById(event.contributeId())) {
-
-			contributeRepository.findWithMember(event.contributeId())
-				.ifPresent(contribute ->
-					badgeService.checkAndAwardBadge(BadgeCategory.CONTRIBUTE_ALL, contribute.getMember())
-				);
-
-		}
+		contributeRepository
+			.findWithMember(event.contributeId())
+			.ifPresent(contribute ->
+				badgeService.checkAndAwardBadge(
+					BadgeCategory.CONTRIBUTE_ALL
+					, contribute.getMember())
+			);
 
 	}
 

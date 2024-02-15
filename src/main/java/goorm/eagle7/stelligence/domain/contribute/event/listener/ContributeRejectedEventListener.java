@@ -22,12 +22,14 @@ public class ContributeRejectedEventListener {
 	@TransactionalEventListener(value = ContributeRejectedEvent.class)
 	public void onContributeRejected(ContributeRejectedEvent event) {
 
-		if (contributeRepository.existsById(event.contributeId())) {
-			contributeRepository.findWithMember(event.contributeId())
-				.ifPresent(contribute ->
-					badgeService.checkAndAwardBadge(BadgeCategory.CONTRIBUTE_REJECTED, contribute.getMember())
-				);
-		}
+		contributeRepository
+			.findWithMember(event.contributeId())
+			.ifPresent(contribute ->
+				badgeService.checkAndAwardBadge(
+					BadgeCategory.CONTRIBUTE_REJECTED
+					, contribute.getMember())
+			);
+
 	}
 
 }
