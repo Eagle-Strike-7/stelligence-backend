@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
-import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
-import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -113,7 +111,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 		//이벤트를 발행합니다.
 		applicationEventPublisher.publishEvent(new ContributeMergedEvent(contribute.getId()));
 		applicationEventPublisher.publishEvent(
-			new BadgeEvent(contribute.getMember().getId(), BadgeCategory.CONTRIBUTE_MERGED));
+			new ContributeMergedEvent(contribute.getId()));
 	}
 
 	/**
