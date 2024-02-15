@@ -91,19 +91,30 @@ public class VoteService {
 		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
 
 		String agreeCountStr = hashOps.get(key, voteStatus);
+		log.info("agreeCountStr: {}", agreeCountStr);
 		return agreeCountStr != null ? Integer.parseInt(agreeCountStr) : 0;
 	}
 
 	private void updateVoteCountInRedis(Long contributeId, Boolean previousVote, Boolean updatedVote) {
 		// Redis 키 생성
 		String key = VOTE_KEY + contributeId;
-
 		HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+		Boolean keyExists = redisTemplate.hasKey(key);
+		log.info("keyExists: {}", keyExists);
 
-		//==바뀌어야할 부분 시작==//
-		Map<String, Integer> voteCountFromRedis = getVoteCountFromRedis(key, contributeId);
+		if (!keyExists) {
+			// Redis에 정보가 없는 경우, 데이터베이스에서 정보 조회 및 Redis에 저장
+			VoteSummary voteSummary = voteRepository.getVoteSummary(contributeId);
+			int agreeCount = voteSummary.getAgreeCount();
+			int disagreeCount = voteSummary.getDisagreeCount();
 
+			log.info("agreeCountDb: {}", agreeCount);
+
+			hashOps.put(key, VOTE_STATUS_AGREE, String.valueOf(agreeCount));
+			hashOps.put(key, VOTE_STATUS_DISAGREE, String.valueOf(disagreeCount));
+		}
 		//==바뀌어야할 부분 끝==//
+		log.info("agreeCountPrev: {}", hashOps.get(key, VOTE_STATUS_AGREE));
 
 		if (previousVote != null) { //이전에 투표가 되어있는 경우(agree, disagree 중 하나로 저장되어 있음)
 			if (updatedVote == null) {
@@ -119,6 +130,7 @@ public class VoteService {
 			hashOps.increment(key, updatedVote ? VOTE_STATUS_AGREE : VOTE_STATUS_DISAGREE, 1);
 		}
 
+		log.info("agreeCountAfter: {}", hashOps.get(key, VOTE_STATUS_AGREE));
 		redisTemplate.expire(key, Duration.ofMinutes(VOTE_CACHE_EXPIRATION_MINUTES));
 	}
 
