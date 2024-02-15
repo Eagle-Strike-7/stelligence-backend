@@ -23,7 +23,7 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
 		AuthenticationException exception)  {
 
 		ResponseTemplate<Void> responseTemplate = ResponseTemplate.fail(exception.getMessage());
-		ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, responseTemplate);
+		ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, responseTemplate);
 
 	}
 }
