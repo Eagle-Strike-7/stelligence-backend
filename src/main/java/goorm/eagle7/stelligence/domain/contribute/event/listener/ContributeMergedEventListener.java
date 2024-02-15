@@ -6,6 +6,8 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import goorm.eagle7.stelligence.domain.badge.BadgeService;
+import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -24,6 +26,8 @@ public class ContributeMergedEventListener {
 	private final ContributeRepository contributeRepository;
 	private final VoteRepository voteRepository;
 	private final NotificationSender notificationSender;
+
+	private final BadgeService badgdService;
 
 	private static final String CONTRIBUTE_MERGED_MESSAGE = "수정요청 '%s'이(가) 반영되었습니다! 글을 확인해보세요.";
 	private static final String DOCUMENT_URI = "/stars/%d";
@@ -59,5 +63,11 @@ public class ContributeMergedEventListener {
 
 		//알림을 보낸다.
 		notificationSender.send(request);
+
+		//배지를 확인하고 수여한다.
+		contributeRepository.findWithMember(event.contributeId()).ifPresent(contributeExist -> {
+			badgdService.checkAndAwardBadge(BadgeCategory.CONTRIBUTE_ALL, contributeExist.getMember());
+		});
+
 	}
 }

@@ -10,12 +10,11 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
-import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
+import goorm.eagle7.stelligence.domain.contribute.event.NewContributeEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
@@ -88,7 +87,9 @@ public class ContributeService {
 		}
 
 		contributeRepository.save(contribute);  // Contribute 저장. 연관된 Amendment도 함께 저장.
-		applicationEventPublisher.publishEvent(new BadgeEvent(member.getId(), BadgeCategory.CONTRIBUTE_ALL));
+
+		// Contribute 생성 이벤트 발행
+		applicationEventPublisher.publishEvent(new NewContributeEvent(contribute.getId()));
 
 		return ContributeResponse.of(contribute);
 	}
