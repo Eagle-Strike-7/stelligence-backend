@@ -22,14 +22,13 @@ public class DocumentEventListener {
 	@TransactionalEventListener(value = NewDocumentEvent.class)
 	public void onDocumentNew(NewDocumentEvent event) {
 
-		if (documentContentRepository.existsById(event.documentId())) {
-
-			documentContentRepository.findByIdWithAuthor(event.documentId())
-				.ifPresent(document ->
-					badgeService.checkAndAwardBadge(BadgeCategory.DOCUMENT, document.getAuthor())
-				);
-
-		}
+		documentContentRepository
+			.findByIdWithAuthor(event.documentId())
+			.ifPresent(document ->
+				badgeService.checkAndAwardBadge(
+					BadgeCategory.DOCUMENT
+					, document.getAuthor())
+			);
 
 	}
 

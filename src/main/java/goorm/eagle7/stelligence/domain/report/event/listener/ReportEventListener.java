@@ -29,11 +29,12 @@ public class ReportEventListener {
 	@EventListener(value = NewReportEvent.class)
 	public void onReportNew(NewReportEvent event) {
 
-		if (documentReportRepository.existsById(event.reportId())) {
-			awardBadgeToReporter(documentReportRepository.findById(event.reportId()));
-		} else if (commentReportRepository.existsById(event.reportId())) {
-			awardBadgeToReporter(commentReportRepository.findById(event.reportId()));
-		}
+		documentReportRepository.findById(event.reportId())
+			.ifPresentOrElse(
+				report -> awardBadgeToReporter(Optional.of(report)),
+				() -> commentReportRepository.findById(event.reportId())
+					.ifPresent(report -> awardBadgeToReporter(Optional.of(report)))
+			);
 
 	}
 
@@ -42,7 +43,7 @@ public class ReportEventListener {
 			.map(Report::getReporterId)
 			.flatMap(memberRepository::findByIdAndActiveTrue)
 			.ifPresent(member ->
-			badgeService.checkAndAwardBadge(BadgeCategory.REPORT, member));
+				badgeService.checkAndAwardBadge(BadgeCategory.REPORT, member));
 	}
 
 }
