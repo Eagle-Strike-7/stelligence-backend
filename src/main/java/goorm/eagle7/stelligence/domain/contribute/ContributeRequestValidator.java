@@ -16,6 +16,7 @@ import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -67,7 +68,6 @@ public class ContributeRequestValidator {
 
 		// 해당 document에 대한 토론이 진행중이거나, 수정요청 대기중인가?
 		checkDebate(request, loginMemberId);
-
 
 		//수정하고자 하는 section들이 document에 존재하는가
 		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
@@ -136,18 +136,27 @@ public class ContributeRequestValidator {
 		debateRepository.findLatestDebateByDocumentId(request.getDocumentId()).ifPresent(
 			debate -> {
 				// 토론이 진행중인가?
-				if (debate.isOnDebate()) {
-					throw new BaseException("해당 문서에 대한 토론이 진행중입니다. debateId=" + debate.getId());
-				}
+				checkIsOnDebate(debate);
 				// 토론이 종료된 후 토론 참여자를 위한 수정요청 대기중인가?
-				if (debate.isPendingForContribute()
-					// 다른 토론에서 파생된 수정요청을 보내는 경우
-					&& (!debate.getId().equals(request.getRelatedDebateId())
-					// 토론 참여자가 아닌 사람이 수정요청을 보내는 경우
-					|| !debate.hasPermissionToWriteDrivenContribute(loginMemberId))) {
-					throw new BaseException("최근 종료된 토론 참여자를 위한 수정요청 대기중입니다. debateId=" + debate.getId());
-				}
+				checkDebateIsPendingForDebater(debate, request.getRelatedDebateId(), loginMemberId);
 			}
 		);
 	}
+
+	void checkIsOnDebate(Debate debate) {
+		if (debate.isOnDebate()) {
+			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. debateId=" + debate.getId());
+		}
+	}
+	
+	void checkDebateIsPendingForDebater(Debate debate, Long relatedDebateId, Long loginMemberId) {
+		if (debate.isPendingForContribute()
+			// 다른 토론에서 파생된 수정요청을 보내는 경우
+			&& (!debate.getId().equals(relatedDebateId)
+			// 토론 참여자가 아닌 사람이 수정요청을 보내는 경우
+			|| !debate.hasPermissionToWriteDrivenContribute(loginMemberId))) {
+			throw new BaseException("최근 종료된 토론 참여자를 위한 수정요청 대기중입니다. debateId=" + debate.getId());
+		}
+	}
+
 }
