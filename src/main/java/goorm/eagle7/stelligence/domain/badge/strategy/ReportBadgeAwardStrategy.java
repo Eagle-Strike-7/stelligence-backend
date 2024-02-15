@@ -7,15 +7,15 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.report.CommentReportRepository;
 import goorm.eagle7.stelligence.domain.report.DocumentReportRepository;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ReportBadgeAwardStrategy implements BadgeAwardStrategy {
+public class ReportBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
 
+	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final DocumentReportRepository documentReportRepository;
 	private final CommentReportRepository commentReportRepository;
 
@@ -25,16 +25,19 @@ public class ReportBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Long memberId) {
+	protected long getCount(Long memberId) {
 		long countDocument = documentReportRepository.countByReporterId(memberId);
 		long countComment = commentReportRepository.countByReporterId(memberId);
 		return countDocument + countComment;
 	}
 
 	@Override
-	public Map<Integer, Badge> getRequiredCounts() {
-		Map<Integer, Badge> requiredCounts = new HashMap<>();
-		requiredCounts.put(10, Badge.GUARD);
+	protected Map<Integer, Badge> getBadgeCriteria() {
+
+		if (requiredCounts.isEmpty()) {
+			requiredCounts.put(1, Badge.GUARD);
+			requiredCounts.put(10, Badge.GUARD);
+		}
 		return requiredCounts;
 	}
 }

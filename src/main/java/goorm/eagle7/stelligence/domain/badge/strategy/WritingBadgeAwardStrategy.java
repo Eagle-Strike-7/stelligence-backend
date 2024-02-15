@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class WritingBadgeAwardStrategy implements BadgeAwardStrategy {
+public class WritingBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
 
+	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final DocumentContentRepository documentContentRepository;
 
 	@Override
@@ -23,17 +23,19 @@ public class WritingBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Long memberId) {
+	protected long getCount(Long memberId) {
 		return documentContentRepository.countByAuthor_Id(memberId);
 	}
 
 	@Override
-	public Map<Integer, Badge> getRequiredCounts() {
-		Map<Integer, Badge> requiredCounts = new HashMap<>();
-		requiredCounts.put(1, Badge.ASTRONAUT);
-		requiredCounts.put(5, Badge.MOON);
-		requiredCounts.put(10, Badge.MARS);
-		requiredCounts.put(20, Badge.URANUS);
+	protected Map<Integer, Badge> getBadgeCriteria() {
+
+		if (requiredCounts.isEmpty()) {
+			requiredCounts.put(1, Badge.ASTRONAUT);
+			requiredCounts.put(5, Badge.MOON);
+			requiredCounts.put(10, Badge.MARS);
+			requiredCounts.put(20, Badge.URANUS);
+		}
 		return requiredCounts;
 	}
 

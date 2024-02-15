@@ -14,8 +14,9 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ContributeAllBadgeAwardStrategy implements BadgeAwardStrategy {
+public class ContributeAllBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
 
+	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final ContributeRepository contributeRepository;
 
 	@Override
@@ -23,19 +24,22 @@ public class ContributeAllBadgeAwardStrategy implements BadgeAwardStrategy {
 		return BadgeCategory.CONTRIBUTE_ALL.equals(category);
 	}
 
-	public long getCount(Long memberId) {
+	protected long getCount(Long memberId) {
 		return contributeRepository.countByMemberId(memberId);
 	}
 
 	@Override
-	public Map<Integer, Badge> getRequiredCounts() {
-		Map<Integer, Badge> requiredCounts = new HashMap<>();
-		requiredCounts.put(1, MERCURY);
-		requiredCounts.put(5, VENUS);
-		requiredCounts.put(10, NEPTUNE);
-		requiredCounts.put(30, SUN);
-		requiredCounts.put(50, GALAXY);
+	protected Map<Integer, Badge> getBadgeCriteria() {
+
+		if (requiredCounts.isEmpty()) {
+			requiredCounts.put(1, MERCURY);
+			requiredCounts.put(5, VENUS);
+			requiredCounts.put(10, NEPTUNE);
+			requiredCounts.put(30, SUN);
+			requiredCounts.put(50, GALAXY);
+		}
 		return requiredCounts;
+
 	}
 
 }

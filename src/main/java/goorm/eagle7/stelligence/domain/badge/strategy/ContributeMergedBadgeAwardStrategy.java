@@ -11,13 +11,13 @@ import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ContributeMergedBadgeAwardStrategy implements BadgeAwardStrategy {
+public class ContributeMergedBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
 
+	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final ContributeRepository contributeRepository;
 
 	@Override
@@ -26,17 +26,19 @@ public class ContributeMergedBadgeAwardStrategy implements BadgeAwardStrategy {
 	}
 
 	@Override
-	public long getCount(Long memberId) {
+	protected long getCount(Long memberId) {
 		return contributeRepository.countByMemberIdAndStatus(memberId, ContributeStatus.MERGED);
 	}
 
 	@Override
-	public Map<Integer, Badge> getRequiredCounts() {
-		Map<Integer, Badge> requiredCounts = new HashMap<>();
-		requiredCounts.put(1, JUPITER);
-		requiredCounts.put(5, SATURN);
-		requiredCounts.put(10, PLUTO);
-		requiredCounts.put(50, ANDROMEDA);
+	protected Map<Integer, Badge> getBadgeCriteria() {
+
+		if (requiredCounts.isEmpty()) {
+			requiredCounts.put(1, JUPITER);
+			requiredCounts.put(5, SATURN);
+			requiredCounts.put(10, PLUTO);
+			requiredCounts.put(50, ANDROMEDA);
+		}
 		return requiredCounts;
 	}
 
