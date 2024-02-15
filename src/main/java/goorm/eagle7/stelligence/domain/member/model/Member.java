@@ -41,10 +41,10 @@ public class Member extends BaseTimeEntity {
 	private boolean active; // default: true, for soft delete
 
 	// social login 시 받아오는 정보
-	private String nickname;
+	private String nickname; // TODO 최대 15자 제한 필요
 	private String email;
 	private String imageUrl;
-	private String socialId; // unique지만, DB에서는 unique 제약 조건을 걸지 않음.
+	private String socialId;
 	@Enumerated(EnumType.STRING)
 	private SocialType socialType;
 
