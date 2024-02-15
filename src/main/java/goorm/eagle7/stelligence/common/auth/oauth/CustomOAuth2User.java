@@ -13,7 +13,6 @@ import lombok.Getter;
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {
 
-	private String name;
 	private String nickname;
 	private String email;
 	private String imageUrl;
@@ -35,13 +34,12 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
 	// 구글 로그인 시
 	public static CustomOAuth2User ofGoogle(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String name, String email, String imageUrl, String socialId,
+		Map<String, Object> attributes, String email, String imageUrl, String socialId,
 		SocialType socialType
 	) {
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "sub");
 
-		customOAuth2User.name = name;
 		customOAuth2User.nickname = null;
 		customOAuth2User.email = email;
 		customOAuth2User.imageUrl = imageUrl;
@@ -53,12 +51,11 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
 	// 네이버 로그인 시
 	public static CustomOAuth2User ofNaver(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String name, String nickname, String email, String imageUrl, String socialId,
+		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId,
 		SocialType socialType) {
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "response");
 
-		customOAuth2User.name = name;
 		customOAuth2User.nickname = nickname;
 		customOAuth2User.email = email;
 		customOAuth2User.imageUrl = imageUrl;
@@ -70,11 +67,10 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
 	// 카카오 로그인 시
 	public static CustomOAuth2User ofKakao(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String name, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
+		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "properties");
 
-		customOAuth2User.name = name;
 		customOAuth2User.nickname = nickname;
 		customOAuth2User.email = email;
 		customOAuth2User.imageUrl = imageUrl;
