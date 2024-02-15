@@ -18,7 +18,7 @@ public class DebateEndAtExtender {
 	@Scheduled(fixedRate = 1000 * 60 * 3) // 3분마다 실행
 	public void extendDebateEndAt() {
 		//now + 15로 endat을 연장한다.
-		jdbcTemplate.update("UPDATE debate SET end_at = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE debate_id = 4");
+		jdbcTemplate.update("UPDATE debate SET end_at = DATE_ADD(NOW(), INTERVAL 300 MINUTE) WHERE debate_id = 4");
 	}
 
 }
