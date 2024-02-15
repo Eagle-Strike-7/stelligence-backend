@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -70,9 +71,11 @@ public class ContributeRequestValidator {
 		checkDebate(request, loginMemberId);
 
 		//수정하고자 하는 section들이 document에 존재하는가
-		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document,
-			document.getLatestRevision());
+		List<Long> sectionIds = new ArrayList<>(
+			sectionRepository.findSectionIdByVersion(document, document.getLatestRevision()));
 
+		sectionIds.add(0L); // Phantom Section Id
+		
 		request.getAmendments().stream().map(AmendmentRequest::getSectionId).forEach(
 			sectionId -> {
 				if (!sectionIds.contains(sectionId)) {
@@ -81,7 +84,12 @@ public class ContributeRequestValidator {
 			}
 		);
 
-		//변경하고자 하는 제목이 다른 문서와 중복되는가
+		//Phantom Section에 대한 수정요청은 항상 CREATE 타입이어야 한다.
+		if (request.getAmendments().stream().anyMatch(
+			req -> req.getSectionId().equals(0L)
+				&& !req.getType().equals(AmendmentType.CREATE))) {
+			throw new BaseException("Section 0에 대한 수정요청은 항상 CREATE 타입이어야 합니다.");
+		}
 
 		//이미 제목을 가진 문서가 존재하는가 - contribute의 대상이 되는 document라면 허용
 		Optional<Document> optionalDocument = documentContentRepository.findByTitle(request.getAfterDocumentTitle());
@@ -148,7 +156,7 @@ public class ContributeRequestValidator {
 			throw new BaseException("해당 문서에 대한 토론이 진행중입니다. debateId=" + debate.getId());
 		}
 	}
-	
+
 	void checkDebateIsPendingForDebater(Debate debate, Long relatedDebateId, Long loginMemberId) {
 		if (debate.isPendingForContribute()
 			// 다른 토론에서 파생된 수정요청을 보내는 경우

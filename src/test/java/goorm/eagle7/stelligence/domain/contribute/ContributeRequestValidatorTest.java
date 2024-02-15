@@ -61,9 +61,11 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		AmendmentRequest a6 = new AmendmentRequest(3L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
+		AmendmentRequest a7 = new AmendmentRequest(0L, AmendmentType.CREATE, Heading.H2, "title",
+			"content", 1); // Section 0도 허용되어야하며, CREATE여야 한다.
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L, null);
+			List.of(a1, a2, a3, a4, a5, a6, a7), 1L, "title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -247,6 +249,27 @@ class ContributeRequestValidatorTest {
 		assertThatThrownBy(
 			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("해당 문서에 존재하지 않는 섹션을 수정하려고 합니다. sectionId=1");
+	}
+
+	@Test
+	@DisplayName("Section 0을 가진 Amendment는 CREATE 이어야 한다.")
+	void sectionZeroOnlyCreate() {
+
+		AmendmentRequest a1 = new AmendmentRequest(0L, AmendmentType.UPDATE, Heading.H2, "title",
+			"content", 1);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
+			2L, null);
+		Long loginMemberId = 2L;
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(2L));
+
+		//then
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
+		).isInstanceOf(BaseException.class).hasMessage("Section 0에 대한 수정요청은 항상 CREATE 타입이어야 합니다.");
 	}
 
 	@Test
