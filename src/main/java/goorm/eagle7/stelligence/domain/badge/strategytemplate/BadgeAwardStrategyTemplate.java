@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.badge.strategy;
+package goorm.eagle7.stelligence.domain.badge.strategytemplate;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public abstract class BadgeAwardStrategyTemplate {
 	/**
 	 * <h2>전략 상세 조건 확인 후 발급</h2>
 	 * <p>- 조건 숫자와 동일한 경우, 해당 배지를 찾아 배지 발급</p>
-	 * @param member
+	 * @param member 해당 이벤트 확인할 member
 	 */
 	@Transactional
 	public void checkAndAward(Member member) {
@@ -32,6 +32,7 @@ public abstract class BadgeAwardStrategyTemplate {
 			.map(Map.Entry::getValue)
 			.findAny()
 			.ifPresent(member::addBadge);
+
 	}
 
 

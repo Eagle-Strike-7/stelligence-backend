@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.badge.strategy;
+package goorm.eagle7.stelligence.domain.badge.strategytemplate;
 
 import java.util.Arrays;
 import java.util.EnumMap;

@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.badge.strategy;
+package goorm.eagle7.stelligence.domain.badge.strategytemplate.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
+import goorm.eagle7.stelligence.domain.badge.strategytemplate.BadgeAwardStrategyTemplate;
 import goorm.eagle7.stelligence.domain.report.CommentReportRepository;
 import goorm.eagle7.stelligence.domain.report.DocumentReportRepository;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ReportBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
+public class ReportBadgeAwardStrategyTemplate extends BadgeAwardStrategyTemplate {
 
 	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final DocumentReportRepository documentReportRepository;

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.badge.strategy.BadgeAwardStrategyTemplate;
-import goorm.eagle7.stelligence.domain.badge.strategy.BadgeTemplateMatcher;
+import goorm.eagle7.stelligence.domain.badge.strategytemplate.BadgeAwardStrategyTemplate;
+import goorm.eagle7.stelligence.domain.badge.strategytemplate.BadgeTemplateMatcher;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
