@@ -140,4 +140,5 @@ class DocumentServiceTest {
 		verify(documentContentService, times(1)).updateParentDocument(documentId, parentDocumentId);
 		verify(documentGraphService, times(1)).updateDocumentLink(documentId, parentDocumentId);
 	}
+
 }
