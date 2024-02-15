@@ -29,6 +29,5 @@ public class RejectHandler implements ContributeSchedulingActionHandler {
 		contribute.setStatusRejected();
 
 		applicationEventPublisher.publishEvent(new ContributeRejectedEvent(contributeId));
-		applicationEventPublisher.publishEvent(new ContributeRejectedEvent(contributeId));
 	}
 }
