@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import goorm.eagle7.stelligence.domain.badge.BadgeService;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.badge.event.listener.ContributeMergedEventListener;
@@ -35,8 +34,6 @@ class ContributeMergedNotifierTest {
 	VoteRepository voteRepository;
 	@Mock
 	ContributeRepository contributeRepository;
-	@Mock
-	BadgeService badgeService;
 
 	@InjectMocks
 	ContributeMergedEventListener contributeEventAware;
