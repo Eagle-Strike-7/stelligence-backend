@@ -18,7 +18,7 @@ import goorm.eagle7.stelligence.common.dev.dto.DevLoginRequest;
 import goorm.eagle7.stelligence.common.dev.dto.DevLoginTokensWithIdAndRoleResponse;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
-import goorm.eagle7.stelligence.common.util.RandomUtils;
+import goorm.eagle7.stelligence.common.util.UniqueNicknameGenerator;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import io.jsonwebtoken.Claims;
@@ -121,9 +121,8 @@ public class DevAuthFilter extends OncePerRequestFilter {
 				// 자동 회원 가입을 위한 랜덤 nickname 생성
 				if (signUpMode) {
 					// test+랜덤숫자 5개로 nickname 생성
-					String finalNickname = nickname;
-					nickname = RandomUtils.generateUniqueNickname("은하",
-						() -> memberRepository.existsByNicknameAndActiveTrue(finalNickname)
+					nickname = UniqueNicknameGenerator.generateUniqueNickname("은하",
+						memberRepository::existsByNickname
 					);
 				}
 				log.debug("nickname: {}", nickname);

@@ -152,7 +152,6 @@ public class SecurityConfig {
 						request -> request.getServletPath().equals("/api/logout")
 					) // 로그아웃 요청 url 설정 (default: /logout)
 					.addLogoutHandler(oAuth2LogoutCustomHandler) // 로그아웃 시 refreshToken 삭제 // handler 순서 중요함.
-					.deleteCookies(accessTokenCookieName, refreshTokenCookieName) // cookie 삭제, (JSESSIONID은 톰캣 사용)
 					.clearAuthentication(true) // 순서 상관 X
 					.logoutSuccessHandler(oAuth2LogoutSuccessHandler)
 					.permitAll() // 세션이 만료된 상태 등에서도 로그아웃 가능. (사용자 경험 위해)

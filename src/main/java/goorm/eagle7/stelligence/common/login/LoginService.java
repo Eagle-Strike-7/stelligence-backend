@@ -52,7 +52,8 @@ public class LoginService {
 	 */
 	private Member findOrRegisterMember(LoginOAuth2Request request) {
 
-		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(request.getSocialType(),
+		return memberRepository.findBySocialTypeAndSocialIdAndActiveTrue(
+			request.getSocialType(),
 				request.getSocialId())
 			.orElseGet(() -> signUpService.oauth2SignUp(request));
 	}

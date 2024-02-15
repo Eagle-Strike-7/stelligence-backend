@@ -2,10 +2,9 @@ package goorm.eagle7.stelligence.common.login;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
-import goorm.eagle7.stelligence.common.util.RandomUtils;
+import goorm.eagle7.stelligence.common.util.UniqueNicknameGenerator;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +21,13 @@ public class SignUpService {
 	@Transactional
 	public Member oauth2SignUp(LoginOAuth2Request loginOAuth2Request) {
 
-		String baseNickname = loginOAuth2Request.getNickname();
-
 		// 닉네임이 중복인지 확인, 중복이면 랜덤 닉네임 생성
-		String uniqueNickname = RandomUtils.generateUniqueNickname(baseNickname, () -> isNicknameDuplicate(baseNickname));
+		String uniqueNickname = loginOAuth2Request.getNickname();
+
+		// RandomUtils 내에서 null 확인 후 기본값으로 랜덤 닉네임 생성
+		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname, this::isNicknameDuplicate);
 
 		Member newMember = Member.of(
-			loginOAuth2Request.getName(),
 			uniqueNickname,
 			loginOAuth2Request.getEmail(),
 			loginOAuth2Request.getImageUrl(),
@@ -43,10 +42,7 @@ public class SignUpService {
 
 	// 닉네임 중복 확인 메서드
 	private boolean isNicknameDuplicate(String nickname) {
-		if(!StringUtils.hasText(nickname)) {
-			return false;
-		}
-		return memberRepository.existsByNicknameAndActiveTrue(nickname);
+		return memberRepository.existsByNickname(nickname);
 	}
 
 }
