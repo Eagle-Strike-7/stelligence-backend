@@ -3,7 +3,10 @@ package goorm.eagle7.stelligence.domain.contribute.event.listener;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.badge.BadgeService;
@@ -40,6 +43,8 @@ public class ContributeMergedEventListener {
 	 *
 	 * @param event 수정요청 완료 이벤트
 	 */
+	@Async
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@TransactionalEventListener(value = ContributeMergedEvent.class)
 	public void onContributeMerged(ContributeMergedEvent event) {
 		Contribute contribute = contributeRepository.findWithMember(event.contributeId())

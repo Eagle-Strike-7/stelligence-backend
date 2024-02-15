@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.report.event.listener;
 import java.util.Optional;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class ReportEventListener {
 	private final DocumentReportRepository documentReportRepository;
 	private final CommentReportRepository commentReportRepository;
 
+	@Async
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@EventListener(value = NewReportEvent.class)
 	public void onReportNew(NewReportEvent event) {

@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute.event.listener;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ public class ContributeRejectedEventListener {
 	private final BadgeService badgeService;
 	private final ContributeRepository contributeRepository;
 
+	@Async
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@TransactionalEventListener(value = ContributeRejectedEvent.class)
 	public void onContributeRejected(ContributeRejectedEvent event) {
