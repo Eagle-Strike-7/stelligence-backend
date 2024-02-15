@@ -65,9 +65,8 @@ public class ContributeMergedEventListener {
 		notificationSender.send(request);
 
 		//배지를 확인하고 수여한다.
-		contributeRepository.findWithMember(event.contributeId()).ifPresent(contributeExist -> {
-			badgdService.checkAndAwardBadge(BadgeCategory.CONTRIBUTE_ALL, contributeExist.getMember());
-		});
+		badgdService.checkAndAwardBadge(BadgeCategory.CONTRIBUTE_ALL, contribute.getMember());
 
 	}
+	
 }
