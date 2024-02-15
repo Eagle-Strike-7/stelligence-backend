@@ -1,5 +1,7 @@
 package goorm.eagle7.stelligence.domain.report.event.listener;
 
+import java.util.Optional;
+
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -28,26 +30,19 @@ public class ReportEventListener {
 	public void onReportNew(NewReportEvent event) {
 
 		if (documentReportRepository.existsById(event.reportId())) {
-			documentReportRepository.findById(event.reportId())
-				.map(Report::getReporterId)
-				.ifPresent(memberId
-					-> memberRepository
-					.findByIdAndActiveTrue(memberId)
-					.ifPresent(member ->
-						badgeService.checkAndAwardBadge(BadgeCategory.REPORT, member)
-					));
-
+			awardBadgeToReporter(documentReportRepository.findById(event.reportId()));
 		} else if (commentReportRepository.existsById(event.reportId())) {
-			commentReportRepository.findById(event.reportId())
-				.map(Report::getReporterId)
-				.ifPresent(memberId
-					-> memberRepository
-					.findByIdAndActiveTrue(memberId)
-					.ifPresent(member ->
-						badgeService.checkAndAwardBadge(BadgeCategory.REPORT, member)
-					));
-
+			awardBadgeToReporter(commentReportRepository.findById(event.reportId()));
 		}
+
+	}
+
+	private void awardBadgeToReporter(Optional<? extends Report> reportOptional) {
+		reportOptional
+			.map(Report::getReporterId)
+			.flatMap(memberRepository::findByIdAndActiveTrue)
+			.ifPresent(member ->
+			badgeService.checkAndAwardBadge(BadgeCategory.REPORT, member));
 	}
 
 }

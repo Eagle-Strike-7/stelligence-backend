@@ -35,7 +35,6 @@ public class ReportBadgeAwardStrategy extends BadgeAwardStrategyTemplate {
 	protected Map<Integer, Badge> getBadgeCriteria() {
 
 		if (requiredCounts.isEmpty()) {
-			requiredCounts.put(1, Badge.GUARD);
 			requiredCounts.put(10, Badge.GUARD);
 		}
 		return requiredCounts;
