@@ -1,12 +1,11 @@
 package goorm.eagle7.stelligence.domain.badge;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.badge.strategy.BadgeAwardStrategy;
+import goorm.eagle7.stelligence.domain.badge.strategy.BadgeAwardStrategyTemplate;
+import goorm.eagle7.stelligence.domain.badge.strategy.BadgeTemplateMatcher;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeService {
 
-	private final Map<BadgeCategory, BadgeAwardStrategy> strategyMap;
+	private final BadgeTemplateMatcher badgeTemplateMatcher;
 
 	/**
 	 * <h2>BadgeCategory에 해당하는 전략을 찾아서 수행</h2>
@@ -27,7 +26,7 @@ public class BadgeService {
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		// badgeCategory에 해당하는 전략 category 찾기
-		BadgeAwardStrategy strategy = strategyMap.get(badgeCategory);
+		BadgeAwardStrategyTemplate strategy = badgeTemplateMatcher.findStrategy(badgeCategory);
 		if (strategy == null) {
 			// BadgeCategory에 해당하는 전략이 없을 경우는 server error로 판단
 			throw new IllegalArgumentException("Unsupported badge category: " + badgeCategory);
