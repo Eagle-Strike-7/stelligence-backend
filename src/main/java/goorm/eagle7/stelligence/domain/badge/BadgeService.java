@@ -26,15 +26,24 @@ public class BadgeService {
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		// badgeCategory에 해당하는 전략 category 찾기
+		BadgeAwardStrategyTemplate strategy = findStrategy(badgeCategory);
+
+		// 해당 전략 조건에 해당하면 배지 발급
+		awardBadge(strategy, member);
+
+	}
+
+	private BadgeAwardStrategyTemplate findStrategy(BadgeCategory badgeCategory) {
 		BadgeAwardStrategyTemplate strategy = badgeTemplateMatcher.findStrategy(badgeCategory);
 		if (strategy == null) {
 			// BadgeCategory에 해당하는 전략이 없을 경우는 server error로 판단
 			throw new IllegalArgumentException("Unsupported badge category: " + badgeCategory);
 		}
+		return strategy;
+	}
 
-		// 전략 상세 조건 확인 후 발급
+	private void awardBadge(BadgeAwardStrategyTemplate strategy, Member member) {
 		strategy.checkAndAward(member);
-
 	}
 
 }
