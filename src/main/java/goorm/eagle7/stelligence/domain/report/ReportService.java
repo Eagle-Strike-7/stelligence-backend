@@ -4,12 +4,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.domain.badge.event.model.BadgeEvent;
-import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
+import goorm.eagle7.stelligence.domain.report.event.NewReportEvent;
 import goorm.eagle7.stelligence.domain.report.model.CommentReport;
 import goorm.eagle7.stelligence.domain.report.model.DocumentReport;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class ReportService {
 		documentReportRepository.save(documentReport);
 
 		// 이벤트 발행
-		eventPublisher.publishEvent(new BadgeEvent(reporterId, BadgeCategory.REPORT));
+		eventPublisher.publishEvent(new NewReportEvent(reporterId));
 	}
 
 	/**
@@ -72,6 +71,6 @@ public class ReportService {
 		commentReportRepository.save(commentReport);
 
 		// 이벤트 발행
-		eventPublisher.publishEvent(new BadgeEvent(reporterId, BadgeCategory.REPORT));
+		eventPublisher.publishEvent(new NewReportEvent(reporterId));
 	}
 }
