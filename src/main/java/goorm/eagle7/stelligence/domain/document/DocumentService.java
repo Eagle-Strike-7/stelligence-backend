@@ -81,8 +81,7 @@ public class DocumentService {
 
 		applicationEventPublisher.publishEvent(new BadgeEvent(author.getId(), BadgeCategory.DOCUMENT));
 
-		return DocumentResponse.of(
-			createdDocument, 1L, sections, Collections.emptyList(), null, null);
+		return DocumentResponse.of(createdDocument, 1L, sections, Collections.emptyList());
 	}
 
 	/**
