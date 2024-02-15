@@ -1,6 +1,7 @@
 package goorm.eagle7.stelligence.domain.document;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DocumentStatusService {
 
 	private final DocumentContentRepository documentContentRepository;
