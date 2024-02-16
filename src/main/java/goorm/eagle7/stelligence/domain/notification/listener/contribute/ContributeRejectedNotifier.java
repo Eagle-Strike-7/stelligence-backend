@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
@@ -38,7 +37,7 @@ public class ContributeRejectedNotifier {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@TransactionalEventListener(value = ContributeRejectedEvent.class)
-	public void onContributeMerged(ContributeMergedEvent event) {
+	public void onContributeRejected(ContributeRejectedEvent event) {
 		Contribute contribute = contributeRepository.findWithMember(event.contributeId())
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 수정요청입니다."));
 
