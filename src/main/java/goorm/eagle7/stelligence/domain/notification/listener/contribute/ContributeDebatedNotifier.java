@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeDebatedEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
@@ -31,7 +32,6 @@ public class ContributeDebatedNotifier {
 	private final NotificationSender notificationSender;
 
 	private static final String CONTRIBUTE_DEBATED_MESSAGE = "수정요청 '%s'와 관련된 토론이 시작되었습니다! 토론을 확인해보세요.";
-	private static final String DEBATE_URI = "/debateList/%d";
 
 	/**
 	 * Contribute가 토론이 완료되었을 때 알림을 보냅니다.
@@ -54,7 +54,7 @@ public class ContributeDebatedNotifier {
 		//알림 요청 객체를 생성한다.
 		NotificationRequest request = NotificationRequest.of(
 			String.format(CONTRIBUTE_DEBATED_MESSAGE, StringSlicer.slice(debate.getContribute().getTitle())),
-			String.format(DEBATE_URI, debateId),
+			Site.debate(debateId),
 			targets
 		);
 

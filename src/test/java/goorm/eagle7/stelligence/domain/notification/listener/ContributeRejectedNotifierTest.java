@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -54,7 +55,7 @@ class ContributeRejectedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'contributeTitle'이(가) 반려되었습니다. 투표 결과를 확인해보세요",
-				"/revise/1/vote",
+				Site.vote(1L),
 				new HashSet<>(Set.of(1L, 2L, 3L))
 			)
 		);

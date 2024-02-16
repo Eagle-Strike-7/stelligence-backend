@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
+import goorm.eagle7.stelligence.domain.debate.event.DebateEndEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
@@ -63,7 +64,7 @@ class DebateSchedulerTest {
 			// then
 			verify(debateRepository, times(1)).findOpenDebateIdByEndAt(now);
 			verify(debateRepository, times(1)).closeAllById(targetDebateIdList);
-			verify(applicationEventPublisher, times(2)).publishEvent(any(Long.class));
+			verify(applicationEventPublisher, times(2)).publishEvent(any(DebateEndEvent.class));
 		}
 	}
 }
