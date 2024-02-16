@@ -8,8 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,12 @@ public class GlobalRestControllerAdvice {
 	public ResponseTemplate<String> handleBaseException(BaseException ex) {
 		log.debug("Exception catched in RestControllerAdvice : {}", ex.getMessage());
 		return ResponseTemplate.fail(ex.getMessage());
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseTemplate<String> handleMethodArgumentTypeMismatchException(HttpServletRequest request) {
+		return ResponseTemplate.fail("잘못된 URI입니다. request URI: \"" + request.getRequestURI() + "\"");
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

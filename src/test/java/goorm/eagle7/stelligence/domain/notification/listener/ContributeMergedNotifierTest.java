@@ -17,13 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
-import goorm.eagle7.stelligence.domain.contribute.event.listener.ContributeMergedEventListener;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.listener.contribute.ContributeMergedNotifier;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +36,7 @@ class ContributeMergedNotifierTest {
 	@Mock
 	ContributeRepository contributeRepository;
 	@InjectMocks
-	ContributeMergedEventListener contributeEventAware;
+	ContributeMergedNotifier contributeEventAware;
 
 	@Test
 	@DisplayName("수정요청 완료 이벤트를 받아 알림을 보낸다.")
