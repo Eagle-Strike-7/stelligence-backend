@@ -23,13 +23,13 @@ public final class UniqueNicknameGenerator {
 	 * <p>- 중복이 아닐 때까지 닉네임에 랜덤 숫자를 추가해 새로운 닉네임 생성.</p>
 	 * <p>- 최대 시도 횟수는 10회, 최대 15자.</p>
 	 * <p>- Predicate 인터페이스를 사용해 닉네임의 중복 여부를 외부에서 결정할 수 있도록 함.</p>
-	 * @param baseNickname 기본 닉네임
+	 * @param baseNickname 유저가 입력한 닉네임
 	 * @param isDuplicate 중복 검사를 수행하는 함수
 	 * @return 중복되지 않는 닉네임(랜덤 문자는 최대 5자리)
 	 */
 	public static String generateUniqueNickname(String baseNickname, Predicate<String> isDuplicate) {
 
-		// 기본 닉네임이 없으면 "은하"로 설정
+		// 유저가 입력한 닉네임이 없으면 "은하"로 설정
 		// 파라미터 보호 및 새로운 시도 시, baseNickname에 붙는 문자만 다르게 하기 위해 baseNickname과 nickname 분리
 		baseNickname = StringUtils.hasText(baseNickname) ? baseNickname : "은하";
 
@@ -43,7 +43,7 @@ public final class UniqueNicknameGenerator {
 				return nickname;
 			}
 
-			// 새로운 닉네임 창출
+			// 새로운 닉네임 생성
 			nickname = generateNewNickname(baseNickname);
 
 		}
