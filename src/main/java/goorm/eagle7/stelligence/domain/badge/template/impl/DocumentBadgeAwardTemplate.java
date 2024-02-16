@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class WritingBadgeAwardTemplate extends BadgeAwardTemplate {
+public class DocumentBadgeAwardTemplate extends BadgeAwardTemplate {
 
 	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
 	private final DocumentContentRepository documentContentRepository;
