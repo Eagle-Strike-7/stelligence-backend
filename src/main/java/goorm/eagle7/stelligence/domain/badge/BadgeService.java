@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.badge.strategytemplate.BadgeAwardStrategyTemplate;
-import goorm.eagle7.stelligence.domain.badge.strategytemplate.BadgeTemplateMatcher;
+import goorm.eagle7.stelligence.domain.badge.template.BadgeAwardTemplate;
+import goorm.eagle7.stelligence.domain.badge.template.BadgeTemplateMatcher;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
@@ -25,15 +25,15 @@ public class BadgeService {
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		// badgeCategory에 해당하는 전략 category 찾기
-		BadgeAwardStrategyTemplate strategy = findStrategy(badgeCategory);
+		BadgeAwardTemplate strategy = findStrategy(badgeCategory);
 
 		// 해당 전략 조건에 해당하면 배지 발급
 		awardBadge(strategy, member);
 
 	}
 
-	private BadgeAwardStrategyTemplate findStrategy(BadgeCategory badgeCategory) {
-		BadgeAwardStrategyTemplate strategy = badgeTemplateMatcher.findStrategy(badgeCategory);
+	private BadgeAwardTemplate findStrategy(BadgeCategory badgeCategory) {
+		BadgeAwardTemplate strategy = badgeTemplateMatcher.findStrategy(badgeCategory);
 		if (strategy == null) {
 			// BadgeCategory에 해당하는 전략이 없을 경우는 server error로 판단
 			throw new IllegalArgumentException("Unsupported badge category: " + badgeCategory);
@@ -41,7 +41,7 @@ public class BadgeService {
 		return strategy;
 	}
 
-	private void awardBadge(BadgeAwardStrategyTemplate strategy, Member member) {
+	private void awardBadge(BadgeAwardTemplate strategy, Member member) {
 		strategy.checkAndAward(member);
 	}
 
