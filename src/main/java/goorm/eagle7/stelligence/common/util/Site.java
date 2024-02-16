@@ -1,7 +1,7 @@
 package goorm.eagle7.stelligence.common.util;
 
 /**
- * 애플리케이션 사이트의 정보를 가지고 있는 정적 유틸 클래스입니다.ㄴㄴ
+ * 애플리케이션 사이트의 정보를 가지고 있는 정적 유틸 클래스입니다.
  */
 public final class Site {
 
