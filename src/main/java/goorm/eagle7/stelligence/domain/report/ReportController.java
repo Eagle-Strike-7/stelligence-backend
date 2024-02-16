@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.report;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,7 @@ public class ReportController {
 	)
 	@PostMapping("/documents/{documentId}")
 	public ResponseTemplate<Void> reportDocument(
-		@RequestBody ReportRequest reportRequest,
+		@Validated @RequestBody ReportRequest reportRequest,
 		@Parameter(description = "신고할 문서의 ID", example = "1")
 		@PathVariable(name = "documentId") Long documentId,
 		@Auth MemberInfo memberInfo) {

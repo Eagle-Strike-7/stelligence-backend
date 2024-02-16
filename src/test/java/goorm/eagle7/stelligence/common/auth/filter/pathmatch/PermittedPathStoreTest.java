@@ -27,7 +27,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/documents";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();
@@ -43,7 +43,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/documents/search?query=1";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();
@@ -59,7 +59,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/documents";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -75,7 +75,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/notin";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -91,7 +91,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/document";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -107,7 +107,7 @@ class PermittedPathStoreTest {
 		String uri = "/notin";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isFalse();
@@ -123,7 +123,7 @@ class PermittedPathStoreTest {
 		String uri = "/api/login";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();
@@ -139,7 +139,75 @@ class PermittedPathStoreTest {
 		String uri = "/api/members/me/nickname";
 
 		// when
-		boolean result = permittedPathStore.exist(httpMethod, uri);
+		boolean result = permittedPathStore.isPermittedAll(httpMethod, uri);
+
+		// then
+		assertThat(result).isTrue();
+
+	}
+
+	/** existMemberInfoRequired 메서드 테스트 */
+
+	@Test
+	@DisplayName("[성공] uri **에 많은 것이 있는 경우 - /api/contibutes/**/votes - existMemberInfoRequired")
+	void existApiContributesVotesTrue() {
+
+		// given
+		String httpMethod = "GET";
+		String uri = "/api/contributes/1/4/random/44//votes";
+
+		// when
+		boolean result = permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
+
+		// then
+		assertThat(result).isTrue();
+
+	}
+
+	/** existMemberInfoRequired 메서드 테스트 */
+
+	@Test
+	@DisplayName("[성공] **에 아무것도 없는 경우 - /api/contributes/**/votes 경우 - existMemberInfoRequired")
+	void existMemberInfoRequiredApiContributesVotesTrue() {
+
+		// given
+		String httpMethod = "GET";
+		String uri = "/api/contributes/votes";
+
+		// when
+		boolean result = permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
+
+		// then
+		assertThat(result).isTrue();
+
+	}
+
+	@Test
+	@DisplayName("[예외] 메서드가 다른 경우, /api/contributes/**/votes 경우 - existMemberInfoRequired")
+	void existMemberInfoRequiredApiContributesVotesFalse() {
+
+		// given
+		String httpMethod = "POST";
+		String uri = "/api/contributes/votes";
+
+		// when
+		boolean result = permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
+
+		// then
+		assertThat(result).isFalse();
+
+	}
+
+	@Test
+	@DisplayName("[성공] /api/bookmarks/marked 경우")
+	void existMemberInfoRequiredApiBookmarksMarkedTrue() {
+
+		// given
+		String httpMethod = "GET";
+		String uri = "/api/bookmarks/marked";
+
+		// when
+		boolean result = permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
 
 		// then
 		assertThat(result).isTrue();

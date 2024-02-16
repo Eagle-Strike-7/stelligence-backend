@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.domain.debate.event.DebateEndEvent;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,11 @@ public class DebateScheduler {
 		if (!targetDebateIdList.isEmpty()) {
 			log.info("[DebateScheduler] 종료 대상 토론을 모두 종료합니다. 대상 토론 ID: {}", targetDebateIdList);
 			debateRepository.closeAllById(targetDebateIdList);
-			targetDebateIdList.forEach(applicationEventPublisher::publishEvent); //이 때 이벤트는 동기적으로 수행됩니다.
+
+			// 토론 종료 이벤트를 발행합니다.
+			targetDebateIdList.forEach(
+				(id) -> applicationEventPublisher.publishEvent(new DebateEndEvent(id))); //이 때 이벤트는 동기적으로 수행됩니다.
+
 		} else {
 			log.info("[DebateScheduler] 종료 대상 토론이 없습니다.");
 		}

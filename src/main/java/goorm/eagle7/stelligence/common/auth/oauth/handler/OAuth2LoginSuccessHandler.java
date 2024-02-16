@@ -49,7 +49,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
 		// loginServie를 이용할 Dto 생성
 		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of(
-			customOAuth2User.getName(),
 			customOAuth2User.getNickname(),
 			customOAuth2User.getEmail(),
 			customOAuth2User.getImageUrl(),
@@ -70,7 +69,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			// 리다이렉트 실패 시, 500 에러 응답
-			ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+			ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 				ResponseTemplate.fail("Redirect failed"));
 		}
 

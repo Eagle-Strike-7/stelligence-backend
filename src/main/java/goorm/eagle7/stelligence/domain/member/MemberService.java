@@ -82,7 +82,7 @@ public class MemberService {
 
 		// nickname 검사
 		String nickname = memberUpdateNicknameRequest.getNickname();
-		if (memberRepository.existsByNicknameAndActiveTrue(nickname)) {
+		if (memberRepository.existsByNickname(nickname)) {
 			// 이미 사용 중인 닉네임이면 예외 발생
 			throw new BaseException("이미 사용 중인 닉네임입니다. nickname=" + nickname);
 		}
@@ -130,16 +130,7 @@ public class MemberService {
 	 */
 	public MemberBadgesListResponse getBadgesById(Long memberId) {
 
-		Member member = findActiveMemberById(memberId);
-		Set<Badge> badges = member.getBadges();
-
-		// Badge 추가는 이벤트로만 가능해 개발용으로 스웨거에서 확인 위해 임시로 추가
-		badges.add(Badge.MERCURY);
-		badges.add(Badge.VENUS);
-		badges.add(Badge.NEPTUNE);
-		badges.add(Badge.ANDROMEDA);
-		badges.add(Badge.GALAXY);
-
+		Set<Badge> badges = findActiveMemberById(memberId).getBadges();
 		List<MemberBadgesResponse> list = badges.stream().map(
 			MemberBadgesResponse::of).toList();
 

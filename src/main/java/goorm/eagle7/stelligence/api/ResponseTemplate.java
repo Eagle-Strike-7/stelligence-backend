@@ -40,4 +40,8 @@ public class ResponseTemplate<T> {
 	public static <T> ResponseTemplate<T> fail(String message) {
 		return new ResponseTemplate<>(false, message, null);
 	}
+
+	public static <T> ResponseTemplate<T> fail(T results, String message) {
+		return new ResponseTemplate<>(false, message, results);
+	}
 }
