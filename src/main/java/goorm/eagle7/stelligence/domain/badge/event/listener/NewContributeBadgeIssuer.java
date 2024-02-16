@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ContributeNewBadgeIssuer {
+public class NewContributeBadgeIssuer {
 
 	private final BadgeService badgeService;
 	private final ContributeRepository contributeRepository;
