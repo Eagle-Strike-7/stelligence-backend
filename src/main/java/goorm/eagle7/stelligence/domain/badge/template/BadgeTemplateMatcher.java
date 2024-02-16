@@ -21,7 +21,7 @@ public class BadgeTemplateMatcher {
 	 * <p>- EnumMap 내부적으로 Enum의 ordinal 값을 인덱스로 사용하여 요소를 저장해 HashMap보다 더 빠름</p>
 	 * @param strategies BadgeAwardStrategy 구현체들
 	 */
-	protected BadgeTemplateMatcher(
+	public BadgeTemplateMatcher(
 		List<BadgeAwardTemplate> strategies) {
 
 		// 각 BadgeAwardStrategy 구현체들을 BadgeCategory에 따라 매핑
