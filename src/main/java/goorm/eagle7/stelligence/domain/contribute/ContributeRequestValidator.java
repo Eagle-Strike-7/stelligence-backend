@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -71,11 +70,11 @@ public class ContributeRequestValidator {
 		checkDebate(request, loginMemberId);
 
 		//수정하고자 하는 section들이 document에 존재하는가
-		List<Long> sectionIds = new ArrayList<>(
-			sectionRepository.findSectionIdByVersion(document, document.getLatestRevision()));
+
+		List<Long> sectionIds = sectionRepository.findSectionIdByVersion(document, document.getLatestRevision());
 
 		sectionIds.add(0L); // Phantom Section Id
-		
+
 		request.getAmendments().stream().map(AmendmentRequest::getSectionId).forEach(
 			sectionId -> {
 				if (!sectionIds.contains(sectionId)) {
