@@ -35,15 +35,6 @@ public class AuthFilter extends OncePerRequestFilter {
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
 
-	/**
-	 * 토큰 검증이 필요한 리소스에 대해서만 검증 진행.
-	 * 		-> 토큰 검증 X uri: ResourceMemoryRepository에서 가져온다.
-	 * 			-> GET: /api/contributes, /api/documents, /api/comments, /api/debates, /login/oauth2/code/**, /oauth2/**
-	 * 			-> POST: /api/login
-	 * 		-> 토큰 검증 O: 그 외
-	 * -> 모든 결과에 대해 exception 발생하지 않는다면, doFilter 진행
-	 * 		-> exception 발생 시, doFilter 진행하지 않고, security exceptionHandler에서 처리
-	 */
 	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -54,6 +45,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		String uri = request.getRequestURI();
 
 		try {
+
 			// accessToken 유효성 검사
 			// 필요하다면 refresh 토큰으로 재발급, 만료된 토큰이면 재로그인 필요
 			String activeAccessToken = getActiveAccessToken();
@@ -66,7 +58,8 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		} catch (AuthenticationException e) {
 
-			if (occurExWithCustomHttpStatusbyClient(e, uri, httpMethod)){
+			// 프론트와 협의한 경로에서 에러 발생 시, 해당 에러 반환
+			if (occurExWithCustomHttpStatusByClient(e, uri, httpMethod)){
 				return;
 			}
 
@@ -77,16 +70,29 @@ public class AuthFilter extends OncePerRequestFilter {
 
 	}
 
-	private static boolean occurExWithCustomHttpStatusbyClient(AuthenticationException e, String uri, String httpMethod) {
+	/**
+	 * <h2>클라이언트와 협의한 HttpStatus로 에러 발생 시, 해당 에러 반환</h2>
+	 * @param e AuthenticationException
+	 * @param uri 요청 uri
+	 * @param httpMethod 요청 httpMethod
+	 * @return 해당 에러 발생 시, true 반환
+	 */
+	private static boolean occurExWithCustomHttpStatusByClient(AuthenticationException e, String uri, String httpMethod) {
+
 		// /api/members/me GET 요청 시, 403 에러 - 클라이언트와 협의한 내용
 		if (uri.equals("/api/members/me") && httpMethod.equals("GET")) {
+
 			log.trace("[403] /api/members/me 403 error : {}", e.getMessage());
+
 			ResponseTemplateUtils.toErrorResponse(
 				HttpServletResponse.SC_FORBIDDEN
 				, ResponseTemplate.fail(ERROR_MESSAGE));
 			return true;
+
 		}
+
 		return false;
+
 	}
 
 	/**
@@ -138,6 +144,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		LoginTokenInfo loginTokenInfo = jwtTokenReissueService
 			.reissueAccessToken(refreshToken);
 
+		// 새로운 accessToken, refreshToken 쿠키에 추가
 		String accessToken = loginTokenInfo.getAccessToken();
 		cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
 		String newRefreshToken = loginTokenInfo.getRefreshToken();
