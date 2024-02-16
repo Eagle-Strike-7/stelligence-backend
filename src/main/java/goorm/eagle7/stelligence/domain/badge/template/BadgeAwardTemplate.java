@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.domain.badge.strategytemplate;
+package goorm.eagle7.stelligence.domain.badge.template;
 
 import java.util.Map;
 
@@ -8,8 +8,7 @@ import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
-public abstract class BadgeAwardStrategyTemplate {
-
+public abstract class BadgeAwardTemplate {
 
 	protected abstract boolean supports(BadgeCategory badgeCategory);
 
@@ -27,13 +26,13 @@ public abstract class BadgeAwardStrategyTemplate {
 
 		long count = getCount(member.getId());
 
-		getBadgeCriteria().entrySet().stream()
+		getBadgeCriteria()
+			.entrySet().stream()
 			.filter(entry -> count == entry.getKey())
 			.map(Map.Entry::getValue)
 			.findAny()
 			.ifPresent(member::addBadge);
 
 	}
-
 
 }
