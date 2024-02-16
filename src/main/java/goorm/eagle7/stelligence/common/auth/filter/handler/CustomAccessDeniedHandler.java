@@ -25,7 +25,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		// 필요한 권한이 없이 접근하려 할때 400으로 통일 - Admin, user, 다른 사람 정보를 수정하려 할 때 등
 		log.debug("CustomAccessDeniedHandler 진입");
 		ResponseTemplate<Void> responseTemplate = ResponseTemplate.fail(accessDeniedException.getMessage());
-		ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, responseTemplate);
+		ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_BAD_REQUEST, responseTemplate);
 
 	}
 }
