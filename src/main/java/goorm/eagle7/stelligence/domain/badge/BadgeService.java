@@ -22,6 +22,7 @@ public class BadgeService {
 	 * @param member Member
 	 * @throws IllegalArgumentException BadgeCategory에 해당하는 전략이 없을 경우
 	 */
+	@Transactional
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
 		// badgeCategory에 해당하는 전략 category 찾기
