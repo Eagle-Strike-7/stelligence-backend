@@ -51,7 +51,7 @@ CREATE TABLE section
 (
     section_id  BIGINT      NOT NULL,
     revision    BIGINT      NOT NULL,
-    document_id BIGINT      NOT NULL,
+    document_id BIGINT,
     heading     ENUM ('H1','H2','H3'),
     title       VARCHAR(100),
     content     TEXT,
