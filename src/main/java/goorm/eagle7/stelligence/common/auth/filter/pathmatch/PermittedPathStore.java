@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <h2>허용 리소스 정보 메모리 저장소</h2>
- * <p>로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
- * <p>(개발) 저장된 리소스인지 확인하는 메소드(exist) 제공, 운영은 matcher 따로 필요.</p>
+ * <p>- 로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
  */
 @Repository
 @NoArgsConstructor
@@ -21,18 +20,16 @@ class PermittedPathStore {
 
 	/**
 	 * <h2>모든 허용 리소스 정보</h2>
-	 * <p>로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
+	 * <p>- 로그인 필요 없는 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
 	 */
 	private static final Set<RequestResource> PERMITTED_RESOURCES =
 		Set.of(
 
-			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/**"),
-
 			// application 권한
 			RequestResource.of(HttpMethod.GET.name(), "/api/documents/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**/comments/**"),
 			RequestResource.of(HttpMethod.GET.name(), "/api/debates/**"),
+			RequestResource.of(HttpMethod.GET.name(), "/api/bookmarks/marked/**"),
 
 			// oauth2
 			RequestResource.of(HttpMethod.GET.name(), "/oauth2/authorization/**"),
@@ -46,12 +43,6 @@ class PermittedPathStore {
 
 			// error
 			RequestResource.of(HttpMethod.POST.name(), "/error/**"),
-			RequestResource.of(HttpMethod.OPTIONS.name(), "/error/**"),
-
-			// login - dev
-			RequestResource.of(HttpMethod.POST.name(), "/api/login"),
-			RequestResource.of(HttpMethod.OPTIONS.name(), "/api/login"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/oauth2/**"),
 
 			// 정적 리소스
 			RequestResource.of(HttpMethod.GET.name(), "/css/**"),
@@ -62,22 +53,13 @@ class PermittedPathStore {
 			RequestResource.of(HttpMethod.GET.name(), "/badges/**"),
 
 			// 모니터링 툴
-			RequestResource.of(HttpMethod.GET.name(), "/actuator/**")
+			RequestResource.of(HttpMethod.GET.name(), "/actuator/**"),
+
+			// login - dev
+			RequestResource.of(HttpMethod.POST.name(), "/api/login")
 
 		);
 
-	/**
-	 * <h2>허용 리소스 중 로그인 정보를 받는 uri</h2>
-	 * <p>허용 리소스 중 로그인 필요한 리소스(httpMethod, uri) 정보를 Set으로 저장</p>
-	 */
-	private static final Set<RequestResource> MEMBERINFO_REQUIRED_RESOURCES =
-		Set.of(
-
-			RequestResource.of(HttpMethod.GET.name(), "/api/contributes/**/votes"),
-			RequestResource.of(HttpMethod.GET.name(), "/api/bookmarks/marked/**"),
-			RequestResource.of(HttpMethod.POST.name(), "/api/logout")
-
-		);
 
 	/**
 	 * <h2>허용하는 uri 확인</h2>
@@ -98,23 +80,11 @@ class PermittedPathStore {
 				antPathMatcher.match(permittedUri, uri)) {
 				return true;
 			}
+
 		}
+
 		return false;
-	}
 
-	public boolean isRequiredMemberInfo(String httpMethod, String uri) {
-
-		for (RequestResource resource : MEMBERINFO_REQUIRED_RESOURCES) {
-
-			String permittedHttpMethod = resource.getHttpMethod();
-			String permittedUri = resource.getUri();
-
-			if (permittedHttpMethod.equals(httpMethod) &&
-				antPathMatcher.match(permittedUri, uri)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

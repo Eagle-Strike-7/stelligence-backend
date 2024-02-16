@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
+import goorm.eagle7.stelligence.common.auth.filter.pathmatch.PermitAllRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenProvider;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DevAuthFilter extends OncePerRequestFilter {
 
-	private final CustomRequestMatcher customRequestMatcher;
+	private final PermitAllRequestMatcher permitAllRequestMatcher;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final DevLoginService devLoginService;
@@ -177,7 +177,7 @@ public class DevAuthFilter extends OncePerRequestFilter {
 	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
 	 */
 	private boolean isTokenValidationRequired(HttpServletRequest request) {
-		return !customRequestMatcher.matches(request);
+		return !permitAllRequestMatcher.matches(request);
 	}
 
 }
