@@ -1,6 +1,5 @@
 package goorm.eagle7.stelligence.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,13 +10,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.CorsFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.AuthExceptionHandlerFilter;
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
-import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
+import goorm.eagle7.stelligence.common.auth.filter.pathmatch.PermitAllRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginFailureHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LoginSuccessHandler;
 import goorm.eagle7.stelligence.common.auth.oauth.handler.OAuth2LogoutCustomHandler;
@@ -32,15 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Value("${http.cookie.accessToken.name}")
-	private String accessTokenCookieName;
-
-	@Value("${http.cookie.refreshToken.name}")
-	private String refreshTokenCookieName;
-
+	private final CorsFilter corsFilter;
 	private final AuthFilter authFilter;
 	private final AuthExceptionHandlerFilter authExceptionHandlerFilter;
-	private final CorsFilter corsFilter;
+	private final PermitAllRequestMatcher permitAllRequestMatcher;
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 	private final OAuth2LogoutCustomHandler oAuth2LogoutCustomHandler;
@@ -48,7 +43,6 @@ public class SecurityConfig {
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomOAuth2UserService customOAuth2UserService;
-	private final CustomRequestMatcher customRequestMatcher;
 
 	/**
 	 * .ignoring():
@@ -67,7 +61,8 @@ public class SecurityConfig {
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
-			.requestMatchers( "/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**", " /assets/**","/favicon.ico",
+			.requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.ico", "/fonts/**", " /assets/**",
+				"/favicon.ico",
 				"/error",
 				"/swagger-ui/**",
 				"/swagger-resources/**",
@@ -118,21 +113,27 @@ public class SecurityConfig {
 		http
 			.csrf(AbstractHttpConfigurer::disable) // csrf -> token 기반으로 비활성화
 			.formLogin(AbstractHttpConfigurer::disable) // form 기반 로그인 비활성화
-			.httpBasic(
-				AbstractHttpConfigurer::disable) // BasicAuthenticationFilter 사용 X (대신 JWT 토큰, OAuth 방식 사용), formLoginFilter 사용 X(사용자 정의 로그인 페이지 이용)
+			.httpBasic(AbstractHttpConfigurer::disable) // 사용자 정의 로그인 페이지 이용
 			.sessionManagement(sessionManagement -> sessionManagement
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			) // for token
-			.authorizeHttpRequests(request -> request
-				.requestMatchers(customRequestMatcher)
-				.permitAll()
-				.requestMatchers("/api/**").hasRole("USER")
-				.anyRequest().authenticated())
+			) // token 사용으로 session 비활성화
 
+			/** authorizeHttpRequests: 권한에 따른 접근 경로 설정 */
+			.authorizeHttpRequests(request -> request
+				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+				.requestMatchers(permitAllRequestMatcher).permitAll()
+				.requestMatchers("/api/**").hasRole("USER")
+				.anyRequest().authenticated()
+			)
+
+			/** addFilter: cors, auth(토큰) 추가 */
 			.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(authFilter,
-				LogoutFilter.class) // 토큰 검증, Authentication 저장, 인증되지 않으면 throw Error // LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능 TODO permitall 이용할 수 있도록 수정
+
+			// LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능
+			.addFilterBefore(authFilter, LogoutFilter.class) // 토큰 검증, Authentication 저장
 			.addFilterBefore(authExceptionHandlerFilter, AuthFilter.class)
+
+			/** exceptionHandling: 인증되지 않은 사용자가 접근하면 401, 인가되지 않은 사용자가 접근하면 403 */
 			.exceptionHandling(exceptionHandling -> exceptionHandling
 				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403 -> 400 통일
 				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
@@ -151,7 +152,7 @@ public class SecurityConfig {
 					.logoutRequestMatcher(
 						request -> request.getServletPath().equals("/api/logout")
 					) // 로그아웃 요청 url 설정 (default: /logout)
-					.addLogoutHandler(oAuth2LogoutCustomHandler) // 로그아웃 시 refreshToken 삭제 // handler 순서 중요함.
+					.addLogoutHandler(oAuth2LogoutCustomHandler) // 로그아웃 시 refreshToken 삭제
 					.clearAuthentication(true) // 순서 상관 X
 					.logoutSuccessHandler(oAuth2LogoutSuccessHandler)
 					.permitAll() // 세션이 만료된 상태 등에서도 로그아웃 가능. (사용자 경험 위해)
