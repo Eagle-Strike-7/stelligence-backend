@@ -16,7 +16,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	 * @param memberId 회원 ID
 	 * @return 알림 목록
 	 */
-	List<Notification> findByMemberId(Long memberId);
+	List<Notification> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
 	/**
 	 * 특정 회원의 모든 알림을 읽음 처리

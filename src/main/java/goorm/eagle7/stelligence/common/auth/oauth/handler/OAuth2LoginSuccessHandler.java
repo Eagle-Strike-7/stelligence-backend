@@ -69,7 +69,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			// 리다이렉트 실패 시, 500 에러 응답
-			ResponseTemplateUtils.toErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+			ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 				ResponseTemplate.fail("Redirect failed"));
 		}
 

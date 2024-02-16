@@ -1,7 +1,7 @@
 package goorm.eagle7.stelligence.common.util;
 
 import static java.nio.charset.StandardCharsets.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.*;
 
 import java.io.IOException;
 
@@ -26,8 +26,13 @@ public class ResponseTemplateUtils {
 		throw new IllegalStateException("Utility class");
 	}
 
-	public static void toErrorResponse(HttpServletResponse response, int httpStatusCode, ResponseTemplate<Void> responseTemplate) {
+	public static void toErrorResponse(
+		int httpStatusCode, ResponseTemplate<Void> responseTemplate) {
+
+		HttpServletResponse response = RequestScopeUtils.getHttpServletResponse();
+
 		try {
+
 			if (!response.isCommitted()) {
 				// JSON으로 변환
 				String jsonResponse = new ObjectMapper().writeValueAsString(responseTemplate);
@@ -48,7 +53,11 @@ public class ResponseTemplateUtils {
 		}
 	}
 
-	public static <T> void toSuccessResponse(HttpServletResponse response, ResponseTemplate<T> responseTemplate) {
+	public static <T> void toSuccessResponse(
+		ResponseTemplate<T> responseTemplate) {
+
+		HttpServletResponse response = RequestScopeUtils.getHttpServletResponse();
+
 		try {
 			if (!response.isCommitted()) {
 				// JSON으로 변환
