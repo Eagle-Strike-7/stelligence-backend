@@ -4,6 +4,8 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +18,6 @@ import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @ExtendWith(MockitoExtension.class)
 class RejectHandlerTest {
@@ -34,11 +35,9 @@ class RejectHandlerTest {
 	void handleTest() {
 		//given
 		Document document = document(1L, null, "title", null);
-		Member member = member(1L, "testNickname");
-		Contribute contribute = contribute(1L, member, "title", "description", ContributeStatus.VOTING, document);
+		Contribute contribute = contribute(1L, null, "title", "description", ContributeStatus.VOTING, document);
 
-		// when(contributeRepository.findById(member.getId())).thenReturn(java.util.Optional.of(contribute));
-		when(contributeRepository.findById(contribute.getId())).thenReturn(java.util.Optional.of(contribute));
+		when(contributeRepository.findById(contribute.getId())).thenReturn(Optional.of(contribute));
 
 		// when
 		rejectHandler.handle(contribute.getId());
