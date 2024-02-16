@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L, 3L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L, 3L)));
 		when(documentContentRepository.findByTitle("title")).thenReturn(Optional.of(targetDocument));
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("title")).thenReturn(false);
 		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.empty());
@@ -202,7 +203,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>());
 		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.of(targetDocument));
 
 		assertThatThrownBy(
@@ -221,7 +222,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>());
 		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.empty());
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("newTitle")).thenReturn(true);
 
@@ -243,7 +244,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(2L)));
 
 		//then
 		assertThatThrownBy(
@@ -264,7 +265,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(2L)));
 
 		//then
 		assertThatThrownBy(
@@ -287,7 +288,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L)));
 
 		//then
 		assertThatThrownBy(
@@ -310,7 +311,7 @@ class ContributeRequestValidatorTest {
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L)));
 
 		//then
 		assertThatThrownBy(
