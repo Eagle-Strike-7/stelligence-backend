@@ -35,8 +35,8 @@ public class CorsConfig {
 			));
 		config.setAllowedMethods(Arrays.asList(
 			"GET", "POST", "PUT", "PATCH", "DELETE"));
-		config.setAllowedHeaders(Arrays.asList(
-			"Set-Cookie", "content-type", "Content-Type"));
+		// config.setAllowedHeaders(Arrays.asList(
+		// 	"Set-Cookie", "content-type", "Content-Type")); // TODO 설정 X 테스트 필요
 		config.setAllowCredentials(true);
 		config.setMaxAge(3600L);
 
