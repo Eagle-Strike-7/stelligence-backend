@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.CorsFilter;
 
-import goorm.eagle7.stelligence.common.auth.filter.AuthExceptionHandlerFilter;
 import goorm.eagle7.stelligence.common.auth.filter.AuthFilter;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAccessDeniedHandler;
 import goorm.eagle7.stelligence.common.auth.filter.handler.CustomAuthenticationEntryPoint;
@@ -34,7 +33,6 @@ public class SecurityConfig {
 
 	private final CorsFilter corsFilter;
 	private final AuthFilter authFilter;
-	private final AuthExceptionHandlerFilter authExceptionHandlerFilter;
 	private final PermitAllRequestMatcher permitAllRequestMatcher;
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
@@ -66,7 +64,9 @@ public class SecurityConfig {
 				"/error",
 				"/swagger-ui/**",
 				"/swagger-resources/**",
-				"/v3/api-docs/**");
+				"/v3/api-docs/**"
+			);
+
 	}
 
 	/**
@@ -131,11 +131,10 @@ public class SecurityConfig {
 
 			// LogoutFilter 전에 해야 logout 시에도 Authentication 사용 가능
 			.addFilterBefore(authFilter, LogoutFilter.class) // 토큰 검증, Authentication 저장
-			.addFilterBefore(authExceptionHandlerFilter, AuthFilter.class)
 
 			/** exceptionHandling: 인증되지 않은 사용자가 접근하면 401, 인가되지 않은 사용자가 접근하면 403 */
 			.exceptionHandling(exceptionHandling -> exceptionHandling
-				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403 -> 400 통일
+				.accessDeniedHandler(customAccessDeniedHandler)// 인가되지 않은 사용자가 접근하면 403
 				.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증되지 않은 사용자가 접근하면 401
 			)
 			.oauth2Login(oauth2 -> oauth2
