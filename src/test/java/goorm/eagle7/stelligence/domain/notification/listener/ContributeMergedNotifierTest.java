@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -84,7 +85,7 @@ class ContributeMergedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'title678901234567890...'이(가) 반영되었습니다! 글을 확인해보세요.",
-				"/stars/1",
+				Site.document(1L),
 				new HashSet<>(Set.of(1L, 2L, 3L))
 			)
 		);
@@ -111,7 +112,7 @@ class ContributeMergedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'title'이(가) 반영되었습니다! 글을 확인해보세요.",
-				"/stars/1",
+				Site.document(1L),
 				new HashSet<>(Set.of(1L, 2L, 3L, 4L))
 			)
 		);

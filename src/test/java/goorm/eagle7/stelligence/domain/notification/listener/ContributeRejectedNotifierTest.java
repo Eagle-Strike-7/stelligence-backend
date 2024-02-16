@@ -13,8 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeRejectedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -39,7 +40,7 @@ class ContributeRejectedNotifierTest {
 	@Test
 	void onContributeRejected() {
 		// given
-		ContributeMergedEvent event = new ContributeMergedEvent(1L);
+		ContributeRejectedEvent event = new ContributeRejectedEvent(1L);
 		Member member = member(1L, "pete");
 		Document document = document(1L, member, "documentTitle", 2L);
 		Contribute contribute = contribute(1L, member, "contributeTitle", "description", ContributeStatus.MERGED,
@@ -48,13 +49,13 @@ class ContributeRejectedNotifierTest {
 		// when
 		when(voteRepository.findVoters(event.contributeId())).thenReturn(new HashSet<>(Set.of(1L, 2L, 3L)));
 		when(contributeRepository.findWithMember(event.contributeId())).thenReturn(Optional.of(contribute));
-		contributeRejectedNotifier.onContributeMerged(event);
+		contributeRejectedNotifier.onContributeRejected(event);
 
 		// then
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'contributeTitle'이(가) 반려되었습니다. 투표 결과를 확인해보세요",
-				"/revise/1/vote",
+				Site.vote(1L),
 				new HashSet<>(Set.of(1L, 2L, 3L))
 			)
 		);

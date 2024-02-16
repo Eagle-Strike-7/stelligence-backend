@@ -110,6 +110,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 
 		//이벤트를 발행합니다.
 		applicationEventPublisher.publishEvent(new ContributeMergedEvent(contribute.getId()));
+
 	}
 
 	/**

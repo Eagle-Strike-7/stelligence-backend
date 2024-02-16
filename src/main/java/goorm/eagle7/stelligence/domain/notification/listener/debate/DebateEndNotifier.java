@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.debate.event.DebateEndEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
@@ -32,7 +33,6 @@ public class DebateEndNotifier {
 	private final NotificationSender notificationSender;
 
 	private static final String DEBATE_END_MESSAGE = "토론 '%s'이 종료되었습니다. 내용을 확인해보세요.";
-	private static final String DEBATE_URI = "/debateList/%d";
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@TransactionalEventListener(DebateEndEvent.class)
@@ -49,7 +49,7 @@ public class DebateEndNotifier {
 		// 알림 요청 객체를 생성합니다.
 		NotificationRequest request = NotificationRequest.of(
 			String.format(DEBATE_END_MESSAGE, StringSlicer.slice(debate.getContribute().getTitle())),
-			String.format(DEBATE_URI, debate.getId()),
+			Site.debate(debate.getId()),
 			targets
 		);
 
