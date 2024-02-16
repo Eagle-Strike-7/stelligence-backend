@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
+import goorm.eagle7.stelligence.domain.contribute.event.NewContributeEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
@@ -36,6 +38,7 @@ public class ContributeService {
 	private final ContributeRequestValidator contributeRequestValidator;
 	private final VoteRepository voteRepository;
 	private final DebateRepository debateRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Contribute 생성
@@ -84,6 +87,10 @@ public class ContributeService {
 		}
 
 		contributeRepository.save(contribute);  // Contribute 저장. 연관된 Amendment도 함께 저장.
+
+		// Contribute 생성 이벤트 발행
+		applicationEventPublisher.publishEvent(new NewContributeEvent(contribute.getId()));
+
 		return ContributeResponse.of(contribute);
 	}
 

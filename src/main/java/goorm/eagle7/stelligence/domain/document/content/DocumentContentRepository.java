@@ -76,4 +76,7 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 	 */
 	long countByAuthor_Id(Long memberId);
 
+	@Query("select d from Document d join fetch d.author where d.id = :documentId")
+	Optional<Document> findByIdWithAuthor(Long documentId);
+
 }
