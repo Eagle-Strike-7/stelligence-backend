@@ -37,7 +37,7 @@ public class ContributeMergedBadgeIssuer {
 			.findWithMember(event.contributeId())
 			.ifPresent(contribute ->
 				badgeService.checkAndAwardBadge(
-					BadgeCategory.CONTRIBUTE_ALL
+					BadgeCategory.CONTRIBUTE_MERGED
 					, contribute.getMember())
 			);
 
