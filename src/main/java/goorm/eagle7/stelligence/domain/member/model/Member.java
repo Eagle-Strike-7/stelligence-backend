@@ -16,8 +16,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +23,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = {
-	@UniqueConstraint(name = "UniqueSocialIdAndSocialType", columnNames = {"social_id", "social_type"})})
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -38,6 +34,8 @@ public class Member extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private Role role; // default: USER
 	private long contributes; // default: 0
+
+	@Column(columnDefinition = "tinyint")
 	private boolean active; // default: true, for soft delete
 
 	// social login 시 받아오는 정보
@@ -61,8 +59,10 @@ public class Member extends BaseTimeEntity {
 	@ElementCollection
 	@CollectionTable(
 		name = "member_badge",
-		joinColumns = @JoinColumn(name = "member_id"))
+		joinColumns = @JoinColumn(name = "member_id")
+	)
 	@Enumerated(EnumType.STRING)
+	@Column(name = "badges", columnDefinition = "varchar(30)")
 	private Set<Badge> badges = new HashSet<>();
 
 	/**
