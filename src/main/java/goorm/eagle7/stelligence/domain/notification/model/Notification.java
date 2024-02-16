@@ -25,6 +25,7 @@ public class Notification extends BaseTimeEntity {
 	private String uri;
 
 	// 읽음 여부
+	@Column(columnDefinition = "tinyint")
 	private boolean isRead;
 
 	//알림 대상 사용자

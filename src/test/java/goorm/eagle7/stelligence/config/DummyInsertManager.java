@@ -22,7 +22,7 @@ public class DummyInsertManager implements ApplicationRunner {
 
 		try (Connection conn = dataSource.getConnection()) {
 
-			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/dummy.sql"));
+			ScriptUtils.executeSqlScript(conn, new ClassPathResource("/data.sql"));
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

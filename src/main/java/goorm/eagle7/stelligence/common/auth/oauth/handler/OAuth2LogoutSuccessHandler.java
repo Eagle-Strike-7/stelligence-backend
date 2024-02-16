@@ -24,7 +24,7 @@ public class OAuth2LogoutSuccessHandler implements LogoutSuccessHandler {
 		Authentication authentication) {
 
 		ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
-		ResponseTemplateUtils.toSuccessResponse(response, responseTemplate);
+		ResponseTemplateUtils.toSuccessResponse(responseTemplate);
 	}
 
 }

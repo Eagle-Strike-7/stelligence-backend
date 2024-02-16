@@ -11,11 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @DataJpaTest
-@WithMockData
 class MemberRepositoryTest {
 
 	@Autowired
@@ -147,16 +145,20 @@ class MemberRepositoryTest {
 
 		// when
 		// 1분 전 생성
-		boolean activeNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(1L, now.minusDays(1));
+		boolean activeNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(1L,
+			now.minusDays(1));
 
 		// 1일 전 생성 - 근소한 시간차 발생
-		boolean active1agoMember  = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(2L, now.minusDays(1));
+		boolean active1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(2L,
+			now.minusDays(1));
 
 		// 1일 전 생성 후 1분 유예 (시간차 해소)
-		boolean active1agoPlus3MinMember  = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(2L, now.minusDays(1).minusMinutes(1));
+		boolean active1agoPlus3MinMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(2L,
+			now.minusDays(1).minusMinutes(1));
 
 		// 2일 전 생성
-		boolean active2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(3L, now.minusDays(1));
+		boolean active2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(3L,
+			now.minusDays(1));
 
 		// then
 		assertThat(activeNowMember).isTrue();
@@ -179,10 +181,12 @@ class MemberRepositoryTest {
 		LocalDateTime now = LocalDateTime.now();
 
 		// when
-		boolean withdrawnNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(5L, now.minusMinutes(5));
-		boolean withdrawn1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(7L, now.minusMinutes(5));
-		boolean withdrawn2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(6L, now.minusMinutes(5));
-
+		boolean withdrawnNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(5L,
+			now.minusMinutes(5));
+		boolean withdrawn1agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(7L,
+			now.minusMinutes(5));
+		boolean withdrawn2agoMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(6L,
+			now.minusMinutes(5));
 
 		// then
 		assertThat(withdrawnNowMember).isFalse();
@@ -204,7 +208,8 @@ class MemberRepositoryTest {
 		LocalDateTime now = LocalDateTime.now();
 
 		// when
-		boolean nonExistNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(100L, now.minusMinutes(5));
+		boolean nonExistNowMember = memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(100L,
+			now.minusMinutes(5));
 		// then
 		assertThat(nonExistNowMember).isFalse();
 
