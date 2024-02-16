@@ -12,7 +12,7 @@ import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 @Component
 public class BadgeTemplateMatcher {
 
-	private final Map<BadgeCategory, BadgeAwardTemplate> templateMap = new EnumMap<>(BadgeCategory.class);
+	private final Map<BadgeCategory, BadgeMatchedCountTemplate> templateMap = new EnumMap<>(BadgeCategory.class);
 
 	/**
 	 * <h2>BadgeCategory, BadgeAwardStrategy 매핑</h2>
@@ -22,7 +22,7 @@ public class BadgeTemplateMatcher {
 	 * @param templates BadgeAwardStrategy 구현체들
 	 */
 	public BadgeTemplateMatcher(
-		List<BadgeAwardTemplate> templates) {
+		List<BadgeMatchedCountTemplate> templates) {
 
 		// 각 BadgeAwardStrategy 구현체들을 BadgeCategory에 따라 매핑
 		templates
@@ -35,7 +35,7 @@ public class BadgeTemplateMatcher {
 			);
 	}
 
-	public BadgeAwardTemplate findTemplate(BadgeCategory badgeCategory) {
+	public BadgeMatchedCountTemplate findTemplate(BadgeCategory badgeCategory) {
 		return templateMap.get(badgeCategory);
 	}
 

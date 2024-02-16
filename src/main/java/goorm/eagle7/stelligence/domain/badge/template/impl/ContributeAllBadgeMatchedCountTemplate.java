@@ -9,36 +9,38 @@ import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.badge.template.BadgeAwardTemplate;
+import goorm.eagle7.stelligence.domain.badge.template.BadgeMatchedCountTemplate;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ContributeRejectedBadgeAwardTemplate extends
+public class ContributeAllBadgeMatchedCountTemplate extends BadgeMatchedCountTemplate {
 
-	BadgeAwardTemplate {
-
-	private final ContributeRepository contributeRepository;
 	private static final Map<Integer, Badge> requiredCounts = new HashMap<>();
+	private final ContributeRepository contributeRepository;
 
 	@Override
 	public boolean supports(BadgeCategory category) {
-		return BadgeCategory.CONTRIBUTE_REJECTED.equals(category);
+		return BadgeCategory.CONTRIBUTE_ALL.equals(category);
 	}
 
-	@Override
 	protected long getCount(Long memberId) {
-		return contributeRepository.countByMemberIdAndStatus(memberId, ContributeStatus.REJECTED);
+		return contributeRepository.countByMemberId(memberId);
 	}
 
 	@Override
 	protected Map<Integer, Badge> getBadgeCriteria() {
 
 		if (requiredCounts.isEmpty()) {
-			requiredCounts.put(100, BLACKHOLE);
+			requiredCounts.put(1, MERCURY);
+			requiredCounts.put(5, VENUS);
+			requiredCounts.put(10, NEPTUNE);
+			requiredCounts.put(30, SUN);
+			requiredCounts.put(50, GALAXY);
 		}
 		return requiredCounts;
+
 	}
+
 }
