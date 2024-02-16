@@ -7,5 +7,5 @@ import goorm.eagle7.stelligence.domain.badge.model.Badge;
  * @param memberId 회원 아이디
  * @param badge 추가된 배지
  */
-public record NewBadgeEvent(String memberId, Badge badge) {
+public record NewBadgeEvent(Long memberId, Badge badge) {
 }
