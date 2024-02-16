@@ -59,7 +59,7 @@ class DebateEndNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"토론 'contributeTitle'이 종료되었습니다. 내용을 확인해보세요.",
-				"/debateList/1",
+				"/debate-list/1",
 				Set.of(1L, 3L, 4L, 5L)
 			)
 		);

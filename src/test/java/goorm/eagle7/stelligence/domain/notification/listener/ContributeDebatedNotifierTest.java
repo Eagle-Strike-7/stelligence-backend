@@ -60,7 +60,7 @@ class ContributeDebatedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'contributeTitle'와 관련된 토론이 시작되었습니다! 토론을 확인해보세요.",
-				"/debateList/1",
+				"/debate-list/1",
 				Set.of(1L, 2L, 3L, 5L)
 			)
 		);

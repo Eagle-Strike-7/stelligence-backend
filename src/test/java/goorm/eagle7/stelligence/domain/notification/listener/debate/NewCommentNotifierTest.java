@@ -60,7 +60,7 @@ class NewCommentNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"토론 'contributeTitle'에 댓글이 달렸습니다. 'commentContent'",
-				"/debateList/1",
+				"/debate-list/1",
 				Set.of(2L, 4L, 5L)
 			)
 		);

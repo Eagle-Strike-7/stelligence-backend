@@ -54,7 +54,7 @@ class ContributeRejectedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'contributeTitle'이(가) 반려되었습니다. 투표 결과를 확인해보세요",
-				"/revise/1/vote",
+				"/vote-list/1",
 				new HashSet<>(Set.of(1L, 2L, 3L))
 			)
 		);
