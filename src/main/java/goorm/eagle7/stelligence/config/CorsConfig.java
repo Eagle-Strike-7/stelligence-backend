@@ -27,15 +27,23 @@ public class CorsConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 
-		config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://www.stelligence.site", "https://api.stelligence.site", "http://localhost:8080"));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(Arrays.asList("Set-Cookie", "Content-Type"));
+		config.setAllowedOrigins(Arrays.asList(
+			"http://localhost:3000"
+			, "http://localhost:8080"
+			, "http://www.stelligence.site"
+			, "https://api.stelligence.site"
+			));
+		config.setAllowedMethods(Arrays.asList(
+			"GET", "POST", "PUT", "PATCH", "DELETE"));
+		config.setAllowedHeaders(Arrays.asList(
+			"Set-Cookie", "content-type", "Content-Type"));
 		config.setAllowCredentials(true);
 		config.setMaxAge(3600L);
 
 		source.registerCorsConfiguration("/api/**", config);
 
 		return new CorsFilter(source);
+
 	}
 
 }
