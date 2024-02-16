@@ -2,19 +2,15 @@ package goorm.eagle7.stelligence.common.auth.filter;
 
 import java.io.IOException;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
@@ -35,10 +31,9 @@ public class AuthFilter extends OncePerRequestFilter {
 
 	private static final String ERROR_MESSAGE = "유효하지 않은 사용자입니다.";
 
+	private final CookieUtils cookieUtils;
 	private final JwtTokenService jwtTokenService;
 	private final JwtTokenReissueService jwtTokenReissueService;
-	private final CustomRequestMatcher customRequestMatcher;
-	private final CookieUtils cookieUtils;
 
 	/**
 	 * 토큰 검증이 필요한 리소스에 대해서만 검증 진행.
@@ -54,45 +49,26 @@ public class AuthFilter extends OncePerRequestFilter {
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
 
-		log.debug("AuthFilter 실행");
+		log.trace("AuthFilter 실행");
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
 		try {
-			// 토큰 검증이 필요 없는지 확인 후 필요하면 토큰 검증으로 진행
-			if (isTokenValidationRequired(request)) {
+			// accessToken 유효성 검사
+			// 필요하다면 refresh 토큰으로 재발급, 만료된 토큰이면 재로그인 필요
+			String activeAccessToken = getActiveAccessToken();
 
-				log.debug("토큰 검증 필요");
+			// Authentication 반환
+			Authentication authentication = jwtTokenService.makeAuthenticationFrom(activeAccessToken);
 
-				// accessToken 유효성 검사
-				// 필요하다면 refresh 토큰으로 재발급
-				// 만료된 토큰이면 재로그인 필요
-				String activeAccessToken = getActiveAccessToken();
-
-				// Authentication 반환
-				Authentication authentication = jwtTokenService.makeAuthenticationFrom(activeAccessToken);
-
-				// SecurityContextHolder에 Authentication 저장
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			}
+			// SecurityContextHolder에 Authentication 저장
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		} catch (AuthenticationException e) {
 
-			// Login 필수인 경우, 재로그인 필요
-			if (!isMemberInfoRequired(httpMethod, uri)) {
-				if(uri.equals("/api/members/me") && httpMethod.equals("GET")) {
-					log.debug("[403] /api/members/me 403 error : {}", e.getMessage());
-					ResponseTemplateUtils.toErrorResponse(
-						HttpServletResponse.SC_FORBIDDEN
-						, ResponseTemplate.fail(ERROR_MESSAGE));
-					return;
-				}
-				throw new UsernameNotFoundException(e.getMessage());
+			if (occurExWithCustomHttpStatusbyClient(e, uri, httpMethod)){
+				return;
 			}
-
-			log.debug("[ex] 로그인 필수가 아닌 uri에서 로그인 사용자와 아닌 사용자를 구분. : {}", e.getMessage());
-			saveAuthenticationForNullMemberInfo();
 
 		}
 
@@ -101,19 +77,16 @@ public class AuthFilter extends OncePerRequestFilter {
 
 	}
 
-	/**
-	 * <h2>SecurityContextHolder에 anonymousUser Authentication 저장</h2>
-	 * <p>- MemberInfo Resolver에서 anonymousUser 확인해 사용.</p>
-	 * TODO : anonymous token으로 사용 예정.
-	 */
-	private static void saveAuthenticationForNullMemberInfo() {
-		UserDetails userForNullMemberInfo =
-			User.withUsername("anonymousUser").password("")
-				.authorities("ROLE_USER").build();
-		AnonymousAuthenticationToken authentication = new AnonymousAuthenticationToken(
-			"anonymousUser", userForNullMemberInfo, userForNullMemberInfo.getAuthorities());
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+	private static boolean occurExWithCustomHttpStatusbyClient(AuthenticationException e, String uri, String httpMethod) {
+		// /api/members/me GET 요청 시, 403 에러 - 클라이언트와 협의한 내용
+		if (uri.equals("/api/members/me") && httpMethod.equals("GET")) {
+			log.trace("[403] /api/members/me 403 error : {}", e.getMessage());
+			ResponseTemplateUtils.toErrorResponse(
+				HttpServletResponse.SC_FORBIDDEN
+				, ResponseTemplate.fail(ERROR_MESSAGE));
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -133,17 +106,17 @@ public class AuthFilter extends OncePerRequestFilter {
 			.getCookieFromRequest(CookieType.ACCESS_TOKEN)
 			.map(
 				cookie -> {
-					log.debug("accessCookie가 있습니다. 유효성 검사 진행");
+					log.trace("accessCookie가 있습니다. 유효성 검사 진행");
 					// token 없으면 재로그인, 있으면 token 반환, 만료면 재발급
 					String accessToken = cookie.getValue();
-					if(!StringUtils.hasText(accessToken)) {
+					if (!StringUtils.hasText(accessToken)) {
 						return getAcccessTokenFromRefreshCookie();
 					}
 					return accessToken;
 				})
 			.orElseGet(() -> {
 					// refresh cookie 확인, 없으면 재로그인, 있으면 재발급 진행
-					log.debug("accessCookie가 없습니다. refresh 토큰으로 재발급 시도");
+					log.trace("accessCookie가 없습니다. refresh 토큰으로 재발급 시도");
 					return getAcccessTokenFromRefreshCookie();
 				}
 			);
@@ -172,18 +145,6 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		return accessToken;
 
-	}
-
-	/**
-	 * customAntPathMatcher를 이용해 토큰 검증이 필요한 httpMethod, uri인지 확인
-	 * @return boolean 토큰 검증이 필요하면 true, 아니면 false
-	 */
-	private boolean isTokenValidationRequired(HttpServletRequest request) {
-		return !customRequestMatcher.matches(request);
-	}
-
-	private boolean isMemberInfoRequired(String httpMethod, String uri) {
-		return customRequestMatcher.matchesMemberInfoRequiredInPermitAll(httpMethod, uri);
 	}
 
 }
