@@ -46,7 +46,7 @@ public class ReportService {
 		documentReportRepository.save(documentReport);
 
 		// 이벤트 발행
-		eventPublisher.publishEvent(new NewReportEvent(reporterId));
+		eventPublisher.publishEvent(new NewReportEvent(documentReport.getId()));
 	}
 
 	/**
@@ -71,6 +71,6 @@ public class ReportService {
 		commentReportRepository.save(commentReport);
 
 		// 이벤트 발행
-		eventPublisher.publishEvent(new NewReportEvent(reporterId));
+		eventPublisher.publishEvent(new NewReportEvent(commentReport.getId()));
 	}
 }
