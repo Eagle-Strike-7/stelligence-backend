@@ -19,6 +19,11 @@ public enum Role {
 		this.value = value;
 	}
 
+	/**
+	 * <h2>value로 role 생성, 없는 value면 default 설정</h2>
+	 * @param value value
+	 * @return Role default User
+	 */
 	public static Role fromValueDefaultUser(String value) {
 		try {
 			return fromValue(value);
