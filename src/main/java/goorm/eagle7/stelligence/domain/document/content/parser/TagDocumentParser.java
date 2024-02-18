@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.owasp.html.PolicyFactory;
 import org.springframework.stereotype.Component;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
@@ -22,24 +21,20 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TagDocumentParser implements DocumentParser {
 
-	private final PolicyFactory policyFactory;
-
 	// Heading 태그를 기반으로 문서를 파싱하기 위한 정규식
 	private static final Pattern HEADING_TAG_PATTERN = Pattern.compile(
 		"(<h([1-6])>(.*?)</h\\2>)(.*?)(?=<h[1-6]>|$)", Pattern.DOTALL);
 
 	/**
 	 * HTML 태그로 들어온 문서를 파싱하여 SectionRequest로 변환합니다.
-	 * @param rawContent HTML 태그로 들어온 문서
+	 * @param htmlContent HTML 태그로 들어온 문서
 	 * @return SectionRequest 리스트
 	 */
 	@Override
-	public List<SectionRequest> parse(String rawContent) {
-		// 악성 스크립트를 방지하기 위해 HTML를 필터링합니다.
-		String sanitizedContent = policyFactory.sanitize(rawContent);
+	public List<SectionRequest> parse(String htmlContent) {
 
 		List<SectionRequest> sectionRequests = new ArrayList<>();
-		Matcher matcher = HEADING_TAG_PATTERN.matcher(sanitizedContent);
+		Matcher matcher = HEADING_TAG_PATTERN.matcher(htmlContent);
 
 		while (matcher.find()) {
 			String level = getValidLevel(matcher.group(2));
