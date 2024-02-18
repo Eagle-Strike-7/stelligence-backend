@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +12,6 @@ import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
 import goorm.eagle7.stelligence.domain.contribute.event.NewContributeEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -140,12 +138,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getContributesByStatus(ContributeStatus status, Pageable pageable) {
 
-		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
-
-		Page<ContributeSimpleResponse> listResponses = votingContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findByContributeStatus(status, pageable));
 	}
 
 	/**
@@ -155,12 +148,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getCompletedContributes(Pageable pageable) {
 
-		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
-
-		Page<ContributeSimpleResponse> listResponses = completedContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findCompleteContributes(pageable));
 	}
 
 	/**
@@ -173,12 +161,7 @@ public class ContributeService {
 	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
-		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
-			merged, pageable);
-
-		Page<ContributeSimpleResponse> listResponses = contributesByDocumentAndStatus.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(
+			contributeRepository.findCompleteContributesByDocumentAndIsMerged(documentId, merged, pageable));
 	}
 }

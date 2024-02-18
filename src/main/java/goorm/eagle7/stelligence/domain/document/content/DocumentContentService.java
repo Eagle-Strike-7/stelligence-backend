@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.owasp.html.PolicyFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
+	private final PolicyFactory policyFactory;
 
 	/**
 	 * Document를 생성합니다.
@@ -57,7 +59,10 @@ public class DocumentContentService {
 		Document document = Document.createDocument(title, author, parentDocument);
 		documentRepository.save(document);
 
-		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
+		// 악성 스크립트를 방지하기 위해 HTML를 필터링합니다.
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		List<SectionRequest> sectionRequests = documentParser.parse(sanitizedContent);
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
