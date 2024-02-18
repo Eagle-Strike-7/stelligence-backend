@@ -38,10 +38,6 @@ public class ContributeSimpleResponse {
 		this.createdAt = contribute.getCreatedAt();
 	}
 
-	public static ContributeSimpleResponse of(Contribute contribute, VoteSummary voteSummary) {
-		return new ContributeSimpleResponse(contribute, voteSummary);
-	}
-
 	@QueryProjection
 	public ContributeSimpleResponse(Contribute contribute, int agreeCount, int disagreeCount) {
 		this.contributeId = contribute.getId();
