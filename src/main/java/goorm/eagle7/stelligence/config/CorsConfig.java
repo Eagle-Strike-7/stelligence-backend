@@ -23,7 +23,7 @@ public class CorsConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 
-		// 허용할 IP, 도메인, 포트
+		// 허용할 프로토콜, IP, 도메인, 포트
 		config.setAllowedOrigins(corsProperties.getAllowedOrigins());
 		// 허용할 Http 메서드
 		config.setAllowedMethods(corsProperties.getAllowedMethods());
@@ -31,6 +31,8 @@ public class CorsConfig {
 		config.setAllowedHeaders(corsProperties.getAllowedHeaders());
 		// 쿠키와 같은 인증 정보를 포함할지 여부
 		config.setAllowCredentials(corsProperties.getAllowedCredentials());
+		// 브라우저에 노출할 헤더
+		config.setExposedHeaders(corsProperties.getExposedHeaders());
 		// 브라우저가 CORS 설정을 캐시할 시간
 		config.setMaxAge(corsProperties.getMaxAge());
 
