@@ -120,7 +120,9 @@ class ContributeRepositoryTest {
 
 		Pageable pageable = PageRequest.of(0, 10);
 
-		Page<ContributeSimpleResponse> contributePage = contributeRepository.findByDocumentAndStatus(1L, true,
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findCompleteContributesByDocumentAndIsMerged(
+			1L,
+			true,
 			pageable);
 
 		assertThat(contributePage.getContent()).hasSize(2);
@@ -134,7 +136,9 @@ class ContributeRepositoryTest {
 
 		Pageable pageable = PageRequest.of(0, 10);
 
-		Page<ContributeSimpleResponse> contributePage = contributeRepository.findByDocumentAndStatus(4L, false,
+		Page<ContributeSimpleResponse> contributePage = contributeRepository.findCompleteContributesByDocumentAndIsMerged(
+			4L,
+			false,
 			pageable);
 
 		assertThat(contributePage.getContent()).hasSize(1);

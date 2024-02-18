@@ -15,7 +15,8 @@ public interface CustomContributeRepository {
 
 	Page<ContributeSimpleResponse> findCompleteContributes(Pageable pageable);
 
-	Page<ContributeSimpleResponse> findByDocumentAndStatus(Long documentId, boolean merged, Pageable pageable);
+	Page<ContributeSimpleResponse> findCompleteContributesByDocumentAndIsMerged(Long documentId, boolean merged,
+		Pageable pageable);
 
 	Optional<Contribute> findLatestContributeByDocumentId(Long documentId);
 

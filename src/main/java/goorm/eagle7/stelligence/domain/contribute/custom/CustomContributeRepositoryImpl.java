@@ -87,7 +87,7 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 
 	// 문서 ID와 merged에 따라 Contribute 목록을 반환
 	@Override
-	public Page<ContributeSimpleResponse> findByDocumentAndStatus(Long documentId, boolean merged,
+	public Page<ContributeSimpleResponse> findCompleteContributesByDocumentAndIsMerged(Long documentId, boolean merged,
 		Pageable pageable) {
 
 		QContribute contribute = QContribute.contribute;

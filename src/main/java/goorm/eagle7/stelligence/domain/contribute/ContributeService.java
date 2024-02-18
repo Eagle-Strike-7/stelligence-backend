@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +12,6 @@ import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
 import goorm.eagle7.stelligence.domain.contribute.event.NewContributeEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -163,6 +161,7 @@ public class ContributeService {
 	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
-		return ContributePageResponse.from(contributeRepository.findByDocumentAndStatus(documentId, merged, pageable));
+		return ContributePageResponse.from(
+			contributeRepository.findCompleteContributesByDocumentAndIsMerged(documentId, merged, pageable));
 	}
 }
