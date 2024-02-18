@@ -40,8 +40,6 @@ class JwtTokenParser {
 
 		log.debug("token에서 sub(memberId) 추출");
 
-		// serviceTime 기준 만료 시각 이전인지 확인
-
 		return claims
 			.getSubject();
 
