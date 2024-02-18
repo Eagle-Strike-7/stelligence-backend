@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.CorsFilter;
 
 import goorm.eagle7.stelligence.common.auth.filter.AuthExceptionHandlerFilter;
@@ -124,6 +125,7 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			) // for token
 			.authorizeHttpRequests(request -> request
+				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 				.requestMatchers(customRequestMatcher)
 				.permitAll()
 				.requestMatchers("/api/**").hasRole("USER")
