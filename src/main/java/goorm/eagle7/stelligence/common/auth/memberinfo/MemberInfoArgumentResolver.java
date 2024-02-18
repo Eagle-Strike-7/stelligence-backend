@@ -77,10 +77,11 @@ public class MemberInfoArgumentResolver
 	 */
 	private Role convertAuthoritiesToRole(Collection<? extends GrantedAuthority> authorities) {
 		return authorities.stream()
-			.findFirst() // 첫 번째 GrantedAuthority 객체를 Optional로 반환
 			.map(GrantedAuthority::getAuthority) // GrantedAuthority의 권한 이름을 가져옴
 			.map(Role::fromLabelDefaultUser) // 권한 이름을 Role로 변환
+			.findFirst() // 첫 번째 GrantedAuthority 객체를 Optional로 반환
 			.orElse(Role.USER); // findFirst Optional이 비어있는 경우 기본값으로 Role.USER 반환
+
 	}
 
 }
