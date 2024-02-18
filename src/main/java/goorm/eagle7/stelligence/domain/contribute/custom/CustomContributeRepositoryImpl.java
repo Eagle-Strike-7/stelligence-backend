@@ -8,12 +8,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.QContributeSimpleResponse;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.contribute.model.QContribute;
+import goorm.eagle7.stelligence.domain.vote.model.QVote;
 import jakarta.persistence.EntityManager;
 
 public class CustomContributeRepositoryImpl implements CustomContributeRepository {
@@ -25,19 +30,24 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 	}
 
 	// BooleanBuilder를 사용하여 중복 코드를 줄임
-	private Page<Contribute> findContributesByCondition(BooleanBuilder builder, Pageable pageable) {
+	private Page<ContributeSimpleResponse> findSimpleContributePage(BooleanBuilder builder, Pageable pageable) {
 		QContribute contribute = QContribute.contribute;
+		QVote vote = QVote.vote;
 
-		// 결과를 가져오는 쿼리
-		List<Contribute> contributes = queryFactory
-			.selectFrom(contribute)
+		List<ContributeSimpleResponse> contributes = queryFactory.select(new QContributeSimpleResponse(contribute,
+				getVoteCount(vote, true).as("agreeCount"),
+				getVoteCount(vote, false).as("disagreeCount")))
+			.from(vote)
+			.rightJoin(vote.contribute, contribute)
+			.join(contribute.member).fetchJoin()
+			.join(contribute.document).fetchJoin()
 			.where(builder)
+			.groupBy(contribute)
 			.orderBy(contribute.createdAt.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		// 전체 개수를 계산하는 쿼리는 필요할 때만 실행
 		JPAQuery<Long> countQuery = queryFactory
 			.select(contribute.count())
 			.from(contribute)
@@ -46,32 +56,38 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 		return PageableExecutionUtils.getPage(contributes, pageable, countQuery::fetchOne);
 	}
 
+	private static NumberExpression<Integer> getVoteCount(QVote vote, boolean agree) {
+		return new CaseBuilder()
+			.when(vote.agree.eq(agree)).then(1)
+			.otherwise(0).sum();
+	}
+
 	// ContributeStatus에 따라 Contribute 목록을 반환
 	@Override
-	public Page<Contribute> findByContributeStatus(ContributeStatus status, Pageable pageable) {
+	public Page<ContributeSimpleResponse> findByContributeStatus(ContributeStatus status, Pageable pageable) {
 		QContribute contribute = QContribute.contribute;
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(contribute.status.eq(status));
 
 		// PageableExecutionUtils를 사용하여 Page 객체 생성
-		return findContributesByCondition(builder, pageable);
+		return findSimpleContributePage(builder, pageable);
 	}
 
 	// 투표 완료된 Contribute 목록을 반환
 	@Override
-	public Page<Contribute> findCompleteContributes(Pageable pageable) {
+	public Page<ContributeSimpleResponse> findCompleteContributes(Pageable pageable) {
 		QContribute contribute = QContribute.contribute;
 		BooleanBuilder builder = new BooleanBuilder();
 
 		builder.and(contribute.status.ne(ContributeStatus.VOTING));
 
-		return findContributesByCondition(builder, pageable);
+		return findSimpleContributePage(builder, pageable);
 	}
 
 	// 문서 ID와 merged에 따라 Contribute 목록을 반환
 	@Override
-	public Page<Contribute> findByDocumentAndStatus(Long documentId, boolean merged,
+	public Page<ContributeSimpleResponse> findCompleteContributesByDocumentAndIsMerged(Long documentId, boolean merged,
 		Pageable pageable) {
 
 		QContribute contribute = QContribute.contribute;
@@ -86,7 +102,7 @@ public class CustomContributeRepositoryImpl implements CustomContributeRepositor
 			builder.and(contribute.status.in(ContributeStatus.REJECTED, ContributeStatus.DEBATING));
 		}
 
-		return findContributesByCondition(builder, pageable);
+		return findSimpleContributePage(builder, pageable);
 	}
 
 	@Override

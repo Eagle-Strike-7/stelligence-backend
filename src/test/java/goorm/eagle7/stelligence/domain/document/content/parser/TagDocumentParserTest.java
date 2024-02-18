@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.document.content.parser;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 
@@ -9,18 +8,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.owasp.html.PolicyFactory;
 
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
 
 @ExtendWith(MockitoExtension.class)
 class TagDocumentParserTest {
-
-	@Mock
-	PolicyFactory policyFactory;
 
 	@InjectMocks
 	TagDocumentParser tagDocumentParser;
@@ -39,7 +33,6 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -72,7 +65,6 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -100,7 +92,6 @@ class TagDocumentParserTest {
 				+ "<p>content3</p>";
 
 		//when
-		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then
@@ -131,7 +122,6 @@ class TagDocumentParserTest {
 				+ "<h6>h6</h6>";
 
 		//when
-		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		List<SectionRequest> result = tagDocumentParser.parse(rawContent);
 
 		//then

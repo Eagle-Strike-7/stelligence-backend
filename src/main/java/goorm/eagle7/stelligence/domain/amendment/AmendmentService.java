@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.amendment;
 
+import org.owasp.html.PolicyFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AmendmentService {
 
 	private final SectionRepository sectionRepository;
+	private final PolicyFactory policyFactory;
 
 	/**
 	 * 타입 구분
@@ -42,7 +44,7 @@ public class AmendmentService {
 			section,
 			amendmentRequest.getNewSectionHeading(),
 			amendmentRequest.getNewSectionTitle(),
-			amendmentRequest.getNewSectionContent(),
+			policyFactory.sanitize(amendmentRequest.getNewSectionContent()),
 			amendmentRequest.getCreatingOrder()
 		);
 	}
@@ -58,7 +60,7 @@ public class AmendmentService {
 			section,
 			amendmentRequest.getNewSectionHeading(),
 			amendmentRequest.getNewSectionTitle(),
-			amendmentRequest.getNewSectionContent()
+			policyFactory.sanitize(amendmentRequest.getNewSectionContent())
 		);
 	}
 

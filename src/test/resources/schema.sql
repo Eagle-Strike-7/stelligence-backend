@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS vote;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS bookmark;
 DROP TABLE IF EXISTS notification;
+DROP TABLE IF EXISTS notification_content;
 DROP TABLE IF EXISTS report;
 DROP TABLE IF EXISTS member_badge;
 DROP TABLE IF EXISTS withdrawn_member;
@@ -142,14 +143,23 @@ CREATE TABLE bookmark
 
 CREATE TABLE notification
 (
-    notification_id BIGINT       NOT NULL auto_increment,
-    message         VARCHAR(255) NOT NULL,
-    uri             VARCHAR(255) NOT NULL,
-    is_read         TINYINT      NOT NULL,
-    member_id       BIGINT       NOT NULL,
-    created_at      DATETIME(6)  NOT NULL,
-    updated_at      DATETIME(6)  NOT NULL,
+    notification_id         BIGINT      NOT NULL auto_increment,
+    notification_content_id BIGINT      NOT NULL,
+    is_read                 TINYINT     NOT NULL,
+    member_id               BIGINT      NOT NULL,
+    created_at              DATETIME(6) NOT NULL,
+    updated_at              DATETIME(6) NOT NULL,
     PRIMARY KEY (notification_id)
+);
+
+CREATE TABLE notification_content
+(
+    notification_content_id BIGINT       NOT NULL auto_increment,
+    message                 VARCHAR(255) NOT NULL,
+    uri                     VARCHAR(255) NOT NULL,
+    created_at              DATETIME(6)  NOT NULL,
+    updated_at              DATETIME(6)  NOT NULL,
+    PRIMARY KEY (notification_content_id)
 );
 
 CREATE TABLE report
@@ -268,6 +278,9 @@ ALTER TABLE member_badge
     ADD CONSTRAINT fk_member_badge_member_id_member
         FOREIGN KEY (member_id) REFERENCES member (member_id);
 
+ALTER TABLE notification
+    ADD CONSTRAINT fk_notification_notification_content_id_notification_content
+        FOREIGN KEY (notification_content_id) REFERENCES notification_content (notification_content_id);
 # 유니크 제약조건 설정
 
 ALTER TABLE member
