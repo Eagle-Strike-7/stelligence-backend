@@ -3,7 +3,6 @@ package goorm.eagle7.stelligence.common.sequence;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  * 따라서 이 클래스는 불필요한 에러를 막기 위해 section 레코드의 생성을 보장하는 역할을 합니다.
  */
 @Slf4j
-@Component
+// @Component
 @RequiredArgsConstructor
 @Profile({"local", "dev"}) //테스트 환경과 분리하기 위해서 local profile에서만 실행합니다.
 class SequenceTableInitiator implements ApplicationRunner {

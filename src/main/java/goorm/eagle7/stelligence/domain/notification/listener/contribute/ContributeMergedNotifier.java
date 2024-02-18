@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
@@ -29,7 +30,6 @@ public class ContributeMergedNotifier {
 	private final NotificationSender notificationSender;
 
 	private static final String CONTRIBUTE_MERGED_MESSAGE = "수정요청 '%s'이(가) 반영되었습니다! 글을 확인해보세요.";
-	private static final String DOCUMENT_URI = "/stars/%d";
 
 	/**
 	 * 수정요청이 완료되면 수정요청 게시자와 투표자에게 알림을 보낸다.
@@ -53,7 +53,7 @@ public class ContributeMergedNotifier {
 
 		NotificationRequest request = NotificationRequest.of(
 			String.format(CONTRIBUTE_MERGED_MESSAGE, StringSlicer.slice(contribute.getTitle())),
-			String.format(DOCUMENT_URI, contribute.getDocument().getId()),
+			Site.document(contribute.getDocument().getId()),
 			targets
 		);
 

@@ -184,6 +184,31 @@ class DocumentNodeRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("대소문자에 구분없이 검색이 잘 이루어짐")
+	void findNodeByUppercaseTitle() {
+
+		//given
+		final String searchTitle = "TitLe1";
+		final int limit = 5;
+
+		String[] queries = queriesThatMakesThreeNodesWithDepthFour();
+
+		for (String queryString : queries) {
+			neo4jClient.query(queryString).run();
+		}
+
+		//when
+		List<DocumentNodeResponse> findNodes = documentNodeRepository.findNodeByTitle(searchTitle, limit);
+
+		//then
+		log.info("findNodes: {}", findNodes);
+		List<String> titleList = findNodes.stream().map(DocumentNodeResponse::getTitle).toList();
+		assertThat(titleList)
+			.isNotEmpty()
+			.allMatch(s -> s.toLowerCase().contains(searchTitle.toLowerCase()));
+	}
+
+	@Test
 	@DisplayName("존재하지 않는 제목으로 검색하면 결과가 빈 리스트로 반환")
 	void findNoNodeByTitle() {
 

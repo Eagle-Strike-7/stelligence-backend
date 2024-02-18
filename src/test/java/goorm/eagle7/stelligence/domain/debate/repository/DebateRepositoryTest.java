@@ -16,14 +16,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.debate.dto.DebateOrderCondition;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import lombok.extern.slf4j.Slf4j;
 
 @DataJpaTest
-@WithMockData
 @Slf4j
 class DebateRepositoryTest {
 
@@ -143,7 +141,7 @@ class DebateRepositoryTest {
 	@DisplayName("특정 Document의 가장 최근 토론 조회")
 	void findLatestDebateByDocument() {
 		//given
-		
+
 		//when
 		Optional<Debate> latestDebateOptional = debateRepository.findLatestDebateByDocumentId(1L);
 

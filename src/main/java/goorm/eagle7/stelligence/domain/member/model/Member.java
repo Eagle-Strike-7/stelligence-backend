@@ -16,8 +16,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +23,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = {
-	@UniqueConstraint(name = "UniqueSocialIdAndSocialType", columnNames = {"social_id", "social_type"})})
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -38,6 +34,8 @@ public class Member extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private Role role; // default: USER
 	private long contributes; // default: 0
+
+	@Column(columnDefinition = "tinyint")
 	private boolean active; // default: true, for soft delete
 
 	// social login 시 받아오는 정보
@@ -61,13 +59,16 @@ public class Member extends BaseTimeEntity {
 	@ElementCollection
 	@CollectionTable(
 		name = "member_badge",
-		joinColumns = @JoinColumn(name = "member_id"))
+		joinColumns = @JoinColumn(name = "member_id")
+	)
 	@Enumerated(EnumType.STRING)
+	@Column(name = "badges", columnDefinition = "varchar(30)")
 	private Set<Badge> badges = new HashSet<>();
 
 	/**
 	 * <h2>Member는 정적 팩토리 메서드로 생성하기</h2>
 	 * <p>member 생성 시, role은 USER, contributes는 0, active = true로  설정.</p>
+	 * <p>member 생성 시, role은 USER, contributes는 0, 배지 발급.</p>
 	 * <p>refreshToken은 회원 가입 후 update로 진행</p>
 	 * @param nickname 닉네임
 	 * @param email 이메일
@@ -89,10 +90,10 @@ public class Member extends BaseTimeEntity {
 		member.socialType = socialType;
 
 		// 기본값 설정
-		member.refreshToken = null;
 		member.role = Role.USER;
 		member.contributes = 0;
 		member.active = true;
+		member.addBadge(Badge.SPROUT);
 
 		return member;
 

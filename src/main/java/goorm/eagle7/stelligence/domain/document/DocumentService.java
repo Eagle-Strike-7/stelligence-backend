@@ -3,6 +3,7 @@ package goorm.eagle7.stelligence.domain.document;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
+import goorm.eagle7.stelligence.domain.document.event.NewDocumentEvent;
 import goorm.eagle7.stelligence.domain.document.graph.DocumentGraphService;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentNodeResponse;
@@ -34,6 +36,8 @@ public class DocumentService {
 	private final DocumentGraphService documentGraphService;
 	private final MemberRepository memberRepository;
 	private final DocumentRequestValidator documentRequestValidator;
+
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Document를 생성합니다.
@@ -73,6 +77,10 @@ public class DocumentService {
 		 * 추후에 코드가 변경될 여지가 있습니다. 자세한 내용은 Document.sections의 주석을 참고해주세요.
 		 */
 		List<SectionResponse> sections = createdDocument.getSections().stream().map(SectionResponse::of).toList();
+
+		// 사용자에게 문서 작성 배지를 수여합니다.
+		applicationEventPublisher.publishEvent(new NewDocumentEvent(createdDocument.getId()));
+
 		return DocumentResponse.of(createdDocument, 1L, sections, Collections.emptyList());
 	}
 
