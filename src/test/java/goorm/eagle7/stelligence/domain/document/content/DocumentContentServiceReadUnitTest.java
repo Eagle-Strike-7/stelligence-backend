@@ -18,6 +18,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentSimpleResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.section.SectionRepository;
 import goorm.eagle7.stelligence.domain.section.model.Heading;
@@ -173,5 +174,38 @@ class DocumentContentServiceReadUnitTest {
 		//then
 		assertThat(documentResponse.getParentDocumentId()).isEqualTo(2L);
 		assertThat(documentResponse.getParentDocumentTitle()).isEqualTo("parentTitle");
+	}
+
+	@Test
+	@DisplayName("문서 제목으로 검색 - 존재하는 제목")
+	void getExistDocumentByTitle() {
+		//given
+		final String searchTitle = "title1";
+		Document document = document(1L, member(1L, "hello"), searchTitle, 1L, null);
+
+		//when
+		when(documentContentRepository.findByTitle(searchTitle)).thenReturn(Optional.of(document));
+
+		DocumentSimpleResponse documentSimpleResponse = documentContentService.getDocumentByTitle(searchTitle);
+
+		//then
+		verify(documentContentRepository, times(1)).findByTitle(searchTitle);
+		assertThat(documentSimpleResponse.getTitle()).isEqualTo(searchTitle);
+		assertThat(documentSimpleResponse.getDocumentId()).isEqualTo(1L);
+	}
+
+	@Test
+	@DisplayName("문서 제목으로 검색 - 존재하지 않는 제목")
+	void getNonExistDocumentByTitle() {
+		//given
+		final String searchTitle = "nonExistTitle";
+
+		//when
+		when(documentContentRepository.findByTitle(searchTitle)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> documentContentService.getDocumentByTitle(searchTitle))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("해당 제목을 갖는 문서가 존재하지 않습니다. 제목: " + searchTitle);
 	}
 }
