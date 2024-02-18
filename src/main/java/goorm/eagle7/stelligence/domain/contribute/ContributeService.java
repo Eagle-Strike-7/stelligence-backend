@@ -141,12 +141,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getContributesByStatus(ContributeStatus status, Pageable pageable) {
 
-		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
-
-		Page<ContributeSimpleResponse> listResponses = votingContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findByContributeStatus(status, pageable));
 	}
 
 	/**
@@ -156,12 +151,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getCompletedContributes(Pageable pageable) {
 
-		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
-
-		Page<ContributeSimpleResponse> listResponses = completedContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findCompleteContributes(pageable));
 	}
 
 	/**
@@ -171,7 +161,7 @@ public class ContributeService {
 	 * @param pageable
 	 * @return
 	 */
-	public ContributeListByDocumentResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
+	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
 		// Document document = documentContentRepository.findById(documentId).orElseThrow(
@@ -189,5 +179,8 @@ public class ContributeService {
 			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
 
 		return ContributeListByDocumentResponse.from(listResponses, documentId, documentTitle);
+
+		return ContributePageResponse.from(
+			contributeRepository.findCompleteContributesByDocumentAndIsMerged(documentId, merged, pageable));
 	}
 }

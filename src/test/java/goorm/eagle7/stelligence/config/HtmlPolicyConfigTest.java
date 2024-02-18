@@ -37,4 +37,16 @@ class HtmlPolicyConfigTest {
 		assertThat(sanitizedContent).isEqualTo("<p>hello</p>");
 	}
 
+	@Test
+	void whenNullReturnEmptyString() {
+		//given
+		String rawContent = null;
+
+		//when
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		//then
+		assertThat(sanitizedContent).isEmpty();
+	}
+
 }
