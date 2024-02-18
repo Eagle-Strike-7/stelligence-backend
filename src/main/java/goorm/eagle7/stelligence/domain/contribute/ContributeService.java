@@ -10,6 +10,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeDocumentPageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
@@ -170,7 +171,7 @@ public class ContributeService {
 	 * @param pageable
 	 * @return
 	 */
-	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
+	public ContributeDocumentPageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
 		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
@@ -179,6 +180,6 @@ public class ContributeService {
 		Page<ContributeSimpleResponse> listResponses = contributesByDocumentAndStatus.map(
 			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
 
-		return ContributePageResponse.from(listResponses);
+		return ContributeDocumentPageResponse.from(listResponses);
 	}
 }
