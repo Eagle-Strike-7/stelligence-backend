@@ -17,7 +17,7 @@ import org.springframework.web.filter.CorsFilter;
  * <p>allowedHeaders: 허용할 HTTP 헤더</p>
  * <p>allowCredentials: 쿠키와 같은 인증 정보를 포함할지 여부</p>
  * <p>maxAge: 브라우저가 CORS 설정을 캐시할 시간</p>
- */ // TODo yml 관리 고려
+ */
 @Configuration
 public class CorsConfig {
 
@@ -27,7 +27,13 @@ public class CorsConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 
-		config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://www.stelligence.site", "https://api.stelligence.site", "http://localhost:8080"));
+		config.setAllowedOrigins(Arrays.asList(
+			"http://localhost:3000"
+			, "http://localhost:8080"
+			, "http://www.stelligence.site"
+			, "http://stelligence.site"
+			, "https://api.stelligence.site"
+			));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(Arrays.asList("Set-Cookie", "Content-Type"));
 		config.setAllowCredentials(true);
