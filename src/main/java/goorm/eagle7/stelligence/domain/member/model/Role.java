@@ -1,6 +1,11 @@
 package goorm.eagle7.stelligence.domain.member.model;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 
@@ -14,6 +19,11 @@ public enum Role {
 	ADMIN("ROLE_ADMIN"), USER("ROLE_USER");
 
 	private final String value;
+	private static final Map<String, Role> values =
+		Collections
+			.unmodifiableMap(Stream.of(values())
+				.collect(Collectors.toMap(
+					Role::getValue, Function.identity())));
 
 	Role(String value) {
 		this.value = value;
@@ -32,11 +42,10 @@ public enum Role {
 		}
 	}
 
-	private static Role fromValue(String value) {
-		return Arrays.stream(values())
-			.filter(r -> r.value.equalsIgnoreCase(value))
-			.findAny()
-			.orElseThrow(IllegalArgumentException::new);
+	private static Role fromValue(String description) {
+		return Optional
+			.ofNullable(values.get(description))
+			.orElse(USER);
 	}
 
 }
