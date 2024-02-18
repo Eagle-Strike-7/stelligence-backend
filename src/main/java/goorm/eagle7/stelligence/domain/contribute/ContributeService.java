@@ -9,7 +9,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.AmendmentService;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListByDocumentResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeDocumentPageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
@@ -159,14 +159,14 @@ public class ContributeService {
 	 * @param pageable
 	 * @return
 	 */
-	public ContributeListByDocumentResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
+	public ContributeDocumentPageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
 		String documentTitle = documentContentRepository.findById(documentId).orElseThrow(
 			() -> new BaseException("존재하지 않는 문서의 요청입니다. 문서 ID: " + documentId)
 		).getTitle();
 
-		return ContributeListByDocumentResponse.from(
+		return ContributeDocumentPageResponse.from(
 			contributeRepository.findCompleteContributesByDocumentAndIsMerged(documentId, merged, pageable),
 			documentId,
 			documentTitle);
