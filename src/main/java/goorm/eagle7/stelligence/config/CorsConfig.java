@@ -1,21 +1,25 @@
 package goorm.eagle7.stelligence.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * <h2>CORS 설정</h2>
- */
+ * <p>CorsFilter: CORS 설정을 적용하는 필터</p>
+ * <p>UrlBasedCorsConfigurationSource: URL별로 CORS 설정을 적용할 수 있도록 하는 클래스</p>
+ * <p>allowedOrigins: 허용할 IP, 도메인</p>
+ * <p>allowedMethods: 허용할 HTTP 메서드</p>
+ * <p>allowedHeaders: 허용할 HTTP 헤더</p>
+ * <p>allowCredentials: 쿠키와 같은 인증 정보를 포함할지 여부</p>
+ * <p>maxAge: 브라우저가 CORS 설정을 캐시할 시간</p>
+ */ // TODo yml 관리 고려
 @Configuration
-@RequiredArgsConstructor
 public class CorsConfig {
-
-	private final CorsProperties corsProperties;
 
 	@Bean
 	public CorsFilter corsFilter() {
@@ -23,24 +27,15 @@ public class CorsConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 
-		// 허용할 프로토콜, IP, 도메인, 포트
-		config.setAllowedOrigins(corsProperties.getAllowedOrigins());
-		// 허용할 Http 메서드
-		config.setAllowedMethods(corsProperties.getAllowedMethods());
-		// 허용할 헤더
-		config.setAllowedHeaders(corsProperties.getAllowedHeaders());
-		// 쿠키와 같은 인증 정보를 포함할지 여부
-		config.setAllowCredentials(corsProperties.getAllowedCredentials());
-		// 브라우저에 노출할 헤더
-		config.setExposedHeaders(corsProperties.getExposedHeaders());
-		// 브라우저가 CORS 설정을 캐시할 시간
-		config.setMaxAge(corsProperties.getMaxAge());
+		config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://www.stelligence.site", "https://api.stelligence.site", "http://localhost:8080"));
+		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(Arrays.asList("Set-Cookie", "Content-Type"));
+		config.setAllowCredentials(true);
+		config.setMaxAge(3600L);
 
-		// URL별로 CORS 설정을 적용할 수 있도록 함.
-		source.registerCorsConfiguration(corsProperties.getRegisterCorsConfiguration(), config);
+		source.registerCorsConfiguration("/api/**", config);
 
 		return new CorsFilter(source);
-
 	}
 
 }
