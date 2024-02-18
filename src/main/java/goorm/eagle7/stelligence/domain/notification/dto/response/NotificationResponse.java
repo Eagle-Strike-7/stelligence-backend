@@ -23,9 +23,9 @@ public class NotificationResponse {
 	public static NotificationResponse of(Notification notification) {
 		NotificationResponse resp = new NotificationResponse();
 		resp.notificationId = notification.getId();
-		resp.message = notification.getMessage();
+		resp.message = notification.getContent().getMessage();
 		resp.isRead = notification.isRead();
-		resp.uri = notification.getUri();
+		resp.uri = notification.getContent().getUri();
 		resp.createdAt = notification.getCreatedAt();
 		return resp;
 	}
