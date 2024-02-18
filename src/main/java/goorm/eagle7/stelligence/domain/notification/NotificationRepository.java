@@ -16,6 +16,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	 * @param memberId 회원 ID
 	 * @return 알림 목록
 	 */
+	@Query("select n from Notification n"
+		+ " join fetch n.content"
+		+ " where n.memberId = :memberId"
+		+ " order by n.createdAt desc")
 	List<Notification> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
 	/**
