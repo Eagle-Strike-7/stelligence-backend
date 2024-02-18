@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.notification.model.Notification;
 
 @SpringBootTest
 @Transactional
-@WithMockData
 class NotificationRepositoryTest {
 
 	@Autowired

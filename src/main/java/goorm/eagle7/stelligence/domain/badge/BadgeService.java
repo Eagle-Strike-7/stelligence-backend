@@ -1,16 +1,16 @@
 package goorm.eagle7.stelligence.domain.badge;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.domain.badge.event.NewBadgeEvent;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
-import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
-import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
-import goorm.eagle7.stelligence.domain.member.MemberRepository;
+import goorm.eagle7.stelligence.domain.badge.template.BadgeMatchedCountTemplate;
+import goorm.eagle7.stelligence.domain.badge.template.BadgeTemplateMatcher;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import lombok.RequiredArgsConstructor;
 
@@ -19,78 +19,66 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BadgeService {
 
-	private final MemberRepository memberRepository;
-	private final ContributeRepository contributeRepository;
-	private final DocumentContentRepository documentContentRepository;
+	private final BadgeTemplateMatcher badgeTemplateMatcher;
+	private final ApplicationEventPublisher eventPublisher;
 
+	/**
+	 * <h2>BadgeCategory에 해당하는 template을 찾아서 수행</h2>
+	 * @param badgeCategory BadgeCategory
+	 * @param member Member
+	 * @throws IllegalArgumentException BadgeCategory에 해당하는 template이 없을 경우
+	 */
 	@Transactional
 	public void checkAndAwardBadge(BadgeCategory badgeCategory, Member member) {
 
-		Badge newBadge = null;
+		// badgeCategory에 해당하는 전략 category 찾기
+		BadgeMatchedCountTemplate template = findTemplate(badgeCategory);
 
-		// badgeCategory와 같은지 확인
-		switch (badgeCategory) {
-			case WRITING:
-				// 글 작성
-				newBadge = checkWritingConditionAndGetBadge(member, badgeCategory);
-				break;
-			case CONTRIBUTE_ALL:
-				// 모든 수정 요청
-				newBadge = checkContributeAllAndGetBadge(member, badgeCategory);
-				break;
-			case CONTRIBUTE_MERGED:
-				// 반영된 수정 요청
-				newBadge = checkContributeMergedAndGetBadge(member, badgeCategory);
-				break;
-			case CONTRIBUTE_REJECTED:
-				// 반려된 수정 요청
-				newBadge = checkContributeRejectedAndGetBadge(member, badgeCategory);
-				break;
-			case MEMBER_JOIN:
-				// 회원 가입
-				newBadge = checkMemberConditionAndGetBadge(member);
-				break;
-			case REPORT:
-				// 신고 - 신고 테이블 따로 없어 미구현
-				break;
+		// 배지 찾기
+		getBadgeMatchedMemberCondition(template, member)
+			.ifPresent(
+				// 배지 발급 및 배지 발급 이벤트 발행
+				badge -> awardBadge(member, badge)
+			);
+
+	}
+
+	/**
+	 * <h2>BadgeCategory에 해당하는 조건 템플릿 찾기</h2>
+	 * @param badgeCategory BadgeCategory
+	 * @return template 반환
+	 * @throws IllegalArgumentException BadgeCategory에 해당하는 template이 없을 경우
+	 */
+	private BadgeMatchedCountTemplate findTemplate(BadgeCategory badgeCategory) {
+
+		BadgeMatchedCountTemplate template = badgeTemplateMatcher.findTemplate(badgeCategory);
+
+		if (template == null) {
+			// BadgeCategory에 해당하는 템플릿이 없을 경우는 server error로 판단
+			throw new IllegalArgumentException("해당하는 badge category가 없습니다.: " + badgeCategory);
 		}
 
-		if (newBadge != null) {
-			member.addBadge(newBadge);
-		}
-
+		return template;
 	}
 
-
-	private Badge checkWritingConditionAndGetBadge(Member member, BadgeCategory badgeCategory) {
-
-		long count = documentContentRepository.countByAuthor_Id(member.getId());
-		return Badge.findByEventCategoryAndCount(badgeCategory, count);
-
+	/**
+	 * <h2>template과 해당 member의 조건에 충족하는 배지 찾기</h2>
+	 * @param template 배지 발급 조건 템플릿
+	 * @param member 확인할 Member
+	 * @return Optional<Badge> 해당 member의 조건에 충족하는 배지
+	 */
+	private Optional<Badge> getBadgeMatchedMemberCondition(BadgeMatchedCountTemplate template, Member member) {
+		return template.getBadgeWithCount(member);
 	}
 
-	private Badge checkContributeAllAndGetBadge(Member member, BadgeCategory badgeCategory) {
-
-		long count = contributeRepository.countByMemberId(member.getId());
-		return Badge.findByEventCategoryAndCount(badgeCategory, count);
-
-	}
-	private Badge checkContributeMergedAndGetBadge(Member member, BadgeCategory badgeCategory) {
-		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.MERGED);
-		return Badge.findByEventCategoryAndCount(badgeCategory, count);
-	}
-
-	private Badge checkContributeRejectedAndGetBadge(Member member, BadgeCategory badgeCategory) {
-		long count = contributeRepository.countByMemberIdAndStatus(member.getId(), ContributeStatus.REJECTED);
-		return Badge.findByEventCategoryAndCount(badgeCategory, count);
-	}
-
-	private Badge checkMemberConditionAndGetBadge(Member member) {
-		// 만 하루 내에 가입한 회원으로 조회되면 회원 가입으로 간주
-		if (memberRepository.existsByIdAndActiveTrueAndCreatedAtGreaterThanEqual(member.getId(), LocalDateTime.now().minusDays(1))) {
-			return Badge.SPROUT;
-		}
-		return null;
+	/**
+	 * <h2>배지 발급</h2>
+	 * @param member Member
+	 * @param badge Badge
+	 */
+	private void awardBadge(Member member, Badge badge) {
+		member.addBadge(badge);
+		eventPublisher.publishEvent(new NewBadgeEvent(member.getId(), badge));
 	}
 
 }

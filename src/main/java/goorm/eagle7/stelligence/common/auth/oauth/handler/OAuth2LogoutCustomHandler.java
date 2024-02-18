@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.common.auth.oauth.handler;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;

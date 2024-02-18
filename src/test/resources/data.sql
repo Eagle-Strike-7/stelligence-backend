@@ -5,33 +5,34 @@
 -- 2번, 7번 멤버는 1일 전에 생성되었습니다.
 -- 3번, 5번 멤버는 2일 전에 생성되었습니다.
 
-insert into member (member_id, email, name, nickname, role, contributes, image_url, refresh_token, social_type,
+insert into member (member_id, email, nickname, role, contributes, image_url, refresh_token, social_type,
                     social_id, created_at, updated_at, active)
-values (1, 'email1', 'name1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
+values (1, 'email1', 'nickname1', 'USER', 0, 'image_url1', 'refresh_token1', 'KAKAO', 'social_id1', NOW(),
         NOW(), true),
-       (2, 'email2', 'name2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2',
+       (2, 'email2', 'nickname2', 'USER', 0, 'image_url2', 'refresh_token2', 'GOOGLE', 'social_id2',
         TIMESTAMPADD(DAY, -1, NOW()),
         NOW(), true),
-       (3, 'email3', 'name3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3',
+       (3, 'email3', 'nickname3', 'USER', 0, 'image_url3', 'refresh_token3', 'NAVER', 'social_id3',
         TIMESTAMPADD(DAY, -2, NOW()),
         NOW(), true),
-       (4, 'email4', 'name4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
+       (4, 'email4', 'nickname4', 'USER', 0, 'image_url4', 'refresh_token4', 'GOOGLE', 'social_id4', NOW(),
         NOW(), true),
-       (5, 'email5', 'name5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5',
+       (5, 'email5', 'nickname5', 'USER', 0, 'image_url5', 'refresh_token5', 'KAKAO', 'social_id5',
         TIMESTAMPADD(DAY, -2, NOW()),
         NOW(), false),
-       (6, 'email6', 'name6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
+       (6, 'email6', 'nickname6', 'USER', 0, 'image_url6', 'refresh_token6', 'KAKAO', 'social_id6', NOW(),
         NOW(), false),
-       (7, 'email7', 'name7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7',
-        TIMESTAMPADD(DAY, -1, NOW()),
-        NOW(), false);
+       (7, 'email7', 'nickname7', 'USER', 0, 'image_url7', 'refresh_token7', 'KAKAO', 'social_id7',
+        TIMESTAMPADD(DAY, -1, NOW()), NOW(), false),
+       (8, 'email8', 'nickname8', 'USER', 0, 'image_url8', 'refresh_token8', 'KAKAO', 'social_id8',
+       TIMESTAMPADD(DAY, -1, NOW()), NOW(), true);
 
 -- 4개의 문서가 존재합니다.
-insert into document (document_id, title, latest_revision, parent_document_id, created_at, updated_at)
-values (1, 'title1', 3, null, NOW(), NOW()),
-       (2, 'title2', 2, null, NOW(), NOW()),
-       (3, 'title3', 1, null, NOW(), NOW()),
-       (4, 'title4', 1, null, NOW(), NOW());
+insert into document (document_id, title, latest_revision, author_id, parent_document_id, created_at, updated_at)
+values (1, 'title1', 3, 8, null, NOW(), NOW()),
+       (2, 'title2', 2, 8, null, NOW(), NOW()),
+       (3, 'title3', 1, 8, null, NOW(), NOW()),
+       (4, 'title4', 1, 8, null, NOW(), NOW());
 
 -- member가 작성한 문서가 존재합니다.
 -- 1번 멤버는 11, 12, 13, 14번 문서를 작성하였습니다.
@@ -42,20 +43,20 @@ values (1, 'title1', 3, null, NOW(), NOW()),
 -- 6번 멤버는 21번 문서를 작성하였습니다.
 -- 7번 멤버는 22번 문서를 작성하였습니다.
 insert into document (document_id, title, latest_revision, author_id, parent_document_id, created_at, updated_at)
-values (11, 'title1', 3, 1, null, NOW(), NOW()),
-       (12, 'title2', 2, 1, null, NOW(), NOW()),
-       (13, 'title3', 1, 1, null, NOW(), NOW()),
-       (14, 'title4', 1, 1, null, NOW(), NOW()),
-       (15, 'title5', 1, 2, null, NOW(), NOW()),
-       (16, 'title6', 1, 2, null, NOW(), NOW()),
-       (17, 'title7', 1, 3, null, NOW(), NOW()),
-       (18, 'title8', 1, 2, null, NOW(), NOW()),
-       (19, 'title9', 1, 4, null, NOW(), NOW()),
-       (20, 'title10', 1, 5, null, NOW(), NOW()),
-       (21, 'title11', 1, 6, null, NOW(), NOW()),
-       (22, 'title12', 1, 7, null, NOW(), NOW()),
-       (23, 'title13', 1, 5, null, NOW(), NOW()),
-       (24, 'title14', 1, 5, null, NOW(), NOW());
+values (11, 'title11', 3, 1, null, NOW(), NOW()),
+       (12, 'title12', 2, 1, null, NOW(), NOW()),
+       (13, 'title13', 1, 1, null, NOW(), NOW()),
+       (14, 'title14', 1, 1, null, NOW(), NOW()),
+       (15, 'title15', 1, 2, null, NOW(), NOW()),
+       (16, 'title16', 1, 2, null, NOW(), NOW()),
+       (17, 'title17', 1, 3, null, NOW(), NOW()),
+       (18, 'title18', 1, 2, null, NOW(), NOW()),
+       (19, 'title19', 1, 4, null, NOW(), NOW()),
+       (20, 'title20', 1, 5, null, NOW(), NOW()),
+       (21, 'title21', 1, 6, null, NOW(), NOW()),
+       (22, 'title22', 1, 7, null, NOW(), NOW()),
+       (23, 'title23', 1, 5, null, NOW(), NOW()),
+       (24, 'title24', 1, 5, null, NOW(), NOW());
 
 -- 14개의 섹션이 존재합니다.
 ------ 1번 문서에는 6개의 섹션이 존재합니다.
@@ -135,46 +136,46 @@ insert into amendment (amendment_id, contribute_id, target_section_id, target_re
 values (1, 1, 2, 1, null, 'H2', 'document1_title2_update', 'document1_content2_update', 'UPDATE', NOW(), NOW()),
        (2, 1, 3, 1, 1, 'H1', 'document1_title4_insert', 'document1_content4_insert', 'CREATE', NOW(), NOW()),
        (3, 2, 1, 1, null, NULL, NULL, NULL, 'DELETE', NOW(), NOW()),
-       (4, null, 13, 2, null, 'H1', 'document1_title4_insert_update',
+       (4, 3, 13, 2, null, 'H1', 'document1_title4_insert_update',
         'document1_content4_insert_update', 'UPDATE', NOW(), NOW()),
        (5, 4, 3, 1, null, 'H2', 'document1_title3', 'document1_content3', 'UPDATE', NOW(), NOW()),
        (6, 5, 4, 1, 2, 'H1', 'document2_title4_insert', 'document2_content4_insert', 'CREATE', NOW(), NOW()),
        (7, 5, 6, 1, null, 'H1', 'document2_title3_update', 'document2_content3_update', 'UPDATE', NOW(), NOW());
 
-insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at)
-values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, TIMESTAMPADD(HOUR, -3, NOW())),
-       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, TIMESTAMPADD(HOUR, -1, NOW())),
-       (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW()),
-       (4, 4, 'CLOSED', NOW(), 1, NOW()),
-       (5, 5, 'CLOSED', NOW(), 1, NOW()),
-       (6, 5, 'OPEN', NOW(), 1, NOW()),
-       (7, 6, 'OPEN', NOW(), 1, NOW());
+insert into debate (debate_id, contribute_id, status, end_at, comment_sequence, created_at, updated_at)
+values (1, 1, 'OPEN', TIMESTAMPADD(HOUR, 1, NOW()), 1, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (2, 2, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, TIMESTAMPADD(HOUR, -1, NOW()), NOW()),
+       (3, 3, 'OPEN', TIMESTAMPADD(MINUTE, -1, NOW()), 1, NOW(), NOW()),
+       (4, 4, 'CLOSED', NOW(), 1, NOW(), NOW()),
+       (5, 5, 'CLOSED', NOW(), 1, NOW(), NOW()),
+       (6, 5, 'OPEN', NOW(), 1, NOW(), NOW()),
+       (7, 6, 'OPEN', NOW(), 1, NOW(), NOW());
 
-insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at)
-values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW())),
-       (2, 1, 2, '댓글2', 2, TIMESTAMPADD(HOUR, -2, NOW())),
-       (3, 1, 3, '댓글3', 3, TIMESTAMPADD(HOUR, -1, NOW())),
-       (4, 2, 4, '댓글4', 1, TIMESTAMPADD(HOUR, -4, NOW())),
-       (5, 2, 1, '댓글5', 2, TIMESTAMPADD(HOUR, -3, NOW())),
-       (6, 2, 2, '댓글6', 3, TIMESTAMPADD(HOUR, -3, NOW())),
-       (7, 3, 3, '댓글7', 1, TIMESTAMPADD(HOUR, -5, NOW())),
-       (8, 3, 4, '댓글8', 2, TIMESTAMPADD(HOUR, -10, NOW())),
-       (9, 3, 4, '댓글9', 3, TIMESTAMPADD(HOUR, -2, NOW()));
+insert into comment (comment_id, debate_id, commenter_id, content, sequences, created_at, updated_at)
+values (1, 1, 1, '댓글1', 1, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (2, 1, 2, '댓글2', 2, TIMESTAMPADD(HOUR, -2, NOW()), NOW()),
+       (3, 1, 3, '댓글3', 3, TIMESTAMPADD(HOUR, -1, NOW()), NOW()),
+       (4, 2, 4, '댓글4', 1, TIMESTAMPADD(HOUR, -4, NOW()), NOW()),
+       (5, 2, 1, '댓글5', 2, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (6, 2, 2, '댓글6', 3, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (7, 3, 3, '댓글7', 1, TIMESTAMPADD(HOUR, -5, NOW()), NOW()),
+       (8, 3, 4, '댓글8', 2, TIMESTAMPADD(HOUR, -10, NOW()), NOW()),
+       (9, 3, 4, '댓글9', 3, TIMESTAMPADD(HOUR, -2, NOW()), NOW());
 
 -- 5개의 Bookmark가 존재합니다.
 -- 1번 멤버는 1, 2, 3, 4번 문서를 북마크하였습니다.
 -- 2번 멤버는 1, 4번 문서를 북마크하였습니다.
 -- 3번 멤버는 2, 3, 4번 문서를 북마크하였습니다.
 -- 4번 멤버는 3, 4번 문서를 북마크하였습니다.
-insert into bookmark (bookmark_id, member_id, document_id)
-values (1, 1, 1),
-       (2, 2, 1),
-       (3, 3, 2),
-       (4, 4, 3),
-       (5, 1, 4),
-       (6, 2, 4),
-       (7, 3, 3),
-       (8, 1, 2),
-       (10, 1, 3),
-       (11, 3, 4),
-       (12, 4, 4);
+insert into bookmark (bookmark_id, member_id, document_id, created_at, updated_at)
+values (1, 1, 1, NOW(), NOW()),
+       (2, 2, 1, NOW(), NOW()),
+       (3, 3, 2, NOW(), NOW()),
+       (4, 4, 3, NOW(), NOW()),
+       (5, 1, 4, NOW(), NOW()),
+       (6, 2, 4, NOW(), NOW()),
+       (7, 3, 3, NOW(), NOW()),
+       (8, 1, 2, NOW(), NOW()),
+       (10, 1, 3, NOW(), NOW()),
+       (11, 3, 4, NOW(), NOW()),
+       (12, 4, 4, NOW(), NOW());

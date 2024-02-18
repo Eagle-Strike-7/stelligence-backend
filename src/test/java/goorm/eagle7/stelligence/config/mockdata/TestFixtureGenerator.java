@@ -74,7 +74,7 @@ public class TestFixtureGenerator {
 		return document(id, author, title, latestRevision, null);
 	}
 
-	public static Member member(Long id, Role role, long contributes, String name, String nickname, String email,
+	public static Member member(Long id, Role role, long contributes, String nickname, String email,
 		String imageUrl, String socialId, SocialType socialType, String refreshToken, Set<Badge> badges) {
 		try {
 			Class<?> memberClass = Class.forName("goorm.eagle7.stelligence.domain.member.model.Member");
@@ -89,7 +89,6 @@ public class TestFixtureGenerator {
 			Field idField = memberClass.getDeclaredField("id");
 			Field roleField = memberClass.getDeclaredField("role");
 			Field contributesField = memberClass.getDeclaredField("contributes");
-			Field nameField = memberClass.getDeclaredField("name");
 			Field nicknameField = memberClass.getDeclaredField("nickname");
 			Field emailField = memberClass.getDeclaredField("email");
 			Field imageUrlField = memberClass.getDeclaredField("imageUrl");
@@ -101,7 +100,6 @@ public class TestFixtureGenerator {
 			idField.setAccessible(true);
 			roleField.setAccessible(true);
 			contributesField.setAccessible(true);
-			nameField.setAccessible(true);
 			nicknameField.setAccessible(true);
 			emailField.setAccessible(true);
 			imageUrlField.setAccessible(true);
@@ -113,7 +111,6 @@ public class TestFixtureGenerator {
 			idField.set(member, id);
 			roleField.set(member, role);
 			contributesField.set(member, contributes);
-			nameField.set(member, name);
 			nicknameField.set(member, nickname);
 			emailField.set(member, email);
 			imageUrlField.set(member, imageUrl);
@@ -129,7 +126,7 @@ public class TestFixtureGenerator {
 	}
 
 	public static Member member(Long id, String nickname) {
-		return TestFixtureGenerator.member(id, Role.USER, 0L, "name", nickname, "email", "imageUrl", "socialId",
+		return TestFixtureGenerator.member(id, Role.USER, 0L, nickname, "email", "imageUrl", "socialId",
 			SocialType.KAKAO, "refreshToken", new HashSet<>());
 	}
 

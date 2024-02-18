@@ -33,7 +33,7 @@ public class NotificationService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원입니다."));
 
-		return notificationRepository.findByMemberId(member.getId()).stream()
+		return notificationRepository.findByMemberIdOrderByCreatedAtDesc(member.getId()).stream()
 			.map(NotificationResponse::of)
 			.toList();
 	}

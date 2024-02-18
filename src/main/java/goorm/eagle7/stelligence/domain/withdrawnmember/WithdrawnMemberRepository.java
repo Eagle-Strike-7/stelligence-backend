@@ -20,7 +20,6 @@ public class WithdrawnMemberRepository {
 		    original_member_id,
 		    joined_at,
 		    withdrawn_at,
-		    name,
 		    nickname,
 		    email,
 		    social_id,
@@ -32,7 +31,6 @@ public class WithdrawnMemberRepository {
 		    :originalMemberId, 
 		    :joinedAt, 
 		    :withdrawnAt, 
-		    :name, 
 		    :nickname, 
 		    :email, 
 		    :socialId, 
@@ -49,7 +47,6 @@ public class WithdrawnMemberRepository {
 			.addValue("originalMemberId", member.getId())
 			.addValue("joinedAt", Timestamp.valueOf(member.getCreatedAt()))
 			.addValue("withdrawnAt", Timestamp.valueOf(LocalDateTime.now()))
-			.addValue("name", member.getName())
 			.addValue("nickname", member.getNickname())
 			.addValue("email", member.getEmail())
 			.addValue("socialId", member.getSocialId())

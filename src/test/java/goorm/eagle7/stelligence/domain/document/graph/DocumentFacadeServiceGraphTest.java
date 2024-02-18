@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.config.TestConfig;
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.document.DocumentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
@@ -18,7 +17,6 @@ import goorm.eagle7.stelligence.domain.document.graph.model.DocumentNode;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
-@WithMockData
 @Transactional
 @Slf4j
 @Import(TestConfig.class)

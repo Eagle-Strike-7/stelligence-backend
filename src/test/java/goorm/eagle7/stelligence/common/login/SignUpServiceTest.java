@@ -1,13 +1,13 @@
 package goorm.eagle7.stelligence.common.login;
 
+import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 // @ExtendWith(MockitoExtension.class)
 @Slf4j
 @SpringBootTest
+@Transactional
 class SignUpServiceTest {
 
 	// @Mock
@@ -28,25 +29,12 @@ class SignUpServiceTest {
 	@Autowired
 	private SignUpService signUpService;
 
-	@BeforeEach
-	void setUp() {
-		Member member = signUpService.oauth2SignUp(
-			LoginOAuth2Request.of("name", "baseNickname", "email", "imageUrl", "socialId123",
-				SocialType.KAKAO));
-		memberRepository.save(member);
-	}
-
-	@AfterEach
-	void tearDown() {
-		memberRepository.deleteAll();
-	}
-
 	@Test
 	@DisplayName("[성공] 닉네임 중복 X, OAuth2 회원 가입 테스트 - oauth2SignUp")
 	void testOauth2SignUp() {
 
 		// given
-		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("name", "nickname", "email", "imageUrl",
+		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("nickname", "email", "imageUrl",
 			"socialId", SocialType.KAKAO
 		);
 
@@ -65,8 +53,9 @@ class SignUpServiceTest {
 	@DisplayName("[성공] 닉네임 중복 O, OAuth2 회원 가입 테스트 - oauth2SignUp")
 	void testIsNicknameDuplicate() {
 
+		memberRepository.save(member(100L, "baseNickname"));
 		// given
-		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("name", "baseNickname", "email", "imageUrl",
+		LoginOAuth2Request loginOAuth2Request = LoginOAuth2Request.of("baseNickname", "email", "imageUrl",
 			"socialId", SocialType.KAKAO
 		);
 
