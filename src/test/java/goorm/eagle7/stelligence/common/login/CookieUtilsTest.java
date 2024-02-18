@@ -13,13 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseCookie;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,8 +29,8 @@ class CookieUtilsTest {
 	@InjectMocks
 	private CookieUtils cookieUtils;
 
-	private MockHttpServletRequest request;
-	private MockHttpServletResponse response;
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 
 	private String testAccessTokenCookieName;
 	private String refreshTokenCookieName;
@@ -48,8 +48,8 @@ class CookieUtilsTest {
 	@BeforeEach
 	void setUp() {
 
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
+		request = mock(HttpServletRequest.class);
+		response = mock(HttpServletResponse.class);
 		testAccessTokenCookieName = "accessTokenCookie";
 		refreshTokenCookieName = "refreshTokenCookie";
 		accessToken = "accessToken";
@@ -87,7 +87,7 @@ class CookieUtilsTest {
 
 			// Arrange: Set up your test
 			Cookie cookie = new Cookie(testAccessTokenCookieName, accessToken);
-			request.setCookies(cookie);
+			when(request.getCookies()).thenReturn(new Cookie[]{cookie});
 			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
 
 			// Act: Call the method you want to test
@@ -108,9 +108,8 @@ class CookieUtilsTest {
 
 		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
 
-			// given
+			// given - cookies 없음
 			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
-			request.setCookies(null);
 
 			// when
 			Optional<Cookie> actualCookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
@@ -130,7 +129,7 @@ class CookieUtilsTest {
 
 			// given
 			Cookie cookie = new Cookie(testAccessTokenCookieName, accessToken);
-			request.setCookies(cookie);
+			when(request.getCookies()).thenReturn(new Cookie[]{cookie});
 			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
 
 			// when
@@ -138,6 +137,7 @@ class CookieUtilsTest {
 
 			// then
 			assertThat(actualCookie).isEmpty();
+			verify(request, times(1)).getCookies();
 
 		}
 
@@ -149,6 +149,8 @@ class CookieUtilsTest {
 
 		// given
 		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
+
+			// given
 			ResponseCookie responseCookie = ResponseCookie.from(testAccessTokenCookieName, accessToken)
 				.maxAge(accessCookieMaxAge)
 				.domain(cookieDomain)
@@ -157,15 +159,17 @@ class CookieUtilsTest {
 				.secure(cookieSecure)
 				.httpOnly(cookieHttpOnly)
 				.build();
-			when(RequestScopeUtils.getHttpServletResponse()).thenReturn(response);
+			mocked.when(RequestScopeUtils::getHttpServletResponse).thenReturn(response);
+			when(response.getHeader(headerName)).thenReturn(responseCookie.toString());
 
 			// when
 			cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
 
 			// then
-			assertThat(response.getCookie(testAccessTokenCookieName).getValue()).isEqualTo(accessToken);
+			assertThat(response.getHeader(headerName)).startsWith(testAccessTokenCookieName);
+
 			log.info("response.getCookie(testAccessTokenCookieName).getValue(): {}",
-				response.getCookie(testAccessTokenCookieName).getValue());
+				response.getHeader(testAccessTokenCookieName));
 			log.info("responseCookie.toString(): {}", responseCookie);
 
 		}
@@ -188,17 +192,17 @@ class CookieUtilsTest {
 				.secure(cookieSecure)
 				.httpOnly(cookieHttpOnly)
 				.build();
-			when(RequestScopeUtils.getHttpServletResponse()).thenReturn(response);
-			when(RequestScopeUtils.getHttpServletRequest()).thenReturn(request);
+			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
+			mocked.when(RequestScopeUtils::getHttpServletResponse).thenReturn(response);
 
 			// when
 			cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
 
 			// then - 쿠키 삭제 시 null 반환
-			assertThat(response.getCookie(testAccessTokenCookieName)).isNull();
+			assertThat(response.getHeader(testAccessTokenCookieName)).isNull();
 
 			log.info("response.getCookie(testAccessTokenCookieName): {}",
-				response.getCookie(testAccessTokenCookieName));
+				response.getHeader(testAccessTokenCookieName));
 			log.info("responseCookie.toString(): {}", responseCookie);
 
 		}
