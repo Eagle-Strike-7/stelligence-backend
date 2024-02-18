@@ -17,6 +17,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
+import goorm.eagle7.stelligence.common.util.RequestScopeUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
