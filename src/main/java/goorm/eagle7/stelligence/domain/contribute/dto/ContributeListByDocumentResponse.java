@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContributeDocumentPageResponse { // 문서별 수정요청 목록 조회 시 응답
+public class ContributeListByDocumentResponse { // 문서별 수정요청 목록 조회 시 응답
 
 	private List<ContributeSimpleResponse> contributes;
 	private int totalPages;
@@ -22,12 +22,14 @@ public class ContributeDocumentPageResponse { // 문서별 수정요청 목록 �
 	private Long documentId;
 	private String documentTitle;
 
-	public static ContributeDocumentPageResponse from(Page<ContributeSimpleResponse> contributePage) {
+	public static ContributeListByDocumentResponse from(Page<ContributeSimpleResponse> contributePage, Long documentId,
+		String documentTitle) {
 
-		return new ContributeDocumentPageResponse(contributePage);
+		return new ContributeListByDocumentResponse(contributePage, documentId, documentTitle);
 	}
 
-	private ContributeDocumentPageResponse(Page<ContributeSimpleResponse> contributePage) {
+	private ContributeListByDocumentResponse(Page<ContributeSimpleResponse> contributePage, Long documentId,
+		String documentTitle) {
 		this.contributes = contributePage.getContent();
 		this.totalPages = contributePage.getTotalPages();
 		this.totalElements = (int)contributePage.getTotalElements();
@@ -35,7 +37,7 @@ public class ContributeDocumentPageResponse { // 문서별 수정요청 목록 �
 		this.currentPage = contributePage.getNumber();
 		this.isFirstPage = contributePage.isFirst();
 		this.isLastPage = contributePage.isLast();
-		this.documentId = contributePage.getContent().get(0).getDocumentId();
-		this.documentTitle = contributePage.getContent().get(0).getDocumentTitle();
+		this.documentId = documentId;
+		this.documentTitle = documentTitle;
 	}
 }
