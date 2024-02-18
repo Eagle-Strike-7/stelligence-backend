@@ -3,30 +3,37 @@ package goorm.eagle7.stelligence.common.login;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
+import goorm.eagle7.stelligence.common.util.UniqueNicknameGenerator;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.member.model.SocialType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SignUpService {
 
 	private final MemberRepository memberRepository;
 
-	public Member signUp(String nickname) {
+	@Transactional
+	public Member oauth2SignUp(LoginOAuth2Request loginOAuth2Request) {
 
 		// 닉네임이 중복인지 확인, 중복이면 랜덤 닉네임 생성
-		if (isNicknameDuplicate(nickname)) {
-			nickname = generateUniqueNickname(nickname);
-		}
+		String uniqueNickname = loginOAuth2Request.getNickname();
 
-		// member 생성 OAuth2.0 테스트용 하드 코딩
-		Member newMember = Member.of("영민", nickname, "sbslc2000@stelligence.com", "star.com",
-			"eeunzzi", SocialType.KAKAO);
+		// RandomUtils 내에서 null 확인 후 기본값으로 랜덤 닉네임 생성
+		uniqueNickname = UniqueNicknameGenerator.generateUniqueNickname(uniqueNickname, this::isNicknameDuplicate);
+
+		Member newMember = Member.of(
+			uniqueNickname,
+			loginOAuth2Request.getEmail(),
+			loginOAuth2Request.getImageUrl(),
+			loginOAuth2Request.getSocialId(),
+			loginOAuth2Request.getSocialType()
+		);
 
 		// 해당 닉네임으로 저장
 		return memberRepository.save(newMember);
@@ -35,15 +42,7 @@ public class SignUpService {
 
 	// 닉네임 중복 확인 메서드
 	private boolean isNicknameDuplicate(String nickname) {
-		return memberRepository.existsByNicknameAndActiveTrue(nickname);
-	}
-
-	// 닉네임 생성 메서드
-	public String generateUniqueNickname(String nickname) {
-		while (isNicknameDuplicate(nickname)) {
-			nickname = RandomUtils.createNicknameWithRandomNumber(nickname);
-		}
-		return nickname;
+		return memberRepository.existsByNickname(nickname);
 	}
 
 }

@@ -9,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @DataJpaTest
-@WithMockData
 class DocumentContentRepositoryTest {
 
 	@Autowired
@@ -55,4 +53,49 @@ class DocumentContentRepositoryTest {
 		assertThat(contributors2.get(0).getId()).isEqualTo(3L);
 
 	}
+
+	@Test
+	@DisplayName("[성공] 활성 멤버가 작성한 문서 전체 조회 - countDistinctByAuthor_Id")
+	void countDistinctByAuthor_IdActiveSuccess() {
+
+		// 활성 멤버
+		// 	-- 1번 멤버는 11, 12, 13, 14번 문서를 작성하였습니다.
+		// 	-- 2번 멤버는 15, 16, 18번 문서를 작성하였습니다.
+		// 	-- 3번 멤버는 17번 문서를 작성하였습니다.
+		// 	-- 4번 멤버는 19번 문서를 작성하였습니다.
+
+		// when
+		long active1Count = documentContentRepository.countByAuthor_Id(1L);
+		long active2Count = documentContentRepository.countByAuthor_Id(2L);
+		long active3Count = documentContentRepository.countByAuthor_Id(3L);
+		long active4Count = documentContentRepository.countByAuthor_Id(4L);
+
+		// then
+		assertThat(active1Count).isEqualTo(4);
+		assertThat(active2Count).isEqualTo(3);
+		assertThat(active3Count).isEqualTo(1);
+		assertThat(active4Count).isEqualTo(1);
+
+	}
+
+	@Test
+	@DisplayName("[성공] 탈퇴 멤버가 작성한 문서 전체 조회 - countDistinctByAuthor_Id")
+	void countDistinctByAuthor_IdExpiredSuccess() {
+
+		// 탈퇴 멤버
+		// 	-- 5번 멤버는 20, 23, 24번 문서를 작성하였습니다.
+		// 	-- 6번 멤버는 21번 문서를 작성하였습니다.
+		// 	-- 7번 멤버는 22번 문서를 작성하였습니다.
+
+		// when
+		long expired5Count = documentContentRepository.countByAuthor_Id(5L);
+		long expired6Count = documentContentRepository.countByAuthor_Id(6L);
+		long expired7Count = documentContentRepository.countByAuthor_Id(7L);
+
+		// then
+		assertThat(expired5Count).isEqualTo(3);
+		assertThat(expired6Count).isEqualTo(1);
+		assertThat(expired7Count).isEqualTo(1);
+	}
+
 }

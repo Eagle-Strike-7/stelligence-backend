@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.common.login.CookieType;
-import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.common.util.CookieType;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberDetailResponse;
 import goorm.eagle7.stelligence.domain.member.dto.MemberSimpleResponse;
@@ -88,7 +89,7 @@ public class MemberController {
 	public ResponseTemplate<Void> updateNickname(
 		@Auth MemberInfo memberInfo,
 		@Parameter(description = "변경할 닉네임", example = "은하수")
-		@RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
+		@Validated @RequestBody MemberUpdateNicknameRequest memberUpdateNicknameRequest) {
 		memberService.updateNickname(memberInfo.getId(), memberUpdateNicknameRequest);
 		return ResponseTemplate.ok();
 	}

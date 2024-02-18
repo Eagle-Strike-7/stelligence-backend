@@ -4,6 +4,8 @@ import static goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.amendment.dto.AmendmentRequest;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
+import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
@@ -45,6 +48,7 @@ class ContributeRequestValidatorTest {
 	void validateSuccess() {
 
 		Document targetDocument = document(1L, member(1L, "pete"), "title", 1L, null);
+		Long loginMemberId = 2L;
 
 		AmendmentRequest a1 = new AmendmentRequest(1L, AmendmentType.DELETE, Heading.H2, "title",
 			"content", 0);
@@ -58,36 +62,24 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		AmendmentRequest a6 = new AmendmentRequest(3L, AmendmentType.CREATE, Heading.H2, "title",
 			"content", 1);
+		AmendmentRequest a7 = new AmendmentRequest(0L, AmendmentType.CREATE, Heading.H2, "title",
+			"content", 1); // Section 0도 허용되어야하며, CREATE여야 한다.
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			List.of(a1, a2, a3, a4, a5, a6), 1L, "title", 2L, null);
+			List.of(a1, a2, a3, a4, a5, a6, a7), 1L, "title", 2L, null);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L, 3L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L, 3L)));
 		when(documentContentRepository.findByTitle("title")).thenReturn(Optional.of(targetDocument));
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("title")).thenReturn(false);
+		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.empty());
 
 		//then
 		assertThatNoException().isThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest));
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId));
 
-	}
-
-	@Test
-	@DisplayName("변경요청된 제목이 비어있는 경우")
-	void emptyTitle() {
-		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
-			Collections.emptyList(), 1L, " ", 2L, null);
-
-		//when
-
-		//then
-		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
-		).isInstanceOf(BaseException.class).hasMessage("수정하려는 제목이 비어있습니다.");
 	}
 
 	@Test
@@ -96,12 +88,13 @@ class ContributeRequestValidatorTest {
 		//given
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
 			"title", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("문서가 존재하지 않습니다. documentId=1");
 	}
 
@@ -111,6 +104,7 @@ class ContributeRequestValidatorTest {
 		//given
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
 			"title", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
@@ -118,7 +112,7 @@ class ContributeRequestValidatorTest {
 
 		//then
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("이미 해당 문서에 대한 수정요청이 존재합니다. documentId=1");
 	}
 
@@ -126,18 +120,75 @@ class ContributeRequestValidatorTest {
 	@DisplayName("documentId에 해당하는 문서에 대한 토론이 진행중인 경우")
 	void debating() {
 		//given
-		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			Collections.emptyList(), 1L,
 			"title", 2L, null);
+		Long loginMemberId = 2L;
+		Debate debate = debate(3L, null, DebateStatus.OPEN, LocalDateTime.now(), 1);
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(debateRepository.existsByContributeDocumentIdAndStatus(1L, DebateStatus.OPEN))
-			.thenReturn(true);
+		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.of(debate));
 
 		//then
-		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest))
-			.isInstanceOf(BaseException.class).hasMessage("해당 문서에 대한 토론이 진행중입니다. documentId=1");
+		assertThat(debate.isOnDebate()).isTrue();
+		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest, loginMemberId))
+			.isInstanceOf(BaseException.class).hasMessage("해당 문서에 대한 토론이 진행중입니다. debateId=" + debate.getId());
+	}
+
+	@Test
+	@DisplayName("토론 종료 후 수정요청 대기중에 다른 토론에서 수정요청을 하려는 경우")
+	void debatePendingRequestOtherDebate() {
+		//given
+		Long loginMemberId = 2L;
+		Debate pendingDebate = debate(3L, null, DebateStatus.CLOSED,
+			LocalDateTime.now(), 1);
+		Debate noPendingDebate = debate(4L, null, DebateStatus.CLOSED,
+			LocalDateTime.now().minusDays(1L), 1);
+
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			Collections.emptyList(), 1L,
+			"title", 2L, noPendingDebate.getId());
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.of(pendingDebate));
+
+		//then
+		assertThat(pendingDebate.isPendingForContribute()).isTrue();
+		assertThat(pendingDebate.getId()).isNotEqualTo(contributeRequest.getRelatedDebateId());
+		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest, loginMemberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("최근 종료된 토론 참여자를 위한 수정요청 대기중입니다. debateId=" + pendingDebate.getId());
+	}
+
+	@Test
+	@DisplayName("토론 종료 후 수정요청 대기중에 토론에 참여하지 않았던 회원이 수정요청을 하려는 경우")
+	void debatePendingRequestFromNoCommenter() {
+		//given
+		Long loginMemberId = 2L;
+		Debate pendingDebate = debate(3L, null, DebateStatus.CLOSED,
+			LocalDateTime.now(), 1);
+
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description",
+			Collections.emptyList(), 1L,
+			"title", 2L, pendingDebate.getId());
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(debateRepository.findLatestDebateByDocumentId(1L)).thenReturn(Optional.of(pendingDebate));
+
+		//then
+		assertThat(pendingDebate.isPendingForContribute()).isTrue();
+		assertThat(pendingDebate.getId()).isEqualTo(contributeRequest.getRelatedDebateId());
+		assertThat(pendingDebate.hasPermissionToWriteDrivenContribute(loginMemberId)).isFalse();
+
+		assertThatThrownBy(() -> contributeRequestValidator.validate(contributeRequest, loginMemberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("최근 종료된 토론 참여자를 위한 수정요청 대기중입니다. debateId=" + pendingDebate.getId());
 	}
 
 	@Test
@@ -147,15 +198,16 @@ class ContributeRequestValidatorTest {
 
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
 			"newTitle", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>());
 		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.of(targetDocument));
 
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("이미 해당 제목을 가진 문서가 존재합니다. title=newTitle");
 
 	}
@@ -165,16 +217,17 @@ class ContributeRequestValidatorTest {
 	void duplicateDocumentTitle2() {
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", Collections.emptyList(), 1L,
 			"newTitle", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(Collections.emptyList());
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>());
 		when(documentContentRepository.findByTitle("newTitle")).thenReturn(Optional.empty());
 		when(contributeRepository.existsDuplicateRequestedDocumentTitle("newTitle")).thenReturn(true);
 
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("해당 제목으로 변경을 요청중인 수정요청이 이미 존재합니다. title=newTitle");
 	}
 
@@ -186,16 +239,38 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
 			2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(2L)));
 
 		//then
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("해당 문서에 존재하지 않는 섹션을 수정하려고 합니다. sectionId=1");
+	}
+
+	@Test
+	@DisplayName("Section 0을 가진 Amendment는 CREATE 이어야 한다.")
+	void sectionZeroOnlyCreate() {
+
+		AmendmentRequest a1 = new AmendmentRequest(0L, AmendmentType.UPDATE, Heading.H2, "title",
+			"content", 1);
+		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1), 1L, "title",
+			2L, null);
+		Long loginMemberId = 2L;
+
+		//when
+		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
+		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(2L)));
+
+		//then
+		assertThatThrownBy(
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
+		).isInstanceOf(BaseException.class).hasMessage("Section 0에 대한 수정요청은 항상 CREATE 타입이어야 합니다.");
 	}
 
 	@Test
@@ -208,15 +283,16 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
 			"title", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L)));
 
 		//then
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("중복된 생성 순서가 존재합니다. sectionId=1");
 	}
 
@@ -230,15 +306,16 @@ class ContributeRequestValidatorTest {
 			"content", 1);
 		ContributeRequest contributeRequest = new ContributeRequest("title", "description", List.of(a1, a2), 1L,
 			"title", 2L, null);
+		Long loginMemberId = 2L;
 
 		//when
 		when(documentContentRepository.findById(1L)).thenReturn(Optional.of(mock(Document.class)));
 		when(contributeRepository.existsByDocumentAndStatus(any(), any())).thenReturn(false);
-		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(List.of(1L, 2L));
+		when(sectionRepository.findSectionIdByVersion(any(), any())).thenReturn(new ArrayList<>(List.of(1L, 2L)));
 
 		//then
 		assertThatThrownBy(
-			() -> contributeRequestValidator.validate(contributeRequest)
+			() -> contributeRequestValidator.validate(contributeRequest, loginMemberId)
 		).isInstanceOf(BaseException.class).hasMessage("생성 순서가 순차적이지 않습니다.");
 	}
 }

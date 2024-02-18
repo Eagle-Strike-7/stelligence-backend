@@ -5,12 +5,14 @@ import java.util.Objects;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.amendment.model.AmendmentType;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.scheduler.template.AmendmentMergeTemplateMapper;
 import goorm.eagle7.stelligence.domain.document.DocumentService;
@@ -31,6 +33,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 	private final ContributeRepository contributeRepository;
 	private final CacheManager cacheManager;
 	private final DocumentService documentService;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Amendment의 정렬은 Merge 과정에서 중요합니다. 정렬이 제대로 되지 않으면
@@ -104,6 +107,10 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 
 		//cache를 삭제합니다.
 		evictCache(document.getId());
+
+		//이벤트를 발행합니다.
+		applicationEventPublisher.publishEvent(new ContributeMergedEvent(contribute.getId()));
+
 	}
 
 	/**

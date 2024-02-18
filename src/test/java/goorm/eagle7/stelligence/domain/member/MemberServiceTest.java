@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
-import goorm.eagle7.stelligence.common.login.CookieUtils;
+import goorm.eagle7.stelligence.common.util.CookieUtils;
 import goorm.eagle7.stelligence.config.mockdata.TestFixtureGenerator;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.member.dto.MemberBadgesListResponse;
@@ -137,7 +137,6 @@ class MemberServiceTest {
 		assertThat(stdMember.getNickname()).isEqualTo(nickname);
 
 		// 탈퇴한 회원 전부 null인지 확인
-		assertThat(stdMember.getName()).isNull();
 		assertThat(stdMember.getEmail()).isNull();
 		assertThat(stdMember.getImageUrl()).isNull();
 		assertThat(stdMember.getSocialId()).isNull();
@@ -213,7 +212,7 @@ class MemberServiceTest {
 		String newNickname = "newNickname";
 		MemberUpdateNicknameRequest nicknameRequest = MemberUpdateNicknameRequest.from(newNickname);
 		when(memberRepository.findByIdAndActiveTrue(memberId)).thenReturn(Optional.of(stdMember));
-		when(memberRepository.existsByNicknameAndActiveTrue(newNickname)).thenReturn(true);
+		when(memberRepository.existsByNickname(newNickname)).thenReturn(true);
 
 		// when - 이미 존재하는 닉네임으로 update 시도
 
@@ -223,7 +222,7 @@ class MemberServiceTest {
 			.isInstanceOf(BaseException.class)
 			.hasMessage(String.format("이미 사용 중인 닉네임입니다. nickname=%s", newNickname));
 		// memberRepository의 existsByNickname()가 호출되는지 확인
-		verify(memberRepository, times(1)).existsByNicknameAndActiveTrue(newNickname);
+		verify(memberRepository, times(1)).existsByNickname(newNickname);
 		// nickname이 변경되었는지 확인 - 예외이므로 바뀌지 않고, 기존 그대로
 		assertThat(stdMember.getNickname()).isEqualTo(stdNickname);
 

@@ -1,6 +1,6 @@
 package goorm.eagle7.stelligence.domain.contribute;
 
-import org.springframework.data.domain.Page;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import goorm.eagle7.stelligence.domain.amendment.model.Amendment;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeSimpleResponse;
+import goorm.eagle7.stelligence.domain.contribute.event.NewContributeEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
@@ -36,6 +36,7 @@ public class ContributeService {
 	private final ContributeRequestValidator contributeRequestValidator;
 	private final VoteRepository voteRepository;
 	private final DebateRepository debateRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Contribute 생성
@@ -46,7 +47,7 @@ public class ContributeService {
 	@Transactional
 	public ContributeResponse createContribute(ContributeRequest contributeRequest, Long loginMemberId) {
 
-		contributeRequestValidator.validate(contributeRequest);
+		contributeRequestValidator.validate(contributeRequest, loginMemberId);
 
 		Member member = memberRepository.findById(loginMemberId).orElseThrow(
 			() -> new BaseException("존재하지 않는 회원의 요청입니다. 사용자 ID: " + loginMemberId)
@@ -84,6 +85,10 @@ public class ContributeService {
 		}
 
 		contributeRepository.save(contribute);  // Contribute 저장. 연관된 Amendment도 함께 저장.
+
+		// Contribute 생성 이벤트 발행
+		applicationEventPublisher.publishEvent(new NewContributeEvent(contribute.getId()));
+
 		return ContributeResponse.of(contribute);
 	}
 
@@ -133,12 +138,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getContributesByStatus(ContributeStatus status, Pageable pageable) {
 
-		Page<Contribute> votingContributes = contributeRepository.findByContributeStatus(status, pageable);
-
-		Page<ContributeSimpleResponse> listResponses = votingContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findByContributeStatus(status, pageable));
 	}
 
 	/**
@@ -148,12 +148,7 @@ public class ContributeService {
 	 */
 	public ContributePageResponse getCompletedContributes(Pageable pageable) {
 
-		Page<Contribute> completedContributes = contributeRepository.findCompleteContributes(pageable);
-
-		Page<ContributeSimpleResponse> listResponses = completedContributes.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(contributeRepository.findCompleteContributes(pageable));
 	}
 
 	/**
@@ -166,12 +161,7 @@ public class ContributeService {
 	public ContributePageResponse getContributesByDocumentAndStatus(Long documentId, boolean merged,
 		Pageable pageable) {
 
-		Page<Contribute> contributesByDocumentAndStatus = contributeRepository.findByDocumentAndStatus(documentId,
-			merged, pageable);
-
-		Page<ContributeSimpleResponse> listResponses = contributesByDocumentAndStatus.map(
-			(contribute) -> ContributeSimpleResponse.of(contribute, voteRepository.getVoteSummary(contribute.getId())));
-
-		return ContributePageResponse.from(listResponses);
+		return ContributePageResponse.from(
+			contributeRepository.findCompleteContributesByDocumentAndIsMerged(documentId, merged, pageable));
 	}
 }

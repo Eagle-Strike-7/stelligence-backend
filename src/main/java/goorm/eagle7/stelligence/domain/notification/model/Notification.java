@@ -1,7 +1,6 @@
 package goorm.eagle7.stelligence.domain.notification.model;
 
 import goorm.eagle7.stelligence.common.entity.BaseTimeEntity;
-import goorm.eagle7.stelligence.domain.member.model.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,27 +22,16 @@ public class Notification extends BaseTimeEntity {
 	@Column(name = "notification_id")
 	private Long id;
 
-	private String message;
-
-	private String uri;
+	@ManyToOne
+	@JoinColumn(name = "notification_content_id")
+	private NotificationContent content;
 
 	// 읽음 여부
+	@Column(columnDefinition = "tinyint")
 	private boolean isRead;
 
-	@ManyToOne
-	@JoinColumn(name = "member_id")
-	private Member member;
-
-	private Notification(String message, String uri, Member member) {
-		this.message = message;
-		this.uri = uri;
-		isRead = false;
-		this.member = member;
-	}
-
-	public static Notification createNotification(String content, String uri, Member member) {
-		return new Notification(content, uri, member);
-	}
+	//알림 대상 사용자
+	private Long memberId;
 
 	public void read() {
 		this.isRead = true;

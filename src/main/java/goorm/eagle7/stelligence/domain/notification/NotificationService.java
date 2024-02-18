@@ -33,7 +33,7 @@ public class NotificationService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원입니다."));
 
-		return notificationRepository.findByMember(member).stream()
+		return notificationRepository.findByMemberIdOrderByCreatedAtDesc(member.getId()).stream()
 			.map(NotificationResponse::of)
 			.toList();
 	}
@@ -50,7 +50,7 @@ public class NotificationService {
 		Notification notification = notificationRepository.findById(notificationId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 알림입니다."));
 
-		if (!notification.getMember().equals(member)) {
+		if (!notification.getMemberId().equals(member.getId())) {
 			throw new BaseException("권한이 없습니다.");
 		}
 
@@ -65,7 +65,7 @@ public class NotificationService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원입니다."));
 
-		notificationRepository.readAllNotificationsByMember(member);
+		notificationRepository.readAllNotificationsByMemberId(member.getId());
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class NotificationService {
 		Notification notification = notificationRepository.findById(notificationId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 알림입니다."));
 
-		if (!notification.getMember().equals(member)) {
+		if (!notification.getMemberId().equals(member.getId())) {
 			throw new BaseException("권한이 없습니다.");
 		}
 
@@ -95,6 +95,6 @@ public class NotificationService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BaseException("존재하지 않는 회원입니다."));
 
-		notificationRepository.deleteAllByMember(member);
+		notificationRepository.deleteAllByMemberId(member.getId());
 	}
 }

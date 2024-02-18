@@ -2,16 +2,13 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.owasp.html.PolicyFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
-import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
-import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.debate.model.Debate;
-import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
@@ -39,8 +36,7 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
-	private final ContributeRepository contributeRepository;
-	private final DebateRepository debateRepository;
+	private final PolicyFactory policyFactory;
 
 	/**
 	 * Document를 생성합니다.
@@ -62,7 +58,10 @@ public class DocumentContentService {
 		Document document = Document.createDocument(title, author, parentDocument);
 		documentRepository.save(document);
 
-		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
+		// 악성 스크립트를 방지하기 위해 HTML를 필터링합니다.
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		List<SectionRequest> sectionRequests = documentParser.parse(sanitizedContent);
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
@@ -120,10 +119,7 @@ public class DocumentContentService {
 			.map(MemberSimpleResponse::from)
 			.toList();
 
-		Contribute latestContribute = contributeRepository.findLatestContributeByDocumentId(document.getId()).orElse(null);
-		Debate latestDebate = debateRepository.findLatestDebateByDocumentId(document.getId()).orElse(null);
-
-		return DocumentResponse.of(document, revision, sections, contributors, latestContribute, latestDebate);
+		return DocumentResponse.of(document, revision, sections, contributors);
 	}
 
 	/**

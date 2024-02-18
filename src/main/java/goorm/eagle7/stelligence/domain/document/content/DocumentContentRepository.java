@@ -68,4 +68,15 @@ public interface DocumentContentRepository extends JpaRepository<Document, Long>
 	 * @return 존재 여부
 	 */
 	boolean existsByTitle(String title);
+
+	/**
+	 * Member가 작성한 Document의 수를 조회합니다.
+	 * @param memberId 조회할 MemberId
+	 * @return 작성한 Document의 수
+	 */
+	long countByAuthor_Id(Long memberId);
+
+	@Query("select d from Document d join fetch d.author where d.id = :documentId")
+	Optional<Document> findByIdWithAuthor(Long documentId);
+
 }

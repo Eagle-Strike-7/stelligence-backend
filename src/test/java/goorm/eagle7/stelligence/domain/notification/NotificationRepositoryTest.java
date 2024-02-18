@@ -9,18 +9,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import goorm.eagle7.stelligence.config.mockdata.WithMockData;
 import goorm.eagle7.stelligence.domain.notification.model.Notification;
 
 @SpringBootTest
 @Transactional
-@WithMockData
 class NotificationRepositoryTest {
 
 	@Autowired
 	private NotificationRepository notificationRepository;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Test
 	@DisplayName("여러 회원에게 알림을 한번에 추가한다.")
@@ -31,22 +33,17 @@ class NotificationRepositoryTest {
 		List<Notification> notifications = notificationRepository.findAll();
 		assertThat(notifications)
 			.hasSize(3)
-			.extracting(Notification::getMember)
-			.extracting("id")
+			.extracting(Notification::getMemberId)
 			.containsExactlyInAnyOrder(1L, 2L, 4L);
-	}
 
-	@Test
-	@DisplayName("실패한 경우, 개별적으로 알림을 추가한다.")
-	void bulkInsertWithFail() {
-		notificationRepository.insertNotifications("message", "uri", Set.of(1L, 2L, 999L));
-
-		// then
-		List<Notification> notifications = notificationRepository.findAll();
+		//all notification content should be same
 		assertThat(notifications)
-			.hasSize(2)
-			.extracting(Notification::getMember)
-			.extracting("id")
-			.containsExactlyInAnyOrder(1L, 2L);
+			.extracting(Notification::getContent)
+			.allMatch(content -> content.getMessage().equals("message") && content.getUri().equals("uri"));
+
+		//only one notification content should be created
+		assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM notification_content", Integer.class)).isEqualTo(
+			1);
+
 	}
 }
