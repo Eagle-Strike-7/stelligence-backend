@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.owasp.html.PolicyFactory;
 
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.config.MockSectionIdGenerator;
@@ -42,6 +43,9 @@ class DocumentContentServiceCreateUnitTest {
 	@Mock
 	DocumentParser documentParser;
 
+	@Mock
+	PolicyFactory policyFactory;
+
 	@InjectMocks
 	DocumentContentService documentContentService;
 
@@ -60,10 +64,9 @@ class DocumentContentServiceCreateUnitTest {
 		sectionRequests.add(new SectionRequest(Heading.H1, "title1", "testRawContent\n"));
 		sectionRequests.add(new SectionRequest(Heading.H2, "title2", "content2 line 1\ncontent2 line 2\n"));
 
-		//문서 파싱 결과를 반환하도록 설정
-		when(documentParser.parse(rawContent)).thenReturn(sectionRequests);
-
 		//when
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
+		when(documentParser.parse(rawContent)).thenReturn(sectionRequests);
 		Document document = documentContentService.createDocument(title, rawContent, null, author);
 
 		//then
@@ -105,6 +108,7 @@ class DocumentContentServiceCreateUnitTest {
 		sectionRequests.add(new SectionRequest(Heading.H2, "title2", "content2 line 1\ncontent2 line 2\n"));
 
 		//when
+		when(policyFactory.sanitize(rawContent)).thenReturn(rawContent);
 		when(documentParser.parse(rawContent)).thenReturn(sectionRequests);
 		when(documentContentRepository.findById(2L)).thenReturn(
 			Optional.of(parent));

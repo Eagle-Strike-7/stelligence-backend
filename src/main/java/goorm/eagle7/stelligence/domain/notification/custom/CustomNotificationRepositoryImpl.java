@@ -1,10 +1,15 @@
 package goorm.eagle7.stelligence.domain.notification.custom;
 
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +20,8 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
 	private final JdbcTemplate jdbcTemplate;
 
-	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (message, uri, member_id, is_read, created_at, updated_at) VALUES (?, ?, ?, false, NOW(), NOW())";
+	private static final String INSERT_NOTIFICATIONS_SQL = "INSERT INTO notification (notification_content_id, member_id, is_read, created_at, updated_at) VALUES (?, ?, false, NOW(), NOW())";
+	private static final String INSERT_NOTIFICATION_CONTENT_SQL = "INSERT INTO notification_content (message, uri, created_at, updated_at) VALUES (?, ?, NOW(), NOW())";
 
 	/**
 	 * 알림 등록
@@ -34,11 +40,25 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 	 * @param memberIds 알림 대상 회원 목록
 	 */
 	@Override
+	@Transactional
 	public void insertNotifications(String message, String uri, Set<Long> memberIds) {
-		List<Object[]> parameters = new ArrayList<>();
+		// NOTIFICATION_CONTENT 테이블에 알림내용 등록 후 생성된 ID 가져오기
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			var ps = connection.prepareStatement(INSERT_NOTIFICATION_CONTENT_SQL,
+				Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, message);
+			ps.setString(2, uri);
+			return ps;
+		}, keyHolder);
 
+		long notificationContentId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+
+		// batchUpdate를 사용하기 위해 파라미터 리스트 생성
+
+		List<Object[]> parameters = new ArrayList<>();
 		for (Long memberId : memberIds) {
-			parameters.add(new Object[] {message, uri, memberId});
+			parameters.add(new Object[] {notificationContentId, memberId});
 		}
 
 		// batchUpdate를 사용하여 여러 개의 알림을 한 번에 등록

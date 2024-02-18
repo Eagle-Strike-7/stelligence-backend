@@ -19,6 +19,7 @@ import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 import goorm.eagle7.stelligence.domain.notification.dto.response.NotificationResponse;
 import goorm.eagle7.stelligence.domain.notification.model.Notification;
+import goorm.eagle7.stelligence.domain.notification.model.NotificationContent;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
@@ -34,16 +35,24 @@ class NotificationServiceTest {
 	@DisplayName("알림 목록 조회 성공")
 	void getNotificationsByMemberId() {
 
+		NotificationContent content = TestNotificationContent.builder()
+			.message("message")
+			.uri("uri")
+			.build();
+
 		Notification noti1 = TestNotification.builder()
 			.id(1L)
+			.content(content)
 			.build();
 
 		Notification noti2 = TestNotification.builder()
 			.id(2L)
+			.content(content)
 			.build();
 
 		Notification noti3 = TestNotification.builder()
 			.id(3L)
+			.content(content)
 			.build();
 
 		List<Notification> notifications = List.of(noti1, noti2, noti3);
@@ -66,7 +75,7 @@ class NotificationServiceTest {
 		Long memberId = 1L;
 		Long notificationId = 2L;
 
-		TestNotification noti = TestNotification.builder()
+		Notification noti = TestNotification.builder()
 			.id(2L)
 			.memberId(1L)
 			.isRead(false)
@@ -88,7 +97,7 @@ class NotificationServiceTest {
 		Long memberId = 1L;
 		Long notificationId = 2L;
 
-		TestNotification noti = TestNotification.builder()
+		Notification noti = TestNotification.builder()
 			.id(2L)
 			.memberId(2L)
 			.isRead(false)
@@ -123,7 +132,7 @@ class NotificationServiceTest {
 		Long memberId = 1L;
 		Long notificationId = 2L;
 
-		TestNotification noti = TestNotification.builder()
+		Notification noti = TestNotification.builder()
 			.id(2L)
 			.memberId(1L)
 			.build();
@@ -143,7 +152,7 @@ class NotificationServiceTest {
 		Long memberId = 1L;
 		Long notificationId = 2L;
 
-		TestNotification noti = TestNotification.builder()
+		Notification noti = TestNotification.builder()
 			.id(2L)
 			.memberId(2L)
 			.build();

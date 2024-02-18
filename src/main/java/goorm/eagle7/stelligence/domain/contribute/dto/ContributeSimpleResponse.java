@@ -2,6 +2,8 @@ package goorm.eagle7.stelligence.domain.contribute.dto;
 
 import java.time.LocalDateTime;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.vote.model.VoteSummary;
@@ -23,7 +25,8 @@ public class ContributeSimpleResponse {
 	private VoteSummary voteSummary;
 	private LocalDateTime createdAt;
 
-	private ContributeSimpleResponse(Contribute contribute, VoteSummary voteSummary) {
+	@QueryProjection
+	public ContributeSimpleResponse(Contribute contribute, int agreeCount, int disagreeCount) {
 		this.contributeId = contribute.getId();
 		this.contributeTitle = contribute.getTitle();
 		this.contributeDescription = contribute.getDescription();
@@ -32,11 +35,7 @@ public class ContributeSimpleResponse {
 		this.documentTitle = contribute.getDocument().getTitle();
 		this.contributorId = contribute.getMember().getId();
 		this.contributorNickname = contribute.getMember().getNickname();
-		this.voteSummary = voteSummary;
+		this.voteSummary = new VoteSummary(agreeCount, disagreeCount);
 		this.createdAt = contribute.getCreatedAt();
-	}
-
-	public static ContributeSimpleResponse of(Contribute contribute, VoteSummary voteSummary) {
-		return new ContributeSimpleResponse(contribute, voteSummary);
 	}
 }
