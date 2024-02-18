@@ -41,7 +41,7 @@ public interface DocumentNodeRepository extends Neo4jRepository<DocumentNode, Lo
 	// 	+ " where score > 0"
 	// 	+ " return node.documentId as documentId, node.title as title, node.group as group")
 	@Query("match (n:DocumentNode)"
-		+ " where n.title contains $title"
+		+ " where toLower(n.title) contains toLower($title)"
 		+ " return n.documentId as documentId, n.title as title, n.group as group"
 		+ " limit $limit")
 	List<DocumentNodeResponse> findNodeByTitle(@Param("title") String title, @Param("limit") int limit);
