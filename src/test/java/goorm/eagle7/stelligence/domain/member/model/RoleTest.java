@@ -23,7 +23,7 @@ class RoleTest {
 		Role expected = Role.ADMIN;
 
 		// when
-		Role actual = Role.fromValueDefaultUser(value);
+		Role actual = Role.fromLabelDefaultUser(value);
 
 		// then
 		assertThat(actual).isEqualTo(expected);
@@ -44,7 +44,7 @@ class RoleTest {
 		Role expected = Role.USER;
 
 		// when
-		Role actual = Role.fromValueDefaultUser(invalidValue);
+		Role actual = Role.fromLabelDefaultUser(invalidValue);
 
 		// then
 		assertThat(actual).isEqualTo(expected);
@@ -64,9 +64,9 @@ class RoleTest {
 		Role expected = Role.USER;
 
 		// when
-		Role actual = Role.fromValueDefaultUser(null);
-		Role actual2 = Role.fromValueDefaultUser("");
-		Role actual3 = Role.fromValueDefaultUser(" ");
+		Role actual = Role.fromLabelDefaultUser(null);
+		Role actual2 = Role.fromLabelDefaultUser("");
+		Role actual3 = Role.fromLabelDefaultUser(" ");
 
 		// then
 		assertThat(actual).isEqualTo(expected);

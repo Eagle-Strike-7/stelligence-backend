@@ -93,7 +93,7 @@ public class JwtTokenService {
 		UserDetails user = User.builder()
 			.username(memberInfo.getId().toString())
 			.password("")
-			.authorities(memberInfo.getRole().getValue())
+			.authorities(memberInfo.getRole().getLabel())
 			.build();
 		log.debug("user: {}", user);
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
