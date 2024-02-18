@@ -2,7 +2,6 @@ package goorm.eagle7.stelligence.domain.member.model;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +25,7 @@ public enum Role {
 					Collectors.toMap(
 						Role::getLabel,
 						Function.identity() // identity()는 입력값 그대로 반환
-					))
+					)) // <label, Role.name()>
 			);
 
 	Role(String label) {
@@ -39,17 +38,7 @@ public enum Role {
 	 * @return Role default User
 	 */
 	public static Role fromLabelDefaultUser(String label) {
-		try {
-			return fromLabel(label);
-		} catch (IllegalArgumentException e) {
-			return Role.USER;
-		}
-	}
-
-	private static Role fromLabel(String label) {
-		return Optional
-			.ofNullable(labels.get(label))
-			.orElse(USER);
+		return labels.getOrDefault(label, Role.USER);
 	}
 
 }
