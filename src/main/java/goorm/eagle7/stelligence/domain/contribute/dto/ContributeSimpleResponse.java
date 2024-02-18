@@ -25,19 +25,6 @@ public class ContributeSimpleResponse {
 	private VoteSummary voteSummary;
 	private LocalDateTime createdAt;
 
-	private ContributeSimpleResponse(Contribute contribute, VoteSummary voteSummary) {
-		this.contributeId = contribute.getId();
-		this.contributeTitle = contribute.getTitle();
-		this.contributeDescription = contribute.getDescription();
-		this.contributeStatus = contribute.getStatus();
-		this.documentId = contribute.getDocument().getId();
-		this.documentTitle = contribute.getDocument().getTitle();
-		this.contributorId = contribute.getMember().getId();
-		this.contributorNickname = contribute.getMember().getNickname();
-		this.voteSummary = voteSummary;
-		this.createdAt = contribute.getCreatedAt();
-	}
-
 	@QueryProjection
 	public ContributeSimpleResponse(Contribute contribute, int agreeCount, int disagreeCount) {
 		this.contributeId = contribute.getId();
