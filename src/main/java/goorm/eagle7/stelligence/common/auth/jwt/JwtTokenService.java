@@ -1,9 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
@@ -81,7 +76,7 @@ public class JwtTokenService {
 
 	/**
 	 * <h2>token 정보에서 Authentication 만들어 반환</h2>
-	 * @param token 추출할 token
+	 * @param accessToken 추출할 token
 	 * @return Authentication token 정보로 만든 Authentication
 	 */
 	public Authentication makeAuthenticationFrom(String accessToken) {
@@ -147,32 +142,6 @@ public class JwtTokenService {
 	 */
 	public Optional<Claims> validateTokenOrThrows(String token) {
 		return jwtTokenValidator.getClaimsOrNullIfInvalid(token);
-	}
-
-	// accessToken이 만료되기 n분 전이면 accessToken 재발급
-	public String getValidAccessToken(String accessToken) {
-
-		if (!StringUtils.hasText(accessToken)) {
-			throw new UsernameNotFoundException(ERROR_MESSAGE);
-		try {
-			return MemberInfo.of(
-				Long.parseLong(claims.getSubject()),
-				Role.fromValueDefaultUser(claims.get(claimRole, String.class)));
-		} catch (NumberFormatException e) {
-			log.debug("JWT에 저장된 사용자 식별자가 올바르지 않습니다. {}", e.getMessage());
-			throw new BaseException("유효하지 않은 사용자입니다.");
-		}
-
-		// serviceTimeMin
-		long serviceTimeMin = jwtProperties.getAccessToken().getServiceTime();
-
-		// LocalTime.now() + serviceTimeMin
-		LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(serviceTimeMin);
-		ZoneId zoneId = ZoneId.systemDefault();
-		Instant instant = localDateTime.atZone(zoneId).toInstant();
-		Date date = Date.from(instant);
-
-		return accessToken;
 	}
 
 	// 하기 메서드는 dev에서 사용
