@@ -24,7 +24,7 @@ public enum Role {
 		}
 	}
 
-	public static Role fromValue(String value) {
+	private static Role fromValue(String value) {
 		return Arrays.stream(values())
 			.filter(r -> r.value.equalsIgnoreCase(value))
 			.findAny()
