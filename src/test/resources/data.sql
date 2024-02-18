@@ -180,12 +180,12 @@ values (1, 1, 1, NOW(), NOW()),
        (11, 3, 4, NOW(), NOW()),
        (12, 4, 4, NOW(), NOW());
 
-insert into vote (vote_id, contribute_id, member_id, agree, created_at)
-values (1, 5, 1, true, TIMESTAMPADD(HOUR, -3, NOW())),
-       (2, 5, 2, true, TIMESTAMPADD(HOUR, -2, NOW())),
-       (3, 5, 3, true, TIMESTAMPADD(HOUR, -1, NOW())),
-       (4, 5, 4, false, TIMESTAMPADD(HOUR, -4, NOW())),
-       (5, 9, 1, true, TIMESTAMPADD(HOUR, -3, NOW())),
-       (6, 9, 2, true, TIMESTAMPADD(HOUR, -3, NOW())),
-       (7, 9, 3, false, TIMESTAMPADD(HOUR, -5, NOW())),
-       (8, 9, 4, false, TIMESTAMPADD(HOUR, -10, NOW()))
+insert into vote (vote_id, contribute_id, member_id, agree, created_at, updated_at)
+values (1, 5, 1, true, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (2, 5, 2, true, TIMESTAMPADD(HOUR, -2, NOW()), NOW()),
+       (3, 5, 3, true, TIMESTAMPADD(HOUR, -1, NOW()), NOW()),
+       (4, 5, 4, false, TIMESTAMPADD(HOUR, -4, NOW()), NOW()),
+       (5, 9, 1, true, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (6, 9, 2, true, TIMESTAMPADD(HOUR, -3, NOW()), NOW()),
+       (7, 9, 3, false, TIMESTAMPADD(HOUR, -5, NOW()), NOW()),
+       (8, 9, 4, false, TIMESTAMPADD(HOUR, -10, NOW()), NOW())
