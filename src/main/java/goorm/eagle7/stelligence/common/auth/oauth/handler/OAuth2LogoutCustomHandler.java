@@ -22,9 +22,9 @@ public class OAuth2LogoutCustomHandler implements LogoutHandler {
 	private final CookieUtils cookieUtils;
 
 	/**
-	 * 로그아웃 요청 시 호출되는 메서드 (/api/logout)
-	 * 		- logout 시 refreshToken을 DB에서 삭제
-	 * 		- 쿠키, Authentication 삭제는 Spring Security에서 처리
+	 * <h2>로그아웃 처리</h2>
+	 * <p>- logout 시 refreshToken DB에서 삭제</p>
+	 * <p>- 쿠키 삭제</p>
 	 * @param request the HTTP request
 	 * @param response the HTTP response
 	 * @param authentication the current principal details
@@ -33,24 +33,20 @@ public class OAuth2LogoutCustomHandler implements LogoutHandler {
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
 		// Authentication에서 사용자 정보 추출, name == memeberId
-		if (authentication != null && authentication.getPrincipal() instanceof UserDetails user) {
+		// 로그인하지 않은 사용자가 로그아웃 요청 시, 아무것도 하지 않음
+		if (authentication != null
+			&& authentication.getPrincipal() instanceof UserDetails user) {
 
-			String username = user.getUsername();
+			Long memberId = Long.parseLong(user.getUsername());
 
-			log.debug("logoutHandler 실행, username: {}", username);
-			// 로그인하지 않은 사용자가 로그아웃 요청 시, 아무것도 하지 않음
-			// 권한 필요 없는 uri에서 로그아웃 요청 시, username == anonymousUser, 아무것도 하지 않음
-			if (!username.equals("anonymousUser")) {
+			loginService.logout(memberId);
 
-				log.debug("로그인한 사용자의 로그아웃 요청, logoutService 진행, userId: {}", username);
-				Long memberId = Long.parseLong(username);
-				loginService.logout(memberId);
-				cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
-				cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
+			// security 쿠키 삭제는 sameSite 설정 불가해 자체 삭제
+			cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
+			cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
 
-
-			}
 		}
+
 	}
 
 }

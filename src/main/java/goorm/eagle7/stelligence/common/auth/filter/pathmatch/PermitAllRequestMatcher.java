@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
  */
 @Component
 @RequiredArgsConstructor
-public class CustomRequestMatcher implements RequestMatcher {
+public class PermitAllRequestMatcher implements RequestMatcher {
 
 	private final PermittedPathStore permittedPathStore;
 
 	/**
 	 * <h2>permitAll match 확인</h2>
 	 * <p>요청의 httpMethod, uri 리소스 리스트 중 어느 하나라도 일치하는 게 있는지 확인</p>
-	 * @param request 요청
+	 * @param request 현재 요청
 	 * @return boolean 리소스 리스트에 있으면 true, 없으면 false
 	 */
 	@Override
@@ -27,22 +27,8 @@ public class CustomRequestMatcher implements RequestMatcher {
 
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
-		if(matchesMemberInfoRequiredInPermitAll(httpMethod, uri)) {
-			return false;
-		}
-
 		return permittedPathStore.isPermittedAll(httpMethod, uri);
 
-	}
-
-	/**
-	 * <h2>permitAll 중 토큰 검증이 필요한지 확인</h2>
-	 * @param httpMethod
-	 * @param uri
-	 * @return
-	 */
-	public boolean matchesMemberInfoRequiredInPermitAll(String httpMethod, String uri) {
-		return permittedPathStore.isRequiredMemberInfo(httpMethod, uri);
 	}
 
 }
