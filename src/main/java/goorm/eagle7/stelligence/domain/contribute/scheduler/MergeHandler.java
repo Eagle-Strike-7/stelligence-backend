@@ -106,7 +106,7 @@ public class MergeHandler implements ContributeSchedulingActionHandler {
 		contribute.setStatusMerged();
 
 		//cache를 삭제합니다.
-		evictCache(document.getId());
+		// evictCache(document.getId());
 
 		//이벤트를 발행합니다.
 		applicationEventPublisher.publishEvent(new ContributeMergedEvent(contribute.getId()));
