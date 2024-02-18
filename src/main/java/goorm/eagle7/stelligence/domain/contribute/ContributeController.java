@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
-import goorm.eagle7.stelligence.domain.contribute.dto.ContributeDocumentPageResponse;
+import goorm.eagle7.stelligence.domain.contribute.dto.ContributeListByDocumentResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributePageResponse;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeRequest;
 import goorm.eagle7.stelligence.domain.contribute.dto.ContributeResponse;
@@ -131,7 +131,7 @@ public class ContributeController {
 		useReturnTypeSchema = true
 	)
 	@GetMapping
-	public ResponseTemplate<ContributeDocumentPageResponse> getContributesByDocument(
+	public ResponseTemplate<ContributeListByDocumentResponse> getContributesByDocument(
 		@Parameter(description = "특정 문서의 수정요청을 조회할 때 문서의 ID", example = "1")
 		@RequestParam Long documentId,
 		@Parameter(description = "수정요청이 MERGED = true, REJECTED or DEBATING = false", example = "true")
