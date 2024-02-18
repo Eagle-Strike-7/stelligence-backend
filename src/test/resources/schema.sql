@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS vote;
 DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS bookmark;
 DROP TABLE IF EXISTS notification;
+DROP TABLE IF EXISTS notification_content;
 DROP TABLE IF EXISTS report;
 DROP TABLE IF EXISTS member_badge;
 DROP TABLE IF EXISTS withdrawn_member;
