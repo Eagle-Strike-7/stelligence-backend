@@ -1,34 +1,44 @@
 package goorm.eagle7.stelligence.domain.member.model;
 
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import lombok.Getter;
 
-@Getter
 /**
  * <h2>사용자 권한</h2>
  * <p>ADMIN: 관리자</p>
  * <p>USER: 일반 사용자</p>
  */
+@Getter
 public enum Role {
 	ADMIN("ROLE_ADMIN"), USER("ROLE_USER");
 
-	private final String value;
+	private final String label;
+	private static final Map<String, Role> labels =
+		Collections
+			.unmodifiableMap(
+				Stream.of(values()).collect(
+					Collectors.toMap(
+						Role::getLabel,
+						Function.identity() // identity()는 입력값 그대로 반환
+					)) // <label, Role.name()>
+			);
 
-	Role(String value) {
-		this.value = value;
+	Role(String label) {
+		this.label = label;
 	}
 
 	/**
-	 * <h2>사용자 권한 문자열로부터 Role 객체 반환</h2>
-	 * @param roleStr 사용자 권한 문자열
-	 * @return Role 객체
+	 * <h2>label로 role 생성, 없는 label이면 default 설정</h2>
+	 * @param label label
+	 * @return Role default User
 	 */
-	public static Role fromValue(String roleStr) {
-		return Arrays.stream(Role.values())
-			.filter(role -> role.getValue().equalsIgnoreCase(roleStr))
-			.findFirst()
-			.orElse(Role.USER); // 일치하는 역할이 없으면 기본값으로 USER 반환
+	public static Role fromLabelDefaultUser(String label) {
+		return labels.getOrDefault(label, Role.USER);
 	}
 
 }
