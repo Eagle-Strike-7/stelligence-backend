@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -19,7 +20,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class CookieUtilsTest {
 
@@ -64,15 +67,15 @@ class CookieUtilsTest {
 
 		// ReflectionTestUtils를 사용하여 필드 값 설정
 		ReflectionTestUtils.setField(cookieUtils, "accessTokenCookieName", testAccessTokenCookieName);
-		ReflectionTestUtils.setField(cookieUtils, "refreshTokenCookieName", "refreshTokenCookie");
-		ReflectionTestUtils.setField(cookieUtils, "accessCookieMaxAge", 1000L);
-		ReflectionTestUtils.setField(cookieUtils, "refreshCookieMaxAge", 2000L);
-		ReflectionTestUtils.setField(cookieUtils, "cookieDomain", "cookieDomain");
-		ReflectionTestUtils.setField(cookieUtils, "cookiePath", "cookiePath");
-		ReflectionTestUtils.setField(cookieUtils, "cookieSameSite", "Lax");
-		ReflectionTestUtils.setField(cookieUtils, "cookieSecure", true);
-		ReflectionTestUtils.setField(cookieUtils, "cookieHttpOnly", true);
-
+		ReflectionTestUtils.setField(cookieUtils, "refreshTokenCookieName", refreshTokenCookieName);
+		ReflectionTestUtils.setField(cookieUtils, "accessCookieMaxAge", accessCookieMaxAge);
+		ReflectionTestUtils.setField(cookieUtils, "refreshCookieMaxAge", refreshCookieMaxAge);
+		ReflectionTestUtils.setField(cookieUtils, "cookieDomain", cookieDomain);
+		ReflectionTestUtils.setField(cookieUtils, "cookiePath", cookiePath);
+		ReflectionTestUtils.setField(cookieUtils, "cookieSameSite", cookieSameSite);
+		ReflectionTestUtils.setField(cookieUtils, "cookieSecure", cookieSecure);
+		ReflectionTestUtils.setField(cookieUtils, "cookieHttpOnly", cookieHttpOnly);
+		ReflectionTestUtils.setField(cookieUtils, "headerName", headerName);
 
 	}
 
@@ -94,27 +97,112 @@ class CookieUtilsTest {
 			assertThat(actualCookie).isPresent();
 			assertThat(actualCookie.get().getName()).isEqualTo(testAccessTokenCookieName);
 			assertThat(actualCookie.get().getValue()).isEqualTo(accessToken);
+
 		}
 
 	}
-	//
-	// @Test
-	// void addCookieBy() {
-	//
-	// 	// given
-	//
-	// 	ResponseCookie responseCookie = ResponseCookie.from(accessTokenCookieName, accessToken)
-	// 		.maxAge(accessCookieMaxAge)
-	// 		.domain(cookieDomain)
-	// 		.path(cookiePath)
-	// 		.sameSite(cookieSameSite)
-	// 		.secure(cookieSecure)
-	// 		.httpOnly(cookieHttpOnly)
-	// 		.build();
-	//
-	// }
-	//
-	// @Test
-	// void deleteCookieBy() {
-	// }
+
+	@Test
+	@DisplayName("[예외] 쿠키 조회, cookies(모든 쿠키) 없음 - getCookieFromRequest")
+	void getCookieFromRequestNoCookie() {
+
+		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
+
+			// given
+			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
+			request.setCookies(null);
+
+			// when
+			Optional<Cookie> actualCookie = cookieUtils.getCookieFromRequest(CookieType.ACCESS_TOKEN);
+
+			// then
+			assertThat(actualCookie).isEmpty();
+
+		}
+
+	}
+
+	@Test
+	@DisplayName("[예외] 쿠키 조회, 특정 쿠키 없음 - getCookieFromRequest")
+	void getCookieFromRequestNoSpecificCookie() {
+
+		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
+
+			// given
+			Cookie cookie = new Cookie(testAccessTokenCookieName, accessToken);
+			request.setCookies(cookie);
+			mocked.when(RequestScopeUtils::getHttpServletRequest).thenReturn(request);
+
+			// when
+			Optional<Cookie> actualCookie = cookieUtils.getCookieFromRequest(CookieType.REFRESH_TOKEN);
+
+			// then
+			assertThat(actualCookie).isEmpty();
+
+		}
+
+	}
+
+	@Test
+	@DisplayName("[성공] accessToken 쿠키 추가 - addCookieBy")
+	void addCookieBy() {
+
+		// given
+		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
+			ResponseCookie responseCookie = ResponseCookie.from(testAccessTokenCookieName, accessToken)
+				.maxAge(accessCookieMaxAge)
+				.domain(cookieDomain)
+				.path(cookiePath)
+				.sameSite(cookieSameSite)
+				.secure(cookieSecure)
+				.httpOnly(cookieHttpOnly)
+				.build();
+			when(RequestScopeUtils.getHttpServletResponse()).thenReturn(response);
+
+			// when
+			cookieUtils.addCookieBy(CookieType.ACCESS_TOKEN, accessToken);
+
+			// then
+			assertThat(response.getCookie(testAccessTokenCookieName).getValue()).isEqualTo(accessToken);
+			log.info("response.getCookie(testAccessTokenCookieName).getValue(): {}",
+				response.getCookie(testAccessTokenCookieName).getValue());
+			log.info("responseCookie.toString(): {}", responseCookie);
+
+		}
+
+	}
+
+	@Test
+	@DisplayName("[성공] 쿠키 삭제 - deleteCookieBy")
+	void deleteCookieBy() {
+
+		// given
+		try (MockedStatic<RequestScopeUtils> mocked = mockStatic(RequestScopeUtils.class)) {
+
+			// request에 쿠키 추가
+			ResponseCookie responseCookie = ResponseCookie.from(testAccessTokenCookieName, "")
+				.maxAge(0)
+				.domain(cookieDomain)
+				.path(cookiePath)
+				.sameSite(cookieSameSite)
+				.secure(cookieSecure)
+				.httpOnly(cookieHttpOnly)
+				.build();
+			when(RequestScopeUtils.getHttpServletResponse()).thenReturn(response);
+			when(RequestScopeUtils.getHttpServletRequest()).thenReturn(request);
+
+			// when
+			cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
+
+			// then - 쿠키 삭제 시 null 반환
+			assertThat(response.getCookie(testAccessTokenCookieName)).isNull();
+
+			log.info("response.getCookie(testAccessTokenCookieName): {}",
+				response.getCookie(testAccessTokenCookieName));
+			log.info("responseCookie.toString(): {}", responseCookie);
+
+		}
+
+	}
+
 }
