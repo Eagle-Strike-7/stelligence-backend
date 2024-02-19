@@ -53,7 +53,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
 
-		log.debug("AuthFilter 실행");
+		log.trace("AuthFilter 실행");
 		String httpMethod = request.getMethod();
 		String uri = request.getRequestURI();
 
@@ -61,7 +61,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 토큰 검증이 필요 없는지 확인 후 필요하면 토큰 검증으로 진행
 			if (isTokenValidationRequired(request)) {
 
-				log.debug("토큰 검증 필요");
+				log.trace("토큰 검증 필요");
 
 				// accessToken 유효성 검사
 				// 필요하다면 refresh 토큰으로 재발급
@@ -81,14 +81,14 @@ public class AuthFilter extends OncePerRequestFilter {
 			// Login 필수인 경우, 재로그인 필요
 			if (!isMemberInfoRequired(httpMethod, uri)) {
 				if (uri.equals("/api/members/me") && httpMethod.equals("GET")) {
-					log.debug("[403] /api/members/me 403 error : {}", e.getMessage());
+					log.trace("[403] /api/members/me 403 error : {}", e.getMessage());
 					ResponseUtils.sendErrorResponse(HttpServletResponse.SC_FORBIDDEN, ERROR_MESSAGE);
 					return;
 				}
 				throw new UsernameNotFoundException(e.getMessage());
 			}
 
-			log.debug("[ex] 로그인 필수가 아닌 uri에서 로그인 사용자와 아닌 사용자를 구분. : {}", e.getMessage());
+			log.trace("[ex] 로그인 필수가 아닌 uri에서 로그인 사용자와 아닌 사용자를 구분. : {}", e.getMessage());
 			saveAuthenticationForNullMemberInfo();
 
 		}
@@ -130,7 +130,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			.getCookieFromRequest(CookieType.ACCESS_TOKEN)
 			.map(
 				cookie -> {
-					log.debug("accessCookie가 있습니다. 유효성 검사 진행");
+					log.trace("accessCookie가 있습니다. 유효성 검사 진행");
 					// token 없으면 재로그인, 있으면 token 반환, 만료면 재발급
 					String accessToken = cookie.getValue();
 					if (!StringUtils.hasText(accessToken)) {
@@ -140,7 +140,7 @@ public class AuthFilter extends OncePerRequestFilter {
 				})
 			.orElseGet(() -> {
 					// refresh cookie 확인, 없으면 재로그인, 있으면 재발급 진행
-					log.debug("accessCookie가 없습니다. refresh 토큰으로 재발급 시도");
+					log.trace("accessCookie가 없습니다. refresh 토큰으로 재발급 시도");
 					return getAcccessTokenFromRefreshCookie();
 				}
 			);

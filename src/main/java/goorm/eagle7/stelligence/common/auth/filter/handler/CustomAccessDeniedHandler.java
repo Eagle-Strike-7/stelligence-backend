@@ -21,7 +21,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 		AccessDeniedException accessDeniedException) {
 		// 필요한 권한이 없이 접근하려 할때 400으로 통일 - Admin, user, 다른 사람 정보를 수정하려 할 때 등
-		log.debug("CustomAccessDeniedHandler 진입");
+		log.trace("CustomAccessDeniedHandler 진입");
 		ResponseUtils.sendErrorResponse(HttpServletResponse.SC_BAD_REQUEST, accessDeniedException.getMessage());
 	}
 }
