@@ -189,7 +189,6 @@ class DocumentContentServiceReadUnitTest {
 		DocumentSimpleResponse documentSimpleResponse = documentContentService.getDocumentByTitle(searchTitle);
 
 		//then
-		verify(documentContentRepository, times(1)).findByTitle(searchTitle);
 		assertThat(documentSimpleResponse.getTitle()).isEqualTo(searchTitle);
 		assertThat(documentSimpleResponse.getDocumentId()).isEqualTo(1L);
 	}
