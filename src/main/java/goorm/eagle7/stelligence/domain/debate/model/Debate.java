@@ -32,17 +32,17 @@ public class Debate extends BaseTimeEntity {
 	//토론 연장 지속 시간: 60분 * 24시간 = 1일
 	// public static final Long DEBATE_EXTENSION_DURATION_MINUTE = 60L * 24L;
 	//개발 테스트 상황에서는 15분을 주기로 합니다.
-	public static final Long DEBATE_EXTENSION_DURATION_MINUTE = 30L;
+	public static final Long DEBATE_EXTENSION_DURATION_MINUTE = 5L;
 
 	//토론 최대 지속 시간: 60분 * 24시간 * 7일 = 7일
 	// public static final Long DEBATE_LIMIT_DURATION_MINUTE = 60L * 24L * 7L;
 	//개발 테스트 상황에서는 60분을 최대 지속 시간으로 합니다.
-	public static final Long DEBATE_LIMIT_DURATION_MINUTE = 60L * 4L;
+	public static final Long DEBATE_LIMIT_DURATION_MINUTE = 10L;
 
 	//토론 이후 수정요청 대기 시간: 60분 * 24시간 = 1일
 	// public static final Long DEBATE_PENDING_DURATION_MINUTE = 60L * 24L;
 	//개발 테스트 상황에서는 15분을 주기로 합니다.
-	public static final Long DEBATE_PENDING_DURATION_MINUTE = 20L;
+	public static final Long DEBATE_PENDING_DURATION_MINUTE = 15L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
