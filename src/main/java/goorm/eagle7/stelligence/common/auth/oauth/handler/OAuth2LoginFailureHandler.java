@@ -4,8 +4,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +19,7 @@ public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHan
 	 */
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException exception)  {
-
-		ResponseTemplate<Void> responseTemplate = ResponseTemplate.fail(exception.getMessage());
-		ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, responseTemplate);
-
+		AuthenticationException exception) {
+		ResponseUtils.sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
 	}
 }

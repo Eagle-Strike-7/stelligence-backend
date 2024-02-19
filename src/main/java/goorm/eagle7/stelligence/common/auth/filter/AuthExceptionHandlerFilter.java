@@ -6,8 +6,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +23,9 @@ public class AuthExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (AuthenticationException e) {
-			log.debug("[401 SC_UNAUTHORIZED ] AuthenticationException catched in AuthExceptionHandlerFilter : {}", e.getMessage());
-			ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ResponseTemplate.fail("유효하지 않은 사용자입니다."));
+			log.debug("[401 SC_UNAUTHORIZED ] AuthenticationException catched in AuthExceptionHandlerFilter : {}",
+				e.getMessage());
+			ResponseUtils.sendErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 사용자입니다.");
 		}
 	}
 
