@@ -76,11 +76,11 @@ class JwtTokenServiceTest {
 	void isTokenValidatedThrows() {
 
 		// given
-		JwtTokenService spy = spy(jwtTokenService);
-		when(spy.validateTokenOrThrows(anyString())).thenThrow(UsernameNotFoundException.class);
+		JwtTokenService spyJwtTokenService = spy(jwtTokenService);
+		when(spyJwtTokenService.validateTokenOrThrows(anyString())).thenThrow(UsernameNotFoundException.class);
 
 		// when
-		boolean tokenValidated = spy.isTokenValidated("anyToken");
+		boolean tokenValidated = spyJwtTokenService.isTokenValidated("anyToken");
 
 		// then - void 반환
 		assertThat(tokenValidated).isFalse();
@@ -92,11 +92,11 @@ class JwtTokenServiceTest {
 	void isTokenValidatedThrowsJwtException() {
 
 		// given
-		JwtTokenService spy = spy(jwtTokenService);
-		when(spy.validateTokenOrThrows(anyString())).thenThrow(JwtException.class);
+		JwtTokenService spyJwtTokenService = spy(jwtTokenService);
+		when(spyJwtTokenService.validateTokenOrThrows(anyString())).thenThrow(JwtException.class);
 
 		// when
-		boolean tokenValidated = spy.isTokenValidated("anyToken");
+		boolean tokenValidated = spyJwtTokenService.isTokenValidated("anyToken");
 
 		// then - void 반환
 		assertThat(tokenValidated).isFalse();
@@ -108,13 +108,13 @@ class JwtTokenServiceTest {
 	void isTokenValidatedThrowsIllegalArgumentException() {
 
 		// given
-		JwtTokenService spy = spy(new JwtTokenService(
+		JwtTokenService spyJwtTokenService = spy(new JwtTokenService(
 			jwtProperties, jwtTokenParser, jwtTokenValidator
 		));
-		doThrow(IllegalArgumentException.class).when(spy).validateTokenOrThrows(anyString());
+		doThrow(IllegalArgumentException.class).when(spyJwtTokenService).validateTokenOrThrows(anyString());
 
 		// when
-		boolean tokenValidated = spy.isTokenValidated("anyToken");
+		boolean tokenValidated = spyJwtTokenService.isTokenValidated("anyToken");
 
 		// then - void 반환
 		assertThat(tokenValidated).isFalse();
@@ -126,23 +126,19 @@ class JwtTokenServiceTest {
 	void makeAuthenticationFromTokenTrue() {
 
 		// given
-		JwtTokenService spy = spy(jwtTokenService);
+		JwtTokenService spyJwtTokenService = spy(jwtTokenService);
 		Claims claims = Jwts.claims().subject(memberId.toString()).add("role", "USER").build();
 
 		// Properties claims 세팅
-		JwtProperties.Claims claimsPro = new JwtProperties.Claims();
-		claimsPro.setRole("role");
-		claimsPro.setValue("USER");
+		JwtProperties.Claims claimsProps = new JwtProperties.Claims();
+		claimsProps.setRole("role");
+		claimsProps.setValue("USER");
 
 		when(jwtTokenParser.getClaims(anyString())).thenReturn(Optional.of(claims));
-		doReturn(MemberInfo.of(memberId, Role.USER)).when(spy).extractMemberInfo(claims);
-
-		// when(jwtProperties.getClaims()).thenReturn(claimsPro);
-		// when(jwtTokenParser.getRole(claims, claimsPro.getRole())).thenReturn(Role.USER);
-		// when(jwtTokenParser.getSubject(claims)).thenReturn("1");
+		doReturn(MemberInfo.of(memberId, Role.USER)).when(spyJwtTokenService).extractMemberInfo(claims);
 
 		// when
-		Authentication authentication = spy.makeAuthenticationFrom("accessToken");
+		Authentication authentication = spyJwtTokenService.makeAuthenticationFrom("accessToken");
 
 		// then
 		assertThat(((User)authentication.getPrincipal()).getUsername()).isEqualTo(memberId.toString());
@@ -172,12 +168,12 @@ class JwtTokenServiceTest {
 		when(jwtTokenParser.getSubject(claims)).thenReturn("1");
 
 		// Properties claims 세팅
-		JwtProperties.Claims claimsPro = new JwtProperties.Claims();
-		claimsPro.setRole("role");
-		claimsPro.setValue("USER");
+		JwtProperties.Claims claimsProps = new JwtProperties.Claims();
+		claimsProps.setRole("role");
+		claimsProps.setValue("USER");
 
-		when(jwtProperties.getClaims()).thenReturn(claimsPro);
-		when(jwtTokenParser.getRole(claims, claimsPro.getRole())).thenReturn(Role.USER);
+		when(jwtProperties.getClaims()).thenReturn(claimsProps);
+		when(jwtTokenParser.getRole(claims, claimsProps.getRole())).thenReturn(Role.USER);
 
 		// when
 		MemberInfo memberInfo = jwtTokenService.extractMemberInfo(claims);
@@ -209,12 +205,12 @@ class JwtTokenServiceTest {
 
 		// given
 
-		String tokenVNull = null;
-		String tokenVEmpty = "";
-		String tokenVBlank = " ";
+		String tokenValueNull = null;
+		String tokenValueEmpty = "";
+		String tokenValueBlank = " ";
 
-		Cookie cookieEmpty = new Cookie(cookieName, tokenVEmpty);
-		Cookie cookieBlank = new Cookie(cookieName, tokenVBlank);
+		Cookie cookieEmpty = new Cookie(cookieName, tokenValueEmpty);
+		Cookie cookieBlank = new Cookie(cookieName, tokenValueBlank);
 
 		// when
 		String tokenNull = jwtTokenService.getTokenFromCookie(null);
@@ -223,8 +219,8 @@ class JwtTokenServiceTest {
 
 		// then
 		assertThat(tokenNull).isNull();
-		assertThat(tokenEmpty).isEqualTo(tokenVEmpty);
-		assertThat(tokenBlank).isEqualTo(tokenVBlank);
+		assertThat(tokenEmpty).isEqualTo(tokenValueEmpty);
+		assertThat(tokenBlank).isEqualTo(tokenValueBlank);
 
 	}
 
