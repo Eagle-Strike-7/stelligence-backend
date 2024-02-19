@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentService;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentSimpleResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
@@ -154,5 +155,14 @@ public class DocumentService {
 	public void changeParentDocument(Long documentId, Long newParentDocumentId) {
 		documentContentService.updateParentDocument(documentId, newParentDocumentId);
 		documentGraphService.updateDocumentLink(documentId, newParentDocumentId);
+	}
+
+	/**
+	 * 입력받은 문자열과 일치하는 제목을 가진 문서를 검색합니다.
+	 * @param title 검색할 제목
+	 * @return DocumentSimpleResponse 검색한 문서의 ID와 제목
+	 */
+	public DocumentSimpleResponse searchDocumentByExactTitle(String title) {
+		return documentContentService.getDocumentByTitle(title);
 	}
 }
