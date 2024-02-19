@@ -40,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenService {
 
 	private final JwtProperties jwtProperties;
-	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenParser jwtTokenParser;
 	private final JwtTokenValidator jwtTokenValidator;
 
@@ -109,6 +108,7 @@ public class JwtTokenService {
 
 		if (cookie == null) {
 			log.debug("쿠키가 없습니다.");
+
 			return null;
 		}
 		return cookie.getValue();

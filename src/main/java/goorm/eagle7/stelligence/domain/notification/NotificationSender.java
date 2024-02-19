@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.notification;
 
 import org.springframework.stereotype.Component;
 
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 
 /**

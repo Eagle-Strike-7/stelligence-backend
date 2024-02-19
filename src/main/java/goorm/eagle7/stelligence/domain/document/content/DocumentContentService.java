@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentSimpleResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -161,5 +162,18 @@ public class DocumentContentService {
 			.orElseThrow(() -> new BaseException("상위 문서가 존재하지 않습니다. 문서 ID : " + newParentDocumentId));
 
 		document.updateParentDocument(parentDocument);
+	}
+
+	/**
+	 * 특정 제목으로 문서를 검색합니다.
+	 * @param title 검색할 제목
+	 * @return DocumentSimpleResponse
+	 */
+	public DocumentSimpleResponse getDocumentByTitle(String title) {
+
+		Document document = documentRepository.findByTitle(title)
+			.orElseThrow(() -> new BaseException("해당 제목을 갖는 문서가 존재하지 않습니다. 제목: " + title));
+
+		return DocumentSimpleResponse.from(document);
 	}
 }

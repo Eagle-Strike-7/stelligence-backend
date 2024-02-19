@@ -13,8 +13,8 @@ import goorm.eagle7.stelligence.domain.debate.event.DebateEndEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.util.StringSlicer;
 import lombok.RequiredArgsConstructor;
 

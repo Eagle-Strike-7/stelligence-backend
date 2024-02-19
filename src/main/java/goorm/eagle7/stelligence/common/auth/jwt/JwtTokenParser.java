@@ -29,7 +29,6 @@ class JwtTokenParser {
 
 	}
 
-
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
 	 * <p>- subject 얻는 건 refresh에서만 진행하기 때문에 token이 만료인 경우(empty),  재로그인 필요</p>
@@ -40,8 +39,6 @@ class JwtTokenParser {
 	public String getSubject(Claims claims) {
 
 		log.debug("token에서 sub(memberId) 추출");
-
-		// serviceTime 기준 만료 시각 이전인지 확인
 
 		return claims
 			.getSubject();
@@ -66,7 +63,6 @@ class JwtTokenParser {
 
 
 	/* dev */
-
 
 	/**
 	 * <h2>만료된 토큰에서 subject(memberId) 추출</h2>

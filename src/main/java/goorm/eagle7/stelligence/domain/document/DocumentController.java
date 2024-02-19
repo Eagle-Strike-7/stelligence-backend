@@ -15,6 +15,7 @@ import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.memberinfo.Auth;
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentSimpleResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentStatusResponse;
 import goorm.eagle7.stelligence.domain.document.dto.DocumentCreateRequest;
 import goorm.eagle7.stelligence.domain.document.graph.dto.DocumentGraphResponse;
@@ -114,5 +115,19 @@ public class DocumentController {
 	) {
 
 		return ResponseTemplate.ok(documentService.getDocumentNodeByTitle(title, limit));
+	}
+
+	@Operation(summary = "제목과 일치하는 문서 조회", description = "특정 제목과 일치하는 문서를 조회합니다.")
+	@ApiResponse(
+		responseCode = "200",
+		description = "제목과 일치하는 문서 조회 성공",
+		useReturnTypeSchema = true
+	)
+	@GetMapping("/exact-search")
+	public ResponseTemplate<DocumentSimpleResponse> searchExactDocument(
+		@Parameter(description = "검색할 제목", example = "제목")
+		@RequestParam("title") String title
+	) {
+		return ResponseTemplate.ok(documentService.searchDocumentByExactTitle(title));
 	}
 }

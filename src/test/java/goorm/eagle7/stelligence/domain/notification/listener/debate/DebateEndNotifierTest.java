@@ -23,8 +23,8 @@ import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class DebateEndNotifierTest {
