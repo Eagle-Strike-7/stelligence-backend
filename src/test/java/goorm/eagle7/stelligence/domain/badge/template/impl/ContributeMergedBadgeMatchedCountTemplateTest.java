@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
 import goorm.eagle7.stelligence.domain.badge.model.BadgeCategory;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
+import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.member.model.Member;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,13 +76,19 @@ class ContributeMergedBadgeMatchedCountTemplateTest {
 	@Test
 	@DisplayName("[성공] repository에서 Member 별 달성한 조건 개수 가져오기 - getCount")
 	void getCount() {
+
 		// given
+		when(contributeRepository.countByMemberIdAndStatus(1L, ContributeStatus.MERGED)).thenReturn(10L);
 
 		// when
 		long result = template.getCount(1L);
 
 		// then
-		assertThat(result).isInstanceOf(Long.class);
+		assertThat(result)
+			.isInstanceOf(Long.class)
+			.isEqualTo(10L);
+		verify(contributeRepository, times(1)).countByMemberIdAndStatus(1L, ContributeStatus.MERGED);
+		
 	}
 
 	/** getBadgeCriteria **/
