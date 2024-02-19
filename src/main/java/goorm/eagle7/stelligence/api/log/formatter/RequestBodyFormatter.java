@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.api.log.requestbodyfilter;
+package goorm.eagle7.stelligence.api.log.formatter;
 
 /**
  * RequestLoggingFilter에서 Request Body를 필터링 하는 로직을 정의합니다.

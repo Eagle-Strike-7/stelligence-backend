@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.api.log.requestbodyfilter;
+package goorm.eagle7.stelligence.api.log.formatter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

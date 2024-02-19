@@ -1,12 +1,11 @@
-package goorm.eagle7.stelligence.api.log.requestbodyfilter;
+package goorm.eagle7.stelligence.api.log.formatter;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 class RequestBodySlicingFormatter implements RequestBodyFormatter {
 
 	private final int MAX_BODY_PRINT_LENGTH;
-
-	public RequestBodySlicingFormatter(int maxBodyPrintLength) {
-		this.MAX_BODY_PRINT_LENGTH = maxBodyPrintLength;
-	}
 
 	@Override
 	public String format(String requestBody) {

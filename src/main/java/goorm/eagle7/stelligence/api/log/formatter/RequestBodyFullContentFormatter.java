@@ -1,4 +1,4 @@
-package goorm.eagle7.stelligence.api.log.requestbodyfilter;
+package goorm.eagle7.stelligence.api.log.formatter;
 
 /**
  * RequestBody의 전체를 로깅하는 프린터입니다.

@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UriUtils;
 
-import goorm.eagle7.stelligence.api.log.requestbodyfilter.RequestBodyFormatter;
+import goorm.eagle7.stelligence.api.log.formatter.RequestBodyFormatter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
@@ -34,7 +34,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 
 	// 로깅 제외 URL 패턴
 	private static final String[] EXCLUDE_URL_PATTERN = {"/swagger-ui/", "/api-docs", "/v3/api-docs"};
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
