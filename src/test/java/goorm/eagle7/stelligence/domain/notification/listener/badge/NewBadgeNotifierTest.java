@@ -12,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import goorm.eagle7.stelligence.domain.badge.event.NewBadgeEvent;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class NewBadgeNotifierTest {

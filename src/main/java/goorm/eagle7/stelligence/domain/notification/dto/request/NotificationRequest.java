@@ -1,7 +1,8 @@
-package goorm.eagle7.stelligence.domain.notification;
+package goorm.eagle7.stelligence.domain.notification.dto.request;
 
 import java.util.Set;
 
+import goorm.eagle7.stelligence.domain.notification.NotificationSender;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

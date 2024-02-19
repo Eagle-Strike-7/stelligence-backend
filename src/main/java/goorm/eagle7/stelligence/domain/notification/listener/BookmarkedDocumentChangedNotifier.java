@@ -12,8 +12,8 @@ import goorm.eagle7.stelligence.domain.bookmark.BookmarkRepository;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.util.StringSlicer;
 import lombok.RequiredArgsConstructor;
 

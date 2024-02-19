@@ -126,6 +126,7 @@ jacocoTestReport {
                                '**/dto/**',
                                '**/Q*',
                                'goorm/eagle7/stelligence/api/**',
+                               경 'goorm/eagle7/stelligence/common/dev/**'
                     ])
         }))
     }

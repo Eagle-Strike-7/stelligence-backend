@@ -21,8 +21,8 @@ import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.listener.contribute.ContributeMergedNotifier;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 

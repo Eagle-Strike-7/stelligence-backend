@@ -10,8 +10,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.badge.event.NewBadgeEvent;
 import goorm.eagle7.stelligence.domain.badge.model.Badge;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 
 /**
