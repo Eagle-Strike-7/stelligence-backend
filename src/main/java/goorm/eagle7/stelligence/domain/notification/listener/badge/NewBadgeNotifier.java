@@ -33,7 +33,7 @@ public class NewBadgeNotifier {
 
 		// 알림 요청 객체를 생성합니다.
 		NotificationRequest request = NotificationRequest.of(
-			String.format(NEW_BADGE_MESSAGE, badge.getTitle(), badge.getTitle()),
+			String.format(NEW_BADGE_MESSAGE, badge.getTitle(), badge.getDescription()),
 			Site.mypage(),
 			Set.of(event.memberId())
 		);

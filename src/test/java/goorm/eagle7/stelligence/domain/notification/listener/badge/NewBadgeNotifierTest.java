@@ -37,7 +37,7 @@ class NewBadgeNotifierTest {
 		// then
 		Mockito.verify(notificationSender).send(
 			NotificationRequest.of(
-				"새로운 뱃지 '태양계'를 획득하였습니다. 사유 : '태양계'. 확인해보세요!!!",
+				"새로운 뱃지 '태양계'를 획득하였습니다. 사유 : '수정 50번 요청 완료'. 확인해보세요!!!",
 				"/mypage",
 				Set.of(1L)
 			)
