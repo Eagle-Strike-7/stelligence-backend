@@ -50,11 +50,11 @@ public class MemberInfoArgumentResolver
 		@Nullable NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) {
 
-		if(SecurityContextHolder.getContext()
-			.getAuthentication().getPrincipal() instanceof User user){
+		if (SecurityContextHolder.getContext()
+			.getAuthentication().getPrincipal() instanceof User user) {
 
-			if(user.getUsername().equals("anonymousUser")){
-				log.debug("anonymousUser, @Auth에 null 반환");
+			if (user.getUsername().equals("anonymousUser")) {
+				log.trace("anonymousUser, @Auth에 null 반환");
 				return null;
 			}
 

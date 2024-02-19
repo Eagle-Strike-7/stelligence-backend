@@ -37,17 +37,16 @@ public class OAuth2LogoutCustomHandler implements LogoutHandler {
 
 			String username = user.getUsername();
 
-			log.debug("logoutHandler 실행, username: {}", username);
+			log.trace("logoutHandler 실행, username: {}", username);
 			// 로그인하지 않은 사용자가 로그아웃 요청 시, 아무것도 하지 않음
 			// 권한 필요 없는 uri에서 로그아웃 요청 시, username == anonymousUser, 아무것도 하지 않음
 			if (!username.equals("anonymousUser")) {
 
-				log.debug("로그인한 사용자의 로그아웃 요청, logoutService 진행, userId: {}", username);
+				log.trace("로그인한 사용자의 로그아웃 요청, logoutService 진행, userId: {}", username);
 				Long memberId = Long.parseLong(username);
 				loginService.logout(memberId);
 				cookieUtils.deleteCookieBy(CookieType.ACCESS_TOKEN);
 				cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
-
 
 			}
 		}

@@ -83,7 +83,7 @@ public class JwtTokenService {
 		Claims claims = jwtTokenParser.getClaims(accessToken)
 			.orElseThrow(
 				() -> {
-					log.debug("authentication 생성 실패, 확인 필요.");
+					log.trace("authentication 생성 실패, 확인 필요.");
 					return new UsernameNotFoundException(ERROR_MESSAGE);
 				}
 			);
@@ -107,7 +107,7 @@ public class JwtTokenService {
 	public String getTokenFromCookie(Cookie cookie) {
 
 		if (cookie == null) {
-			log.debug("쿠키가 없습니다.");
+			log.trace("쿠키가 없습니다.");
 
 			return null;
 		}
