@@ -70,6 +70,18 @@ class NotificationServiceTest {
 	}
 
 	@Test
+	@DisplayName("알림 목록 조회 실패 - 회원 없음")
+	void getNotificationsByMemberIdFailNoMember() {
+		//when
+		when(memberRepository.findById(1L)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.getNotificationsByMemberId(1L))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 회원입니다.");
+	}
+
+	@Test
 	@DisplayName("알림 읽음처리 성공")
 	void readNotification() {
 		Long memberId = 1L;
@@ -89,6 +101,19 @@ class NotificationServiceTest {
 
 		//then
 		assertThat(noti.isRead()).isTrue();
+	}
+
+	@Test
+	@DisplayName("알림 읽음처리 실패 - 사용자 없음")
+	void readNotificationFailNoMember() {
+		Long memberId = 1L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> notificationService.readNotification(1L, memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 회원입니다.");
 	}
 
 	@Test
@@ -113,6 +138,22 @@ class NotificationServiceTest {
 	}
 
 	@Test
+	@DisplayName("알림 읽음처리 실패 - 알림 없음")
+	void readNotificationFailNoNotification() {
+		Long memberId = 1L;
+		Long notificationId = 2L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member(1L, "pete")));
+		when(notificationRepository.findById(notificationId)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.readNotification(notificationId, memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 알림입니다.");
+	}
+
+	@Test
 	@DisplayName("알림 일괄 읽음처리 성공")
 	void readAllNotifications() {
 		Long memberId = 1L;
@@ -124,6 +165,20 @@ class NotificationServiceTest {
 
 		//then
 		verify(notificationRepository).readAllNotificationsByMemberId(memberId);
+	}
+
+	@Test
+	@DisplayName("알림 일괄 읽음처리 실패 - 사용자 없음")
+	void readAllNotificationsFailNoMember() {
+		Long memberId = 1L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.readAllNotifications(memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 회원입니다.");
 	}
 
 	@Test
@@ -144,6 +199,37 @@ class NotificationServiceTest {
 
 		//then
 		verify(notificationRepository).delete(noti);
+	}
+
+	@Test
+	@DisplayName("알림 삭제 실패 - 사용자 없음")
+	void deleteNotificationFailNoMember() {
+		Long memberId = 1L;
+		Long notificationId = 2L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.deleteNotification(notificationId, memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 회원입니다.");
+	}
+
+	@Test
+	@DisplayName("알림 삭제 실패 - 알림 없음")
+	void deleteNotificationFailNoNotification() {
+		Long memberId = 1L;
+		Long notificationId = 2L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member(memberId, "pete")));
+		when(notificationRepository.findById(notificationId)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.deleteNotification(notificationId, memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 알림입니다.");
 	}
 
 	@Test
@@ -179,5 +265,19 @@ class NotificationServiceTest {
 
 		//then
 		verify(notificationRepository).deleteAllByMemberId(memberId);
+	}
+
+	@Test
+	@DisplayName("알림 일괄 삭제 실패 - 사용자 없음")
+	void deleteAllNotificationsFailNoMember() {
+		Long memberId = 1L;
+
+		//when
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+		//then
+		assertThatThrownBy(() -> notificationService.deleteAllNotifications(memberId))
+			.isInstanceOf(BaseException.class)
+			.hasMessage("존재하지 않는 회원입니다.");
 	}
 }
