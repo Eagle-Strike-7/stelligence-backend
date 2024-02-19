@@ -34,19 +34,20 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 
 	// 구글 로그인 시
 	public static CustomOAuth2User ofGoogle(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String email, String imageUrl, String socialId,
+		Map<String, Object> attributes, String name, String email, String imageUrl, String socialId,
 		SocialType socialType
 	) {
 
 		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "sub");
 
-		customOAuth2User.nickname = null;
+		customOAuth2User.nickname = name; // name을 nickname으로 사용.
 		customOAuth2User.email = email;
 		customOAuth2User.imageUrl = imageUrl;
 		customOAuth2User.socialId = socialId;
 		customOAuth2User.socialType = socialType;
 
 		return customOAuth2User;
+
 	}
 
 	// 네이버 로그인 시
