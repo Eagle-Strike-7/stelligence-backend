@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.member;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +74,7 @@ public class MemberController {
 		cookieUtils.deleteCookieBy(CookieType.REFRESH_TOKEN);
 
 		// SecurityContext 초기화
-		// SecurityContextHolder.clearContext();
+		SecurityContextHolder.clearContext();
 
 		return ResponseTemplate.ok();
 
