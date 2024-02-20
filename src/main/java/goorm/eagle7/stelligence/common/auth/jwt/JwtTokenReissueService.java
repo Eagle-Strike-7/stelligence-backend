@@ -99,7 +99,7 @@ public class JwtTokenReissueService {
 	 */
 	private LoginTokenInfo reissueTokens(Member member) {
 
-		log.debug("accessToken, refreshToken 재발급 진행");
+		log.trace("accessToken, refreshToken 재발급 진행");
 
 		Long memberId = member.getId();
 

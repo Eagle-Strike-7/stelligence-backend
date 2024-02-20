@@ -38,7 +38,7 @@ class JwtTokenParser {
 	 */
 	public String getSubject(Claims claims) {
 
-		log.debug("token에서 sub(memberId) 추출");
+		log.trace("token에서 sub(memberId) 추출");
 
 		return claims
 			.getSubject();
@@ -53,7 +53,7 @@ class JwtTokenParser {
 	 */
 	public Role getRole(Claims claims, String claimKey) {
 
-		log.debug("토큰에서 사용자 정의 claims 추출");
+		log.trace("토큰에서 사용자 정의 claims 추출");
 		return Role.valueOf(
 			claims.get(claimKey, String.class)
 		);
@@ -83,7 +83,7 @@ class JwtTokenParser {
 						.getClaims(token).getSubject());
 
 		} catch (ExpiredJwtException e) {
-			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
+			log.trace("만료된 JWT에서 sbj 추출: {}", e.getMessage());
 			return e.getClaims().getSubject();
 		}
 

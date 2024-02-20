@@ -39,7 +39,7 @@ public class Contribute extends BaseTimeEntity {
 	//투표 지속 시간: 60분 * 24시간 = 1일
 	// public static final Long VOTE_DURATION_MINUTE = 60L * 24L;
 	//개발 테스트 상황에서는 15분을 주기로 합니다.
-	public static final Long VOTE_DURATION_MINUTE = 15L;
+	public static final Long VOTE_DURATION_MINUTE = 3L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
