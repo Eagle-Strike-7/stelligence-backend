@@ -40,8 +40,8 @@ public class SectionRequestValidator {
 	}
 
 	private void validateContent(String content) {
-		if (content != null && content.length() > 65536) {
-			throw new BaseException("Content는 65536자 이하로 입력해주세요.");
+		if (content != null && content.length() > 65535) {
+			throw new BaseException("Content는 65535자 이하로 입력해주세요.");
 		}
 	}
 }
