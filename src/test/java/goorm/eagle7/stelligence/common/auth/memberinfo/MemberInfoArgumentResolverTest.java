@@ -48,7 +48,7 @@ class MemberInfoArgumentResolverTest {
 	}
 
 	@Test
-	@DisplayName("[실패] securityContext의 정보를 @Auth에 저장 실패 - resolveArgument")
+	@DisplayName("[실패] 인증 불가 시 securityContext에 정보 저장 X, @Auth null - resolveArgument")
 	void resolveArgumentFailure() throws NoSuchMethodException {
 
 		// given
@@ -67,9 +67,42 @@ class MemberInfoArgumentResolverTest {
 		assertThat(memberInfo).isNull();
 
 	}
-
 	@Test
-	@DisplayName("[확인] authorities 여러 개인 경우 동작 확인 - resolveArgument")
+	@DisplayName("[확인] authorities 여러 개, 없는 role(admin 앞)이 있는 경우 동작 확인 - resolveArgument")
+	void resolveArgumentWithMultipleAuthoritiesWithNoRole() throws NoSuchMethodException {
+
+		// given
+		// security context 설정
+		List<SimpleGrantedAuthority> authorities = List.of(
+			new SimpleGrantedAuthority("ROLE_USER"),
+			new SimpleGrantedAuthority("ROLE_ADMIN"),
+			new SimpleGrantedAuthority("ROLE_A")
+		);
+
+		User user = new User("1", "", authorities);
+		Authentication authentication = new TestingAuthenticationToken(user, null);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		MethodParameter parameter = new MethodParameter(
+			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
+
+		// when
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+
+		// then
+		// ADMIN 기준 없는 ROLE이 앞이라 USER가 FindFirst 반환값
+		assertThat(result.getId()).isEqualTo(1);
+		assertThat(result.getRole())
+			.isEqualTo(Role.USER);
+
+	}
+
+	/**
+	 * <h2>authorities 여러 개인 경우 동작 확인</h2>
+	 * <p>- authorities 내부적으로 Set으로 저장, 현재는 알파벳 순으로 list에서 찾는 순서 결정</p>
+	 */
+	@Test
+	@DisplayName("[확인] authorities 여러 개, 없는 role(admin 뒤)이 있는 경우 동작 확인 - resolveArgument")
 	void resolveArgumentWithMultipleAuthorities() throws NoSuchMethodException {
 
 		// given
@@ -90,7 +123,8 @@ class MemberInfoArgumentResolverTest {
 		// when
 		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
 
-		// then - findFirst라서 LIST 순서가 아닌 role 정의 시 순서
+		// then
+		// ADMIN 기준 없는 ROLE이 나중이라 ADMIN이 FindFirst 반환값
 		assertThat(result.getId()).isEqualTo(1);
 		assertThat(result.getRole())
 			.isEqualTo(Role.ADMIN);
@@ -98,7 +132,7 @@ class MemberInfoArgumentResolverTest {
 	}
 
 	@Test
-	@DisplayName("[확인] authorities 여러 개인 경우 동작 확인 - resolveArgument")
+	@DisplayName("[확인] authorities에 존재하는 role, 여러 개인 경우 동작 확인 - resolveArgument")
 	void resolveArgumentWithMultipleAuthorities2() throws NoSuchMethodException {
 
 		// given
@@ -133,8 +167,6 @@ class MemberInfoArgumentResolverTest {
 		// security context 설정
 		List<SimpleGrantedAuthority> authorities = List.of(
 			new SimpleGrantedAuthority("ROLE_AAA"),
-			new SimpleGrantedAuthority("ROLE_USER"),
-			new SimpleGrantedAuthority("ROLE_ADMIN"),
 			new SimpleGrantedAuthority("ROLE_MANAGER")
 		);
 
