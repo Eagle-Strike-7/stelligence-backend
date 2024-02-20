@@ -76,7 +76,7 @@ public class CookieUtils {
 		}
 
 		// 쿠키 이름으로 필터링, 일치하는 쿠키 아무거나 반환, 없으면 empty 반환
-		return Arrays.stream(request.getCookies())
+		return Arrays.stream(cookies)
 			.filter(cookie -> cookie.getName().equals(cookieName))
 			.findAny();
 	}

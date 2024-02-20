@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeDebatedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
@@ -20,8 +21,8 @@ import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.listener.contribute.ContributeDebatedNotifier;
 import goorm.eagle7.stelligence.domain.vote.VoteRepository;
 
@@ -60,7 +61,7 @@ class ContributeDebatedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"수정요청 'contributeTitle'와 관련된 토론이 시작되었습니다! 토론을 확인해보세요.",
-				"/debateList/1",
+				Site.debate(1L),
 				Set.of(1L, 2L, 3L, 5L)
 			)
 		);

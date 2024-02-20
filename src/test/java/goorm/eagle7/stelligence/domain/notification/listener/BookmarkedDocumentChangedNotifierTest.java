@@ -13,14 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.bookmark.BookmarkRepository;
 import goorm.eagle7.stelligence.domain.contribute.ContributeRepository;
 import goorm.eagle7.stelligence.domain.contribute.event.ContributeMergedEvent;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class BookmarkedDocumentChangedNotifierTest {
@@ -53,7 +54,7 @@ class BookmarkedDocumentChangedNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"북마크한 문서 'documentTitle'(이)가 수정되었습니다. 확인해보세요!",
-				"/stars/1",
+				Site.document(1L),
 				Set.of(3L, 4L, 5L, 6L)
 			)
 		);

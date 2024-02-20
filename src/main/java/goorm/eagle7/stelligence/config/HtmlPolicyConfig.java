@@ -21,6 +21,8 @@ public class HtmlPolicyConfig {
 			.allowCommonInlineFormattingElements() //"b", "i", "em", "strong", "a", "br", "img", "span", "hr", "code", "pre"
 			.allowElements("img")
 			.allowAttributes("src", "alt").onElements("img")
+			.allowElements("a") // Allow a elements
+			.allowAttributes("href", "target").onElements("a") // Allow href, target. rel은 자체적으로 생성하므로 필터링의 대상으로 합니다.
 			.toFactory();
 	}
 }

@@ -1,9 +1,5 @@
 package goorm.eagle7.stelligence.common.auth.jwt;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import goorm.eagle7.stelligence.common.auth.memberinfo.MemberInfo;
 import goorm.eagle7.stelligence.domain.member.model.Role;
@@ -45,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenService {
 
 	private final JwtProperties jwtProperties;
-	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtTokenParser jwtTokenParser;
 	private final JwtTokenValidator jwtTokenValidator;
 
@@ -81,7 +75,7 @@ public class JwtTokenService {
 
 	/**
 	 * <h2>token 정보에서 Authentication 만들어 반환</h2>
-	 * @param token 추출할 token
+	 * @param accessToken 추출할 token
 	 * @return Authentication token 정보로 만든 Authentication
 	 */
 	public Authentication makeAuthenticationFrom(String accessToken) {
@@ -89,7 +83,7 @@ public class JwtTokenService {
 		Claims claims = jwtTokenParser.getClaims(accessToken)
 			.orElseThrow(
 				() -> {
-					log.debug("authentication 생성 실패, 확인 필요.");
+					log.trace("authentication 생성 실패, 확인 필요.");
 					return new UsernameNotFoundException(ERROR_MESSAGE);
 				}
 			);
@@ -98,7 +92,7 @@ public class JwtTokenService {
 		UserDetails user = User.builder()
 			.username(memberInfo.getId().toString())
 			.password("")
-			.authorities(memberInfo.getRole().getValue())
+			.authorities(memberInfo.getRole().getLabel())
 			.build();
 		log.debug("user: {}", user);
 		return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
@@ -113,7 +107,8 @@ public class JwtTokenService {
 	public String getTokenFromCookie(Cookie cookie) {
 
 		if (cookie == null) {
-			log.debug("쿠키가 없습니다.");
+			log.trace("쿠키가 없습니다.");
+
 			return null;
 		}
 		return cookie.getValue();
@@ -147,25 +142,6 @@ public class JwtTokenService {
 	 */
 	public Optional<Claims> validateTokenOrThrows(String token) {
 		return jwtTokenValidator.getClaimsOrNullIfInvalid(token);
-	}
-
-	// accessToken이 만료되기 n분 전이면 accessToken 재발급
-	public String getValidAccessToken(String accessToken) {
-
-		if (!StringUtils.hasText(accessToken)) {
-			throw new UsernameNotFoundException(ERROR_MESSAGE);
-		}
-
-		// serviceTimeMin
-		long serviceTimeMin = jwtProperties.getAccessToken().getServiceTime();
-
-		// LocalTime.now() + serviceTimeMin
-		LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(serviceTimeMin);
-		ZoneId zoneId = ZoneId.systemDefault();
-		Instant instant = localDateTime.atZone(zoneId).toInstant();
-		Date date = Date.from(instant);
-
-		return accessToken;
 	}
 
 	// 하기 메서드는 dev에서 사용

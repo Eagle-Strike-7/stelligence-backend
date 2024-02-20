@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,11 +22,12 @@ public class Notification extends BaseTimeEntity {
 	@Column(name = "notification_id")
 	private Long id;
 
-	private String message;
-
-	private String uri;
+	@ManyToOne
+	@JoinColumn(name = "notification_content_id")
+	private NotificationContent content;
 
 	// 읽음 여부
+	@Column(columnDefinition = "tinyint")
 	private boolean isRead;
 
 	//알림 대상 사용자

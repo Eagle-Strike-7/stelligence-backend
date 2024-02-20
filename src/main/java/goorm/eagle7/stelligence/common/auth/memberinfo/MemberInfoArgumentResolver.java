@@ -50,11 +50,11 @@ public class MemberInfoArgumentResolver
 		@Nullable NativeWebRequest webRequest,
 		WebDataBinderFactory binderFactory) {
 
-		if(SecurityContextHolder.getContext()
-			.getAuthentication().getPrincipal() instanceof User user){
+		if (SecurityContextHolder.getContext()
+			.getAuthentication().getPrincipal() instanceof User user) {
 
-			if(user.getUsername().equals("anonymousUser")){
-				log.debug("anonymousUser, @Auth에 null 반환");
+			if (user.getUsername().equals("anonymousUser")) {
+				log.trace("anonymousUser, @Auth에 null 반환");
 				return null;
 			}
 
@@ -77,10 +77,11 @@ public class MemberInfoArgumentResolver
 	 */
 	private Role convertAuthoritiesToRole(Collection<? extends GrantedAuthority> authorities) {
 		return authorities.stream()
-			.findFirst() // 첫 번째 GrantedAuthority 객체를 Optional로 반환
 			.map(GrantedAuthority::getAuthority) // GrantedAuthority의 권한 이름을 가져옴
-			.map(Role::fromValue) // 권한 이름을 Role로 변환
-			.orElse(Role.USER); // Optional이 비어있는 경우 기본값으로 Role.USER 반환
+			.map(Role::fromLabelDefaultUser) // 권한 이름을 Role로 변환
+			.findFirst() // 첫 번째 GrantedAuthority 객체를 Optional로 반환
+			.orElse(Role.USER); // findFirst Optional이 비어있는 경우 기본값으로 Role.USER 반환
+
 	}
 
 }

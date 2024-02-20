@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.event.DebateEndEvent;
@@ -22,8 +23,8 @@ import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.debate.repository.DebateRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class DebateEndNotifierTest {
@@ -59,7 +60,7 @@ class DebateEndNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"토론 'contributeTitle'이 종료되었습니다. 내용을 확인해보세요.",
-				"/debateList/1",
+				Site.debate(1L),
 				Set.of(1L, 3L, 4L, 5L)
 			)
 		);

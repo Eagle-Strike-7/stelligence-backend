@@ -29,7 +29,6 @@ class JwtTokenParser {
 
 	}
 
-
 	/**
 	 * <h2>token에서 sub(memberId) 추출</h2>
 	 * <p>- subject 얻는 건 refresh에서만 진행하기 때문에 token이 만료인 경우(empty),  재로그인 필요</p>
@@ -39,9 +38,7 @@ class JwtTokenParser {
 	 */
 	public String getSubject(Claims claims) {
 
-		log.debug("token에서 sub(memberId) 추출");
-
-		// serviceTime 기준 만료 시각 이전인지 확인
+		log.trace("token에서 sub(memberId) 추출");
 
 		return claims
 			.getSubject();
@@ -56,7 +53,7 @@ class JwtTokenParser {
 	 */
 	public Role getRole(Claims claims, String claimKey) {
 
-		log.debug("토큰에서 사용자 정의 claims 추출");
+		log.trace("토큰에서 사용자 정의 claims 추출");
 		return Role.valueOf(
 			claims.get(claimKey, String.class)
 		);
@@ -66,7 +63,6 @@ class JwtTokenParser {
 
 
 	/* dev */
-
 
 	/**
 	 * <h2>만료된 토큰에서 subject(memberId) 추출</h2>
@@ -87,7 +83,7 @@ class JwtTokenParser {
 						.getClaims(token).getSubject());
 
 		} catch (ExpiredJwtException e) {
-			log.debug("만료된 JWT에서 sbj 추출: {}", e.getMessage());
+			log.trace("만료된 JWT에서 sbj 추출: {}", e.getMessage());
 			return e.getClaims().getSubject();
 		}
 

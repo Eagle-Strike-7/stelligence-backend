@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.config;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.owasp.html.PolicyFactory;
 
@@ -35,6 +36,30 @@ class HtmlPolicyConfigTest {
 
 		//then
 		assertThat(sanitizedContent).isEqualTo("<p>hello</p>");
+	}
+
+	@Test
+	void whenNullReturnEmptyString() {
+		//given
+		String rawContent = null;
+
+		//when
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		//then
+		assertThat(sanitizedContent).isEmpty();
+	}
+
+	@Test
+	@DisplayName("a 태그가 허용되어야 한다.")
+	void aTagLink() {
+		//given
+		String rawContent = "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://www.stelligence.site/stars/77\">[[테스트 주도 개발]]</a>";
+
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		assertThat(sanitizedContent).isEqualTo(
+			"<a target=\"_blank\" href=\"http://www.stelligence.site/stars/77\" rel=\"noopener noreferrer\">[[테스트 주도 개발]]</a>");
 	}
 
 }

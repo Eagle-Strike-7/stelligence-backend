@@ -18,7 +18,7 @@ public class ContributeSchedulingActionDeterminer {
 
 	private final CustomVoteRepository voteRepository;
 
-	private static final double MERGE_RATE = 0.8;
+	private static final double MERGE_RATE = 0.7;
 	private static final double DEBATE_RATE = 0.3;
 
 	/**

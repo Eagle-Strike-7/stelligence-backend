@@ -8,12 +8,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
 import goorm.eagle7.stelligence.domain.debate.model.Comment;
 import goorm.eagle7.stelligence.domain.debate.model.Debate;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.util.StringSlicer;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +31,6 @@ public class NewCommentNotifier {
 	private final NotificationSender notificationSender;
 
 	private static final String NEW_COMMENT_MESSAGE = "토론 '%s'에 댓글이 달렸습니다. '%s'";
-	private static final String DEBATE_URI = "/debateList/%d";
 
 	/**
 	 * 새로운 댓글이 추가될 때 알림을 보낸다.
@@ -65,7 +65,7 @@ public class NewCommentNotifier {
 				StringSlicer.slice(debate.getContribute().getTitle()),
 				StringSlicer.slice(comment.getContent())
 			),
-			String.format(DEBATE_URI, debate.getId()),
+			Site.debate(debate.getId()),
 			targets
 		);
 

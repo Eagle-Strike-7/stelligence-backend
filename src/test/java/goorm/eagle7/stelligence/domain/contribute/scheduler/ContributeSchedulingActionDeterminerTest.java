@@ -49,7 +49,7 @@ class ContributeSchedulingActionDeterminerTest {
 
 		//when
 		when(voteCustomRepository.getVoteSummary(contribute.getId())).thenReturn(
-			new VoteSummary(79, 20));
+			new VoteSummary(40, 20));
 		ContributeSchedulingAction action = contributeSchedulingActionDeterminer.check(contribute);
 
 		//then

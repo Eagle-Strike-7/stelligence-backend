@@ -1,5 +1,6 @@
 package goorm.eagle7.stelligence.domain.report;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import goorm.eagle7.stelligence.api.exception.BaseException;
@@ -7,6 +8,7 @@ import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.document.content.DocumentContentRepository;
 import goorm.eagle7.stelligence.domain.member.MemberRepository;
 import goorm.eagle7.stelligence.domain.report.dto.ReportRequest;
+import goorm.eagle7.stelligence.domain.report.event.NewReportEvent;
 import goorm.eagle7.stelligence.domain.report.model.CommentReport;
 import goorm.eagle7.stelligence.domain.report.model.DocumentReport;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class ReportService {
 	private final DocumentContentRepository documentContentRepository;
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
+	private final ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * 특정 문서를 신고합니다.
@@ -41,6 +44,9 @@ public class ReportService {
 		DocumentReport documentReport = DocumentReport.createDocumentReport(
 			documentId, reportRequest.getDescription(), reporterId);
 		documentReportRepository.save(documentReport);
+
+		// 이벤트 발행
+		eventPublisher.publishEvent(new NewReportEvent(documentReport.getId()));
 	}
 
 	/**
@@ -63,5 +69,8 @@ public class ReportService {
 		CommentReport commentReport = CommentReport.createCommentReport(
 			commentId, reportRequest.getDescription(), reporterId);
 		commentReportRepository.save(commentReport);
+
+		// 이벤트 발행
+		eventPublisher.publishEvent(new NewReportEvent(commentReport.getId()));
 	}
 }

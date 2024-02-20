@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import goorm.eagle7.stelligence.common.util.Site;
 import goorm.eagle7.stelligence.domain.contribute.model.Contribute;
 import goorm.eagle7.stelligence.domain.contribute.model.ContributeStatus;
 import goorm.eagle7.stelligence.domain.debate.event.NewCommentEvent;
@@ -22,8 +23,8 @@ import goorm.eagle7.stelligence.domain.debate.model.DebateStatus;
 import goorm.eagle7.stelligence.domain.debate.repository.CommentRepository;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
 import goorm.eagle7.stelligence.domain.member.model.Member;
-import goorm.eagle7.stelligence.domain.notification.NotificationRequest;
 import goorm.eagle7.stelligence.domain.notification.NotificationSender;
+import goorm.eagle7.stelligence.domain.notification.dto.request.NotificationRequest;
 
 @ExtendWith(MockitoExtension.class)
 class NewCommentNotifierTest {
@@ -60,7 +61,7 @@ class NewCommentNotifierTest {
 		verify(notificationSender).send(
 			NotificationRequest.of(
 				"토론 'contributeTitle'에 댓글이 달렸습니다. 'commentContent'",
-				"/debateList/1",
+				Site.debate(1L),
 				Set.of(2L, 4L, 5L)
 			)
 		);

@@ -56,6 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		return CustomOAuth2User.ofGoogle(
 			Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
 			attributes,
+			attributes.get("name").toString(),
 			attributes.get("email").toString(),
 			attributes.get("picture").toString(),
 			attributes.get("sub").toString(),

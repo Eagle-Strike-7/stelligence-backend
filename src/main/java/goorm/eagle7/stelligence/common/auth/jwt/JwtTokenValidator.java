@@ -31,7 +31,7 @@ class JwtTokenValidator {
 	 */
 	public Optional<Claims> getClaimsOrNullIfInvalid(String token) {
 		try {
-			log.debug("토큰 유효성 검사 시작, Optional 반환 = {}", token);
+			log.trace("토큰 유효성 검사 시작, Optional 반환 = {}", token);
 			return Optional.of(getClaims(token));
 		} catch (ExpiredJwtException e) {
 			log.debug("만료된 토큰입니다. empty 반환");

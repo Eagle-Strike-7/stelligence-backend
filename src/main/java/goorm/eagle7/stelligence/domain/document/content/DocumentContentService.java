@@ -2,6 +2,7 @@ package goorm.eagle7.stelligence.domain.document.content;
 
 import java.util.List;
 
+import org.owasp.html.PolicyFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import goorm.eagle7.stelligence.api.exception.BaseException;
 import goorm.eagle7.stelligence.common.sequence.SectionIdGenerator;
 import goorm.eagle7.stelligence.domain.document.content.dto.DocumentResponse;
+import goorm.eagle7.stelligence.domain.document.content.dto.DocumentSimpleResponse;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionRequest;
 import goorm.eagle7.stelligence.domain.document.content.dto.SectionResponse;
 import goorm.eagle7.stelligence.domain.document.content.model.Document;
@@ -35,6 +37,8 @@ public class DocumentContentService {
 	private final SectionRepository sectionRepository;
 	private final SectionIdGenerator sectionIdGenerator;
 	private final DocumentParser documentParser;
+	private final PolicyFactory policyFactory;
+	private final SectionRequestValidator sectionRequestValidator;
 
 	/**
 	 * Document를 생성합니다.
@@ -56,7 +60,12 @@ public class DocumentContentService {
 		Document document = Document.createDocument(title, author, parentDocument);
 		documentRepository.save(document);
 
-		List<SectionRequest> sectionRequests = documentParser.parse(rawContent);
+		// 악성 스크립트를 방지하기 위해 HTML를 필터링합니다.
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+		List<SectionRequest> sectionRequests = documentParser.parse(sanitizedContent);
+
+		//sectionRequests의 유효성을 검증합니다.
+		sectionRequestValidator.validate(sectionRequests);
 
 		//section 생성
 		for (int order = 0; order < sectionRequests.size(); order++) {
@@ -156,5 +165,18 @@ public class DocumentContentService {
 			.orElseThrow(() -> new BaseException("상위 문서가 존재하지 않습니다. 문서 ID : " + newParentDocumentId));
 
 		document.updateParentDocument(parentDocument);
+	}
+
+	/**
+	 * 특정 제목으로 문서를 검색합니다.
+	 * @param title 검색할 제목
+	 * @return DocumentSimpleResponse
+	 */
+	public DocumentSimpleResponse getDocumentByTitle(String title) {
+
+		Document document = documentRepository.findByTitle(title)
+			.orElseThrow(() -> new BaseException("해당 제목을 갖는 문서가 존재하지 않습니다. 제목: " + title));
+
+		return DocumentSimpleResponse.from(document);
 	}
 }
