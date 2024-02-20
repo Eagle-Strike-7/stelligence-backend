@@ -11,11 +11,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UriUtils;
 
+import goorm.eagle7.stelligence.api.log.formatter.RequestBodyFormatter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,11 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @Component
 @WebFilter(filterName = "RequestLoggingFilter", urlPatterns = "/*") // 애플리케이션의 모든 요청에 대해 매핑됨
+@RequiredArgsConstructor
 public class RequestLoggingFilter extends OncePerRequestFilter {
+
+	private final RequestBodyFormatter requestBodyFormatter;
 
 	// 로깅 제외 URL 패턴
 	private static final String[] EXCLUDE_URL_PATTERN = {"/swagger-ui/", "/api-docs", "/v3/api-docs"};
-	private static final int MAX_BODY_PRINT_LENGTH = 100; // body 출력 길이 제한
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -54,15 +58,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 		String requestBody = IOUtils.toString(cachedHttpServletRequest.getInputStream(), StandardCharsets.UTF_8);
 
 		if (StringUtils.hasText(requestBody)) {
-			// body가 100자 이상이면 100자까지만 출력
-			if (requestBody.length() > MAX_BODY_PRINT_LENGTH) {
-				requestBody = requestBody.substring(0, MAX_BODY_PRINT_LENGTH) + "...";
-			}
-
-			// 개행문자 제거
-			requestBody = requestBody.replace("\n", " ");
-
-			log.debug("REQUEST BODY: {}", requestBody);
+			log.debug("REQUEST BODY: {}", requestBodyFormatter.format(requestBody));
 		}
 
 		filterChain.doFilter(cachedHttpServletRequest, response);

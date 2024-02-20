@@ -103,7 +103,7 @@ class SectionRequestValidatorTest {
 	}
 
 	@Test
-	@DisplayName("콘텐츠가 65536자 초과인 경우")
+	@DisplayName("콘텐츠가 65535자 초과인 경우")
 	void over65536Content() {
 		//given
 		List<SectionRequest> sectionRequests = List.of(
@@ -113,7 +113,7 @@ class SectionRequestValidatorTest {
 		Assertions.assertThatThrownBy(() ->
 				sectionRequestValidator.validate(sectionRequests))
 			.isInstanceOf(BaseException.class)
-			.hasMessage("Content는 65536자 이하로 입력해주세요.");
+			.hasMessage("Content는 65535자 이하로 입력해주세요.");
 	}
 
 }

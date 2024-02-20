@@ -93,7 +93,7 @@ public class ImageUploadController {
 		}
 
 		// 이미지 파일 크기 확인
-		long contentLength = Long.parseLong(request.getHeader("Content-Length"));
+		long contentLength = request.getContentLengthLong();
 		if (contentLength > MAX_IMAGE_BYTE) {
 			throw new BaseException("이미지 파일은 " + MAX_IMAGE_MB + "MB 이하만 업로드할 수 있습니다.");
 		}
