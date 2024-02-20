@@ -23,8 +23,6 @@ public class DocumentRequestValidator {
 	 * 문서 생성 요청의 유효성을 검증합니다.
 	 * <p>검증 실패 케이스
 	 * <ul>
-	 *     <li>제목이 null이거나 빈값인 경우</li>
-	 *     <li>내용이 null이거나 빈값인 경우</li>
 	 *     <li>제목이 이미 존재하는 경우</li>
 	 *     <li>수정하고자 하는 제목에 대해 다른 수정요청이 해당 제목으로 변경을 요청중인 경우</li>
 	 * </ul>
