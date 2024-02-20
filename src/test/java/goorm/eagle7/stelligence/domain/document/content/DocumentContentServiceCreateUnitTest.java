@@ -46,6 +46,9 @@ class DocumentContentServiceCreateUnitTest {
 	@Mock
 	PolicyFactory policyFactory;
 
+	@Mock
+	SectionRequestValidator sectionRequestValidator;
+
 	@InjectMocks
 	DocumentContentService documentContentService;
 
