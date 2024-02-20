@@ -13,11 +13,11 @@ import lombok.Getter;
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {
 
-	private String nickname;
-	private String email;
-	private String imageUrl;
-	private String socialId;
-	private SocialType socialType;
+	private final String nickname;
+	private final String email;
+	private final String imageUrl;
+	private final String socialId;
+	private final SocialType socialType;
 
 	/**
 	 * 	OAuth2User: 각 소셜 로그인 서비스에서 제공하는 정보가 담긴 DefaultOAuth2User 객체
@@ -28,57 +28,38 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 	 * @param nameAttributeKey 소셜 로그인 제공자가 제공하는 사용자 정보(JSON 형태)에서 사용자의 고유 식별자(예: 사용자 ID)를 추출하는 데 사용되는 PK 필드의 이름
 	 */
 	private CustomOAuth2User(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes,
-		String nameAttributeKey) {
+		String nameAttributeKey, String nickname, String email, String imageUrl, String socialId,
+		SocialType socialType) {
 		super(authorities, attributes, nameAttributeKey);
+		this.nickname = nickname;
+		this.email = email;
+		this.imageUrl = imageUrl;
+		this.socialId = socialId;
+		this.socialType = socialType;
 	}
 
 	// 구글 로그인 시
 	public static CustomOAuth2User ofGoogle(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String name, String email, String imageUrl, String socialId,
-		SocialType socialType
-	) {
+		Map<String, Object> attributes, String name, String email, String imageUrl, String socialId) {
 
-		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "sub");
-
-		customOAuth2User.nickname = name; // name을 nickname으로 사용.
-		customOAuth2User.email = email;
-		customOAuth2User.imageUrl = imageUrl;
-		customOAuth2User.socialId = socialId;
-		customOAuth2User.socialType = socialType;
-
-		return customOAuth2User;
-
+		return new CustomOAuth2User(authorities, attributes, "sub", name, email,
+			imageUrl, socialId, SocialType.GOOGLE);
 	}
 
 	// 네이버 로그인 시
 	public static CustomOAuth2User ofNaver(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId,
-		SocialType socialType) {
+		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId) {
 
-		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "response");
-
-		customOAuth2User.nickname = nickname;
-		customOAuth2User.email = email;
-		customOAuth2User.imageUrl = imageUrl;
-		customOAuth2User.socialId = socialId;
-		customOAuth2User.socialType = socialType;
-
-		return customOAuth2User;
+		return new CustomOAuth2User(authorities, attributes, "response", nickname, email,
+			imageUrl, socialId, SocialType.NAVER);
 	}
 
 	// 카카오 로그인 시
 	public static CustomOAuth2User ofKakao(Collection<? extends GrantedAuthority> authorities,
-		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId, SocialType socialType) {
+		Map<String, Object> attributes, String nickname, String email, String imageUrl, String socialId) {
 
-		CustomOAuth2User customOAuth2User = new CustomOAuth2User(authorities, attributes, "properties");
-
-		customOAuth2User.nickname = nickname;
-		customOAuth2User.email = email;
-		customOAuth2User.imageUrl = imageUrl;
-		customOAuth2User.socialId = socialId;
-		customOAuth2User.socialType = socialType;
-
-		return customOAuth2User;
+		return new CustomOAuth2User(authorities, attributes, "properties", nickname, email,
+			imageUrl, socialId, SocialType.KAKAO);
 	}
 
 	/**
@@ -88,10 +69,13 @@ public class CustomOAuth2User extends DefaultOAuth2User {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
-		CustomOAuth2User that = (CustomOAuth2User) o;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		CustomOAuth2User that = (CustomOAuth2User)o;
 		return Objects.equals(socialId, that.socialId) && Objects.equals(socialType, that.socialType);
 	}
 
