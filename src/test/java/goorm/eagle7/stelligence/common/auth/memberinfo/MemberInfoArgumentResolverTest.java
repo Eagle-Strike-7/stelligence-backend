@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,11 +34,8 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then
 		assertThat(result.getId()).isEqualTo(1);
@@ -57,16 +53,14 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo memberInfo = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo memberInfo = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then
 		assertThat(memberInfo).isNull();
 
 	}
+
 	@Test
 	@DisplayName("[확인] authorities 여러 개, 없는 role(admin 앞)이 있는 경우 동작 확인 - resolveArgument")
 	void resolveArgumentWithMultipleAuthoritiesWithNoRole() throws NoSuchMethodException {
@@ -83,11 +77,8 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then
 		// ADMIN 기준 없는 ROLE이 앞이라 USER가 FindFirst 반환값
@@ -117,11 +108,8 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then
 		// ADMIN 기준 없는 ROLE이 나중이라 ADMIN이 FindFirst 반환값
@@ -146,11 +134,8 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then - findFirst라서 LIST 순서가 아닌 role 정의 시 순서
 		assertThat(result.getId()).isEqualTo(1);
@@ -174,11 +159,8 @@ class MemberInfoArgumentResolverTest {
 		Authentication authentication = new TestingAuthenticationToken(user, null);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		MethodParameter parameter = new MethodParameter(
-			TestController.class.getMethod("methodWithAuthAnnotation", String.class), 0);
-
 		// when
-		MemberInfo result = (MemberInfo)resolver.resolveArgument(parameter, null, null, null);
+		MemberInfo result = (MemberInfo)resolver.resolveArgument(null, null, null, null);
 
 		// then
 		assertThat(result.getId()).isEqualTo(1);
@@ -187,12 +169,4 @@ class MemberInfoArgumentResolverTest {
 
 	}
 
-	private class TestController {
-		public void methodWithAuthAnnotation(@Auth String memberId) {
-		}
-
-		public void methodWithoutAuthAnnotation(String memberId) {
-		}
-
-	}
 }
