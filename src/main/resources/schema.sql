@@ -248,7 +248,7 @@ ALTER TABLE amendment
 
 ALTER TABLE vote
     ADD CONSTRAINT fk_vote_contribute_id_contribute
-        FOREIGN KEY (contribute_id) REFERENCES contribute (contribute_id);
+        FOREIGN KEY (contribute_id) REFERENCES contribute (contribute_id) ON DELETE CASCADE;
 
 ALTER TABLE vote
     ADD CONSTRAINT fk_vote_member_id_member
