@@ -18,11 +18,12 @@ public class HtmlPolicyConfig {
 		return new HtmlPolicyBuilder()
 			.allowUrlProtocols("http", "https") // URL로 들어오는 값들에 대해 허용할 프로토콜 지정
 			.allowCommonBlockElements() //"p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote",
-			.allowCommonInlineFormattingElements() //"b", "i", "em", "strong", "a", "br", "img", "span", "hr", "code", "pre"
+			.allowCommonInlineFormattingElements() //"b", "i", "em", "strong", "a", "br", "img", "span", "hr", "code"
 			.allowElements("img")
 			.allowAttributes("src", "alt").onElements("img")
 			.allowElements("a") // Allow a elements
 			.allowAttributes("href", "target").onElements("a") // Allow href, target. rel은 자체적으로 생성하므로 필터링의 대상으로 합니다.
+			.allowElements("pre")
 			.toFactory();
 	}
 }
