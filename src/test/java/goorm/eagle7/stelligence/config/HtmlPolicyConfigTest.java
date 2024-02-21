@@ -62,4 +62,17 @@ class HtmlPolicyConfigTest {
 			"<a target=\"_blank\" href=\"http://www.stelligence.site/stars/77\" rel=\"noopener noreferrer\">[[테스트 주도 개발]]</a>");
 	}
 
+	@Test
+	@DisplayName("pre 허용")
+	void authorizePre() {
+		//given
+		String rawContent = "<pre><code>hello(hello(hello()))</code></pre>";
+
+		//when
+		String sanitizedContent = policyFactory.sanitize(rawContent);
+
+		//then
+		assertThat(sanitizedContent).isEqualTo(rawContent);
+	}
+
 }
