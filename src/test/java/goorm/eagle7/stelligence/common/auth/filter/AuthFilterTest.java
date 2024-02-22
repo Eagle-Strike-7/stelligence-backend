@@ -37,6 +37,17 @@ class AuthFilterTest {
 		// then
 	}
 
-	// 쿠키
+	// request가 없는 경우
+
+	// 액세스 쿠키가 없는 경우
+
+	// 토큰 만료된 경우
+
+	// 토큰 재발급 성공한 경우
+
+	// 토큰 재발급 실패한 경우
+
+	// authenication 저장 성공
+
 
 }
