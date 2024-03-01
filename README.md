@@ -131,7 +131,7 @@
 
 </div>
 
-## 주요 기능
+## 기능 명세
 
 ### ✨ 그래프 조회 및 검색
 검색 설명
@@ -155,7 +155,7 @@
 소셜 로그인을 통해 사용자는 번거로운 회원가입 / 로그인 과정을 거치지 않고 서비스를 이용할 수 있습니다. Spring Security, JWT, OAuth2를 사용했으며, 통신간 암호화를 위해 HTTPS를 적용했으며 리프레시 토큰을 1회성으로 사용하게 만드는 Rotation 기술을 도입했습니다.
 
 
-## 🔗 링크
+## 🔗 산출물
 
 ### 🎞 시연 영상
 
@@ -168,6 +168,9 @@
  🔗 [Swagger](https://api.stelligence.site/api-docs)
  
  🔗 [Notion Link](https://excited-cycle-902.notion.site/API-ec8902badd2147ae8bfcaf7223539427?pvs=4)
+
+### ERD
+![](https://i.imgur.com/ERvCjpP.png)
 
 ### 🤝 공동작업 GitHub
 
