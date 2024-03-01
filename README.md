@@ -111,18 +111,16 @@
 <div align="center">
 
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
-
+<br/>  
 <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 <img src="https://img.shields.io/badge/neo4j-4581C3?style=for-the-badge&logo=neo4j&logoColor=white">
 <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-
-
+<br/>  
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
 <img src="https://img.shields.io/badge/hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white">
 <img src="https://img.shields.io/badge/spring security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
 <img src="https://img.shields.io/badge/jwt-000000?style=for-the-badge&logo=JSONWebTokens&logoColor=white">
-
-
+<br/>  
 <img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=NGINX&logoColor=white">
 <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white">
 <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white">
@@ -166,8 +164,10 @@
 ### 📝 팀 노션
 <a href="https://www.notion.so/7-6ff5c3b7a51c4ba9b4201a804cd37b60"><img alt="notion" src ="https://img.shields.io/badge/notion-skyblue.svg?&style=for-the-badge&logo=notion&logoColor=black"/></a>
 
-###  API Docs
-https://excited-cycle-902.notion.site/API-ec8902badd2147ae8bfcaf7223539427?pvs=4
+### 📌 API Docs
+ 🔗 [Swagger](https://api.stelligence.site/api-docs)
+ 
+ 🔗 [Notion Link](https://excited-cycle-902.notion.site/API-ec8902badd2147ae8bfcaf7223539427?pvs=4)
 
 ### 🤝 공동작업 GitHub
 
