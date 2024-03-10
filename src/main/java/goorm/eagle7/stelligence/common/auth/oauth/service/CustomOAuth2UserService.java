@@ -59,8 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			attributes.get("name").toString(),
 			attributes.get("email").toString(),
 			attributes.get("picture").toString(),
-			attributes.get("sub").toString(),
-			SocialType.GOOGLE
+			attributes.get("sub").toString()
 		);
 	}
 
@@ -74,8 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			response.get("nickname").toString(),
 			response.get("email").toString(),
 			response.get("profile_image").toString(),
-			response.get("id").toString(),
-			SocialType.NAVER
+			response.get("id").toString()
 		);
 	}
 
@@ -90,8 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			profile.get("nickname").toString(),
 			kakaoAccount.get("email").toString(),
 			profile.get("thumbnail_image_url").toString(),
-			attributes.get("id").toString(),
-			SocialType.KAKAO
+			attributes.get("id").toString()
 		);
 	}
 }
