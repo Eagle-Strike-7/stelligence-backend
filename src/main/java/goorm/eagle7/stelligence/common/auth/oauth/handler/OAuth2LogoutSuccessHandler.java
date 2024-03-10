@@ -4,8 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
-import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +21,7 @@ public class OAuth2LogoutSuccessHandler implements LogoutSuccessHandler {
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) {
-
-		ResponseTemplate<Void> responseTemplate = ResponseTemplate.ok();
-		ResponseTemplateUtils.toSuccessResponse(responseTemplate);
+		ResponseUtils.sendSuccessResponse();
 	}
 
 }

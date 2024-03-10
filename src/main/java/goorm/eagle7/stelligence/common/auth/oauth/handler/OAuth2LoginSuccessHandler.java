@@ -8,14 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.oauth.CustomOAuth2User;
 import goorm.eagle7.stelligence.common.login.LoginService;
 import goorm.eagle7.stelligence.common.login.dto.LoginOAuth2Request;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
-import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +68,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 			response.sendRedirect(redirectUrl);
 		} catch (IOException e) {
 			// 리다이렉트 실패 시, 500 에러 응답
-			ResponseTemplateUtils.toErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-				ResponseTemplate.fail("Redirect failed"));
+			ResponseUtils.sendErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				"리다이렉트 실패");
 		}
 
 	}

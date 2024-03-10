@@ -13,14 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import goorm.eagle7.stelligence.api.ResponseTemplate;
 import goorm.eagle7.stelligence.common.auth.filter.pathmatch.CustomRequestMatcher;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenReissueService;
 import goorm.eagle7.stelligence.common.auth.jwt.JwtTokenService;
 import goorm.eagle7.stelligence.common.login.dto.LoginTokenInfo;
 import goorm.eagle7.stelligence.common.util.CookieType;
 import goorm.eagle7.stelligence.common.util.CookieUtils;
-import goorm.eagle7.stelligence.common.util.ResponseTemplateUtils;
+import goorm.eagle7.stelligence.common.util.ResponseUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,9 +82,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			if (!isMemberInfoRequired(httpMethod, uri)) {
 				if (uri.equals("/api/members/me") && httpMethod.equals("GET")) {
 					log.trace("[403] /api/members/me 403 error : {}", e.getMessage());
-					ResponseTemplateUtils.toErrorResponse(
-						HttpServletResponse.SC_FORBIDDEN
-						, ResponseTemplate.fail(ERROR_MESSAGE));
+					ResponseUtils.sendErrorResponse(HttpServletResponse.SC_FORBIDDEN, ERROR_MESSAGE);
 					return;
 				}
 				throw new UsernameNotFoundException(e.getMessage());
