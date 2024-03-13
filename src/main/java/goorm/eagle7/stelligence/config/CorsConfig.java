@@ -21,27 +21,29 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-	@Bean
-	public CorsFilter corsFilter() {
+    @Bean
+    public CorsFilter corsFilter() {
 
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
 
-		config.setAllowedOrigins(Arrays.asList(
-			"http://localhost:3000"
-			, "http://localhost:8080"
-			, "http://www.stelligence.site"
-			, "http://stelligence.site"
-			, "https://api.stelligence.site"
-			));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(Arrays.asList("Set-Cookie", "Content-Type"));
-		config.setAllowCredentials(true);
-		config.setMaxAge(3600L);
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000"
+                , "http://localhost:8080"
+                , "http://www.stelligence.site"
+                , "http://stelligence.site"
+                , "https://api.stelligence.site"
+                , "https://www.stelligence.site"
+                , "https://stelligence.site"
+        ));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Set-Cookie", "Content-Type"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
-		source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/api/**", config);
 
-		return new CorsFilter(source);
-	}
+        return new CorsFilter(source);
+    }
 
 }
