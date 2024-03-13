@@ -7,7 +7,7 @@
 
 ## 배포 주소
 > 백엔드 서버 : https://api.stelligence.site<br>
-> 프론트엔드 서버 : http://www.stelligence.site
+> 프론트엔드 서버 : https://www.stelligence.site
 > 
 ## 팀 소개
 
